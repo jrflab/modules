@@ -1,0 +1,7 @@
+--filterName "QD" --filterExpression "QD < 2.0"
+--filterName "MQ" --filterExpression "MQ < 40.0"
+--filterName "FS" --filterExpression "FS > 60.0"
+--filterName "HapScore" --filterExpression "HaplotypeScore > 13.0"
+--filterName "MQRankSum" --filterExpression "MQRankSum < -12.5"
+--filterName "ReadPosRankSum" --filterExpression "ReadPosRankSum < -8.0"
+--filterName "Depth" --filterExpression "DP < 5" 
