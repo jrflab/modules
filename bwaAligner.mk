@@ -21,9 +21,9 @@ VPATH ?= unprocessed_bam
 EXTRACT_FASTQ ?= true
 DUP_TYPE ?= rmdup
 NO_RECAL = false
-SPLIT_FASTQ = true
+SPLIT_FASTQ = false
 
-FASTQ_CHUNKS := 20
+FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
 FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 
@@ -42,7 +42,7 @@ ifeq ($(SPLIT_FASTQ),true)
 $(foreach i,$(FASTQ_CHUNK_SEQ),split_fastq/%.$i.fastq.gz) : fastq/%.fastq.gz
 	$(INIT) $(FASTQUTILS) split -gz $< split_fastq/$* $(FASTQ_CHUNKS) &> $(LOG)
 bwa/sai/%.sai : split_fastq/%.fastq.gz
-	$(call INIT_PARALLEL_MEM,10,0.8G,1G) $(BWA) aln -t 10 $(REF_FASTA) $< > $@ 2> $(LOGDIR)/$@.log
+	$(call INIT_PARALLEL_MEM,8,1G,1.2G) $(BWA) aln -t 8 $(REF_FASTA) $< > $@ 2> $(LOGDIR)/$@.log
 define bwa-chunk
 bwa/split_bam/%.$1.bwa.bam : bwa/sai/%.1.$1.sai bwa/sai/%.2.$1.sai split_fastq/%.1.$1.fastq.gz split_fastq/%.2.$1.fastq.gz
 	$$(call INIT_MEM,4G,10G) \
@@ -54,7 +54,7 @@ bwa/bam/%.bwa.bam : $(foreach i,$(FASTQ_CHUNK_SEQ),bwa/split_bam/%.$i.bwa.sorted
 	$(call INIT_MEM,2G,4G) $(SAMTOOLS) merge $@ $^ && $(RM) $^ &> $(LOG)
 else
 bwa/sai/%.sai : fastq/%.fastq.gz
-	$(call INIT_PARALLEL_MEM,10,0.8G,1G) $(BWA) aln -t 10 $(REF_FASTA) $< > $@ 2> $(LOGDIR)/$@.log
+	$(call INIT_PARALLEL_MEM,8,1G,1.2G) $(BWA) aln -t 8 $(REF_FASTA) $< > $@ 2> $(LOGDIR)/$@.log
 bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(call INIT_MEM,4G,10G) \
 	LBID=`echo "$*" | sed 's/_[0-9]\+//'`; \
@@ -62,9 +62,9 @@ bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2
 endif
 else
 bwa/sai/%.1.sai : %.bam
-	$(call INIT_PARALLEL_MEM,10,0.8G,1G) $(BWA) aln -t 10 $(REF_FASTA) -b -1 $< > $@ 2> $(LOGDIR)/$@.log
+	$(call INIT_PARALLEL_MEM,8,1G,1.2G) $(BWA) aln -t 8 $(REF_FASTA) -b -1 $< > $@ 2> $(LOGDIR)/$@.log
 bwa/sai/%.2.sai : %.bam
-	$(call INIT_PARALLEL_MEM,10,0.8G,1G) $(BWA) aln -t 10 $(REF_FASTA) -b -2 $< > $@ 2> $(LOGDIR)/$@.log
+	$(call INIT_PARALLEL_MEM,8,1G,1.2G) $(BWA) aln -t 8 $(REF_FASTA) -b -2 $< > $@ 2> $(LOGDIR)/$@.log
 bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai %.bam
 	$(call INIT_MEM,4G,8G) \
 	LBID=`echo "$*" | sed 's/_[0-9]\+//'`; \
