@@ -10,6 +10,15 @@ SAMPLE_PAIR_FILE ?= sample_pairs.txt
 TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
 NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
 SAMPLES ?= $(TUMOR_SAMPLES) $(NORMAL_SAMPLES)
+SPLIT_CHR ?= true
+
+GATK_OLD_JAR = /opt/common/gatk/GenomeAnalysisTK-2.3-9-ge5ebf34/GenomeAnalysisTK.jar
+SOM_INDEL = $(call JAVA) -Xmx8G -jar $(GATK_OLD_JAR) -T SomaticIndelDetector
+
+DEPTH_FILTER = 10
+
+VCF_SAMPLES = 0 1
+VCF_GEN_IDS = GT AD DP MM MQS NQSBQ NQSMM REnd RStart SC
 
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
@@ -22,17 +31,19 @@ INDEL_WINDOW_SIZE = 200
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all
+.PHONY: all som_indel_vcfs som_indel_tables
 
-all : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.eff.vcf)
-
-som_indel_tables : $(foreach i,$(shell seq 1 $(NSAMPLES)),gatk/tables/$(word $i,$(NORMAL_SAMPLES))_$(word $i,$(TUMOR_SAMPLES)).som_indels.annotated.cbind.txt)
+all : som_indel_vcfs som_indel_tables
+som_indel_vcfs : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.annotated.nsfp.vcf)
+som_indel_tables : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.annotated.nsfp.som_indel_ft.txt)
+	
+mutect_som_indel_tables : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).mutect_som_indels.txt)
 
 ifeq ($(SPLIT_CHR),true)
 #$(call som-indel,tumor,normal,chr)
 define som-indel-tumor-normal-chr
-gatk/chr_vcf/$1_$2.$3.som_indels.vcf : gatk/chr_bam/$1.$3.realn.bam gatk/chr_bam/$2.$3.realn.bam gatk/chr_bam/$1.$3.realn.bai gatk/chr_bam/$2.$3.realn.bai
-	$$(call INIT_MEM,8G,10G) $$(MKDIR) gatk/metrics; $$(call GATK_MEM,8G) -T SomaticIndelDetector -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp -L $3 --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
+gatk/chr_vcf/$1_$2.$3.som_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call INIT_MEM,9G,14G) $$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp -L $3 --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call som-indel-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 
@@ -46,8 +57,8 @@ else # no splitting by chromosome
 
 #$(call som-indel-tumor-normal,tumor,normal)
 define som-indel-tumor-normal
-gatk/chr_vcf/$1_$2.som_indels.vcf : gatk/bam/$1.realn.bam gatk/bam/$2.realn.bam gatk/bam/$1.realn.bai gatk/bam/$2.realn.bai
-	$$(call INIT_MEM,8G,10G) $$(MKDIR) gatk/metrics; $$(call GATK_MEM,8G) -T SomaticIndelDetector -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
+gatk/chr_vcf/$1_$2.som_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call INIT_MEM,9G,14G) $$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call som-indel-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 endif
@@ -55,8 +66,15 @@ endif
 #$(call pedigree-som-indel-tumor-normal,tumor,normal)
 define pedigree-som-indel-tumor-normal
 vcf/$1_$2.gatk_som_indels.vcf : gatk/vcf/$1_$2.som_indels.vcf
-	$$(INIT) echo "##PEDIGREE=<Derived=$1,Original=$2>" > $$@ && cat $$< >> $$@
+	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' >> $$@ 2> $$(LOG)
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call pedigree-som-indel-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+
+tables/%.som_indel_ft.txt : tables/%.txt
+	$(INIT) head -1 $< > $@; sed '1d' $< | awk -F$$'\t' '$$7 != $$8 && $$11 >= $(DEPTH_FILTER) && $$12 >= $(DEPTH_FILTER)' >> $@
+
+tables/%.mutect_som_indels.txt : tables/%.mutect.dp_ft.annotated.nsfp.pass.novel.txt tables/%.gatk_som_indels.annotated.nsfp.som_indel_ft.txt
+	$(INIT) $(RSCRIPT) $(RBIND) $^ > $@
+
 
 include ~/share/modules/gatk.mk

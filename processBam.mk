@@ -6,6 +6,7 @@ include ~/share/modules/gatk.inc
 SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 
+SPLIT_CHR ?= true
 
 #LOGDIR = bam/log
 
@@ -35,6 +36,9 @@ sort : $(foreach sample,$(SAMPLES),bam/$(sample).sorted.bam)
 %.bam.bai : %.bam
 	$(call INIT_MEM,4G,8G)  $(SAMTOOLS) index $<
 
+%.bai : %.bam
+	$(call INIT_MEM,4G,8G) $(SAMTOOLS) index $< $@
+
 #&& if readlink $< > /dev/null; then ln -fs $$(readlink -f $<).bai $(<D)/$(@F); fi &> $(LOGDIR)/$(@F).log
 
 # sam to bam
@@ -49,7 +53,7 @@ sort : $(foreach sample,$(SAMPLES),bam/$(sample).sorted.bam)
 	$(call INIT_MEM,9G,14G) $(call FIX_MATE_MEM,8G) I=$< O=$@ &> $(LOG) && $(RM) $<
 
 # recalibrate base quality
-%.recal_report.grp : %.bam %.bam.bai
+%.recal_report.grp : %.bam %.bai
 	$(call INIT_MEM,11G,15G) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) -knownSites $(DBSNP) -I $< -o $@ &> $(LOGDIR)/$@.log
 
 # recalibration
@@ -82,3 +86,51 @@ sort : $(foreach sample,$(SAMPLES),bam/$(sample).sorted.bam)
 # add rg
 %.rg.bam : %.bam
 	$(call INIT_MEM,10G,12G) $(call ADD_RG_MEM,10G) I=$< O=$@ RGLB=$(call strip-suffix,$(@F)) RGPL=illumina RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) &> $(LOG) && $(RM) $<
+
+# if SPLIT_CHR is set to true, we will split realn processing by chromosome
+ifeq ($(SPLIT_CHR),true)
+# indel realignment intervals (i.e. where to do MSA)
+# split by samples and chromosomes
+# %=sample
+# $(eval $(call chr-target-aln,chromosome))
+define chr-target-realn
+%.$1.chr_split.intervals : %.bam %.bam.bai
+	$$(call INIT_PARALLEL_MEM,6,2G,2.5G) $$(call GATK_MEM,8G) -T RealignerTargetCreator \
+	-I $$< \
+	-L $1 \
+	-nt 6 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS) \
+	&> $$(LOG)
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
+
+# indel realignment per chromosome
+# only realign if intervals is non-empty
+# %=sample
+# $(eval $(call chr-aln,chromosome))
+define chr-realn
+%.$(1).chr_realn.bam %.$(1).chr_realn.bai : %.bam %.$(1).chr_split.intervals %.bam.bai
+	$$(call INIT_MEM,9G,12G) if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM,8G) -T IndelRealigner \
+	-I $$< -R $$(REF_FASTA) -L $1 -targetIntervals $$(word 2,$$^) \
+	-o $$*.$1.chr_realn.bam --knownAlleles $$(KNOWN_INDELS) &> $$(LOG); \
+	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$< -L $1 -o $$*.$1.chr_realn.bam &> $$(LOG) && $(SAMTOOLS) index $$*.$1.chr_realn.bam $$*.$1.chr_realn.bai ; fi
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
+
+# merge sample chromosome bams
+%.realn.bam : $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bam) $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bai)
+	$(call INIT_PARALLEL_MEM,2,10G,11G) $(MERGE_SAMS) $(foreach i,$(filter %.bam,$^), I=$i) SORT_ORDER=coordinate O=$@ USE_THREADING=true &> $(LOGDIR)/$@.log && $(RM) $^ 
+
+else # no splitting by chr
+%.realn.bam %.realn.bai : %.bam %.intervals %.bam.bai
+	$(call INIT_MEM,9G,12G) if [[ -s $(word 2,$^) ]]; then $(call GATK_MEM,8G) -T IndelRealigner \
+	-I $< -R $(REF_FASTA) -targetIntervals $(word 2,$^) \
+	-o gatk/bam/$*.realn.bam --knownAlleles $(KNOWN_INDELS) &> $(LOG) && $(RM) $< ; \
+	else mv bam/$*.bam gatk/bam/$*.realn.bam && mv bam/$*.bam.bai gatk/bam/$*.realn.bai &> $(LOG) ; fi
+
+%.intervals : %.bam %.bam.bai
+	$(call INIT_PARALLEL_MEM,6,2G,3G) $(call GATK_MEM,8G) -T RealignerTargetCreator \
+	-I $< \
+	-nt 6 -R $(REF_FASTA)  -o $@  --known $(KNOWN_INDELS) \
+	&> $(LOG)
+
+endif

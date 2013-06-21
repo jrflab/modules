@@ -18,7 +18,7 @@ fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz)
 
 
 ifeq (${EXTRACT_TOOL},picard)
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.fixmate.bam
+fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
 	$(call INIT_PARALLEL_MEM,2,4G,6G) \
 	TEMP=`mktemp`; mkfifo $${TEMP}_1; mkfifo $${TEMP}_2; \
 	gzip < $${TEMP}_1 > fastq/$*.1.fastq.gz & \

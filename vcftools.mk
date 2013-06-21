@@ -4,7 +4,8 @@
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
-SNP_EFF_FLAGS ?= -ud 0 -no-intron -no-intergenic
+#SNP_EFF_FLAGS ?= -ud 0 -no-intron -no-intergenic
+DEPTH_FILTER ?= 10
 
 %.vcf.idx : %.vcf
 	$(call INIT_MEM,4G,8G) $(IGVTOOLS) index $< &> $(LOGDIR)/$(@F).log
@@ -17,6 +18,7 @@ SNP_EFF_FLAGS ?= -ud 0 -no-intron -no-intergenic
 %.nsfp.vcf : %.vcf %.vcf.idx
 	$(call INIT_MEM,9G,12G) $(call SNP_SIFT_MEM,8G) dbnsfp -v $(DB_NSFP) $< > $@ 2> $(LOG)
 
+# run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
 	$(call INIT_MEM,5G,8G) $(call SNP_EFF_MEM,4G) -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@  2> $(LOGDIR)/$(@F).log
 
@@ -25,21 +27,31 @@ SNP_EFF_FLAGS ?= -ud 0 -no-intron -no-intergenic
 	$(call INIT_PARALLEL_MEM,5,2G,3G) $(call GATK_MEM,8G) -T VariantAnnotator \
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log
 
+# apply sample depth filter
+%.dp_ft.vcf : %.vcf
+	$(call INIT_MEM,2G,5G) cat $< | $(call SNP_SIFT_MEM,2G) filter "GEN[ALL].DP > $(DEPTH_FILTER)" > $@ 2> $(LOG)
+
 # add exon distance
 %.exondist.vcf : %.vcf
 	$(call INIT_MEM,2G,3G) $(INTRON_POSN_LOOKUP) $< > $@ 2> $(LOGDIR)/$@.log
 
 # extract vcf to table
 tables/%.eff.nsfp.txt : vcf/%.eff.nsfp.vcf
-	$(call INIT_MEM,2G,5G) $(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(VCF_EXTRACT_FIELDS) > $@
+	$(call INIT_MEM,2G,5G) $(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(ALL_VCF_EFF_FIELDS) > $@
 	
 tables/%.annotated.nsfp.txt : vcf/%.annotated.nsfp.vcf
-	$(call INIT_MEM,2G,5G) $(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(GATK_VCF_EXTRACT_FIELDS) > $@
+	$(call INIT_MEM,2G,5G) $(call SNP_SIFT_MEM,2G) extractFields $< $(ALL_VCF_GATK_FIELDS) > $@
+
 
 # extract vcf to table
 tables/%.eff.nsfp.txt : vcf/%.eff.nsfp.vcf
-	$(call INIT_MEM,2G,5G) $(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(VCF_EXTRACT_FIELDS) > $@
+	$(call INIT_MEM,2G,5G) $(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(VCF_EFF_FIELDS) > $@
 
+%.pass.txt : %.txt
+	$(INIT) grep -v "REJECT" $< > $@
+
+%.novel.txt : %.txt
+	$(INIT) awk 'NR == 1 || length($$3) == 1 { print }' $< > $@
 
 # merge tables
 tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)

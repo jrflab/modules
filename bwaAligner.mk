@@ -20,8 +20,10 @@ VPATH ?= unprocessed_bam
 # use fastq; otherwise use bams
 EXTRACT_FASTQ ?= true
 DUP_TYPE ?= rmdup
-NO_RECAL = false
-SPLIT_FASTQ = false
+NO_RECAL ?= false
+NO_REALN ?= false
+SPLIT_CHR ?= true
+SPLIT_FASTQ ?= false
 
 FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
@@ -36,6 +38,9 @@ all : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
 
 bam/%.bam : bwa/bam/%.$(BAM_SUFFIX)
 	$(INIT) ln -f $< $@
+
+fastq/%.fastq.gz : fastq/%.fastq
+	$(INIT) gzip -c $< > $@ 2> $(LOG) && $(RM) $< 
 
 ifeq ($(EXTRACT_FASTQ),true)
 ifeq ($(SPLIT_FASTQ),true)
@@ -88,9 +93,11 @@ ifeq ($(NO_RECAL),false)
 BAM_SUFFIX := $(BAM_SUFFIX).recal
 endif
 
-BAM_SUFFIX := $(BAM_SUFFIX).bam
+ifeq ($(NO_REALN),false)
+BAM_SUFFIX := $(BAM_SUFFIX).realn
+endif
 
-$(info $(BAM_SUFFIX)) 
+BAM_SUFFIX := $(BAM_SUFFIX).bam
 
 bam/%.bam : bwa/bam/%.$(BAM_SUFFIX)
 	$(INIT) ln -f $< $@
