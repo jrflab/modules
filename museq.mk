@@ -6,10 +6,16 @@ include ~/share/modules/Makefile.inc
 SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 
-MUSEQ_DIR = /genesis/scratch/sohrab_temp/jknaggs_tmp/mutationSeq2
-EXTRACT_FEATURES = PYTHONPATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib/python LD_LIBRARY_PATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib $(MUSEQ_DIR)/extract_features
-MUSEQ = PYTHONPATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib/python LD_LIBRARY_PATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib $(MUSEQ_DIR)/muSeq
-MUSEQ_MODEL = /genesis/scratch/sohrab_temp/jknaggs_tmp/all_single/model.pk
+#MUSEQ_DIR = /genesis/scratch/sohrab_temp/jknaggs_tmp/mutationSeq2
+#EXTRACT_FEATURES = PYTHONPATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib/python LD_LIBRARY_PATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib $(MUSEQ_DIR)/extract_features
+
+MUSEQ_PYTHON = $(HOME)/share/usr/anaconda/bin/python
+MUSEQ_PYTHONPATH = $(HOME)/share/usr/anaconda/lib/python2.7/site-packages
+MUSEQ_LD_LIBRARY_PATH = $(HOME)/share/usr/anaconda/lib
+
+MUSEQ_TRAIN = PYTHONPATH=$(MUSEQ_PYTHONPATH) LD_LIBRARY_PATH=$(MUSEQ_LD_LIBRARY_PATH) $(MUSEQ_PYTHON) $(HOME)/share/usr/museq-3.0.0/train.py
+MUSEQ_CLASSIFY = PYTHONPATH=$(MUSEQ_PYTHONPATH) LD_LIBRARY_PATH=$(MUSEQ_LD_LIBRARY_PATH) $(MUSEQ_PYTHON) $(HOME)/share/usr/museq-3.0.0/classify.py
+MUSEQ_MODEL = $(HOME)/share/museq-3.0.0/model.npz
 MUSEQ_THRESHOLD = 0.5
 NCHUNKS = 100
 SNP_FILTERS = --filterName "muSeq" --filterExpression "PROB < $(MUSEQ_THRESHOLD)"

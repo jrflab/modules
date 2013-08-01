@@ -24,8 +24,8 @@ endif
 
 all : $(foreach sample,$(SAMPLES),qualimap/$(sample)_bamqc.timestamp)
 
-qualimap/%_bamqc.timestamp : bam/%.clean.bam
-	$(call INIT_PARALLEL_MEM,10,2G,2.5G) $(QUALIMAP) bamqc $(QUALIMAP_BAMQC_OPTS) -bam $< -nr 6 -nt 10 -outdir qualimap/$*_bamqc &> $(LOG) && touch $@
+qualimap/%_bamqc.timestamp : bam/%.bam
+	$(call INIT_PARALLEL_MEM,8,2G,2.5G) $(QUALIMAP) bamqc $(QUALIMAP_BAMQC_OPTS) -bam $< -nr 6 -nt 8 -outdir qualimap/$*_bamqc &> $(LOG) && touch $@
 
 
 include ~/share/modules/processBam.mk

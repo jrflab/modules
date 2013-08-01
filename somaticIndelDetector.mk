@@ -43,7 +43,7 @@ ifeq ($(SPLIT_CHR),true)
 #$(call som-indel,tumor,normal,chr)
 define som-indel-tumor-normal-chr
 gatk/chr_vcf/$1_$2.$3.som_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call INIT_MEM,9G,14G) $$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp -L $3 --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
+	$$(call LSCRIPT_MEM,9G,14G,"$$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp -L $3 --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call som-indel-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 
@@ -58,7 +58,7 @@ else # no splitting by chromosome
 #$(call som-indel-tumor-normal,tumor,normal)
 define som-indel-tumor-normal
 gatk/chr_vcf/$1_$2.som_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call INIT_MEM,9G,14G) $$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)
+	$$(call LSCRIPT_MEM,9G,14G,"$$(MKDIR) gatk/metrics; $$(SOM_INDEL) -R $$(REF_FASTA) -I:tumor $$(word 1,$$^) -I:normal $$(word 2,$$^) -o $$@ --metrics_file gatk/metrics/$1_$2.som_indels.grp --window_size $$(INDEL_WINDOW_SIZE) &> $$(LOG)")
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call som-indel-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 endif
@@ -74,7 +74,7 @@ tables/%.som_indel_ft.txt : tables/%.txt
 	$(INIT) head -1 $< > $@; sed '1d' $< | awk -F$$'\t' '$$7 != $$8 && $$11 >= $(DEPTH_FILTER) && $$12 >= $(DEPTH_FILTER)' >> $@
 
 tables/%.mutect_som_indels.txt : tables/%.mutect.dp_ft.annotated.nsfp.pass.novel.txt tables/%.gatk_som_indels.annotated.nsfp.som_indel_ft.txt
-	$(INIT) $(RSCRIPT) $(RBIND) $^ > $@
+	$(call LSCRIPT,"$(RSCRIPT) $(RBIND) $^ > $@")
 
 
 include ~/share/modules/gatk.mk

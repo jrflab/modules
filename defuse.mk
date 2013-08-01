@@ -8,9 +8,10 @@ include ~/share/modules/Makefile.inc
 SAMPLE_FILE ?= samples.txt
 SAMPLES = $(shell cat $(SAMPLE_FILE))
 
-DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
+#DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
+DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
 
-LOGDIR = log
+LOGDIR = defuse/log.$(NOW)
 
 # Runs defuse locally on the same node
 LOCAL ?= FALSE
@@ -26,8 +27,8 @@ endif
 
 .PHONY : defuse
 
-defuse : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse.timestamp)
+defuse : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
 
-defuse/%.defuse.timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(call INIT_MEM,1G,2G) \
 	$(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@

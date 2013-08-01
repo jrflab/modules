@@ -6,25 +6,26 @@ include ~/share/modules/Makefile.inc
 include ~/share/modules/hg19.inc
 
 SNP = snp135
-NPARTS = 10 
+NPARTS = 5 
 SEQ = $(shell seq 0 $(shell expr $(NPARTS) \- 1))
-OPTS = -d $(REF) -D ${GSNAP_REF_DIR} -B 4 -t 4 -A sam --novelsplicing=1 --pairexpect=200 -v $(SNP) -s $(REF).splicesites.iit -n 1 --quiet-if-excessive --nofails --gunzip
+OPTS = -d $(REF) -D ${GSNAP_REF_DIR} -B 4 -t 3 -A sam --novelsplicing=1 --pairexpect=150 -v $(SNP) -s $(REF).splicesites.iit -n 1 --quiet-if-excessive --nofails --gunzip
 ifeq ($(PHRED64),true)
 	OPTS += -J 64 -j -31
 endif
 # note: GSNAP actually uses 2 + number of specified threads
-GSNAP_SGE_RREQ = $(call MEM_FREE,3G,3.5G) -q all.q -pe $(PARALLEL_ENV) 6 -now n
 
 SAMPLE_FILE = samples.txt
 SAMPLES = $(shell cat $(SAMPLE_FILE))
 
 LOGDIR = gsnap/log
 
-VPATH ?= gsc_bam
+VPATH ?= unprocessed_bam
 
 # Indicates how PCR-duplicates should be handled
 # Options: rmdup, markdup, none
 DUP_TYPE ?= rmdup
+NO_RECAL ?= false
+NO_REALN ?= false
 
 GSNAP_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
@@ -41,10 +42,10 @@ gsnap_unmerged : $(foreach sample,$(SAMPLES),$(foreach i,$(SEQ),gsnap/sam/$(samp
 #$(call gsnap-part,part)
 define gsnap-part
 gsnap/bam/$(1).gsnap.$(2).bam : fastq/$1.1.fastq.gz fastq/$1.2.fastq.gz
-	$$(call INIT_PARALLEL_MEM,6,3G,3.5G) $$(GSNAP) $$(OPTS) --read-group-id=$1 --part=$2/$$(NPARTS) $$^ 2> $(LOGDIR)/$1/$1.gsnap.$2.log | $$(SAMTOOLS) view -b -S - 2> $(LOGDIR)/$1/$1.gsnap.$2.samview.log | $$(SAMTOOLS) sort - $$(basename $$@) 2> $$(LOG)
+	$$(call INIT_PARALLEL_MEM,4,3G,3.5G) $$(GSNAP) $$(OPTS) --read-group-id=$1 --part=$2/$$(NPARTS) $$^ 2> $(LOGDIR)/$1/$1.gsnap.$2.log | $$(SAMTOOLS) view -b -S - 2> $(LOGDIR)/$1/$1.gsnap.$2.samview.log | $$(SAMTOOLS) sort - $$(basename $$@) 2> $$(LOG)
 endef
 $(foreach sample,$(SAMPLES),$(eval $(foreach i,$(SEQ),$(eval $(call gsnap-part,$(sample),$i)))))
-$(foreach sample,$(SAMPLES),$(eval $(foreach i,$(SEQ),$(eval $(call gsnap-part,$(sample).readtrim,$i)))))
+#$(foreach sample,$(SAMPLES),$(eval $(foreach i,$(SEQ),$(eval $(call gsnap-part,$(sample).readtrim,$i)))))
 
 gsnap/bam/%.gsnap.bam : $(foreach i,$(SEQ),gsnap/bam/%.gsnap.$i.bam)
 	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,2G,3G)" $(SAMTOOLS) merge $@ $^ && rm -f $^
@@ -62,6 +63,27 @@ endif
 
 bam/%.readtrim.bam : gsnap/bam/%.readtrim.gsnap.sorted.filtered.markdup.bam
 	$(INIT) $(MKDIR) $(@D); ln -f $< $@
+
+BAM_SUFFIX := gsnap.sorted.filtered
+
+ifeq ($(DUP_TYPE),rmdup)
+BAM_SUFFIX := $(BAM_SUFFIX).rmdup
+else ifeq ($(DUP_TYPE),markdup) 
+BAM_SUFFIX := $(BAM_SUFFIX).markdup
+endif
+
+ifeq ($(NO_RECAL),false)
+BAM_SUFFIX := $(BAM_SUFFIX).recal
+endif
+
+ifeq ($(NO_REALN),false)
+BAM_SUFFIX := $(BAM_SUFFIX).realn
+endif
+
+BAM_SUFFIX := $(BAM_SUFFIX).bam
+
+bam/%.bam : gsnap/bam/%.$(BAM_SUFFIX)
+	$(INIT) ln -f $< $@
 
 #maps : $(GSNAP_MAPS)/$(REF).splicesites.iit $(GSNAP_MAPS)/$(SNP).iit
 

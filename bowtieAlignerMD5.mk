@@ -32,22 +32,6 @@ ifeq ($(LOCAL),true)
   BOWTIE_OPTS += --local
 endif
 
-.SECONDARY:
-.DELETE_ON_ERROR:
-.PHONY: all
-
-BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-
-.PHONY : all bowtie_bams
-
-all : bowtie_bams
-bowtie_bams : $(BAMS) $(addsuffix .bai,$(BAMS))
-
-# memory for human genome: ~3.2G
-bowtie/bam/%.bwt.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	LBID=`echo "$*" | sed 's/_[0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) --1 $(word 1,$^) -2 $(word 2,$^) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $@")
-
 BAM_SUFFIX := bwt.sorted.filtered
 
 ifeq ($(NO_REALN),false)
@@ -69,5 +53,23 @@ BAM_SUFFIX := $(BAM_SUFFIX).bam
 bam/%.bam : bowtie/bam/%.$(BAM_SUFFIX)
 	$(INIT) ln -f $< $@
 
+
+BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
+
+.SECONDARY:
+.DELETE_ON_ERROR:
+.PHONY: all
+
+all : bowtie_bams
+bowtie_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
+
+# memory for human genome: ~3.2G
+bowtie/bam/%.bwt.bam.md5 : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"LBID=`echo \"$*\" | sed 's/_[0-9]\+//'`; \
+		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) --1 $(word 1,$^) -2 $(word 2,$^) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+
+bam/%.bam.md5 : bowtie/bam/%.$(BAM_SUFFIX).md5
+	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+
 include ~/share/modules/fastq.mk
-include ~/share/modules/processBam.mk
+include ~/share/modules/processBamMD5.mk

@@ -1,54 +1,68 @@
 # vim: set ft=make :
 # museq module for use by jsm.mk
-SAMPLE_PAIR_FILE = sample_pairs.txt
 
+include ~/share/modules/Makefile.inc
+
+LOGDIR = log/museq.$(NOW)
+SAMPLE_PAIR_FILE ?= sample_pairs.txt
+SAMPLE_FILE ?= samples.txt
 TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
 NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(TUMOR_SAMPLES) $(NORMAL_SAMPLES)
-NSAMPLES ?= $(words $(TUMOR_SAMPLES))
+SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 
-MUSEQ_THRESHOLD = 0.5
-NCHUNKS = 100
-MUSEQ_MODEL = /genesis/scratch/sohrab_temp/jknaggs_tmp/models/models/all/model_nov26_1000.pk
-EXTRACT_FEATURES = PYTHONPATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib/python LD_LIBRARY_PATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib /genesis/scratch/sohrab_temp/jknaggs_tmp/alan/mutationSeq2_test_parameters/extract_features
-MUSEQ = PYTHONPATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib/python/ LD_LIBRARY_PATH=/genesis/scratch/sohrab_temp/jknaggs_tmp/lib /genesis/scratch/sohrab_temp/jknaggs_tmp/alan/mutationSeq2_test_parameters/muSeq
+$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
+$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
 
+MUSEQ_PYTHON = $(HOME)/share/usr/anaconda/bin/python
+MUSEQ_PYTHONPATH = $(HOME)/share/usr/anaconda/lib/python2.7/site-packages
+MUSEQ_LD_LIBRARY_PATH = $(HOME)/share/usr/anaconda/lib
 
-# chunk-ify filtered jsm as input
-define museq-chunks
-museq/chunks/%.chunk_$1.txt : jsm/tables/%.jsm.filtered.txt
-	$$(INIT) sed '1d' $$< | awk "NR % $$(NCHUNKS) == $1 - 1 { print }" > $$@
+MUSEQ_TRAIN = PYTHONPATH=$(MUSEQ_PYTHONPATH) LD_LIBRARY_PATH=$(MUSEQ_LD_LIBRARY_PATH) $(MUSEQ_PYTHON) $(HOME)/share/usr/museq-3.0.0/train.py
+MUSEQ_CLASSIFY = PYTHONPATH=$(MUSEQ_PYTHONPATH) LD_LIBRARY_PATH=$(MUSEQ_LD_LIBRARY_PATH) $(MUSEQ_PYTHON) $(HOME)/share/usr/museq-3.0.0/classify.py
+MUSEQ_MODEL = $(HOME)/share/usr/museq-3.0.0/model.npz
+MUSEQ_CONFIG = $(HOME)/share/usr/museq-3.0.0/metadata.config
+TUMOR_PURITY = 70
+
+FIX_MUSEQ_VCF = $(PERL) $(HOME)/share/scripts/fixMuseqVCF.pl
+
+# VCF overrides for tumor-normal
+VCF_SAMPLES = 0 1
+VCF_GEN_IDS = GT DP AD
+
+SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
+
+VPATH ?= bam
+
+.DELETE_ON_ERROR:
+.SECONDARY: 
+.PHONY : museq_vcfs
+
+all : museq_vcfs museq_tables
+
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp
+EFF_TYPES = silent missense nonsilent_cds nonsilent
+ANN_TYPES = eff # annotated
+VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).vcf)
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt))
+
+museq_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
+museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
+
+define museq-tumor-normal-chr
+museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_MEM,8G,12G,"$$(MUSEQ_CLASSIFY) tumour:$$< normal:$$(word 2,$$^) reference:$$(REF_FASTA) model:$$(MUSEQ_MODEL) --config $$(MUSEQ_CONFIG) --interval $3 --purity $$(TUMOR_PURITY) --out $$@ &> $$(LOG)")
 endef
-$(foreach i,$(shell seq 1 $(NCHUNKS)),$(eval $(call museq-chunks,$i)))
+$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 
-define museq-features-chunks
-museq/chunk_features/$1_$2.features.chunk_$3.txt : $1.bam $2.bam museq/chunks/$1_$2.chunk_$3.txt
-	$$(call INIT_MEM,5G,7G) $$(EXTRACT_FEATURES) $$(word 1,$$^) $$(word 2,$$^) $$(REF_FASTA) --labels normal tumour reference --counts tumour --outfile $$@ --featureset features_classic -p $$(word 3,$$^) &> $$(LOGDIR)/$$(@F).log
-endef
-$(foreach i,$(shell seq 1 $(NSAMPLES)),$(foreach j,$(shell seq 1 $(NCHUNKS)),$(eval $(call museq-features-chunks,$(word $i,$(NORMAL_SAMPLES)),$(word $i,$(TUMOR_SAMPLES)),$(j)))))
-
-define museq-classify-chunks
-museq/chunk_vcf/%.museq.chunk_$1.vcf : museq/chunk_features/%.features.chunk_$1.txt
-	$$(call INIT_MEM,5G,7G) $$(MUSEQ) classify $$< --model $$(MUSEQ_MODEL) --out $$@ &> $$(LOGDIR)/$$(@F).log
-endef
-$(foreach i,$(shell seq 1 $(NCHUNKS)),$(eval $(call museq-classify-chunks,$(i))))
 
 # merge museq chunks
-museq/vcf/%.museq.vcf : $(foreach i,$(shell seq 1 $(NCHUNKS)),museq/chunk_vcf/%.museq.chunk_$(i).vcf)
-	$(INIT) grep '^#' $< | cut -f -8 > $@.unsorted; cut -f -8 $^ | sed '/^#/d; /^$$/d; s/;$$//' >> $@.unsorted && $(VCF_SORT) $(UCSC_REF_DICT) $@.unsorted > $@ && $(RM) $@.unsorted
+define museq-tumor-normal
+museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.vcf)
+	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
+endef
+$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 
-museq/vcf/%.museq.filtered.vcf : museq/vcf/%.museq.vcf 
-	$(INIT) perl -lane 'if (m/^#/) { print; } else { m/PR=([^;]+)/; $$F[6] = ($$1 > $(MUSEQ_THRESHOLD))? "PASS" : "PR"; print join "\t", @F }' $< > $@
-
-museq/tables/all.%.txt : $(foreach i,$(shell seq 1 $(NSAMPLES)),museq/tables/$(word $i,$(NORMAL_SAMPLES))_$(word $i,$(TUMOR_SAMPLES)).%.txt)
-	$(INIT) head -n 1 $< | sed 's/^/TUMOR_SAMPLE\tNORMAL_SAMPLE\t/; s/[^\t]\+\.//g' > $@; \
-	for txt in $^; do \
-		nsample=`echo $$txt | sed 's/.*\///; s/\..*//; s/_.*//'`; \
-		tsample=`echo $$txt | sed 's/.*\///; s/\..*//; s/.*_//'`; \
-		sed "1d; s/^/$$tsample\t$$nsample\t/" $$txt >> $@; \
-	done
-
-museq/tables/%.txt : museq/vcf/%.vcf
-	$(call INIT_MEM,2G,3G) $(VCF_TO_TABLE) $< > $@
+vcf/%.museq.vcf : museq/vcf/%.museq.vcf
+	$(INIT) $(FIX_MUSEQ_VCF) -R $(REF_FASTA) $< > $@ 2> $(LOG)
 
 include ~/share/modules/vcftools.mk

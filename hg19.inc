@@ -9,6 +9,7 @@ REF_FASTA := $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 REF_DICT := $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.dict
 SNP_EFF_GENOME = GRCh37.70 # == hg19
 DBSNP := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.vcf
+DBSNP1PC := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.vcf
 KNOWN_INDELS := $(HOME)/share/reference/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
 OMNI := $(HOME)/share/reference/GATK_bundle/2.3/1000G_omni2.5.b37.vcf
 HAPMAP := $(HOME)/share/reference/GATK_bundle/2.3/hapmap_3.3.b37.vcf
@@ -19,10 +20,20 @@ COSMIC := $(HOME)/share/reference/CosmicCodingMuts_v64_02042013_noLimit.vcf
 #MAP_WIG = $(HOME)/share/references/map_hgi19.wig
 
 #BOWTIE_UCSC_REF = $(HOME)/share/references/genomes/ucsc.hg19
-#BOWTIE_REF = $(BOWTIE_UCSC_REF)
+BOWTIE_REF = $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37
 
 #CUFFLINKS_REF = GRCh37
 #CUFFLINKS_REF_GTF = $(HOME)/share/references/iGenomes/Homo_sapiens/Ensembl/${CUFFLINKS_REF}/Annotation/Genes/genes.gtf
 
 #UCSC_REFSEQ_GTF = $(HOME)/share/references/genomes/ucsc.refseq.gtf
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
+
+EXOME_BED = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
+FREEC_REF = $(HOME)/share/reference/GATK_bundle/2.3/FREEC_ref
+CHR_LEN = $(HOME)/share/reference/GATK_bundle/2.3/hg19.len
+
+SNP_TXT = $(HOME)/share/reference/hg19_snp137.SingleDiNucl.1based.txt
+
+GEM_MAP_FILE = $(HOME)/share/reference/gem/out76_hg19.gem
+
+CHIMERASCAN_REF = $(HOME)/share/reference/chimerascan_index

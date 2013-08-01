@@ -12,7 +12,7 @@ VPATH ?= bam
 EXOME ?= false
 
 ifeq ($(EXOME),true)
-READ_DEPTH_ARGS += -L $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr.bed
+READ_DEPTH_ARGS += -L $(EXOME_BED)
 endif
 
 .PHONY: all

@@ -2,25 +2,20 @@
 
 # default reference: 
 REF ?= hg19
+include $(HOME)/share/modules/$(REF).inc
 
-ifeq ($(REF),hg19)
-	include ~/share/modules/hg19.inc
-else ifeq ($(REF),mm10)
-	include ~/share/modules/mm10.inc
-endif
-
-UMASK = 002
-SHELL = /bin/bash --noprofile -c 'umask 002; eval "$$1"'
+#SHELL = /bin/bash --noprofile -c 'umask 002; eval "$$1"'
+SHELL = /bin/bash
 
 #SHELL = umask $(UMASK); exec /bin/bash
 #SHELL = export SGE_RREQ="-q all.q -now no" && umask $(UMASK) && exec /bin/bash
 
 export PATH := $(HOME)/share/usr/bin:$(PATH)
 export PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.3/lib:/opt/common/python/python-2.7.3/lib/python2.7:$(PYTHONPATH)
-export PYTHONHOME := /opt/common/python/python-2.7.3/
+#export PYTHONHOME := /opt/common/python/python-2.7.3/
 #Set environment variables
 #export R_LIBS_USER := $(HOME)/share/usr/lib64/R/library:${R_LIBS_USER}
-export R_LIBS := $(HOME)/share/usr/lib64/R/library
+export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
 
 #PERL5LIB := $(HOME)/share/usr/lib/perl5/:${PERL5LIB}
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl/modules/
@@ -33,14 +28,17 @@ export PERL5LIB
 #Interpreters
 PYTHON = /opt/common/python/python-2.7.3/bin/python
 PERL = /usr/bin/perl
-RSCRIPT = /usr/bin/Rscript
+#RSCRIPT = /usr/bin/Rscript
+R = /opt/common/R/R-3.0.0/bin/R
+RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
 #RSCRIPT = $(HOME)/usr/bin/Rscript
 
 JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
 BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
-BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
+#BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
+BWA = $(HOME)/share/usr/bin/bwa
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
 #GSNAP = $(HOME)/share/usr/bin/gsnap
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
@@ -58,6 +56,7 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
 #TOPHAT = $(HOME)/share/usr/tophat-2.0.8.Linux_x86_64/tophat2
 #DEFUSE = $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
+DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 TMPDIR = $(HOME)/share/tmp
 
 # PICARD tools
@@ -96,11 +95,12 @@ MERGE = $(SCRIPTS_DIR)/merge.R
 VCF_TO_TABLE = $(SCRIPTS_DIR)/vcfToTable.R
 INTRON_POSN_LOOKUP = $(SCRIPTS_DIR)/posnGeneLookup.pl
 RBIND = $(SCRIPTS_DIR)/rbind.R
+NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 
-JAVA_ARGS = -D.java.io.tmpdir=$(TMPDIR)
+JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
-#JAVA := /usr/lib/jvm/jre-1.6.0/bin/java $(JAVA_ARGS)
-JAVA = /usr/bin/java $(JAVA_ARGS)
+JAVA := /usr/lib/jvm/jre-1.6.0/bin/java $(JAVA_ARGS)
+#JAVA = /usr/bin/java $(JAVA_ARGS)
 
 NO_RM ?= false
 ifeq ($(NO_RM),true)
@@ -117,7 +117,7 @@ $(space) :=
 $(space) +=
 
 #CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
-CHROMOSOMES = 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X Y MT
+CHROMOSOMES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X Y MT
 
 # $(call strip-suffix,filename)
 strip-suffix = $(firstword $(subst ., ,$(1)))
@@ -130,19 +130,51 @@ NOW := $(shell date +"%F")
 
 MKDIR = mkdir -p -m 770
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
-LOG = $(LOGDIR)/$@.log
+LOG = $(LOGDIR)/$(@:.md5=).log
 
-PARALLEL_ENV = smp
-MEM_FREE = -l virtual_free=$1,h_vmem=$2
+
+#LOG_MEM = $(HOME)/share/scripts/monitorMem.sh $(LOG).top &
+LOG_MEM = 
 
 # SGE variables
-SGE_RREQ = -q jrf.q -N X$(@F) -V -cwd
+QUEUE = jrf.q
+SGE_RREQ = -q $(QUEUE) -N X$(@F) -V -cwd 
+PARALLEL_ENV = smp
+MEM_FREE = -l virtual_free=$1,h_vmem=$2
 REQ = SGE_RREQ="$(SGE_RREQ)"
+
 REQ_PARALLEL_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(PARALLEL_ENV) $(1)"
 REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
-INIT = $(REQ) $(MKDIRS);
+UMASK = 002
+INIT = $(MKDIRS); umask $(UMASK); $(LOG_MEM) 
 # $(call INIT_MEM,mem_free,h_vmem)
-INIT_MEM = $(MKDIRS); $(call REQ_MEM,$1,$2)
+INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2); $(LOG_MEM) 
 # $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
-INIT_PARALLEL_MEM = $(MKDIRS); $(call REQ_PARALLEL_MEM,$1,$2,$3)
+INIT_PARALLEL_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_PARALLEL_MEM,$1,$2,$3); $(LOG_MEM) 
 
+# openMPI
+MPIRUN = /opt/bin/mpirun
+MPI_ENV = openmpi
+REQ_MPI_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(MPI_ENV) $(1)"
+INIT_MPI_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MPI_MEM,$1,$2,$3); $(MPIRUN) -np $1
+
+QRSH = /common/sge/bin/lx-amd64/qrsh
+LAUNCH = $(INIT) $(QRSH) -N X$(@F) -V -cwd -q $(QUEUE) -now n -notify
+LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
+LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
+
+# launch read script from stdin
+QSUB = /common/sge/bin/lx-amd64/qsub
+QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o
+LSCRIPT = $(INIT) echo $1 | $(QSUB) $(QSUB_ARGS) -- -
+LSCRIPT_PARALLEL_MEM = $(INIT) echo $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -
+LSCRIPT_MEM = $(INIT) echo $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
+
+#MD5 = md5sum $(1:.md5=) > $1
+MD5 = md5sum $(@:.md5=) > $@
+#CHECK_MD5 = md5sum -c $(filter %.md5,$^); i=0; until md5sum --status -c $(filter %.md5,$^); do if (( $$i % 5  == 0 )); then date; md5sum -c $(filter %.md5,$^); fi; if (( $$i > 20 )); then echo giving up; exit 1; fi; sleep 5; let i=i+1 ; done;
+CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi; sleep 5; done;
+
+#signature md5
+#makepp_no_builtin = 1
+#makepp_percent_subdirs := 1

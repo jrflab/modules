@@ -8,6 +8,8 @@ SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 LOGDIR = log/gatk.$(NOW)
 
+VCF_GEN_IDS = GT AD GQ PL
+
 ##### OPTIONS ######
 # HARD_FILTER_SNPS = true/false (default: true)
 # 	Filter snps using hard thresholds instead of dynamically
@@ -44,20 +46,34 @@ VPATH ?= bam
 # create novel indel/snp tables
 
 ##### MAIN TARGETS ######
-VARIANTS_VCF := $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.vcf)
-SNPS_VCFS := $(foreach sample,$(SAMPLES),vcf/$(sample).gatk_snps.eff.nsfp.vcf)
-SNPS_TABLES := $(foreach sample,$(SAMPLES),tables/$(sample).gatk_snps.eff.nsfp.novel.txt)
-INDELS_VCFS := $(foreach sample,$(SAMPLES),vcf/$(sample).gatk_indels.eff.nsfp.vcf)
-INDELS_TABLES := $(foreach sample,$(SAMPLES),tables/$(sample).gatk_indels.eff.nsfp.novel.txt)
+ANN_TYPES = eff # annotated
+EFF_TYPES = silent missense nonsilent_cds
+VARIANT_TYPES = gatk_snps gatk_indels
 
-.PHONY : all variants_vcf variants_table recal_sample_bams realn_chr_bams realn_sample_bams variants_novel_table sample_variants clean reports all_variants
-all : snps_vcf indels_vcf snps_table indels_table
-variants_vcf : $(VARIANTS_VCF)
-snps_vcf : $(SNPS_VCFS)
-indels_vcf : $(INDELS_VCFS)
-snps_table : $(SNPS_TABLES)
-indels_table : $(INDELS_TABLES)
-reports : gatk/reports/snps_filter.grp gatk/reports/indels_filter.grp gatk/reports/all.grp
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp
+ifdef NORMAL_VCF
+FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
+endif
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX).$(ann).vcf))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt)))
 
+VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff)))
+TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff)))
+TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/all.$(suff))
+
+.PHONY : all vcfs tables
+all : vcfs tables
+
+vcfs : $(VCFS)
+
+tables : $(TABLES)
+
+
+
+vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
+	$(INIT) cp $< $@
+
+vcf/%.gatk_indels.vcf : gatk/vcf/%.variants.indels.filtered.vcf
+	$(INIT) cp $< $@
 
 include ~/share/modules/gatk.mk
