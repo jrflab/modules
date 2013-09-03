@@ -10,9 +10,10 @@ SAMPLES = $(notdir $(subst _,,$(patsubst %_L001_R1_001.fastq.gz,%,$(wildcard fas
 all : fastq samples.txt
 
 fastq :
-	cd fastq; rename _L001_R1_001.fastq.gz .1.fastq.gz *.fastq.gz; rename _L001_R2_001.fastq.gz .2.fastq.gz *.fastq.gz; rename _S S *.fastq.gz; cd ..; \
-	SMALL=`find fastq/* -size -1000 | sed 's/\..*.fastq.gz//'`; \
-	for x in $$SMALL; do $(RM) $x.*.fastq.gz; done 
+	cd fastq; prename 's/_[ATCG]+_L001_R([12])_001\.fastq\.gz/.$$1.fastq.gz/' *.fastq.gz; cd ..
+
+#SMALL=`find fastq/* -size -1000 | sed 's/\..*.fastq.gz//'`; \
+#for x in $$SMALL; do $(RM) $x.*.fastq.gz; done 
 
 
 samples.txt : fastq

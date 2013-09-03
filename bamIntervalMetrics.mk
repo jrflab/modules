@@ -1,6 +1,6 @@
 # generate bam interval metrics per sample
 
-NO_RM := true
+#NO_RM := true
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc

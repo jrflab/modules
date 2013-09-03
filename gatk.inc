@@ -39,10 +39,14 @@ VCF_GEN_IDS ?= GT AD DP
 VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
 VCF_GEN_FIELDS = $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(VCF_SAMPLES),'GEN[$i].$(gen)'))
 VCF_EFF_FIELDS = 'EFF[*].EFFECT' 'EFF[*].IMPACT' 'EFF[*].FUNCLASS' 'EFF[*].CODON' 'EFF[*].AA' 'EFF[*].GENE' 'EFF[*].BIOTYPE' 'EFF[*].CODING' 'EFF[*].TRID' 'EFF[*].RANK'
-VCF_NSFP_FIELDS = dbnsfpPolyphen2_HVAR_pred dbnsfpInterpro_domain
+#VCF_ANNOTATIONS = RMSMappingQuality ReadPositionRankSumTest QualByDepth MappingQualityZero MappingQualityRankSumTest HaplotypeScore FisherStrand DepthOfCoverage BaseQualityRankSumTest HomopolymerRun
+VCF_ANNOTATIONS = RMSMappingQuality QualByDepth MappingQualityZero MappingQualityRankSumTest HaplotypeScore FisherStrand Coverage BaseQualityRankSumTest HomopolymerRun
+NSFP_FIELDS = Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
+VCF_NSFP_FIELDS = $(addprefix dbnsfp,$(NSFP_FIELDS))
+VCF_ANN_FIELDS = HRun
 VCF_GATK_FIELDS = SNPEFF_EFFECT SNPEFF_FUNCTIONAL_CLASS SNPEFF_IMPACT SNPEFF_GENE_BIOTYPE SNPEFF_GENE_NAME SNPEFF_TRANSCRIPT_ID SNPEFF_AMINO_ACID_CHANGE SNPEFF_CODON_CHANGE
-ALL_VCF_EFF_FIELDS = $(VCF_FIELDS) $(VCF_GEN_FIELDS) $(VCF_EFF_FIELDS) $(VCF_NSFP_FIELDS)
-ALL_VCF_GATK_FIELDS = $(VCF_FIELDS) $(VCF_GEN_FIELDS) $(VCF_GATK_FIELDS) $(VCF_NSFP_FIELDS)
+ALL_VCF_EFF_FIELDS = $(VCF_FIELDS) $(VCF_GEN_FIELDS) $(VCF_EFF_FIELDS) $(VCF_NSFP_FIELDS) $(VCF_ANN_FIELDS)
+ALL_VCF_GATK_FIELDS = $(VCF_FIELDS) $(VCF_GEN_FIELDS) $(VCF_GATK_FIELDS) $(VCF_NSFP_FIELDS) $(VCF_ANN_FIELDS)
 
 # my scripts
 VCF_TO_TABLE = ~/share/scripts/vcfToTable.R

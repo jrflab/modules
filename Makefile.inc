@@ -3,6 +3,32 @@
 # default reference: 
 REF ?= hg19
 include $(HOME)/share/modules/$(REF).inc
+SAMPLE_PAIR_FILE ?= sample_pairs.txt
+SAMPLE_FILE ?= samples.txt
+ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
+  TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
+  NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
+  $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
+  $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
+  SAMPLE_PAIRS ?= $(foreach tumor,$(TUMOR_SAMPLES),$(tumor)_$(normal_lookup.$(tumor)) )
+endif
+ifneq ($(wildcard $(SAMPLE_FILE)),)
+  SAMPLES ?= $(shell cat $(SAMPLE_FILE))
+endif
+
+SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh
+ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
+A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
+B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
+$(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += $(word $i,$(B))))
+SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
+endif
+
+$(foreach i,$(shell seq 1 $(words $(LANES))),$(eval lane_lookup.$(word $i,$(LANES)) := $(word $i,$(LANE_SAMPLES))))
+$(foreach i,$(shell seq 1 $(words $(LANE_SAMPLES))),$(eval sample_lookup.$(word $i,$(LANE_SAMPLES)) += $(word $i,$(LANES))))
+
+
+ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
 #SHELL = /bin/bash --noprofile -c 'umask 002; eval "$$1"'
 SHELL = /bin/bash
@@ -10,8 +36,10 @@ SHELL = /bin/bash
 #SHELL = umask $(UMASK); exec /bin/bash
 #SHELL = export SGE_RREQ="-q all.q -now no" && umask $(UMASK) && exec /bin/bash
 
-export PATH := $(HOME)/share/usr/bin:$(PATH)
-export PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.3/lib:/opt/common/python/python-2.7.3/lib/python2.7:$(PYTHONPATH)
+PATH := $(HOME)/share/usr/bin:$(PATH)
+export PATH
+PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.3/lib:/opt/common/python/python-2.7.3/lib/python2.7
+export PYTHONPATH
 #export PYTHONHOME := /opt/common/python/python-2.7.3/
 #Set environment variables
 #export R_LIBS_USER := $(HOME)/share/usr/lib64/R/library:${R_LIBS_USER}
@@ -22,6 +50,8 @@ export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-l
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-variation/modules/
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-functgenomics/modules/
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-compara/modules/
+
+PERL5LIB := /opt/common/Perl/perl5
 
 export PERL5LIB
 
@@ -55,8 +85,8 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #BAM2FASTQ = $(HOME)/share/usr/bin/bam2fastq
 #QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
 #TOPHAT = $(HOME)/share/usr/tophat-2.0.8.Linux_x86_64/tophat2
-#DEFUSE = $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
-DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
+DEFUSE = $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
+#DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 TMPDIR = $(HOME)/share/tmp
 
 # PICARD tools
@@ -117,7 +147,16 @@ $(space) :=
 $(space) +=
 
 #CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
-CHROMOSOMES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X Y MT
+ifdef INTERVALS_FILE
+   CHROMOSOMES := $(shell grep -v '@' $(INTERVALS_FILE) | cut -f1 | sort | uniq)
+else
+   CHROMOSOMES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X MT
+endif
+INCLUDE_CHR_Y ?= false
+ifeq ($(INCLUDE_CHR_Y),true)
+   CHROMOSOMES += Y
+endif
+
 
 # $(call strip-suffix,filename)
 strip-suffix = $(firstword $(subst ., ,$(1)))
@@ -174,6 +213,10 @@ LSCRIPT_MEM = $(INIT) echo $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
 MD5 = md5sum $(@:.md5=) > $@
 #CHECK_MD5 = md5sum -c $(filter %.md5,$^); i=0; until md5sum --status -c $(filter %.md5,$^); do if (( $$i % 5  == 0 )); then date; md5sum -c $(filter %.md5,$^); fi; if (( $$i > 20 )); then echo giving up; exit 1; fi; sleep 5; let i=i+1 ; done;
 CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi; sleep 5; done;
+<M = $(<:.md5=)
+^M = $(^:.md5=)
+@M = $(@:.md5=)
+
 
 #signature md5
 #makepp_no_builtin = 1

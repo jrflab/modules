@@ -29,7 +29,7 @@ FIX_MUSEQ_VCF = $(PERL) $(HOME)/share/scripts/fixMuseqVCF.pl
 VCF_SAMPLES = 0 1
 VCF_GEN_IDS = GT DP AD
 
-SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
+SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer -canon
 
 VPATH ?= bam
 
@@ -39,14 +39,14 @@ VPATH ?= bam
 
 all : museq_vcfs museq_tables
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).vcf)
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt))
 
 museq_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
-museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
+museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
 
 define museq-tumor-normal-chr
 museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
@@ -57,7 +57,7 @@ $(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call muse
 
 # merge museq chunks
 define museq-tumor-normal
-museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.vcf)
+museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.ann.vcf)
 	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))

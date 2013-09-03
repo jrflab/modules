@@ -1,4 +1,4 @@
-# Use ExomeCNV to detect copy number variants and LOH
+# Use controlFreeC to detect copy number variants and LOH
 # vim: set ft=make :
 
 include ~/share/modules/Makefile.inc
@@ -50,10 +50,6 @@ forceGCcontentNormalization=$(GC_CONTENT_NORM)\n\
 mateFile=$1\n\
 inputFormat=BAM\n\
 mateOrientation=FR\n\
-[control]\n\
-mateFile=$2\n\
-inputFormat=BAM\n\
-mateOrientation=FR\n\
 [BAF]\n\
 shiftInQuality=33\n\
 $(FREEC_TARGET_CONFIG)
@@ -61,24 +57,16 @@ endef
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all cnv config
+.PHONY: all cnv
 
-all : cnv config
-cnv : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor).bam_ratio.txt.png)
-config : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor)_$(normal_lookup.$(tumor)).config.txt)
+all : cnv
+cnv : $(foreach sample,$(SAMPLES),freec/$(sample).bam_ratio.txt.png)
 
-#$(call config-tumor-normal,tumor,normal)
-define freec-config-tumor-normal
-freec/$1_$2.config.txt : $1.bam $2.bam
-	$$(INIT) echo -e "$$(call FREEC_CONFIG,$$<,$$(word 2,$$^),$$(@D))" | sed 's/ //' >  $$@
-endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-config-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+freec/%.config.txt : %.bam
+	$(INIT) echo -e "$(call FREEC_CONFIG,$<,$(word 2,$^),$(@D))" | sed 's/ //' > $@
 
-define freec-tumor-normal
-freec/$1.bam_ratio.txt : freec/$1_$2.config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$< &> $$(LOG)")
-endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+freec/%.bam_ratio.txt : freec/%.config.txt
+	$(call LSCRIPT_PARALLEL_MEM,$(FREEC_THREADS),$(FREEC_MEM),$(FREEC_HMEM),"$(FREEC) -conf $< &> $(LOG)")
 
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")

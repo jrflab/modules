@@ -5,13 +5,13 @@
 #
 include ~/share/modules/Makefile.inc
 
-SAMPLE_FILE ?= samples.txt
-SAMPLES = $(shell cat $(SAMPLE_FILE))
+DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
+#DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
+DEFUSE_FILTER = $(HOME)/share/scripts/filterDefuse.pl
+DEFUSE_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterDefuse.pl
 
-#DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
-DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
 
-LOGDIR = defuse/log.$(NOW)
+LOGDIR = log/defuse.$(NOW)
 
 # Runs defuse locally on the same node
 LOCAL ?= FALSE
@@ -22,13 +22,31 @@ NUM_CORES ?= 2
 ifeq ($(LOCAL),true)
 	DEFUSE_OPTS = -p $(NUM_CORES)
 else
-	DEFUSE_OPTS = -s sge
+	DEFUSE_OPTS = -s sge -p 10
 endif
 
-.PHONY : defuse
+.PHONY : all tables
 
-defuse : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
 
-defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call INIT_MEM,1G,2G) \
-	$(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
+#all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
+ifdef NORMAL_DEFUSE_RESULTS
+all : defuse/tables/all.defuse_results.nft.txt tables
+else
+all : defuse/tables/all.defuse_results.txt tables
+endif
+
+tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
+
+defuse/%.defuse_timestamp : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
+	$(INIT) $(CHECK_MD5) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$(^M)) -2 $(word 2,$(^M)) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@ && $(RM) -r defuse/$*/jobs
+
+defuse/tables/%.defuse_results.txt : defuse/%.defuse_timestamp
+	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG)
+
+defuse/tables/all.defuse_results.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
+	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
+
+defuse/tables/%.defuse_results.nft.txt : defuse/tables/%.defuse_results.txt $(NORMAL_DEFUSE_RESULTS)
+	$(INIT) $(PERL) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
+
+include ~/share/modules/fastq.mk

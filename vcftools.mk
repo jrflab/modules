@@ -14,16 +14,13 @@ ifdef NORMAL_VCF
 	$(call LSCRIPT_MEM,2G,2G,"$(NORMAL_FILTER) $< $(NORMAL_VCF) > $@")
 endif
 
-%.vcf.idx : %.vcf
-	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $< &> $(LOG)")
-
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
 	$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@  2> $(LOGDIR)/$(@F).log")
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -v $(DB_NSFP) $< > $@ 2> $(LOG)")
+	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< > $@ 2> $(LOG)")
 
 # run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
@@ -46,9 +43,12 @@ endif
 	$(call INIT_MEM,2G,3G) $(INTRON_POSN_LOOKUP) $< > $@ 2> $(LOGDIR)/$@.log
 
 # extract vcf to table
-tables/%.nsfp.opl_eff.txt : vcf/%.nsfp.eff.vcf
-	$(call LSCRIPT_MEM,2G,5G,"S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \
-	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(ALL_VCF_EFF_FIELDS) | sed \"1s/GEN\[0\]/\$$S1/g; 1s/GEN\[1\]/\$$S2/g\" > $@")
+tables/%.nsfp.ann.opl_eff.txt : vcf/%.nsfp.ann.eff.vcf
+	$(call LSCRIPT_MEM,2G,5G,"S1=`grep '^#CHROM' $< | cut -f 10`; \
+		S2=`grep '^#CHROM' $< | cut -f 11`; \
+		S3=`grep '^#CHROM' $< | cut -f 12`; \
+		S4=`grep '^#CHROM' $< | cut -f 13`; \
+	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(ALL_VCF_EFF_FIELDS) | sed \"1s/GEN\[0\]/\$$S1/g; 1s/GEN\[1\]/\$$S2/g; 1s/GEN\[2\]/\$$S3/g; 1s/GEN\[3\]/\$$S4/g \" > $@")
 
 %.eff.txt : %.opl_eff.txt
 	$(INIT) $(PERL) $(VCF_JOIN_EFF) < $< > $@ 2> $(LOG)
@@ -67,8 +67,27 @@ tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
 
 # merge tables
 tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
-	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $^ > $@
+	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
 
+ifdef TUMOR_SAMPLES
+tables/allTN.%.txt : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).%.txt)
+	$(INIT) $(RSCRIPT) $(RBIND) --tumorNormal $^ > $@
+
+define annotate-tumor-normal
+vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
+endef
+$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call annotate-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+endif
+
+define annotate-sample
+vcf/$1.%.ann.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call annotate-sample,$(sample))))
+
+tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
+	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
 
 # VariantEval: generate vcf report
 reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf) $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf.idx)
@@ -87,6 +106,11 @@ NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIF
 
 %.silent.txt : %.txt
 	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
+
+%.vcf.idx : %.vcf
+	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $< &> $(LOG)")
+
+CHASM = ssh unagi 
 
 
 #%.txt : %.vcf

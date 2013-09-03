@@ -28,14 +28,13 @@ FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
 FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 
+BWA_ALN_OPTS ?= 
+#BWA_ALN_OPTS ?= -q 20
+
 .SECONDARY:
 .DELETE_ON_ERROR: 
 
-ifeq ($(SPLIT_FASTQ),true)
-BAM_SUFFIX := bwa.filtered
-else
 BAM_SUFFIX := bwa.sorted.filtered
-endif
 
 ifeq ($(NO_REALN),false)
 BAM_SUFFIX := $(BAM_SUFFIX).realn
@@ -59,14 +58,30 @@ all : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 bam/%.bam.md5 : bwa/bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
+ifdef SPLIT_SAMPLES
+define bam-header
+bwa/bam/$1.header.sam : $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
+	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
+	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
+endef
+$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
+
+define merged-bam
+bwa/bam/$1.bwa.sorted.bam.md5 : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
+	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
+endif
+
 fastq/%.fastq.gz.md5 : fastq/%.fastq
 	$(INIT) gzip -c $< > $(@:.md5=) 2> $(LOG) && $(RM) $< && $(MD5)
 
-bwa/sai/%.sai.md5 : fastq/%.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(BWA) aln -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)")
+bwa/sai/%.sai.md5 : fastq/%.fastq.gz.md5
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)")
 #echo "$(BWA) aln -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)" | $(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G)
 
-bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	LBID=`echo "$*" | sed 's/_[0-9]\+//'`; \
 	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^:.md5=) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 

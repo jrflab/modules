@@ -7,9 +7,10 @@ include ~/share/modules/gatk.inc
 REF ?= hg19
 LOGDIR = log/gatk_som_indel.$(NOW)
 SAMPLE_PAIR_FILE ?= sample_pairs.txt
+SAMPLE_FILE ?= samples.txt
 TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
 NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(TUMOR_SAMPLES) $(NORMAL_SAMPLES)
+SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 SPLIT_CHR ?= true
 
 GATK_OLD_JAR = /opt/common/gatk/GenomeAnalysisTK-2.3-9-ge5ebf34/GenomeAnalysisTK.jar
@@ -19,6 +20,7 @@ DEPTH_FILTER = 10
 
 VCF_SAMPLES = 0 1
 VCF_GEN_IDS = GT AD DP MM MQS NQSBQ NQSMM REnd RStart SC
+#VCF_ANNOTATIONS = RMSMappingQuality ReadPositionRankSumTest QualByDepth MappingQualityZero MappingQualityRankSumTest HaplotypeScore FisherStrand DepthOfCoverage BaseQualityRankSumTest HomopolymerRun
 
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
@@ -29,13 +31,15 @@ LOGDIR = log/gatk.$(NOW)
 
 INDEL_WINDOW_SIZE = 200
 
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann.eff
+
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: all som_indel_vcfs som_indel_tables
 
 all : som_indel_vcfs som_indel_tables
-som_indel_vcfs : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.annotated.nsfp.vcf)
-som_indel_tables : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.annotated.nsfp.som_indel_ft.txt)
+som_indel_vcfs : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.$(FILTER_SUFFIX).vcf)
+som_indel_tables : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).gatk_som_indels.$(FILTER_SUFFIX).som_indel_ft.txt)
 	
 mutect_som_indel_tables : $(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).mutect_som_indels.txt)
 
@@ -71,7 +75,7 @@ endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call pedigree-som-indel-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 
 tables/%.som_indel_ft.txt : tables/%.txt
-	$(INIT) head -1 $< > $@; sed '1d' $< | awk -F$$'\t' '$$7 != $$8 && $$11 >= $(DEPTH_FILTER) && $$12 >= $(DEPTH_FILTER)' >> $@
+	$(INIT) head -1 $< > $@; sed '1d' $< | awk -F$$'\t' '$$8 != $$9 && $$11 >= $(DEPTH_FILTER) && $$12 >= $(DEPTH_FILTER)' >> $@
 
 tables/%.mutect_som_indels.txt : tables/%.mutect.dp_ft.annotated.nsfp.pass.novel.txt tables/%.gatk_som_indels.annotated.nsfp.som_indel_ft.txt
 	$(call LSCRIPT,"$(RSCRIPT) $(RBIND) $^ > $@")

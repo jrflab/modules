@@ -19,7 +19,6 @@ SPLIT_CHR ?= true
 
 ###### RECIPES #######
 
-
 #### if SPLIT_CHR is set to true, we will split gatk processing by chromosome
 ifeq ($(SPLIT_CHR),true)
 #gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam bam/%.bai

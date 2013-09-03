@@ -17,10 +17,10 @@ BAM_FILTER_FLAGS ?= 768
 # indices
 # if bam file is a symlink, need to create a symlink to index
 %.bam.bai : %.bam.md5
-	$(call LSCRIPT_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<:.md5=)")
+	$(call LSCRIPT_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<M)")
 
 %.bai : %.bam.md5
-	$(call LSCRIPT_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<:.md5=) $@")
+	$(call LSCRIPT_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<M) $@")
 
 # sam to bam
 #%.bam : %.sam
@@ -28,7 +28,7 @@ BAM_FILTER_FLAGS ?= 768
 
 # filter
 %.filtered.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,6G,7G,"$(CHECK_MD5) $(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5) && $(RM) $(<:.md5=) $<")
+	$(call LSCRIPT_MEM,6G,7G,"$(CHECK_MD5) $(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $(<M) > $(@M) 2> $(LOG) && $(MD5) && $(RM) $(<M) $<")
 
 %.fixmate.bam : %.bam
 	$(call LSCRIPT_MEM,9G,14G,"$(call FIX_MATE_MEM,8G) I=$< O=$@ &> $(LOG) && $(RM) $<")
@@ -39,7 +39,7 @@ BAM_FILTER_FLAGS ?= 768
 
 # recalibration
 %.recal.bam.md5 : %.bam.md5 %.recal_report.grp
-	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $(<:.md5=) -BQSR $(word 2,$^) -o $(@:.md5=) &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $(<M) -BQSR $(word 2,$^) -o $(@:.md5=) &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")
 
 # sort only if necessary
 #%.sorted.bam : %.bam
@@ -55,7 +55,7 @@ BAM_FILTER_FLAGS ?= 768
 
 # mark duplicates
 %.markdup.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,14G,18G,"$(CHECK_MD5) $(call MARK_DUP_MEM,14G) I=$(<:.md5=) O=$(@:.md5=) METRICS_FILE=metrics/$(call strip-suffix,$(@F:.md5=)).dup_metrics.txt &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,14G,18G,"$(CHECK_MD5) $(MKDIR) metrics; $(call MARK_DUP_MEM,14G) I=$(<:.md5=) O=$(@:.md5=) METRICS_FILE=metrics/$(call strip-suffix,$(@F:.md5=)).dup_metrics.txt &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")
 
 %.rmdup.bam.md5 : %.bam.md5
 	$(call LSCRIPT_MEM,4G,7G,"$(CHECK_MD5) $(SAMTOOLS) rmdup $(<:.md5=) $(@:.md5=) &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")
@@ -100,7 +100,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
 
 # merge sample chromosome bams
 %.realn.bam.md5 : $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bam.md5) $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bai)
-	$(call LSCRIPT_PARALLEL_MEM,2,10G,11G,"$(CHECK_MD5) $(MERGE_SAMS) $(foreach i,$(filter %.bam.md5,$^), I=$(i:.md5=)) SORT_ORDER=coordinate O=$(@:.md5=) USE_THREADING=true &> $(LOG) && $(MD5) && $(RM) $^ $(^:.md5=)")
+	$(call LSCRIPT_PARALLEL_MEM,2,10G,11G,"$(CHECK_MD5) $(MERGE_SAMS) $(foreach i,$(filter %.bam.md5,$^), I=$(i:.md5=)) SORT_ORDER=coordinate O=$(@:.md5=) USE_THREADING=true &> $(LOG) && $(MD5) && $(RM) $^ $(^:.md5=) $(@:.realn.bam.md5=.bam) $(@:.realn.bam.md5=.bam.md5)")
 
 else # no splitting by chr
 %.realn.bam.md5 : %.bam.md5 %.intervals %.bam.bai

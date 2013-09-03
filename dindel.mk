@@ -19,11 +19,11 @@ vcf : $(foreach sample,$(SAMPLES),dindel/vcf/$(sample).dindel.sorted.annotated.v
 
 # extract candidate indels and insert size dist
 dindel/candidate/%.variants.txt dindel/candidate/%.libraries.txt : %.bam %.bam.bai
-	$(call INIT_MEM,10G,15G) $(DINDEL) --analysis getCIGARindels --bamFile $< --outputFile dindel/candidate/$* --ref $(REF_FASTA) &> $(LOGDIR)/$(@F).log
+	$(call LSCRIPT_MEM,8G,12G,"$(DINDEL) --analysis getCIGARindels --bamFile $< --outputFile dindel/candidate/$* --ref $(REF_FASTA) &> $(LOGDIR)/$(@F).log")
 
 # make realignment windows
 dindel/%.realn_windows_timestamp : dindel/candidate/%.variants.txt
-	$(call INIT_MEM,10G,15G) $(MKDIR) dindel/windows; $(MAKE_WINDOWS) --inputVarFile $< --windowFilePrefix dindel/windows/$*.realn_windows --numWindowsPerFile $(NUM_WINDOWS_PER_FILE) &> $(LOGDIR)/$*.realn_windows.log && time > $@
+	$(call LSCRIPT_MEM,8G,12G,"$(MKDIR) dindel/windows; $(MAKE_WINDOWS) --inputVarFile $< --windowFilePrefix dindel/windows/$*.realn_windows --numWindowsPerFile $(NUM_WINDOWS_PER_FILE) &> $(LOGDIR)/$*.realn_windows.log && time > $@")
 
 # realignment
 define find-indels-window
@@ -46,15 +46,4 @@ dindel/vcf/%.dindel.vcf : dindel/%.variants_filelist.txt
 
 %.vcf.idx : %.vcf
 	$$(INIT) $(VCFTOOLS) index $<
-
-
-dindel/vcf/%.sorted.snpEff.vcf : dindel/vcf/%.sorted.vcf
-	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,19G,25G)" $(MKDIR) $(@D); \
-	$(SNP_EFF) eff -v -onlyCoding true -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_GENOME) $< > $@ \
-	2> $(LOGDIR)/$(@F).log || ($(RM) $@ && false)
-
-# process snp eff output with gatk %=sample.indels/snps
-dindel/vcf/%.sorted.annotated.vcf : dindel/vcf/%.sorted.vcf dindel/vcf/%.sorted.snpEff.vcf
-	$(call INIT_PARALLEL_MEM,5,2G,2.5G) $(call GATK_MEM,10G) -T VariantAnnotator -nt 5\
-	 -R $(REF_FASTA)  -A SnpEff --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$(@F).log || ($(RM) $@ && false)
 

@@ -11,7 +11,7 @@ SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 VCF_SAMPLES = 0 1
 VCF_GEN_IDS = GT AD DP FA
 
-SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
+SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer -canon
 
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
 $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
@@ -32,14 +32,14 @@ VPATH ?= bam
 all : mutect_vcfs mutect_tables ext_output
 
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).vcf)
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt))
 
 mutect_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
-mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
+mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
 ext_output : $(foreach tumor,$(TUMOR_SAMPLES),mutect/tables/$(tumor)_$(normal_lookup.$(tumor)).mutect.txt)
 
 # run mutect on each chromosome
@@ -59,7 +59,7 @@ $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(no
 
 # merge variants 
 define mutect-tumor-normal
-vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
+vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.ann.vcf)
 	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))

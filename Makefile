@@ -13,7 +13,7 @@ SAMPLE_FILE = samples.txt
 #LANE_SAMPLE_FILE = lane_samples.txt
 SAMPLE_PAIR_FILE = sample_pairs.txt # pairs tumor-normal
 
-NUM_ATTEMPTS = 1
+NUM_ATTEMPTS ?= 1
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
@@ -69,14 +69,13 @@ lane_bwa :
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bwaAligner.mk SAMPLE_FILE=$(LANE_SAMPLE_FILE) $(FLAGS) $(TARGET)
 
 # merge lanes
-TARGETS += merge_lanes
-merge_lanes : 
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/mergeLanes.mk $(FLAGS) $(TARGET)
+TARGETS += merge
+merge : 
+	$(MAKE) -e -f ~/share/modules/merge.mk $(FLAGS) $(TARGET)
 	
 TARGETS += merge_fastq
 merge_fastq : 
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/mergeFastq.mk $(FLAGS) $(TARGET)
-
+	$(MAKE) -e -f ~/share/modules/mergeFastq.mk $(FLAGS) $(TARGET)
 
 TARGETS += gatk
 gatk : 
@@ -126,9 +125,9 @@ fastqc :
 
 # not tested on the cluster
 # requires x11 for graphics
-TARGETS += amplicon_qc
-amplicon_qc :
-	$(MAKE) -e -f ~/share/modules/ampliconBamQC.mk -j 50 >> $@.log
+TARGETS += interval_qc
+interval_qc :
+	$(MAKE) -e -f ~/share/modules/intervalBamQC.mk -j 50 >> $@.log
 
 TARGETS += miso
 miso :
@@ -157,6 +156,10 @@ TARGETS += museqTN
 museqTN :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/museqTN.mk $(FLAGS) $(TARGET)
 
+TARGETS += merge_vcfTN
+merge_vcf_tn :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfMergeTN.mk $(FLAGS) $(TARGET)
+
 TARGETS += somatic_sniper
 somatic_sniper :
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/somaticSniper.mk $(FLAGS) $(TARGET)
@@ -170,6 +173,17 @@ TARGETS += snvmix
 snvmix :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/snvmix.mk $(FLAGS) $(TARGET)
 
+TARGETS += compare_vcf
+compare_vcf :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfCompare.mk $(FLAGS) $(TARGET)
+
+TARGETS += merge_vcf_platform
+merge_vcf_platform :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfMergePlatform.mk $(FLAGS) $(TARGET)
+
+TARGETS += compare_vcf_tn
+compare_vcf_tn :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfCompareTN.mk $(FLAGS) $(TARGET)
 
 TARGETS += read_depth
 read_depth :
@@ -177,7 +191,7 @@ read_depth :
 
 TARGETS += qualimap
 qualimap :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/qualimap.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/qualimap.mk $(FLAGS) $(TARGET)
 
 TARGETS += hmm_copy
 hmm_copy :
@@ -202,11 +216,20 @@ exomecnv :
 
 TARGETS += freec
 freec : 
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/controlFreeC.mk $(FLAGS) $(TARGET) 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/controlFreeC.mk $(FLAGS) $(TARGET) 
+
+TARGETS += freecTN
+freecTN : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/controlFreeCTN.mk $(FLAGS) $(TARGET) 
 
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f ~/share/modules/defuse.mk $(FLAGS) $(TARGET)
+	$(MAKE) -e -f ~/share/modules/defuse.mk -j15 -k $(TARGET)
+
+TARGETS += chimscan
+chimscan :
+	$(MAKE) -e -f ~/share/modules/chimerascan.mk $(FLAGS) $(TARGET)
+
 
 TARGETS += cleanlinks
 cleanlinks :
