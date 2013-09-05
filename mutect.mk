@@ -32,7 +32,7 @@ VPATH ?= bam
 all : mutect_vcfs mutect_tables ext_output
 
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).vcf)
@@ -59,7 +59,7 @@ $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(no
 
 # merge variants 
 define mutect-tumor-normal
-vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.ann.vcf)
+vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
 	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))

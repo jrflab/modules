@@ -31,7 +31,7 @@ LOGDIR = log/gatk.$(NOW)
 
 INDEL_WINDOW_SIZE = 200
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann.eff
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.hrun.eff
 
 .SECONDARY:
 .DELETE_ON_ERROR:

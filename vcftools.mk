@@ -8,6 +8,16 @@ include ~/share/modules/gatk.inc
 SNP_EFF_FLAGS ?= -canon -ud 0 -no-intron -no-intergenic -no-utr
 DEPTH_FILTER ?= 5
 
+CHASM = ssh unagi $(HOME)/share/usr/bin/Rscript $(HOME)/share/scripts/chasmVcf.R 
+CHASM_DIR = /ifs/opt/common/CHASM/CHASMDL.1.0.7
+CHASM_PYTHON_DIR = /ifs/opt/common/python/python-2.7.3/
+CHASM_CLASSIFIER = Breast
+
+FATHMM = $(RSCRIPT) $(HOME)/share/scripts/fathmmVcf.R 
+FATHMM_DIR = $(HOME)/share/usr/fathmm
+ENSEMBL_TXDB = $(HOME)/share/reference/ensembl_biomart.sqlite
+FATHMM_PYTHON = $(HOME)/share/usr/bin/python
+
 
 ifdef NORMAL_VCF
 %.nft.vcf : %.vcf
@@ -43,7 +53,7 @@ endif
 	$(call INIT_MEM,2G,3G) $(INTRON_POSN_LOOKUP) $< > $@ 2> $(LOGDIR)/$@.log
 
 # extract vcf to table
-tables/%.nsfp.ann.opl_eff.txt : vcf/%.nsfp.ann.eff.vcf
+tables/%.opl_eff.txt : vcf/%.eff.vcf
 	$(call LSCRIPT_MEM,2G,5G,"S1=`grep '^#CHROM' $< | cut -f 10`; \
 		S2=`grep '^#CHROM' $< | cut -f 11`; \
 		S3=`grep '^#CHROM' $< | cut -f 12`; \
@@ -78,13 +88,25 @@ vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.ba
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call annotate-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+define hrun-tumor-normal
+vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
+endef
+$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call hrun-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 endif
+
 
 define annotate-sample
 vcf/$1.%.ann.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call annotate-sample,$(sample))))
+
+define hrun-sample
+vcf/$1.%.hrun.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
 tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
@@ -110,8 +132,11 @@ NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIF
 %.vcf.idx : %.vcf
 	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $< &> $(LOG)")
 
-CHASM = ssh unagi 
+%.chasm.vcf : %.vcf
+	$(INIT) $(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --pythonDir $(CHASM_PYTHON_DIR) < $< > $@
 
+%.fathmm.vcf : %.vcf
+	$(INIT) $(FATHMM) --genome $(REF) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --ensemblTxdb $(ENSEMBL_TXDB) --outFile $@ --python $(FATHMM_PYTHON) $<
 
 #%.txt : %.vcf
 #	$(call INIT_MEM,2G,3G) $(VCF_TO_TABLE) $< > $@

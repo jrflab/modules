@@ -50,12 +50,14 @@ ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds
 VARIANT_TYPES = gatk_snps gatk_indels
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX).$(ann).vcf))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt)))
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).chasm.fathmm
+FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).hrun
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).vcf))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).$(eff).pass.novel.txt)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff)))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff)))

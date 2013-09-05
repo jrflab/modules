@@ -39,7 +39,7 @@ VPATH ?= bam
 
 all : museq_vcfs museq_tables
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.ann
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.fathmm.chasm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).vcf)
