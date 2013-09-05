@@ -133,10 +133,10 @@ NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIF
 	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $< &> $(LOG)")
 
 %.chasm.vcf : %.vcf
-	$(INIT) $(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --pythonDir $(CHASM_PYTHON_DIR) < $< > $@
+	$(INIT) $(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --pythonDir $(CHASM_PYTHON_DIR) < $< > $@ 2> $(LOG)
 
 %.fathmm.vcf : %.vcf
-	$(INIT) $(FATHMM) --genome $(REF) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --ensemblTxdb $(ENSEMBL_TXDB) --outFile $@ --python $(FATHMM_PYTHON) $<
+	$(INIT) $(FATHMM) --genome $(REF) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --ensemblTxdb $(ENSEMBL_TXDB) --outFile $@ --python $(FATHMM_PYTHON) $< &> $(LOG)
 
 #%.txt : %.vcf
 #	$(call INIT_MEM,2G,3G) $(VCF_TO_TABLE) $< > $@
