@@ -18,8 +18,8 @@ ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
 #VARIANT_TYPES := gatk_snps snvmix2
-EVAL_TYPES := exonseq_museq exonseq_mutect
-COMP_TYPES := rnaseq_gatk_snps
+EVAL_TYPES := rnaseq_gatk_snps
+COMP_TYPES := exonseq_museq exonseq_mutect
 
 all : variant_eval
 

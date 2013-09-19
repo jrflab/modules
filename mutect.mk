@@ -35,11 +35,11 @@ all : mutect_vcfs mutect_tables ext_output
 FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
-VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).vcf)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt))
+VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann))
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel))
 
-mutect_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
-mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
+mutect_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
+mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff).txt)) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
 ext_output : $(foreach tumor,$(TUMOR_SAMPLES),mutect/tables/$(tumor)_$(normal_lookup.$(tumor)).mutect.txt)
 
 # run mutect on each chromosome

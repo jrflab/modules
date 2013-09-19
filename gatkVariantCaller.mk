@@ -55,22 +55,27 @@ ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
 FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).chasm.fathmm
-FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).hrun
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).vcf))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).$(eff).pass.novel.txt)))
+FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX)
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).$(eff).pass.novel)))
 
-VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff)))
-TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff)))
-TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/all.$(suff))
+VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
+TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
+TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/all.$(suff).txt)
 
-.PHONY : all vcfs tables
-all : vcfs tables
+ifdef SAMPLE_SETS
+VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
+TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(set).$(suff).txt))
+endif
+
+.PHONY : all vcfs tables reports
+all : vcfs tables reports
 
 vcfs : $(VCFS)
 
 tables : $(TABLES)
 
-
+reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 
 vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
 	$(INIT) cp $< $@

@@ -5,14 +5,6 @@
 
 REF ?= hg19
 LOGDIR = log/varscan.$(NOW)
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
-SAMPLE_FILE ?= samples.txt
-TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
 
 SPLIT_CHR ?= true
 
@@ -24,7 +16,6 @@ VARSCAN = $(JAVA) -Xmx8G -jar $(VARSCAN_JAR)
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV.R
 
 VPATH ?= bam
-SPLIT_CHR ?= true
 
 .DELETE_ON_ERROR:
 
@@ -93,7 +84,14 @@ endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-copynum-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 
 varscan/copycall/%.copycall : varscan/copynum/%.copynumber
-	$(call LSCRIPT_MEM,9G,12G,"$(VARSCAN) copyCaller $< --output-file $@ &> $(LOG)")
+	$(call LSCRIPT_MEM,9G,12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \
+	if [ \$$(bc <<< \"\$$n > 0\") -eq 1 ]; then \
+		recenter_opt=\"--recenter-up \$$n\"; \
+	else \
+		n=\$$(bc <<< \"\$$n*-1\"); \
+		recenter_opt=\"--recenter-down \$$n\"; \
+	fi; \
+	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt &> $(LOG)")
 
 varscan/segment/%.segment.txt : varscan/copycall/%.copycall
 	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --prefix=varscan/segment/$* $< &> $(LOG)")

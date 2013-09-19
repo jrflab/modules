@@ -3,8 +3,12 @@
 # default reference: 
 REF ?= hg19
 include $(HOME)/share/modules/$(REF).inc
+
 SAMPLE_PAIR_FILE ?= sample_pairs.txt
+SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
+SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh
+
 ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
   TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
   NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
@@ -16,7 +20,16 @@ ifneq ($(wildcard $(SAMPLE_FILE)),)
   SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 endif
 
-SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh
+
+ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
+  NUM_SETS := $(shell wc -l $(SAMPLE_SET_FILE) | cut -f 1 -d' ')
+  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval set.$i := $(shell sed -n $(i)p $(SAMPLE_SET_FILE))))
+  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
+  ifndef SAMPLE_SETS
+  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
+  endif
+endif
+
 ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
 A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
 B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
@@ -24,8 +37,8 @@ $(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += 
 SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
 endif
 
-$(foreach i,$(shell seq 1 $(words $(LANES))),$(eval lane_lookup.$(word $i,$(LANES)) := $(word $i,$(LANE_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(LANE_SAMPLES))),$(eval sample_lookup.$(word $i,$(LANE_SAMPLES)) += $(word $i,$(LANES))))
+#$(foreach i,$(shell seq 1 $(words $(LANES))),$(eval lane_lookup.$(word $i,$(LANES)) := $(word $i,$(LANE_SAMPLES))))
+#$(foreach i,$(shell seq 1 $(words $(LANE_SAMPLES))),$(eval sample_lookup.$(word $i,$(LANE_SAMPLES)) += $(word $i,$(LANES))))
 
 
 ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
@@ -130,6 +143,7 @@ NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
 JAVA := /usr/lib/jvm/jre-1.6.0/bin/java $(JAVA_ARGS)
+JAVA7 := /usr/bin/java $(JAVA_ARGS)
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 NO_RM ?= false
@@ -205,9 +219,9 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 # launch read script from stdin
 QSUB = /common/sge/bin/lx-amd64/qsub
 QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o
-LSCRIPT = $(INIT) echo $1 | $(QSUB) $(QSUB_ARGS) -- -
-LSCRIPT_PARALLEL_MEM = $(INIT) echo $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -
-LSCRIPT_MEM = $(INIT) echo $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
+LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(QSUB) $(QSUB_ARGS) -- -
+LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -
+LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
 
 #MD5 = md5sum $(1:.md5=) > $1
 MD5 = md5sum $(@:.md5=) > $@

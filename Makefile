@@ -116,7 +116,11 @@ bam_metrics :
 
 TARGETS += bam_interval_metrics
 bam_interval_metrics :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bamIntervalMetrics.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bamIntervalMetrics.mk $(FLAGS) $(TARGET)
+
+TARGETS += rnaseq_metrics
+rnaseq_metrics :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/rnaseqMetrics.mk $(FLAGS) $(TARGET)
 
 TARGETS += fastqc
 fastqc :
@@ -230,6 +234,9 @@ TARGETS += chimscan
 chimscan :
 	$(MAKE) -e -f ~/share/modules/chimerascan.mk $(FLAGS) $(TARGET)
 
+TARGETS += pindel
+pindel :
+	$(MAKE) -e -f ~/share/modules/pindel.mk $(FLAGS) $(TARGET)
 
 TARGETS += cleanlinks
 cleanlinks :

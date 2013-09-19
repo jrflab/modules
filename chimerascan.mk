@@ -22,5 +22,5 @@ CHIMERASCAN = PYTHONPATH=$(CHIMSCAN_PYTHONPATH) $(CHIMSCAN_PYTHON) /home/limr/sh
 CHIMERASCAN_OPTS = -v --quals illumina
 
 chimerascan/%.chimscan_timestamp : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) $(CHIMERASCAN) $(CHIMERASCAN_OPTS) -p 4 $(CHIMSCAN_INDEX) $(^M) $(@D)/$* && touch $@ && $(RM) -r $(@D)/$*/tmp")
+	$(call LSCRIPT_PARALLEL_MEM,4,6G,12G,"$(CHECK_MD5) $(CHIMERASCAN) $(CHIMERASCAN_OPTS) -p 4 $(CHIMSCAN_INDEX) $(^M) $(@D)/$* && touch $@ && $(RM) -r $(@D)/$*/tmp")
 
