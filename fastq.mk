@@ -32,7 +32,7 @@ fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_fastq/%.1.fastq.gz.m
 endif
 
 %.fastq.gz.md5 : %.fastq.gz
-	$(INIT) $(MD5)
+	$(call LSCRIPT,"$(MD5)")
 
 ifeq (${EXTRACT_TOOL},picard)
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam

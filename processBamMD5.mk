@@ -95,7 +95,7 @@ endef
 $(foreach i,$(SORT_SPLIT_SEQ),$(eval $(call split-sort,$i)))
 
 %.sorted.bam.md5 : $(foreach i,$(SORT_SPLIT_SEQ),%.sorted_split_$i.bam.md5)
-	$(call LSCRIPT_MEM,8G,10G,"$(CHECK_MD5) $(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $(<M)) $(@M) $(^M) && $(MD5) && $(RM) $^ $(^M) $(@:.sorted.bam=) $(@:.sorted.bam.md5=)")
+	$(call LSCRIPT_MEM,8G,10G,"$(CHECK_MD5) $(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $(<M)) $(@M) $(^M) && $(MD5) && $(RM) $^ $(^M) $(@:.sorted.bam=.bam) $(@:.sorted.bam.md5=.bam.md5)")
 else
 %.sorted.bam.md5 : %.bam.md5
 	$(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G,4500000) I=$(<:.md5=) O=$(@:.md5=) SO=coordinate &> $(LOG) && $(MD5) && $(RM) $< $(<:.md5=)")

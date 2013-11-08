@@ -2,8 +2,8 @@
 # vim: set ft=make :
 
 include ~/share/modules/Makefile.inc
+include ~/share/modules/gatk.inc
 
-READ_LENGTH ?= 75
 
 LOGDIR = log/control_freec.$(NOW)
 FREEC = $(HOME)/share/usr/bin/freec
@@ -16,7 +16,8 @@ MAKE_GRAPH = $(HOME)/share/scripts/makeGraph.R
 
 FREEC_WINDOW_SIZE = 50000
 
-GC_CONTENT_NORM = 0
+
+#GC_CONTENT_NORM = 0
 
 VPATH ?= bam
 
@@ -26,9 +27,16 @@ captureRegions=$(EXOME_BED)
 NOISY_DATA = true
 PRINT_NA = false
 else
+ifdef TARGETS_FILE
+FREEC_TARGET_CONFIG =[target]\n\
+captureRegions=$(TARGETS_FILE)
+NOISY_DATA = true
+PRINT_NA = false
+else
 FREEC_TARGET_CONFIG = 
 NOISY_DATA = false
 PRINT_NA = true
+endif
 endif
 
 #usage $(call FREEC_CONFIG,tumor-bam,normal-bam,output-dir)
@@ -45,7 +53,6 @@ coefficientOfVariation=0.05\n\
 window=$(FREEC_WINDOW_SIZE)\n\
 gemMappabilityFile=$(GEM_MAP_FILE)\n\
 printNA=$(PRINT_NA)\n\
-forceGCcontentNormalization=$(GC_CONTENT_NORM)\n\
 [sample]\n\
 mateFile=$1\n\
 inputFormat=BAM\n\
@@ -59,26 +66,43 @@ shiftInQuality=33\n\
 $(FREEC_TARGET_CONFIG)
 endef
 
+PLOT_FREEC_COPY_NUM = $(RSCRIPT) $(HOME)/share/scripts/plotFreeCCopyNum.R
+CBIND_CNV = $(RSCRIPT) $(HOME)/share/scripts/cbindCNVs.R
+
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all cnv config
+.PHONY: all cnv config plots png tables
 
-all : cnv config
-cnv : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor).bam_ratio.txt.png)
-config : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor)_$(normal_lookup.$(tumor)).config.txt)
+all : cnv config plots png tables
+cnv : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt.png))
+config : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair).config.txt)
+png : freec/cnvs.png
+tables : freec/recurrent_cnv.txt
 
 #$(call config-tumor-normal,tumor,normal)
 define freec-config-tumor-normal
 freec/$1_$2.config.txt : $1.bam $2.bam
 	$$(INIT) echo -e "$$(call FREEC_CONFIG,$$<,$$(word 2,$$^),$$(@D))" | sed 's/ //' >  $$@
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-config-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-config-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call freec-config-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 define freec-tumor-normal
 freec/$1.bam_ratio.txt : freec/$1_$2.config.txt
 	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$< &> $$(LOG)")
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call freec-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
+
+freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt))
+	$(INIT) $(PLOT_FREEC_COPY_NUM) --outFile $@ --centromereTable $(CENTROMERE_TABLE) $^
+
+freec/recurrent_cnv.txt : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor).bam_ratio.txt)
+	$(INIT) $(CBIND_CNV) --ensemblTxdb $(ENSEMBL_TXDB) --outDir $(@D) $(^:ratio.txt=CNVs)

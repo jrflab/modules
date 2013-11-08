@@ -75,7 +75,7 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(
 endif
 
 fastq/%.fastq.gz.md5 : fastq/%.fastq
-	$(INIT) gzip -c $< > $(@:.md5=) 2> $(LOG) && $(RM) $< && $(MD5)
+	$(call LSCRIPT,"gzip -c $< > $(@:.md5=) && $(RM) $< && $(MD5)")
 
 bwa/sai/%.sai.md5 : fastq/%.fastq.gz.md5
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)")

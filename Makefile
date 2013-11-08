@@ -6,14 +6,7 @@
 
 export
 
-#REF = hg19
-#include ~/share/modules/Makefile.inc
-
-SAMPLE_FILE = samples.txt
-#LANE_SAMPLE_FILE = lane_samples.txt
-SAMPLE_PAIR_FILE = sample_pairs.txt # pairs tumor-normal
-
-NUM_ATTEMPTS ?= 1
+NUM_ATTEMPTS ?= 3
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
@@ -21,7 +14,7 @@ QMAKE_BINARY = /common/sge/bin/lx-amd64/qmake
 QMAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
 MAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 QMAKEFLAGS = -cwd -v -inherit -q jrf.q
-FLAGS = -j 50
+FLAGS = -j 25
 
 #SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
 #FIND_LANES = ssh xhost08 sh $(HOME)/share/scripts/findLanes.sh $(SAMPLE_DIRS)
@@ -103,12 +96,21 @@ TARGETS += bowtie
 bowtie : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bowtieAlignerMD5.mk $(FLAGS) $(TARGET)
 
+TARGETS += tmap
+tmap :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/tmapAligner.mk $(FLAGS) $(TARGET)
+
+TARGETS += tophat_fusion
+tophat_fusion : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/tophatFusion.mk $(FLAGS) $(TARGET)
+
 TARGETS += novoalign_iadb
 novoalign_iadb : 
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/novoalignIADB.mk $(FLAGS) $(TARGET)
 
-#process_bam : 
-#$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/processBam.mk $(FLAGS) $(TARGET) >> $@.log
+TARGETS += process_bam
+process_bam : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/processBamMD5.mk $(FLAGS) $(TARGET)
 
 TARGETS += bam_metrics
 bam_metrics :
@@ -125,7 +127,6 @@ rnaseq_metrics :
 TARGETS += fastqc
 fastqc :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/fastqc.mk $(FLAGS) $(TARGET)
-
 
 # not tested on the cluster
 # requires x11 for graphics
@@ -161,7 +162,7 @@ museqTN :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/museqTN.mk $(FLAGS) $(TARGET)
 
 TARGETS += merge_vcfTN
-merge_vcf_tn :
+merge_vcfTN :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfMergeTN.mk $(FLAGS) $(TARGET)
 
 TARGETS += somatic_sniper
@@ -185,8 +186,8 @@ TARGETS += merge_vcf_platform
 merge_vcf_platform :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfMergePlatform.mk $(FLAGS) $(TARGET)
 
-TARGETS += compare_vcf_tn
-compare_vcf_tn :
+TARGETS += compare_vcfTN
+compare_vcfTN :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfCompareTN.mk $(FLAGS) $(TARGET)
 
 TARGETS += read_depth
@@ -207,12 +208,12 @@ nfuse_wgss_wtss :
 
 TARGETS += sum_reads
 sum_reads :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/sumRNASeqReads.mk $(FLAGS) $(TARGET) SAMPLE_FILE=${SAMPLE_FILE} >>
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/sumRNASeqReads.mk $(FLAGS) $(TARGET)
 
 TARGETS += dindel
 dindel :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/dindel.mk $(FLAGS) windows && \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/dindel.mk $(FLAGS) vcf 2>&1
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/dindel.mk $(FLAGS) windows && \
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/dindel.mk $(FLAGS) vcf 2>&1
 
 TARGETS += exomecnv
 exomecnv : 

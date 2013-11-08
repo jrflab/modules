@@ -7,8 +7,6 @@
 include ~/share/modules/Makefile.inc
 
 VPATH ?= unprocessed_bam
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 
 LOGDIR = log/bowtie.$(NOW)
 
@@ -70,6 +68,23 @@ bowtie/bam/%.bwt.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 
 bam/%.bam.md5 : bowtie/bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+
+ifdef SPLIT_SAMPLES
+define bam-header
+bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
+	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
+	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
+endef
+$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
+
+define merged-bam
+bowtie/bam/$1.bwt.sorted.bam.md5 : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
+	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
+endif
+
 
 include ~/share/modules/fastq.mk
 include ~/share/modules/processBamMD5.mk

@@ -47,40 +47,53 @@ VPATH ?= bam
 
 ##### MAIN TARGETS ######
 ANN_TYPES = eff # annotated
-EFF_TYPES = silent missense nonsilent_cds
+EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = gatk_snps gatk_indels
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp
+FILTER_SUFFIX := dp_ft.dbsnp
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).chasm.fathmm
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX)
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).$(eff).pass.novel)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/all.$(suff).txt)
 
 ifdef SAMPLE_SETS
-VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
-TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(set).$(suff).txt))
+SS_FILTER_SUFFIX := dp_ft.som_ft.dbsnp
+SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.chasm.fathmm
+SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX)
+SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann)))
+SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
+VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
+TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
+TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),tables/allSS.$(suff).txt)
 endif
 
 .PHONY : all vcfs tables reports
-all : vcfs tables reports
+all : vcfs tables # reports
 
-vcfs : $(VCFS)
+vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 
 tables : $(TABLES)
 
 reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 
+filtered_snps : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.filtered.vcf)
+
 vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
-	$(INIT) cp $< $@
+	$(INIT) ln -f $< $@
 
 vcf/%.gatk_indels.vcf : gatk/vcf/%.variants.indels.filtered.vcf
-	$(INIT) cp $< $@
+	$(INIT) ln -f $< $@
+
+VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) $(HOME)/share/scripts/variantEvalGatkReport.R
+
+reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
+	$(call LSCRIPT,"$(VARIANT_EVAL_GATK_REPORT) --metrics $(word 2,$^) --outDir $(@D) $<")
 
 include ~/share/modules/gatk.mk

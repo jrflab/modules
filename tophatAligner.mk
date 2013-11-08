@@ -28,27 +28,32 @@ endif
 .PHONY : all tophat_bams tophat_junctions
 	
 all : tophat_bams tophat_junctions
-tophat_bams : $(foreach sample,$(SAMPLES),tophat/bam/$(sample).bam) $(foreach sample,$(SAMPLES),tophat/bam/$(sample).bam.bai)
-tophat_unmapped_bams : $(foreach sample,$(SAMPLES),tophat/unmapped_bam/$(sample).unmapped.bam)
-tophat_junctions: $(foreach sample,$(SAMPLES),tophat/junctions/$(sample)_junctions.bed)
 
-tophat/%.timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	SGE_RREQ="-N X$(@F) $(TOPHAT_SGE_RREQ)" \
-	$(MKDIR) $(@D)/logs;\
-	$(TOPHAT) $(TOPHAT_OPTS) -o $(@D)/$* $(BOWTIE_REF) $(word 1,$^) $(word 2,$^) &> $(@D)/logs/$(@F).log && touch $@
+BAM_SUFFIX := tophat.sorted.filtered
+ifeq ($(NO_REALN),false)
+BAM_SUFFIX := $(BAM_SUFFIX).realn
+endif
 
-tophat/%/accepted_hits.bam : tophat/%.timestamp
+ifeq ($(DUP_TYPE),rmdup)
+BAM_SUFFIX := $(BAM_SUFFIX).rmdup
+else ifeq ($(DUP_TYPE),markdup) 
+BAM_SUFFIX := $(BAM_SUFFIX).markdup
+endif
 
-tophat/unmapped_bam/%.unmapped.bam : tophat/%/unmapped.bam
-	$(MKDIR) $(@D); ln -f $< $@
+ifeq ($(NO_RECAL),false)
+BAM_SUFFIX := $(BAM_SUFFIX).recal
+endif
 
-tophat/bam/%.bam : tophat/%/accepted_hits.sorted.filtered.rmdup.bam
-	$(MKDIR) $(@D); ln -f $< $@
+BAM_SUFFIX := $(BAM_SUFFIX).bam
 
-tophat/junctions/%_junctions.bed : tophat/%.timestamp
-	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,100M,1G)" \
-	$(MKDIR) $(@D)/logs;\
-	ln -f tophat/$*/junctions.bed $@; touch $@
+TOPHAT_BAMS = $(foreach sample,$(SAMPLES),tophat/bam/$(sample).$(BAM_SUFFIX))
+tophat_bams : $(addsuffix .md5,$(TOPHAT_BAMS)) $(addsuffix .bai,$(TOPHAT_BAMS))
+#tophat_unmapped_bams : $(foreach sample,$(SAMPLES),tophat/unmapped_bam/$(sample).unmapped.bam)
+#tophat_junctions: $(foreach sample,$(SAMPLES),tophat/junctions/$(sample)_junctions.bed)
+
+tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
+	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) $(TOPHAT) $(TOPHAT_OPTS) -o $(@D)/$* $(BOWTIE_REF) $(word 1,$^) $(word 2,$^) && ln -f tophat/$*/accepted_hits.bam $(@M) && $(MD5)")
+
 
 include ~/share/modules/fastq.mk
 include ~/share/modules/processBam.mk

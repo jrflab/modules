@@ -26,9 +26,9 @@ VPATH ?= bam
 all : vcfs cnv
 
 cnv : copycalls segments
-vcfs : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).varscan_indels.vcf) $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).varscan_snps.vcf)
-copycalls : $(foreach tumor,$(TUMOR_SAMPLES),varscan/copycall/$(tumor)_$(normal_lookup.$(tumor)).copycall)
-segments : $(foreach tumor,$(TUMOR_SAMPLES),varscan/segment/$(tumor)_$(normal_lookup.$(tumor)).segment.txt)
+vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).varscan_indels.vcf vcf/$(pair).varscan_snps.vcf)
+copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
+segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.txt)
 	
 
 ifeq ($(SPLIT_CHR),true)
@@ -46,7 +46,11 @@ varscan/chr_vcf/$1_$2.$3.indels.vcf : varscan/chr_vcf/$1_$2.$3.varscan_timestamp
 varscan/chr_vcf/$1_$2.$3.snps.vcf : varscan/chr_vcf/$1_$2.$3.varscan_timestamp
 
 endef
-$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
+$(foreach chr,$(CHROMOSOMES), \
+	$(foreach i,$(SETS_SEQ), \
+		$(foreach tumor,$(call get_tumors,$(set.$i)), \
+			$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
+#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 
 
 define varscan-ped-tumor-normal
@@ -55,7 +59,9 @@ vcf/$1_$2.varscan_%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1_$2.$
 	grep '^#' $$< >> $$@ && \
 	cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -  >> $$@
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-ped-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call varscan-ped-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 else # no splitting by chr
 
@@ -74,14 +80,19 @@ varscan/chr_vcf/$1_$2.snps.vcf : varscan/chr_vcf/$1_$2.varscan_timestamp
 vcf/$1_$2.varscan_%.vcf : varscan/vcf/$1_$2.%.vcf
 	$$(INIT) echo "##PEDIGREE=<Derived=$1,Original=$2>" > $$@ && cat $$< >> $$@
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 endif
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  $1.bam $2.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1 &> $$(LOG)")
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-copynum-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call varscan-copynum-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	$(call LSCRIPT_MEM,9G,12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \

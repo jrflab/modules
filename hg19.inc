@@ -3,12 +3,12 @@ REF = hg19
 GSNAP_REF_DIR = $(HOME)/share/references/gmapdb
 #UCSC_REF_FASTA := $(HOME)/share/references/genomes/ucsc.hg19.fasta
 #UCSC_REF_DICT = $(HOME)/share/references/genomes/ucsc.hg19.dict
-REF_FASTA := $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+REF_FASTA ?= $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 REF_NAME := 1000GenomesPilot-NCBI37
 REF_DATE := 2010517
 #REF_CHR_ORD = $(HOME)/share/references/genomes/ucsc.hg19.chr_order
 #REF_FA = $(HOME)/share/references/genomes/hg19.fa
-REF_DICT := $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.dict
+REF_DICT = $(REF_FASTA:.fasta=.dict)
 SNP_EFF_GENOME = GRCh37.70 # == hg19
 DBSNP := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.vcf
 DBSNP1PC := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.vcf
@@ -42,3 +42,10 @@ CHIMERASCAN_REF = $(HOME)/share/reference/chimerascan_index
 
 RIBOSOMAL_INTERVALS = $(HOME)/share/reference/rrna_intervals.txt
 GENE_REF_FLAT = $(HOME)/share/reference/hg19_genes.refFlat.txt
+
+CENTROMERE_TABLE = $(HOME)/share/reference/centromere.txt
+
+MUT_ASS_RDATA = $(HOME)/share/reference/MA.hg19/MA.Rdata
+
+ENSEMBL_TXDB = $(HOME)/share/reference/ensembl_biomart.sqlite
+

@@ -2,16 +2,9 @@
 # museq module for use by jsm.mk
 
 include ~/share/modules/Makefile.inc
+include ~/share/modules/gatk.inc
 
 LOGDIR = log/museq.$(NOW)
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
-SAMPLE_FILE ?= samples.txt
-TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
 
 MUSEQ_PYTHON = $(HOME)/share/usr/anaconda/bin/python
 MUSEQ_PYTHONPATH = $(HOME)/share/usr/anaconda/lib/python2.7/site-packages
@@ -35,24 +28,29 @@ VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY : museq_vcfs
+.PHONY : museq_vcfs museq_tables
 
 all : museq_vcfs museq_tables
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.fathmm.chasm
+FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).vcf)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).$(eff).pass.novel.txt))
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).tab.$(eff).pass.novel.txt))
 
-museq_vcfs : $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff)))
-museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),tables/$(tumor)_$(normal_lookup.$(tumor)).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
+VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff)))
+museq_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
+museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
 
 define museq-tumor-normal-chr
 museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_MEM,8G,12G,"$$(MUSEQ_CLASSIFY) tumour:$$< normal:$$(word 2,$$^) reference:$$(REF_FASTA) model:$$(MUSEQ_MODEL) --config $$(MUSEQ_CONFIG) --interval $3 --purity $$(TUMOR_PURITY) --out $$@ &> $$(LOG)")
 endef
-$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
+#$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
+$(foreach chr,$(CHROMOSOMES), \
+	$(foreach i,$(SETS_SEQ), \
+		$(foreach tumor,$(call get_tumors,$(set.$i)), \
+			$(eval $(call museq-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
 
 
 # merge museq chunks
@@ -60,7 +58,9 @@ define museq-tumor-normal
 museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.vcf)
 	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
-$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+$(foreach i,$(SETS_SEQ), \
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call museq-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(chr)))))
 
 vcf/%.museq.vcf : museq/vcf/%.museq.vcf
 	$(INIT) $(FIX_MUSEQ_VCF) -R $(REF_FASTA) $< > $@ 2> $(LOG)

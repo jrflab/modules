@@ -16,8 +16,6 @@ MAKE_GRAPH = $(HOME)/share/scripts/makeGraph.R
 
 FREEC_WINDOW_SIZE = 50000
 
-GC_CONTENT_NORM = 0
-
 VPATH ?= bam
 
 ifeq ($(EXOME),true)
@@ -45,7 +43,6 @@ coefficientOfVariation=0.05\n\
 window=$(FREEC_WINDOW_SIZE)\n\
 gemMappabilityFile=$(GEM_MAP_FILE)\n\
 printNA=$(PRINT_NA)\n\
-forceGCcontentNormalization=$(GC_CONTENT_NORM)\n\
 [sample]\n\
 mateFile=$1\n\
 inputFormat=BAM\n\

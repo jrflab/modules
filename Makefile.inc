@@ -9,26 +9,50 @@ SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
 SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh
 
-ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
-  TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-  NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-  $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-  $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
-  SAMPLE_PAIRS ?= $(foreach tumor,$(TUMOR_SAMPLES),$(tumor)_$(normal_lookup.$(tumor)) )
-endif
+#ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
+#TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
+#NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
+#$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
+#$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
+#SAMPLE_PAIRS ?= $(foreach tumor,$(TUMOR_SAMPLES),$(tumor)_$(normal_lookup.$(tumor)) )
+#endif
+
 ifneq ($(wildcard $(SAMPLE_FILE)),)
   SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 endif
 
+get_tumors = $(wordlist 1,$(shell expr $(words $1) - 1),$1)
+get_normal = $(lastword $1)
 
 ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   NUM_SETS := $(shell wc -l $(SAMPLE_SET_FILE) | cut -f 1 -d' ')
-  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval set.$i := $(shell sed -n $(i)p $(SAMPLE_SET_FILE))))
-  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
+  SETS_SEQ := $(shell seq 1 $(NUM_SETS))
+  $(foreach i,$(SETS_SEQ),$(eval set.$i := $(shell sed -n $(i)p $(SAMPLE_SET_FILE))))
+  $(foreach i,$(SETS_SEQ),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
   ifndef SAMPLE_SETS
-  $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
+  $(foreach i,$(SETS_SEQ),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
   endif
+  SAMPLE_PAIRS ?= $(foreach i,$(SETS_SEQ), \
+				  $(foreach tumor,$(call get_tumors,$(set.$i)), \
+				  $(tumor)_$(call get_normal,$(set.$i))))
+  TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
+  NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
+
+#ifeq ($(NORMAL_MATCHED),true)
+#ifndef SAMPLE_PAIRS
+#TUMOR_SAMPLES ?= $(shell sed 's/\w*$$//; s/ /\n/' $(SAMPLE_SET_FILE) | sort | uniq)
+#NORMAL_SAMPLES ?= $(shell sed 's/.* //' $(SAMPLE_SET_FILE) | sort | uniq)
+#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(foreach tumor,$(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i)),$(eval normal_lookup.$(tumor) = $(lastword $(set.$i)))))
+#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval tumor_lookup.$(lastword $(set.$i)) += $(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i))))
+#$(foreach tumor,$(TUMOR_SAMPLES),$(foreach normal,$(normal_lookup.$(tumor)),$(eval SAMPLE_PAIRS += $(tumor)_$(normal))))
+#endif
 endif
+
+
+
+
+#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(info $(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i))))
+
 
 ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
 A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
@@ -57,6 +81,9 @@ export PYTHONPATH
 #Set environment variables
 #export R_LIBS_USER := $(HOME)/share/usr/lib64/R/library:${R_LIBS_USER}
 export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
+
+LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
+export LD_LIBRARY_PATH
 
 #PERL5LIB := $(HOME)/share/usr/lib/perl5/:${PERL5LIB}
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl/modules/
@@ -87,6 +114,7 @@ BWA = $(HOME)/share/usr/bin/bwa
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
 SAMTOOLS = $(HOME)/share/usr/bin/samtools
+BCFTOOLS = /opt/bin/bcftools
 IGVTOOLS = $(HOME)/share/usr/bin/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
@@ -161,15 +189,25 @@ $(space) :=
 $(space) +=
 
 #CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
+CHR_CHROMOSOMES ?= false
 ifdef INTERVALS_FILE
    CHROMOSOMES := $(shell grep -v '@' $(INTERVALS_FILE) | cut -f1 | sort | uniq)
 else
-   CHROMOSOMES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X MT
+   ifeq ($(CHR_CHROMOSOMES),true)
+      CHROMOSOMES := chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrM
+      ifeq ($(INCLUDE_CHR_Y),true)
+	    CHROMOSOMES += chrY
+      endif
+   else
+      CHROMOSOMES := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X MT
+      ifeq ($(INCLUDE_CHR_Y),true)
+	    CHROMOSOMES += Y
+      endif
+   endif
 endif
 INCLUDE_CHR_Y ?= false
-ifeq ($(INCLUDE_CHR_Y),true)
-   CHROMOSOMES += Y
-endif
+
+
 
 
 # $(call strip-suffix,filename)
@@ -218,7 +256,7 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
 QSUB = /common/sge/bin/lx-amd64/qsub
-QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o
+QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(QSUB) $(QSUB_ARGS) -- -
 LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -
 LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
@@ -231,6 +269,9 @@ CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi
 ^M = $(^:.md5=)
 @M = $(@:.md5=)
 
+SOMATIC_FILTER_VCF = $(PERL) $(HOME)/share/scripts/somaticFilterVCF.pl
+
+GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
 #signature md5
 #makepp_no_builtin = 1

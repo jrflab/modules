@@ -8,11 +8,13 @@ LOGDIR = log/pindel.$(NOW)
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
-GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 PINDEL = $(HOME)/share/usr/bin/pindel
 PINDEL2VCF = $(HOME)/share/usr/bin/pindel2vcf
 
 PINDEL2VCF_OPTS = -G -co 50 -ir 2 -il 3 -pr 2 -pl 3
+
+VCF_GEN_IDS ?= GT AD
+PINDEL_ANNOTATIONS = END HOMLEN SVLEN SVTYPE GENEINFO RSPOS SAO SLO SSR VC VP WGT
 
 VPATH ?= bam
 
