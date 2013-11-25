@@ -8,24 +8,24 @@ MAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 QMAKEFLAGS = -cwd -v -inherit -q jrf.q
 FLAGS = -j 25
 
-.PHONY : all alignment variants qc
+.PHONY : all
 
-all : alignment variants qc
+all : variants qc cnv qc
 
-alignment :
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS)
+alignment.timestamp :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS) && touch $@
 
-variants : alignment
+variants: alignment.timestamp
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/gatkVariantCaller.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/mutect.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/museqTN.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/pindel.mk $(FLAGS)
 
-cnv : alignment
+cnv : alignment.timestamp
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/controlFreeCTN.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/varscanTN.mk $(FLAGS) cnv
 
-qc : alignment
+qc : alignment.timestamp
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bamIntervalMetrics.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/fastqc.mk $(FLAGS)
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bamMetrics.mk $(FLAGS)

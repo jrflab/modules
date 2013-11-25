@@ -10,7 +10,6 @@ DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 DEFUSE_FILTER = $(HOME)/share/scripts/filterDefuse.pl
 DEFUSE_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterDefuse.pl
 
-
 LOGDIR = log/defuse.$(NOW)
 
 # Runs defuse locally on the same node
