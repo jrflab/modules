@@ -6,7 +6,7 @@ include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 # picard format intervals file, needs requires sam format header
 
-VPATH = bam
+VPATH ?= bam
 
 LOGDIR = log/metrics.$(NOW)
 
@@ -64,4 +64,4 @@ metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/processBamMD5.mk

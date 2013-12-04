@@ -15,7 +15,7 @@ SEQ_PLATFORM = illumina
 VPATH ?= unprocessed_bam
 
 # use fastq; otherwise use bams
-DUP_TYPE ?= rmdup
+DUP_TYPE ?= markdup
 NO_RECAL ?= false
 NO_REALN ?= false
 SPLIT_CHR ?= true
