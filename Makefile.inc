@@ -255,7 +255,7 @@ LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$
 LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
-QSUB = /common/sge/bin/lx-amd64/qsub
+QSUB = /common/sge/bin/lx24-amd64/qsub
 QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(QSUB) $(QSUB_ARGS) -- -
 LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -

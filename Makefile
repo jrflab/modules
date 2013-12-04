@@ -10,11 +10,12 @@ NUM_ATTEMPTS ?= 3
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
+#QMAKE_BINARY = /common/sge/bin/lx24-amd64/qmake
 QMAKE_BINARY = /common/sge/bin/lx-amd64/qmake
 QMAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
 MAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 QMAKEFLAGS = -cwd -v -inherit -q jrf.q
-FLAGS = -j 25
+FLAGS = -j 75
 
 #SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
 #FIND_LANES = ssh xhost08 sh $(HOME)/share/scripts/findLanes.sh $(SAMPLE_DIRS)
@@ -26,26 +27,6 @@ HARD_FILTER_SNPS ?= true
 TARGETS = get_bams 
 get_bams :
 	$(MAKE) -f ~/share/modules/getBams.mk -j 50 >> $@.log
-
-TARGETS += exomeTN
-exomeTN :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bwaAligner.mk $(FLAGS) && \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/gatkVariantCaller.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bamIntervalMetrics.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/fastqc.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/mutect.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/somaticIndelDetector.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/exomeCNV.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/controlFreeC.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/varscanTN.mk $(FLAGS) cnv
-
-TARGETS += rnaseq
-rnaseq :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bowtieAligner.mk $(FLAGS) && \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/gatkVariantCaller.mk $(FLAGS) & \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/fastqc.mk $(FLAGS) &
-
-
 
 # create sample.lanes.txt [sample-id lane-id lane-bam-path]
 %.lane.txt : %.txt
@@ -152,9 +133,9 @@ TARGETS += varscan_cnv
 varscan_cnv :
 	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/varscanTN.mk $(FLAGS) cnv
 
-TARGETS += varscan_variants
-varscan_variants :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/varscanTN.mk $(FLAGS) variants
+TARGETS += varscanTN
+varscanTN :
+	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/varscanTN.mk $(FLAGS) vcfs tables
 
 # single sample mutation seq
 TARGETS += museqTN
@@ -167,7 +148,7 @@ merge_vcfTN :
 
 TARGETS += somatic_sniper
 somatic_sniper :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/somaticSniper.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/somaticSniper.mk $(FLAGS) $(TARGET)
 
 
 TARGETS += som_indels
@@ -217,7 +198,12 @@ dindel :
 
 TARGETS += exomecnv
 exomecnv : 
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/exomeCNV.mk $(FLAGS) $(TARGET) 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/exomeCNV.mk $(FLAGS) $(TARGET) 
+
+TARGETS += exomecnvloh
+exomecnvloh : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/exomeCNVLOH.mk $(FLAGS) $(TARGET) 
+
 
 TARGETS += freec
 freec : 
@@ -226,6 +212,10 @@ freec :
 TARGETS += freecTN
 freecTN : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/controlFreeCTN.mk $(FLAGS) $(TARGET) 
+
+TARGETS += freec_lohTN
+freec_lohTN : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/controlFreeCLOHTN.mk $(FLAGS) $(TARGET) 
 
 TARGETS += defuse
 defuse :

@@ -11,9 +11,14 @@ SPLIT_CHR ?= true
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.5.jar
-VARSCAN = $(JAVA) -Xmx8G -jar $(VARSCAN_JAR)
-SEGMENTCNV = $(HOME)/share/scripts/segmentCNV.R
+VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.6.jar
+VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
+VARSCAN = $(call VARSCAN_MEM,8G)
+SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
+
+MIN_MAP_QUAL ?= 1
+
+MIN_VAR_FREQ ?= 0.05
 
 VPATH ?= bam
 
@@ -23,23 +28,43 @@ VPATH ?= bam
 
 .PHONY: all vcfs copycalls segments cnv
 
-all : vcfs cnv
+SNP_VCF_EFF_FIELDS += FREQ
+INDEL_VCF_EFF_FIELDS += FREQ
 
+ANN_TYPES = eff # annotated
+EFF_TYPES = silent missense nonsilent_cds nonsilent
+VARIANT_TYPES = varscan_snps varscan_indels
+
+FILTER_SUFFIX := vdp_ft.freq_ft.dbsnp
+FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm
+FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
+
+VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
+TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
+TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
+
+all : vcfs tables cnv
+variants : vcfs tables
 cnv : copycalls segments
-vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).varscan_indels.vcf vcf/$(pair).varscan_snps.vcf)
+vcfs : $(VCFS)
+tables : $(TABLES)
 copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
-segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.txt)
-	
+segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).varscan2copynumber.txt)
+
+
+%.Somatic.vcf : %.vcf
+	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $<")
 
 ifeq ($(SPLIT_CHR),true)
 #varscan/chr_vcf/$1_$2.$3.indels.vcf varscan/chr_vcf/$1_$2.$3.snps.vcf : $1.bam $2.bam
 define varscan-somatic-tumor-normal-chr
-varscan/chr_vcf/$1_$2.$3.varscan_timestamp : $1.bam $2.bam
-	$$(call LSCRIPT_MEM,9G,12G,"tmpfile=`mktemp`; \
-	mkfifo $$$$tmpfile.$1; mkfifo $$$$tmpfile.$2; \
-	$$(SAMTOOLS) mpileup -l $3 -q 1 -f $$(REF_FASTA) $$< > $$$$tmpfile.$1 & \
-	$$(SAMTOOLS) mpileup -l $3 -q 1 -f $$(REF_FASTA) $$(word 2,$$^) > $$$$tmpfile.$2 & \
-	$$(VARSCAN) somatic $$$$tmpfile.$1 $$$$tmpfile.$2 --output-vcf --output-indel varscan/chr_vcf/$1_$2.$3.indels.vcf --output-snp varscan/chr_vcf/$1_$2.$3.snps.vcf &> $$(LOG) && touch $$@)")
+varscan/chr_vcf/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
+	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
+	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
+	--min-var-freq $(MIN_VAR_FREQ) --output-vcf --output-indel varscan/chr_vcf/$1_$2.$3.indels.vcf --output-snp varscan/chr_vcf/$1_$2.$3.snps.vcf && touch $$@")
 
 varscan/chr_vcf/$1_$2.$3.indels.vcf : varscan/chr_vcf/$1_$2.$3.varscan_timestamp
 
@@ -54,30 +79,36 @@ $(foreach chr,$(CHROMOSOMES), \
 
 
 define varscan-ped-tumor-normal
-vcf/$1_$2.varscan_%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1_$2.$$(chr).%.vcf)
+varscan/vcf/$1_$2.$3.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1_$2.$$(chr).$3.vcf)
 	$$(INIT) echo "##PEDIGREE=<Derived=$1,Original=$2>" > $$@ && \
 	grep '^#' $$< >> $$@ && \
-	cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -  >> $$@
+	cat $$^ | grep -v '^#' |  perl -lane '$$$$F[3] =~ s:/:,:; $$$$F[4] =~ s:/:,:; unless ($$$$F[3] =~ /[+-,]/ || $$$$F[4] =~ /[+-]/) { print join "\t", @F; }' | $$(VCF_SORT) $$(REF_DICT) -  >> $$@
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call varscan-ped-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach type,indels snps, \
+	$(foreach i,$(SETS_SEQ),\
+		$(foreach tumor,$(call get_tumors,$(set.$i)), \
+			$(eval $(call varscan-ped-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(type))))))
+
+vcf/%.varscan_indels.vcf : varscan/vcf/%.indels.Somatic.vcf
+	$(INIT) ln $< $@
+
+vcf/%.varscan_snps.vcf : varscan/vcf/%.snps.Somatic.vcf
+	$(INIT) ln $< $@
 
 else # no splitting by chr
 
 define varscan-somatic-tumor-normal
-varscan/vcf/$1_$2.varscan_timestamp : $1.bam $2.bam
-	$$(call LSCRIPT_MEM,9G,12G,"tmpfile=`mktemp`; \
-	mkfifo $$$$tmpfile.$1; mkfifo $$$$tmpfile.$2; \
-	$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$< > $$$$tmpfile.$1 2> /dev/null & \
-	$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) > $$$$tmpfile.$2 2> /dev/null & \
-	$$(VARSCAN) somatic $$$$tmpfile.$2 $$$$tmpfile.$1 --output-vcf --output-indel varscan/vcf/$1_$2.indels.vcf --output-snp varscan/vcf/$1_$2.snps.vcf &> $$(LOG)")
+varscan/vcf/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
+	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
+	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) $$(REF_FASTA) $$<) \
+	--min-var-freq $(MIN_VAR_FREQ) --output-vcf --output-indel varscan/vcf/$1_$2.indels.vcf --output-snp varscan/vcf/$1_$2.snps.vcf")
 
-varscan/chr_vcf/$1_$2.indels.vcf : varscan/chr_vcf/$1_$2.varscan_timestamp
+varscan/vcf/$1_$2.indels.vcf : varscan/vcf/$1_$2.varscan_timestamp
 
-varscan/chr_vcf/$1_$2.snps.vcf : varscan/chr_vcf/$1_$2.varscan_timestamp
+varscan/vcf/$1_$2.snps.vcf : varscan/vcf/$1_$2.varscan_timestamp
 
-vcf/$1_$2.varscan_%.vcf : varscan/vcf/$1_$2.%.vcf
+vcf/$1_$2.varscan_%.vcf : varscan/vcf/$1_$2.%.Somatic.vcf
 	$$(INIT) echo "##PEDIGREE=<Derived=$1,Original=$2>" > $$@ && cat $$< >> $$@
 endef
 #$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
@@ -104,7 +135,7 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	fi; \
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt &> $(LOG)")
 
-varscan/segment/%.segment.txt : varscan/copycall/%.copycall
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --prefix=varscan/segment/$* $< &> $(LOG)")
+varscan/segment/%.varscan2copynumber.txt : varscan/copycall/%.copycall
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=varscan/segment/$* $<")
 
 include ~/share/modules/gatk.mk

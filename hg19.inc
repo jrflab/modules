@@ -34,7 +34,7 @@ EXOME_BED = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_noAn
 FREEC_REF = $(HOME)/share/reference/GATK_bundle/2.3/FREEC_ref
 CHR_LEN = $(HOME)/share/reference/GATK_bundle/2.3/hg19.len
 
-SNP_TXT = $(HOME)/share/reference/hg19_snp137.SingleDiNucl.1based.txt
+SNP_TXT = $(HOME)/share/reference/hg19_snp137.SingleDiNucl.1based.nochr.txt
 
 GEM_MAP_FILE = $(HOME)/share/reference/gem/out76_hg19.gem
 
@@ -44,6 +44,7 @@ RIBOSOMAL_INTERVALS = $(HOME)/share/reference/rrna_intervals.txt
 GENE_REF_FLAT = $(HOME)/share/reference/hg19_genes.refFlat.txt
 
 CENTROMERE_TABLE = $(HOME)/share/reference/centromere.txt
+CENTROMERE_TABLE2 = $(HOME)/share/reference/centromere2.txt
 
 MUT_ASS_RDATA = $(HOME)/share/reference/MA.hg19/MA.Rdata
 

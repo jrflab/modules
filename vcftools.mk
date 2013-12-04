@@ -47,11 +47,19 @@ endif
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@ 2> $(LOG)")
+	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+
+# varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
+%.freq_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,2G,5G,"sed '/##FORMAT=<ID=FREQ/ s/String/Float/; /^#/! s/%//g' $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].FREQ) & (GEN[0].FREQ < 5) & (GEN[1].FREQ[0] > 5)' > $@")
+
+# varscan depth filter (b/c varscan is dumb and only gives variant depth)
+%.vdp_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD > $(DEPTH_FILTER))' > $@")
 
 # add exon distance
 %.exondist.vcf : %.vcf
-	$(call INIT_MEM,2G,3G) $(INTRON_POSN_LOOKUP) $< > $@ 2> $(LOGDIR)/$@.log
+	$(call LSCRIPT_MEM,2G,3G,"$(INTRON_POSN_LOOKUP) $< > $@")
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf

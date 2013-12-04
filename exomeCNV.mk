@@ -3,16 +3,7 @@
 
 include ~/share/modules/Makefile.inc
 
-REF ?= hg19
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
-TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(TUMOR_SAMPLES) $(NORMAL_SAMPLES)
-
 READ_LENGTH ?= 75
-
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
 
 
 LOGDIR = log/exomeCNV.$(NOW)
@@ -31,8 +22,8 @@ ADMIXTURE_RATE ?= 0.5
 
 all : cnv # loh
 	
-cnv : $(foreach tumor,$(TUMOR_SAMPLES),$(OUTDIR)/cnv/$(tumor)_$(normal_lookup.$(tumor)).cnv.txt)
-loh : $(foreach tumor,$(TUMOR_SAMPLES),$(OUTDIR)/loh/$(tumor)_$(normal_lookup.$(tumor)).loh.txt)
+cnv : $(foreach tumor,$(TUMOR_SAMPLES),exomecnv/cnv/$(tumor)_$(normal_lookup.$(tumor)).cnv.txt)
+loh : $(foreach tumor,$(TUMOR_SAMPLES),exomecnv/loh/$(tumor)_$(normal_lookup.$(tumor)).loh.txt)
 
 metrics/%.read_len : %.bam
 	$(INIT) $(SAMTOOLS) view $< | awk '{ print length($$10) }' | sort -n | uniq -c | sort -rn | sed 's/^ \+//' > $@
@@ -44,7 +35,7 @@ endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call exomecnv-cnv-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 
 define exomecnv-baf-tumor-normal
-$(OUTDIR)/baf/$1_$2.baf_timestamp : vcf/$1_$2.mutect.vcf
+$(OUTDIR)/baf/$1_$2.baf_timestamp : vcf/$1_$2.gatk_snps.vcf
 	$(INIT) $(CREATE_BAF) $$< $(OUTDIR)/baf/$2.baf.txt $(OUTDIR)/baf/$1.baf.txt 1 2
 $(OUTDIR)/baf/$1.baf.txt : $(OUTDIR)/baf/$1_$2.baf_timestamp
 $(OUTDIR)/baf/$2.baf.txt : $(OUTDIR)/baf/$1_$2.baf_timestamp

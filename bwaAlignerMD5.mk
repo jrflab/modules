@@ -7,9 +7,6 @@
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
-SAMPLE_FILE ?= samples.txt
-SAMPLES = $(shell cat $(SAMPLE_FILE))
-
 LOGDIR := log/bwa.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000

@@ -12,7 +12,7 @@ EXTRACT_TOOL ?= picard
 ifeq ($(TRIM_READS),true)
    FASTQ_FILTER := trim
    TRIM_LENGTH ?= 150
-   TRIM_OPTS := -l $(TRIM_LENGTH)
+   TRIM_OPTS ?= -l $(TRIM_LENGTH)
 endif
 
 FASTQ_TRIMMER = $(PERL) $(HOME)/share/scripts/trimFastq.pl
