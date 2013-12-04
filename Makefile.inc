@@ -257,9 +257,16 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 # launch read script from stdin
 QSUB = /common/sge/bin/lx24-amd64/qsub
 QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
+USE_CLUSTER ?= true
+ifeq ($(USE_CLUSTER),false)
+LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL)
+LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(SHELL)
+LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(SHELL)
+else
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(QSUB) $(QSUB_ARGS) -- -
 LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -
 LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(QSUB) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -- -
+endif
 
 #MD5 = md5sum $(1:.md5=) > $1
 MD5 = md5sum $(@:.md5=) > $@
