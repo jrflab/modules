@@ -49,6 +49,8 @@ metrics/hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metric
 		samplename=$$(basename $${metrics%%.hs_metrics.txt}); \
 	    sed "/^#/d; /^BAIT/d; /^\$$/d; s/^hs/$$samplename/; s/\t\+$$//" $$metrics >> $@; \
 	done
+# print mean, min, max for average bait coverage
+# awk 'BEGIN {min = 10000000; max = 0; } NR > 1 {if ($21 > max) {max = $21; } if ($21 < min) {min = $21;} total += $21} END {print total / (NR-1), min, max }'
 
 # summarize interval metrics into one file
 metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_hs_metrics.txt)
