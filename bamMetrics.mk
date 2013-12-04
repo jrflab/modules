@@ -42,3 +42,8 @@ metrics/%.flagstats : %.bam
 bam/%.markdup.bam metrics/%.dup_metrics : %.bam
 	$(call LSCRIPT_MEM,18G,19G,"$(MARK_DUP) I=$< O=bam/$*.markdup.bam METRICS_FILE=metrics/$*.dup_metrics &> $(LOGDIR)/$(@F).log")
 
+metrics/dup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metrics.txt)
+	$(INIT) grep '^LIBRARY' $< > $@ && \
+	for metrics in $^; do \
+	    grep -A1 '^LIBRARY' $$metrics | sed '1d' >> $@; \
+	done
