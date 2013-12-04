@@ -47,3 +47,5 @@ metrics/dup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metr
 	for metrics in $^; do \
 	    grep -A1 '^LIBRARY' $$metrics | sed '1d' >> $@; \
 	done
+# print mean, min, max
+# awk 'BEGIN {min = 1; max = 0; } NR > 1 {if ($8 > max) {max = $8; } if ($8 < min) {min = $8;} total += $8} END {print total / (NR-1), min, max }' metrics/dup_metrics.txt
