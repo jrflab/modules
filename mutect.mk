@@ -27,9 +27,9 @@ VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY : all mutect_vcfs mutect_tables ext_output
+.PHONY : all mutect_vcfs mutect_tables ext_output mut_report
 
-all : mutect_vcfs mutect_tables ext_output
+all : mutect_vcfs mutect_tables ext_output mut_report
 
 
 FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
@@ -44,6 +44,7 @@ mutect_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
 	$(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+mut_report : mutect/report/index.html
 
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
@@ -75,7 +76,6 @@ endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
 
 
 include ~/share/modules/vcftools.mk
