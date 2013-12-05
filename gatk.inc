@@ -72,7 +72,7 @@ VARIANT_CALL_THRESHOLD = 50
 VARIANT_EMIT_THRESHOLD = 10
 VARIANT_RECAL_TRUTH_SENSITIVITY_LEVEL = 99.0
 VARIANT_RECAL_ANNOTATIONS = QD FS ClippingRankSum BaseQRankSum  MQRankSum ReadPosRankSum MQ
-HAPLOTYPE_CALLER_OPTS = --dbsnp $(DBSNP1PC) -rf BadCigar -stand_call_conf $(VARIANT_CALL_THRESHOLD) -stand_emit_conf $(VARIANT_EMIT_THRESHOLD) -R $(REF_FASTA)
+HAPLOTYPE_CALLER_OPTS = --dbsnp $(DBSNP) -rf BadCigar -stand_call_conf $(VARIANT_CALL_THRESHOLD) -stand_emit_conf $(VARIANT_EMIT_THRESHOLD) -R $(REF_FASTA)
 
 INDEL_FILTERS = --filterName 'QD' --filterExpression 'QD < 2.0' --filterName 'ReadPosRankSum' --filterExpression 'ReadPosRankSum < -20.0'  --filterName 'InbreedingCoeff' --filterExpression 'InbreedingCoeff < -0.8'  --filterName 'FS' --filterExpression 'FS > 200.0' --filterName 'DP' --filterExpression 'DP < 5'
 
