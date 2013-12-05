@@ -21,6 +21,8 @@ MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_OPTS = --enable_extended_output --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION)
 MUTECT = $(JAVA) -Xmx7G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
+MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/mutFreqReport.R
+
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
@@ -54,16 +56,16 @@ $(foreach chr,$(CHROMOSOMES), \
 		$(foreach tumor,$(call get_tumors,$(set.$i)), \
 			$(eval $(call mutect-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
 
-#$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
-
 # merge variant tables 
 define ext-mutect-tumor-normal
 mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$1.$$(chr).mutect.txt)
 	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
-#$(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),$(eval $(call ext-mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+
+mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+	$(INIT) $(MUT_FREQ_REPORT) --outDir $(@D) $^
+
 
 # merge variants 
 define mutect-tumor-normal
@@ -73,7 +75,8 @@ endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call mutect-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
+
+
 
 include ~/share/modules/vcftools.mk
 
