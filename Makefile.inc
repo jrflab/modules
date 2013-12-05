@@ -4,10 +4,10 @@
 REF ?= hg19
 include $(HOME)/share/modules/$(REF).inc
 
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
+#SAMPLE_PAIR_FILE ?= sample_pairs.txt
 SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
-SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh
+SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
 
 #ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
 #TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
@@ -275,6 +275,7 @@ CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi
 <M = $(<:.md5=)
 ^M = $(^:.md5=)
 @M = $(@:.md5=)
+
 
 SOMATIC_FILTER_VCF = $(PERL) $(HOME)/share/scripts/somaticFilterVCF.pl
 

@@ -6,7 +6,7 @@ include ~/share/modules/gatk.inc
 
 LOGDIR ?= log/process_bam.$(NOW)
 
-DUP_TYPE ?= rmdup
+DUP_TYPE ?= markdup
 NO_RECAL ?= false
 NO_REALN ?= false
 SPLIT_CHR ?= true
