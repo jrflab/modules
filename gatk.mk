@@ -28,7 +28,7 @@ ifeq ($(SPLIT_CHR),true)
 ifdef SAMPLE_SETS
 define hapcall-vcf-sets-chr
 gatk/chr_vcf/$$(subst $$( ),_,$1).$2.variants.vcf : $$(foreach sample,$1,gatk/chr_vcf/$$(sample).$2.variants.vcf) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
-	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) -R $$(REF_FASTA) \
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) \
 		$$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call hapcall-vcf-sets-chr,$(set.$i),$(chr)))))
