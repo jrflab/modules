@@ -17,6 +17,7 @@ POOL_SNP_RECAL ?= false
 SPLIT_CHR ?= true
 
 
+
 ###### RECIPES #######
 
 
@@ -27,7 +28,8 @@ ifeq ($(SPLIT_CHR),true)
 ifdef SAMPLE_SETS
 define hapcall-vcf-sets-chr
 gatk/chr_vcf/$$(subst $$( ),_,$1).$2.variants.vcf : $$(foreach sample,$1,gatk/chr_vcf/$$(sample).$2.variants.vcf) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
-	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) -R $$(REF_FASTA) \
+		$$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call hapcall-vcf-sets-chr,$(set.$i),$(chr)))))
 
@@ -46,8 +48,8 @@ endif # def SAMPLE_SETS
 define chr-variants
 gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam bam/%.bai
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
-	-L $1 -I $$< --dbsnp $$(DBSNP1PC) -o $$@  -rf BadCigar \
-	-stand_call_conf $$(VARIANT_CALL_THRESHOLD) -stand_emit_conf $$(VARIANT_EMIT_THRESHOLD) -R $$(REF_FASTA) &> $$(LOG)")
+	-L $1 -I $$< -o $$@ \
+	$$(HAPLOTYPE_CALLER_OPTS)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-variants,$(chr))))
 
