@@ -133,7 +133,7 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 		n=\$$(bc <<< \"\$$n*-1\"); \
 		recenter_opt=\"--recenter-down \$$n\"; \
 	fi; \
-	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt &> $(LOG)")
+	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
 varscan/segment/%.varscan2copynumber.txt : varscan/copycall/%.copycall
 	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=varscan/segment/$* $<")
