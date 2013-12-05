@@ -65,7 +65,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(INIT) $(MUT_FREQ_REPORT) --outDir $(@D) $^
+	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^")
 
 
 # merge variants 
