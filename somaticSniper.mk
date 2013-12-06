@@ -39,7 +39,7 @@ $(foreach i,$(SETS_SEQ),\
 # $(eval $(call pedigree-tumor-normal,tumor,normal))
 define pedigree-tumor-normal
 vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.vcf
-	$$(INIT) echo "##PEDIGREE=<Derived=$1,Original=$2>" > $$@; cat $< >> $$@
+	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
