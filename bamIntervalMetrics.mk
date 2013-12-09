@@ -14,6 +14,7 @@ EXOME ?= false
 
 ifeq ($(EXOME),true)
 INTERVALS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_intervals.txt
+TARGETS_FILE = $(EXOME_BED)
 else
 INTERVALS_FILE ?= intervals.txt
 endif
@@ -27,6 +28,8 @@ PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
 .PHONY: all hs_metrics amplicon_metrics report
 
 all : hs_metrics report
+
+non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.txt)
 
 hs_metrics : metrics/hs_metrics.txt metrics/interval_hs_metrics.txt
 
@@ -64,6 +67,11 @@ metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).
 
 metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
+
+NON_REF_FREQ = $(PERL) $(HOME)/share/scripts/nonRefFreqFromPileup.pl
+
+metrics/%.interval_nonref_freq.txt : %.bam
+	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) > $@")
 
 
 include ~/share/modules/processBamMD5.mk
