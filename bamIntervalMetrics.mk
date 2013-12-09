@@ -27,7 +27,7 @@ PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
 
 .PHONY: all hs_metrics amplicon_metrics report
 
-all : hs_metrics report
+all : hs_metrics report non_ref_metrics
 
 non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.txt)
 
