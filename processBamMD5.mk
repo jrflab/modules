@@ -120,7 +120,7 @@ endif
 
 # add rg
 %.rg.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,10G,12G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=illumina RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) &> $(LOG) && $(RM) $< $(<:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=illumina RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) &> $(LOG) && $(RM) $< $(<:.md5=) && $(MD5)")
 
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome
