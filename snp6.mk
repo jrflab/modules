@@ -47,7 +47,7 @@ apt/%.summary.txt : $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
 	$(call LSCRIPT_MEM,8G,10G,"$(APT_SUMMARIZE) -a $(SUMMARIZE_PATHWAY_FULL.$*) $(APT_SUMMARIZE_OPTS) -out-dir $(@D) $^")
 
 apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
-	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D)")
+	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
 
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
 	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) \"$(HAPSEG_OPTS); tumour='$*'; calls.fn='$(word 1,$^)'; clusters.fn='$(word 2,$^)'; snp.fn='$(word 3,$^)'; results.dir='$(@D)'; genome.build='$(REF)'; out.file='$@'\"")
