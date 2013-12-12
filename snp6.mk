@@ -34,7 +34,7 @@ HAPSEG_OPTS = disease='breastcancer' phased.bgl.dir='$(HAPSEG_PHASED_BGL_DIR)'
 ABSOLUTE = $(RSCRIPT) $(SHARE)/scripts/absolute.R
 ABSOLUTE_OPTS = disease='breastcancer'
 
-all : $(foreach sample,$(SAMPLES),absolute/$(sample).Rdata)
+all : $(foreach sample,$(SAMPLES),absolute/$(sample)/absolute.Rdata)
 
 # APT birdseed-v1
 apt/%.summary.txt : $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
