@@ -12,8 +12,8 @@ SNP6_SPECIAL = $(SNP6_LIB_DIR)/GenomeWideSNP_6.Full.specialSNPs
 SNP6_CHRX = $(SNP6_LIB_DIR)/GenomeWideSNP_6.chrXprobes
 SNP6_CHRY = $(SNP6_LIB_DIR)/GenomeWideSNP_6.chrYprobes
 SUMMARIZE_TARGET = $(HOME)/share/reference/penncnv_gw6/lib/hapmap.quant-norm.normalization-target.txt
-APT_GENOTYPE = $(HOME)/share/usr/apt-1.15.0-x86_64-intel-linux/apt-probeset-genotype
-APT_SUMMARIZE = $(HOME)/share/usr/apt-1.15.0-x86_64-intel-linux/apt-probeset-summarize
+APT_GENOTYPE = $(HOME)/share/usr/apt-1.15.0-x86_64-intel-linux/bin/apt-probeset-genotype
+APT_SUMMARIZE = $(HOME)/share/usr/apt-1.15.0-x86_64-intel-linux/bin/apt-probeset-summarize
 
 #SUMMARIZE_PATHWAY := $(shell echo "$(SUMMARIZE_PATHWAY)" | sed 's/\.[^,]\+//g; s/,/./g')
 SUMMARIZE_PATHWAY := quant-norm.pm-only.med-polish.expr
