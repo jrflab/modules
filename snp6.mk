@@ -28,7 +28,7 @@ APT_GENOTYPE_OPTS = -c $(SNP6_CDF) \
 					--special-snps $(SNP6_SPECIAL) \
 					--chrX-probes $(SNP6_CHRX) \
 					--chrY-probes $(SNP6_CHRY) \
-					--set-gender-method cn-probe-chrXY-ratio --write-model
+					--set-gender-method cn-probe-chrXY-ratio --write-models
 
 HAPSEG = $(RSCRIPT) $(HOME)/share/scripts/hapseg.R
 HAPSEG_PHASED_BGL_DIR = $(HOME)/share/reference/phasedBGL
