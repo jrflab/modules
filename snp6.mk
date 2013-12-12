@@ -28,10 +28,10 @@ APT_GENOTYPE_OPTS = -c $(SNP6_CDF) \
 					--chrY-probes $(SNP6_CHRY) \
 					--set-gender-method cn-probe-chrXY-ratio --write-model
 
-HAPSEG = $(RSCRIPT) $(SHARE)/scripts/hapseg.R
+HAPSEG = $(RSCRIPT) $(HOME)/share/scripts/hapseg.R
 HAPSEG_PHASED_BGL_DIR = $(HOME)/share/reference/phasedBGL
 HAPSEG_OPTS = disease='breastcancer' phased.bgl.dir='$(HAPSEG_PHASED_BGL_DIR)'
-ABSOLUTE = $(RSCRIPT) $(SHARE)/scripts/absolute.R
+ABSOLUTE = $(RSCRIPT) $(HOME)/share/scripts/absolute.R
 ABSOLUTE_OPTS = disease='breastcancer'
 
 all : $(foreach sample,$(SAMPLES),absolute/$(sample)/absolute.Rdata)
