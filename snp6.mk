@@ -40,7 +40,7 @@ PENNCNV_AFFY = $(HOME)/share/usr/penncnv_gw6/bin/normalize_affy_geno_cluster.pl
 PENNCNV_HAPMAP = $(HOME)/share/reference/penncnv_gw6/lib/hapmap.genocluster
 PENNCNV_LOCFILE = $(HOME)/share/reference/penncnv_gw6/lib/affygw6.hg19.pfb
 
-all : $(foreach sample,$(SAMPLES),absolute/$(sample)/absolute.Rdata)
+all : $(foreach sample,$(SAMPLES),absolute/$(sample)_timestamp)
 
 # APT birdseed-v1
 apt/%.summary.txt : $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
