@@ -13,7 +13,7 @@ PYROHMMVAR_MODEL = $(HOME)/share/reference/pyrohmm_parameter_config
 
 all : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).txt)
 
-pyrohmm/tables/%.txt : bam/%.bam bam/%.bam.bai
+pyrohmm/tables/%.pyrohmm.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,10G,"$(PYROHMMVAR) -b $< -f $(REF_FASTA) -m $(PYROHMMVAR_MODEL) > $@")
 
 
