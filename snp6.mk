@@ -32,9 +32,10 @@ APT_GENOTYPE_OPTS = -c $(SNP6_CDF) \
 
 HAPSEG = $(RSCRIPT) $(HOME)/share/scripts/hapseg.R
 HAPSEG_PHASED_BGL_DIR = $(HOME)/share/reference/phasedBGL
-HAPSEG_OPTS = disease='breastcancer'; phased.bgl.dir='$(HAPSEG_PHASED_BGL_DIR)'
+DISEASE = breastcancer
+HAPSEG_OPTS = --disease $(DISEASE) --phasedBGLDir $(HAPSEG_PHASED_BGL_DIR) --ref $(REF)
 ABSOLUTE = $(RSCRIPT) $(HOME)/share/scripts/absolute.R
-ABSOLUTE_OPTS = disease='breastcancer'
+ABSOLUTE_OPTS = --disease $(DISEASE)
 
 PENNCNV_AFFY = $(HOME)/share/usr/penncnv_gw6/bin/normalize_affy_geno_cluster.pl
 PENNCNV_HAPMAP = $(HOME)/share/reference/penncnv_gw6/lib/hapmap.genocluster
@@ -54,10 +55,10 @@ apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample
 	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
 
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) \"$(HAPSEG_OPTS); tumour='$*'; calls.fn='$(word 1,$^)'; clusters.fn='$(word 2,$^)'; snp.fn='$(word 3,$^)'; results.dir='$(@D)'; genome.build='$(REF)'; out.file='$@'\"")
+	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersfile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) $*")
 
 absolute/%_timestamp : hapseg/%/segdat.Rdata
-	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) \"$(ABSOLUTE_OPTS); seg.data.fn='$<'; tumour='$*'; out.file='$@'; results.dir='$(@D)'\" && touch $@")
+	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D) $< && touch $@")
 
 
 # APT summarise
