@@ -159,6 +159,11 @@ TARGETS += snvmix
 snvmix :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/snvmix.mk $(FLAGS) $(TARGET)
 
+TARGETS += pyrohmm
+pyrohmm :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/pyroHMMVar.mk $(FLAGS) $(TARGET)
+
+
 TARGETS += compare_vcf
 compare_vcf :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/vcfCompare.mk $(FLAGS) $(TARGET)
