@@ -43,9 +43,31 @@ PENNCNV_LOCFILE = $(HOME)/share/reference/penncnv_gw6/lib/affygw6.hg19.pfb
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
-.PHONY: all
 
-all : $(foreach sample,$(SAMPLES),absolute/$(sample)_timestamp)
+
+ifdef SAMPLE_PAIRS
+.PHONY: absoluteTN
+absoluteTN : $(foreach sample,$(SAMPLE_PAIRS),absolute/$(pair)/segdat.Rdata
+
+define hapseg-tumor-normal
+hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
+	$$(call LSCRIPT_MEM,8G,10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersfile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) $1 $2")
+endef
+$(foreach i,$(SETS_SEQ), \
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call hapseg-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))
+
+define absolute-tumor-normal
+absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
+	$$(call LSCRIPT_MEM,8G,10G,"$$(ABSOLUTE) --tumour $1 --outPrefix $$* --resultsDir $$(@D) $$< && touch $$@")
+endef
+$(foreach i,$(SETS_SEQ), \
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call absolute-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))
+else
+.PHONY: absolute
+absolute : $(foreach sample,$(SAMPLES),absolute/$(sample)_timestamp)
+endif
 
 # APT birdseed-v1
 apt/%.summary.txt : $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
@@ -55,10 +77,8 @@ apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample
 	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
 
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersfile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) $*")
+	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersfile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
 
 absolute/%_timestamp : hapseg/%/segdat.Rdata
 	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D) $< && touch $@")
 
-
-# APT summarise
