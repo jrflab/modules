@@ -63,7 +63,7 @@ absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call absolute-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))
+		$(eval $(call absolute-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 else
 .PHONY: absolute
 absolute : $(foreach sample,$(SAMPLES),absolute/$(sample)_timestamp)
