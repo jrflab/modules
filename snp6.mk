@@ -47,7 +47,7 @@ PENNCNV_LOCFILE = $(HOME)/share/reference/penncnv_gw6/lib/affygw6.hg19.pfb
 
 ifdef SAMPLE_PAIRS
 .PHONY: absoluteTN
-absoluteTN : $(foreach sample,$(SAMPLE_PAIRS),absolute/$(pair)/segdat.Rdata
+absoluteTN : $(foreach sample,$(SAMPLE_PAIRS),absolute/$(pair)/segdat.Rdata)
 
 define hapseg-tumor-normal
 hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
