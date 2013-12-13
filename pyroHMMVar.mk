@@ -11,7 +11,7 @@ PYROHMMVAR_MODEL = $(HOME)/share/reference/pyrohmm_parameter_config
 .DELETE_ON_ERROR: 
 .PHONY: all
 
-all : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).txt)
+all : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).pyrohmm.txt)
 
 pyrohmm/tables/%.pyrohmm.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,10G,"$(PYROHMMVAR) -b $< -f $(REF_FASTA) -m $(PYROHMMVAR_MODEL) > $@")
