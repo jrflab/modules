@@ -234,6 +234,10 @@ TARGETS += pindel
 pindel :
 	$(MAKE) -e -f ~/share/modules/pindel.mk $(FLAGS) $(TARGET)
 
+TARGETS += snp6
+snp6 :
+	$(MAKE) -e -f ~/share/modules/snp6.mk $(FLAGS) $(TARGET)
+
 TARGETS += cleanlinks
 cleanlinks :
 	symlinks -dr .
