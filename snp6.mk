@@ -47,7 +47,7 @@ PENNCNV_LOCFILE = $(HOME)/share/reference/penncnv_gw6/lib/affygw6.hg19.pfb
 
 ifdef SAMPLE_PAIRS
 .PHONY: absoluteTN
-absoluteTN : $(foreach pair,$(SAMPLE_PAIRS),absolute/$(pair)/segdat.Rdata)
+absoluteTN : $(foreach pair,$(SAMPLE_PAIRS),absolute/$(pair).timestamp)
 
 define hapseg-tumor-normal
 hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
@@ -66,7 +66,7 @@ $(foreach i,$(SETS_SEQ), \
 		$(eval $(call absolute-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 else
 .PHONY: absolute
-absolute : $(foreach sample,$(SAMPLES),absolute/$(sample)_timestamp)
+absolute : $(foreach sample,$(SAMPLES),absolute/$(sample).timestamp)
 endif
 
 # APT birdseed-v1
@@ -79,6 +79,6 @@ apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
 	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersfile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
 
-absolute/%_timestamp : hapseg/%/segdat.Rdata
+absolute/%.timestamp : hapseg/%/segdat.Rdata
 	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D) $< && touch $@")
 
