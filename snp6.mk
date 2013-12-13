@@ -55,7 +55,7 @@ hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_P
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call hapseg-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))
+		$(eval $(call hapseg-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 define absolute-tumor-normal
 absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
