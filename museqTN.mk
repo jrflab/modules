@@ -44,7 +44,7 @@ museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),t
 
 define museq-tumor-normal-chr
 museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_MEM,8G,16G,"$$(MUSEQ_CLASSIFY) tumour:$$< normal:$$(word 2,$$^) reference:$$(REF_FASTA) model:$$(MUSEQ_MODEL) --config $$(MUSEQ_CONFIG) --interval $3 --purity $$(TUMOR_PURITY) --out $$@ &> $$(LOG)")
+	$$(call LSCRIPT_MEM,8G,20G,"$$(MUSEQ_CLASSIFY) tumour:$$< normal:$$(word 2,$$^) reference:$$(REF_FASTA) model:$$(MUSEQ_MODEL) --config $$(MUSEQ_CONFIG) --interval $3 --purity $$(TUMOR_PURITY) --out $$@ &> $$(LOG)")
 endef
 #$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 $(foreach chr,$(CHROMOSOMES), \
