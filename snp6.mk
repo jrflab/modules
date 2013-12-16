@@ -59,7 +59,7 @@ $(foreach i,$(SETS_SEQ), \
 
 define absolute-tumor-normal
 absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
-	$$(call LSCRIPT_MEM,8G,10G,"$$(ABSOLUTE) --tumour $1 --outPrefix $$* --resultsDir $$(@D) $$< && touch $$@")
+	$$(call LSCRIPT_MEM,8G,10G,"$$(ABSOLUTE) --tumour $1 --outPrefix segdat --resultsDir $$(@D) $$< && touch $$@")
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
