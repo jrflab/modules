@@ -77,7 +77,7 @@ apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample
 	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
 
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersfile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
+	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersFile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
 
 absolute/%.timestamp : hapseg/%/segdat.Rdata
 	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D) $< && touch $@")
