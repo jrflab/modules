@@ -51,7 +51,7 @@ absoluteTN : $(foreach pair,$(SAMPLE_PAIRS),absolute/$(pair).timestamp)
 
 define hapseg-tumor-normal
 hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
-	$$(call LSCRIPT_MEM,8G,10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersfile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) --outFile $$(@F) $1 $2")
+	$$(call LSCRIPT_MEM,8G,10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersFile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) --outFile $$(@F) $1 $2")
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
