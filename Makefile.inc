@@ -256,7 +256,7 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
 QSUB = /common/sge/bin/lx24-amd64/qsub
-QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
+override QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL)
