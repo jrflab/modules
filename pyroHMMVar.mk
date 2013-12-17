@@ -28,6 +28,6 @@ pyrohmm/tables/%.pyrohmm.txt : $(foreach chr,$(CHROMOSOMES),pyrohmm/chr_tables/%
 	$(INIT) cat $^ > $@
 
 vcf/%.pyrohmm.vcf : pyrohmm/tables/%.pyrohmm.txt
-	$(INIT) $(PYROHMM2VCF) -f $(REF_FASTA) -n $* < $< | $(VCF_SORT $(REF_DICT) - > $@ 2> $(LOG)
+	$(INIT) $(PYROHMM2VCF) -f $(REF_FASTA) -n $* < $< | $(VCF_SORT) $(REF_DICT) - > $@ 2> $(LOG)
 
 include ~/share/modules/vcftools.mk
