@@ -3,7 +3,7 @@
 
 include ~/share/modules/Makefile.inc
 
-LOGDIR = log/apt.$(NOW)
+LOGDIR = log/snp6.$(NOW)
 
 SNP6_LIB_DIR = $(HOME)/share/reference/SNP6_library_files
 SNP6_CDF = $(SNP6_LIB_DIR)/GenomeWideSNP_6.Full.cdf
