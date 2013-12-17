@@ -1,6 +1,7 @@
 # run pyrohmmvar: realignment-based variant calling method for 454 and ion torrent
 
 include ~/share/modules/Makefile.inc
+include ~/share/modules/gatk.inc
 
 LOGDIR = log/pyrohmm.$(NOW)
 
