@@ -6,14 +6,27 @@ LOGDIR = log/pyrohmm.$(NOW)
 
 PYROHMMVAR = $(HOME)/share/usr/bin/pyrohmmvar
 PYROHMMVAR_MODEL = $(HOME)/share/reference/pyrohmm_parameter_config
+PYROHMM2VCF = $(PERL) $(HOME)/share/scripts/pyroHMMVcf.pl
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY: all
 
-all : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).pyrohmm.txt)
+FILTER_SUFFIX := ann
 
-pyrohmm/tables/%.pyrohmm.txt : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_MEM,6G,10G,"$(PYROHMMVAR) -b $< -f $(REF_FASTA) -m $(PYROHMMVAR_MODEL) > $@")
+tables : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).pyrohmm.txt)
+vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).pyrohmm.ann.vcf)
 
+define pyrohmm-chr
+pyrohmm/chr_tables/%.$1.pyrohmm.txt : bam/%.bam bam/%.bam.bai
+	$$(call LSCRIPT_MEM,6G,10G,"$$(PYROHMMVAR) -r $1 -b $$< -f $$(REF_FASTA) -m $$(PYROHMMVAR_MODEL) > $$@")
+endef
+$(foreach chr,$(CHROMOSOMES), $(eval $(call pyrohmm-chr,$(chr))))
 
+pyrohmm/tables/%.pyrohmm.txt : $(foreach chr,$(CHROMOSOMES),pyrohmm/chr_tables/%.$(chr).pyrohmm.txt)
+	$(INIT) cat $^ > $@
+
+vcf/%.pyrohmm.vcf : pyrohmm/tables/%.pyrohmm.txt
+	$(INIT) $(PYROHMM2VCF) -f $(REF_FASTA) -n $* < $< > $@ 2> $(LOG)
+
+include ~/share/modules/vcftools.mk
