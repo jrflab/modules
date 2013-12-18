@@ -25,7 +25,7 @@ PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
 
 .SECONDARY: 
 
-.PHONY: all hs_metrics amplicon_metrics report
+.PHONY: all hs_metrics amplicon_metrics report non_ref_metrics
 
 all : hs_metrics report non_ref_metrics
 
@@ -69,9 +69,10 @@ metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
 NON_REF_FREQ = $(PERL) $(HOME)/share/scripts/nonRefFreqFromPileup.pl
+NON_REF_FREQ_BIN_SIZE = 0.01
 
 metrics/%.interval_nonref_freq.txt : %.bam
-	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) > $@")
+	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 
 include ~/share/modules/processBamMD5.mk
