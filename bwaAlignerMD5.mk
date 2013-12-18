@@ -66,7 +66,7 @@ $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_loo
 
 define merged-bam
 bwa/bam/$1.bwa.sorted.bam.md5 : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
-	if [ `echo $$(filter %.bam,$$(^M) | wc -w` -gt 1 ]; then \
+	if [ `echo $$(filter %.bam,$$(^M)) | wc -w` -gt 1 ]; then \
 		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
 	else \
 		ln -f $$(word 2,$$(^M)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
