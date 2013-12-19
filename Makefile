@@ -14,7 +14,7 @@ MAKELOG = log/$(@).$(NOW).log
 QMAKE_BINARY = /common/sge/bin/lx-amd64/qmake
 QMAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
 MAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
-QMAKEFLAGS = -cwd -v -inherit -q jrf.q
+QMAKEFLAGS = -cwd -v -inherit -q jrf.q 
 FLAGS = -j 75
 
 #SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
