@@ -2,6 +2,7 @@
 # vim: set ft=make :
 
 include ~/share/modules/Makefile.inc
+include ~/share/modules/gatk.inc
 
 LOGDIR = log/scalpel.$(NOW)
 
