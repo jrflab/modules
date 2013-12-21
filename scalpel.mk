@@ -14,7 +14,7 @@ ifdef TARGETS_FILE
 SCALPEL_OPTS += --bed $(TARGETS_FILE)
 endif
 
-SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scapelToVcf.pl
+SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
 FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
 
