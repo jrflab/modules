@@ -16,7 +16,7 @@ endif
 
 SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm
+FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm
 
 .SECONDARY:
 .DELETE_ON_ERROR:
