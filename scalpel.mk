@@ -18,13 +18,19 @@ endif
 SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
 FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm
+EFF_TYPES = silent missense nonsilent_cds nonsilent
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.novel)
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all
+.PHONY: all vcfs tables
+
+all : vcfs tables
+
+vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(FILTER_SUFFIX).vcf)
+tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt))
 
 
-all : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(FILTER_SUFFIX).vcf)
 
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.bam bam/$2.bam
