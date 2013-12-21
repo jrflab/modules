@@ -35,7 +35,7 @@ $(foreach i,$(SETS_SEQ),\
 
 define scalpel2vcf-tumor-normal
 vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
-	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@
+	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
