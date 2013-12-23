@@ -3,8 +3,6 @@
 
 include ~/share/modules/Makefile.inc
 
-READ_LENGTH ?= 75
-
 LOGDIR = log/control_freec.$(NOW)
 FREEC = $(HOME)/share/usr/bin/freec
 FREEC_THREADS = 4
@@ -14,7 +12,7 @@ FREEC_HMEM = 6G
 
 MAKE_GRAPH = $(HOME)/share/scripts/makeGraph.R
 
-FREEC_WINDOW_SIZE = 50000
+FREEC_WINDOW_SIZE = 10000
 
 VPATH ?= bam
 
@@ -67,3 +65,9 @@ freec/%.bam_ratio.txt : freec/%.config.txt
 
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
+
+freec/cnvs.png : $(foreach sample,$(SAMPLES),freec/$(sample).bam_ratio.txt)
+	$(INIT) $(PLOT_FREEC_COPY_NUM) --outFile $@ --centromereTable $(CENTROMERE_TABLE) $^
+
+freec/recurrent_cnv.txt : $(foreach sample,$(SAMPLES),freec/$(sample).bam_ratio.txt)
+	$(INIT) $(CBIND_CNV) --ensemblTxdb $(ENSEMBL_TXDB) --outDir $(@D) $(^:ratio.txt=CNVs)
