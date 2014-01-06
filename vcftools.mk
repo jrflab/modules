@@ -43,7 +43,7 @@ endif
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ 2> $(LOG)")
+	$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ 2> $(LOG))")
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
