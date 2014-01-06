@@ -114,7 +114,6 @@ define ad-tumor-normal
 vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
 endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call ad-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call ad-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
@@ -123,7 +122,6 @@ define annotate-tumor-normal
 vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
 endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call annotate-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call annotate-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
@@ -132,7 +130,6 @@ define hrun-tumor-normal
 vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -L $$< -o $$@")
 endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call hrun-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call hrun-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
@@ -157,7 +154,6 @@ tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf) $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf.idx)
 	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@ &> $(LOG)")
 ifdef SAMPLE_PAIRS
-#reports/%.grp : $(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).%.vcf vcf/$(tumor)_$(normal_lookup.$(tumor)).%.vcf.idx )
 reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf vcf/$(pair).%.vcf.idx)
 	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@ &> $(LOG)")
 endif
@@ -202,6 +198,3 @@ TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
 %.transfic.vcf : %.vcf
 	$(call LSCRIPT_MEM,3G,4G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $<")
 
-#%.txt : %.vcf
-#	$(call INIT_MEM,2G,3G) $(VCF_TO_TABLE) $< > $@
-#
