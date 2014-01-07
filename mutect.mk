@@ -44,7 +44,7 @@ mutect_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
 	$(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-mut_report : mutect/report/index.html
+mut_report : mutect/report/report.timestamp
 
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
