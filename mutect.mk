@@ -21,7 +21,7 @@ MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_OPTS = --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION)
 MUTECT = $(JAVA) -Xmx7G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
-MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/mutFreqReport.R
+MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/plotSeqLogoFromMutect.R
 
 VPATH ?= bam
 
@@ -64,8 +64,8 @@ mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
-mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^")
+mutect/report/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^ && touch $@")
 
 
 # merge variants 
