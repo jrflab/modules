@@ -9,7 +9,7 @@ SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsnip
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
 
-LOGDIR = som_sniper.$(NOW)
+LOGDIR = log/som_sniper.$(NOW)
 
 VPATH ?= bam
 
@@ -17,7 +17,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm.eff
+FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
