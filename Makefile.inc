@@ -91,7 +91,7 @@ export LD_LIBRARY_PATH
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-functgenomics/modules/
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-compara/modules/
 
-PERL5LIB := /opt/common/Perl/perl5
+PERL5LIB := /opt/common/Perl/lib/perl5/
 
 export PERL5LIB
 
@@ -259,9 +259,9 @@ QSUB = /common/sge/bin/lx24-amd64/qsub
 override QSUB_ARGS = -N X$(@F) -V -cwd -q $(QUEUE) -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
-LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL)
-LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(SHELL)
-LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(SHELL)
+LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(SHELL) > $(LOG).o 2> $(LOG).e
 else
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(QSUB) $(QSUB_ARGS) -- -
 LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -- -

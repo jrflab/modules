@@ -16,9 +16,9 @@ VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all
+.PHONY: all somsniper_vcfs somsniper_tables
 
-FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm.eff
+FILTER_SUFFIX := ss_dp_ft.dbsnp.nsfp.chasm.fathmm.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
@@ -26,6 +26,7 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),som_sniper.$(FILTER_SUFFIX).tab.$(ef
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
+all : somsniper_vcfs somsniper_tables
 somsniper_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 somsniper_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
 	$(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
