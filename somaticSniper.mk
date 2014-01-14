@@ -9,6 +9,8 @@ SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsnip
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
 
+LOGDIR = som_sniper.$(NOW)
+
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
