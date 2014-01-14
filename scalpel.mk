@@ -9,7 +9,7 @@ LOGDIR = log/scalpel.$(NOW)
 SCALPEL = $(HOME)/share/usr/scalpel-0.1.1/scalpel
 SCALPEL_OPTS = --ref $(REF_FASTA)
 ifeq ($(EXOME),true)
-SCALPEL_OPTS += --bed $(EXOME_BED)
+SCALPEL_OPTS += --bed $(EXOME_BED_NOHEADER)
 endif
 ifdef TARGETS_FILE
 SCALPEL_OPTS += --bed $(TARGETS_FILE)
