@@ -43,11 +43,16 @@ endif
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ 2> $(LOG))")
+	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@")
+#$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ 2> $(LOG))")
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AD -r PASS -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+
+# apply dp filter for somatic sniper
+%.ss_dp_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[*].DP) & (GEN[*].DP >= $(DEPTH_FILTER))' > $@")
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
 %.freq_ft.vcf : %.vcf
