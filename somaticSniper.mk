@@ -11,7 +11,7 @@ SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
 
 VCF_SAMPLES = 0 1
-VCF_GEN_IDS = GT DP DP4 VAQ BQ MQ AMQ
+VCF_GEN_IDS = GT DP DP4 VAQ BQ MQ AMQ SSC
 
 LOGDIR = log/som_sniper.$(NOW)
 
