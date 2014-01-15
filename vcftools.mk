@@ -52,7 +52,7 @@ endif
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[*].DP) & (GEN[ALL].DP >= $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[ALL].DP) & (GEN[ALL].DP >= $(DEPTH_FILTER))' > $@")
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
 %.freq_ft.vcf : %.vcf
