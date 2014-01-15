@@ -10,6 +10,9 @@ SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsnip
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
 
+VCF_SAMPLES = 0 1
+VCF_GEN_IDS = GT DP DP4 VAQ BQ MQ AMQ
+
 LOGDIR = log/som_sniper.$(NOW)
 
 VPATH ?= bam
@@ -18,7 +21,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm.eff.ss_dp_ft
+FILTER_SUFFIX := ss_dp_ft.dbsnp.nsfp.chasm.fathmm.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
