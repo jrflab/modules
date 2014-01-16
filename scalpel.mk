@@ -34,7 +34,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,8G,10G,"$$(SCALPEL) --somatic --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$$(SCALPEL) --somatic --numprocs 8 ---tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
