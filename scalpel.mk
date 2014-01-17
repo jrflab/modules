@@ -9,8 +9,7 @@ LOGDIR = log/scalpel.$(NOW)
 SCALPEL = $(HOME)/share/usr/scalpel-0.1.1/scalpel
 SCALPEL_OPTS = --ref $(REF_FASTA)
 ifeq ($(EXOME),true)
-BED_FILES = $(call ls $(HOME)/share/reference/splitExonBed/)
-$(info $(BED_FILES))
+BED_FILES = $(shell ls $(HOME)/share/reference/splitExonBed/)
 endif
 ifdef TARGETS_FILE
 SCALPEL_OPTS += --bed $(TARGETS_FILE)
