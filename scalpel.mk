@@ -33,7 +33,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
 scalpel/$2_$3/$1/somatic.5x.indel.txt : bam/$2.bam bam/$3.bam
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,5G,"$$(SCALPEL) --somatic --numprocs 2 ---tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --bed $1 --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,5G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --bed $1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
 	$(foreach i,$(SETS_SEQ),\
@@ -58,7 +58,7 @@ $(foreach i,$(SETS_SEQ),\
 else
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2G,"$$(SCALPEL) --somatic --numprocs 8 ---tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
