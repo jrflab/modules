@@ -43,6 +43,7 @@ $(foreach bed,$(BED_FILES),\
 define merge-scalpel-tumor-normal
 scalpel/tables/$1_$2.scalpel.txt : $(foreach bed,$(BED_FILES),scalpel/$1_$2/$(bed)/somatic.5x.indel.txt)
 	$$(INIT) head -1 $$< > $$@ && cat $$^ >> $$@
+endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call merge-scalpel-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
