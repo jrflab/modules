@@ -119,6 +119,15 @@ ifdef SAMPLE_PAIRS
 tables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
 	$(INIT) $(RSCRIPT) $(RBIND) --tumorNormal $^ > $@
 
+define som-ad-ft-tumor-normal
+vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
+	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ 'if (DP > 20) { vc.getGenotype(\"$2\").AD[1] > vc.getGenotype(\"$1\").AD[1] / 5 } else { vc.getGenotype(\"$2\").AD[1] > 1 }")
+endef
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call som-ad-ft-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+
+
 define ad-tumor-normal
 vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
