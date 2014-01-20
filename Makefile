@@ -242,6 +242,10 @@ TARGETS += snp6
 snp6 :
 	$(MAKE) -e -f ~/share/modules/snp6.mk $(FLAGS) $(TARGET)
 
+TARGETS += snpcaller
+snpcaller :
+	$(MAKE) -e -f ~/share/modules/snpCaller.mk $(FLAGS) $(TARGET)
+
 TARGETS += cleanlinks
 cleanlinks :
 	symlinks -dr .
