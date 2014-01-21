@@ -59,7 +59,7 @@ $(foreach i,$(SETS_SEQ),\
 else
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
