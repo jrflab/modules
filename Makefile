@@ -246,6 +246,11 @@ TARGETS += snpcaller
 snpcaller :
 	$(MAKE) -e -f ~/share/modules/snpCaller.mk $(FLAGS) $(TARGET)
 
+TARGETS += soapfuse
+soapfuse :
+	$(MAKE) -e -f ~/share/modules/soapFuse.mk $(FLAGS) $(TARGET)
+
+
 TARGETS += cleanlinks
 cleanlinks :
 	symlinks -dr .
