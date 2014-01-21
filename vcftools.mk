@@ -48,7 +48,8 @@ endif
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -r PASS -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --genotypeFilterExpression 'AD.1 > $(DEPTH_FILTER)' --genotypeFilterName alleleDepth")
+#$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -r PASS -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
