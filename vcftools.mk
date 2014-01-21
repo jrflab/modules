@@ -48,8 +48,8 @@ endif
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.hasAttribute(\"AD\") && vc.getAD().1 > $(DEPTH_FILTER)' --filterName alleleDepth")
-#$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -r PASS -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -r PASS -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@")
+#$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.hasAttribute(\"AD\") && vc.getAD().1 > $(DEPTH_FILTER)' --filterName alleleDepth")
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
@@ -122,7 +122,7 @@ tables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
 
 define som-ad-ft-tumor-normal
 vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
-	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth")
+	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth --genotypeFilterExpression 'DP > 5' --genotypeFilterName depthFilter")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
