@@ -29,7 +29,7 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.nov
 all : vcfs tables
 
 vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(FILTER_SUFFIX).vcf)
-tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt)) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.scalpel.$(suff).txt)
+tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt)) $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.scalpel.$(suff).txt)
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal

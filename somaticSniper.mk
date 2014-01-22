@@ -32,7 +32,7 @@ VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair)
 all : somsniper_vcfs somsniper_tables
 somsniper_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 somsniper_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
-	$(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
+	$(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
 define somsniper-tumor-normal
 som_sniper/vcf/$1_$2.som_sniper.vcf : bam/$1.bam bam/$2.bam

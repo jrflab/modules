@@ -40,7 +40,7 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(F
 
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff)))
 museq_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
-museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff))
+museq_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff))) $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff))
 
 define museq-tumor-normal-chr
 museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai

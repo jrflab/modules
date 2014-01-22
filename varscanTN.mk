@@ -43,7 +43,7 @@ TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(fo
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
-TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
+TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
 all : vcfs tables cnv
 variants : vcfs tables

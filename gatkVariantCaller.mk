@@ -61,7 +61,7 @@ TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(fo
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-TABLES += $(foreach suff,$(TABLE_SUFFIXES),tables/all.$(suff).txt)
+TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
 ifdef SAMPLE_SETS
 SS_FILTER_SUFFIX := dp_ft.som_ft.dbsnp
@@ -71,7 +71,7 @@ SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(t
 SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
 VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
 TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
-TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),tables/allSS.$(suff).txt)
+TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),alltables/allSS.$(suff).txt)
 endif
 
 .PHONY : all vcfs tables reports

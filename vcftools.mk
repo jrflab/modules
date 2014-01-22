@@ -96,7 +96,7 @@ tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
 	awk -v id=$$id -v gmaf=$$gmaf 'NR == 1 || length($$id) == 1 || $$gmaf < 0.01 { print }' $< > $@ || true
 
 # merge tables
-tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
+alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 	$(INIT) $(RBIND) --sampleName $< $^ > $@
 
 ifdef SAMPLE_SETS
@@ -106,7 +106,7 @@ vcf/$$(subst $$( ),_,$1).%.som_ft.vcf : vcf/$$(subst $$( ),_,$1).%.vcf
 endef
 $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call somatic-filter-vcf-set,$(set.$i))))
 
-tables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
+alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
 	$(INIT) $(RSCRIPT) $(RBIND) --normalLast $^ > $@
 endif
 
@@ -117,7 +117,7 @@ ifdef SAMPLE_PAIRS
 #endef
 #$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call somatic-filter-vcf,$(tumor),$(normal_lookup.$(tumor)))))
 
-tables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
+alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
 	$(INIT) $(RSCRIPT) $(RBIND) --tumorNormal $^ > $@
 
 define som-ad-ft-tumor-normal
@@ -166,7 +166,7 @@ vcf/$1.%.hrun.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call hrun-sample-chr,$(sample))))
 
-tables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
+alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
 
 # VariantEval: generate vcf report

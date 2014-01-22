@@ -42,7 +42,7 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),mutect.$(
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
 mutect_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
-	$(foreach suff,$(TABLE_SUFFIXES),tables/allTN.$(suff).txt)
+	$(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 mut_report : mutect/report/report.timestamp mutect/lowAFreport/report.timestamp mutect/highAFreport/report.timestamp
 
