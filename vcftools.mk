@@ -197,8 +197,9 @@ NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIF
 %.chasm.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $<")
 
-%.fathmm.vcf : %.vcf %.fathmmInput.Rdata
-	$(call LSCRIPT_MEM,12G,22G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $^")
+%.fathmm.vcf : %.vcf
+	$(INIT) PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< &> $(LOG)
+#$(call LSCRIPT_MEM_NET,12G,22G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $<")
 
 PRED_CODING = $(RSCRIPT) $(HOME)/share/scripts/vcfPredictCoding.R
 %.predCoding.Rdata : %.vcf
