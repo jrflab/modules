@@ -19,7 +19,7 @@ SOAPFUSE_SAMPLES_FILE = samples.soapfuse.txt
 all : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
 soapfuse/%.timestamp : soapfuse/sample_lists/%.txt
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_soapfuse,4,2G,2.5G,"$(SOAPFUSE) -c $(SOAPFUSE_CONFIG) -fd $(@D) -l $< -o $(@D)/$*")
+	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_soapfuse,4,2G,2.5G,"$(SOAPFUSE) -c $(SOAPFUSE_CONFIG) -fd $(@D) -l $< -o $(@D)/$* && touch $@")
 
 soapfuse/sample_lists/%.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) SAMPLEDIR=soapfuse/$*/$*; \
