@@ -115,7 +115,7 @@ BWA = $(HOME)/share/usr/bin/bwa
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
 SAMTOOLS = $(HOME)/share/usr/bin/samtools
 BCFTOOLS = /opt/bin/bcftools
-IGVTOOLS = $(HOME)/share/usr/bin/IGVTools/igvtools
+IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 SNP_EFF = $(JAVA) -Xmx4G -jar $(JARDIR)/snpEff.jar
@@ -257,7 +257,7 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 # launch read script from stdin
 override QSUB_ARGS = -V -cwd -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
 QSUB_BIN = /common/sge/bin/lx24-amd64/qsub
-QSUB_QUEUE = $(QSUB_BIN) -q $1 $(QSUB_ARGS)
+QSUB_QUEUE = $(QSUB_BIN) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
