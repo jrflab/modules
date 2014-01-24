@@ -14,7 +14,7 @@ CHASM_DIR = $(HOME)/share/usr/CHASM
 CHASM_PYTHON = $(HOME)/share/usr/bin/python
 CHASM_CLASSIFIER = Breast
 
-FATHMM = $(RSCRIPT) $(HOME)/share/scripts/fathmmVcf.R 
+FATHMM = $(MY_RSCRIPT) $(HOME)/share/scripts/fathmmVcf.R 
 FATHMM_DIR = $(HOME)/share/usr/fathmm
 FATHMM_PYTHON = $(HOME)/share/usr/bin/python
 FATHMM_PYTHONPATH = $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7
