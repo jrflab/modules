@@ -101,6 +101,7 @@ PERL = /usr/bin/perl
 #RSCRIPT = /usr/bin/Rscript
 R = /opt/common/R/R-3.0.0/bin/R
 RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
+MY_RSCRIPT = $(HOME)/usr/bin/Rscript
 #RSCRIPT = $(HOME)/usr/bin/Rscript
 
 JARDIR := $(HOME)/share/usr/lib/java
