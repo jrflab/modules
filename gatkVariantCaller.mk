@@ -50,7 +50,7 @@ ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = gatk_snps gatk_indels
 
-FILTER_SUFFIX := dp_ft.dbsnp
+FILTER_SUFFIX := dp_ft.pass.dbsnp
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
