@@ -18,7 +18,7 @@ endif
 
 SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
-FILTER_SUFFIX := dbsnp.nsfp.chasm.fathmm.eff
+FILTER_SUFFIX := dbsnp.nsfp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.novel)
 
