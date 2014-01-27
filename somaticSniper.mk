@@ -21,11 +21,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-<<<<<<< HEAD
-FILTER_SUFFIX := ss_dp_ft.ss_ft.dbsnp.nsfp.chasm.fathmm.eff
-=======
-FILTER_SUFFIX := ss_dp_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
->>>>>>> c4fe21a5877af22a70ec6265935e5fa08892b77d
+FILTER_SUFFIX := ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
