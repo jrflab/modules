@@ -258,7 +258,8 @@ LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$
 LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
-override QSUB_ARGS = -V -cwd -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL)
+QSUB_PRIORITY ?= 0
+override QSUB_ARGS = -V -cwd -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL) -p $(QSUB_PRIORITY)
 QSUB_BIN = /common/sge/bin/lx24-amd64/qsub
 QSUB_QUEUE = $(QSUB_BIN) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
