@@ -99,9 +99,11 @@ export PERL5LIB
 PYTHON = /opt/common/python/python-2.7.3/bin/python
 PERL = /usr/bin/perl
 #RSCRIPT = /usr/bin/Rscript
-R = /opt/common/R/R-3.0.0/bin/R
-RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
+#R = /opt/common/R/R-3.0.0/bin/R
+R = $(HOME)/share/usr/bin/R
+#RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
 MY_RSCRIPT = $(HOME)/share/usr/bin/Rscript
+RSCRIPT = $(MY_RSCRIPT)
 #RSCRIPT = $(HOME)/usr/bin/Rscript
 
 JARDIR := $(HOME)/share/usr/lib/java
