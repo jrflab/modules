@@ -28,7 +28,7 @@ endif
 
 all : sumreads # sumexons sumintrons
 
-sumreads : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt) sumreads/rpkm.txt
+sumreads : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt) sumreads/rpkm.txt sumreads/countsByGene.txt sumreads/countsByExon.txt
 #sumexons : $(foreach sample,$(SAMPLES),sumexons/$(sample).sumexons.txt)
 #sumintrons : $(foreach sample,$(SAMPLES),sumintrons/$(sample).sumintrons.txt)
 
@@ -38,6 +38,15 @@ sumreads/%.sumreads.txt : bam/%.bam bam/%.bam.bai
 sumreads/rpkm.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
 	cut -f 2 $< > $@; \
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 7 $$x | sed "s/exonRPKM/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
+
+sumreads/countsByGene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
+	cut -f 2 $< > $@; \
+	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 3 $$x | sed "s/countsByGene/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
+
+sumreads/countsByExon.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
+	cut -f 2 $< > $@; \
+	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 3 $$x | sed "s/countsByExon/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
+
 
 
 include ~/share/modules/processBamMD5.mk
