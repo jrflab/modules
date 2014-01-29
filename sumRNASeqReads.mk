@@ -8,6 +8,14 @@ LOGDIR = log/sumReads.$(NOW)
 SUM_READS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReads.R
 SUM_EXONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByExon.R
 SUM_INTRONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntron.R
+
+SUM_READS_OPTS ?= -r
+HAS_CHR ?= false
+ifeq ($(HAS_CHR),true)
+SUM_READS_OPTS =
+endif
+
+
 #SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntronByTranscript.R
 
 #INTRONS_NON_OVERLAPPING_WITH_EXONS_FILE = ~/share/references/introns.non.overlapping.with.exons.txt
@@ -24,7 +32,7 @@ sumreads : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt) sumreads
 #sumintrons : $(foreach sample,$(SAMPLES),sumintrons/$(sample).sumintrons.txt)
 
 sumreads/%.sumreads.txt : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_MEM,15G,30G,"$(SUM_READS_RSCRIPT) --outFile $@ -a $<")
+	$(call LSCRIPT_MEM,15G,30G,"$(SUM_READS_RSCRIPT) --outFile $@ $(SUM_READ_OPTS) $<")
 
 sumreads/rpkm.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
 	cut -f 2 $< > $@; \
