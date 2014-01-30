@@ -56,7 +56,7 @@ endif
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[ALL].DP) & (GEN[ALL].DP >= $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[ALL].DP) & (GEN[ALL].DP < $(DEPTH_FILTER))' > $@")
 
 %.ss_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a SS -i 'non-ref normal' -r PASS -f $< '(exists GEN[ALL].SS) & (GEN[0].SS = 0)' > $@")
