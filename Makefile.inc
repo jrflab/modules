@@ -222,7 +222,7 @@ LINK = ln -svf $(notdir $1) $(2) && touch $1
 NOW := $(shell date +"%F")
 
 
-MKDIR = mkdir -p -m 770
+MKDIR = mkdir -p -m 775
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
 LOG = $(LOGDIR)/$(@:.md5=).log
 
