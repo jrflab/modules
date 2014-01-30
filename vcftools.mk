@@ -56,11 +56,11 @@ endif
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getDP4().2 + vc.getGenotype(\"TUMOR\").getDP4().3 < $(DEPTH_FILTER)' --filterName varAlleleDepth")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getAnyAttribute(\"DP4\").2 + vc.getGenotype(\"TUMOR\").getAnyAttribute(\"DP4\").3 < $(DEPTH_FILTER)' --filterName varAlleleDepth")
 #$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[ALL].DP) & (GEN[ALL].DP < $(DEPTH_FILTER))' > $@")
 
 %.ss_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getSS() != 2'  --filterName nonSomatic")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getAnyAttribute(\"SS\") != 2'  --filterName nonSomatic")
 #$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a SS -i 'nonsomatic' -r PASS -f $< '(exists GEN[ALL].SS) & (GEN[1].SS != 2)' > $@")
 
 
