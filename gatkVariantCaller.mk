@@ -64,7 +64,7 @@ TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(s
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
 ifdef SAMPLE_SETS
-SS_FILTER_SUFFIX := dp_ft.som_ft.dbsnp
+SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
 SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.chasm.fathmm
 SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX)
 SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann)))
