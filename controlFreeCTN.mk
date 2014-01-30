@@ -103,7 +103,7 @@ freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
 
 freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt))
-	$(INIT) $(PLOT_FREEC_COPY_NUM) --outFile $@ --centromereTable $(CENTROMERE_TABLE) $^
+	$(INIT) $(PLOT_FREEC_COPY_NUM) --outPrefix $(@:.png=) --centromereTable $(CENTROMERE_TABLE) $^
 
 freec/recurrent_cnv.txt : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor).bam_ratio.txt)
 	$(INIT) $(CBIND_CNV) --ensemblTxdb $(ENSEMBL_TXDB) --outDir $(@D) $(^:ratio.txt=CNVs)
