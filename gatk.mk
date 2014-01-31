@@ -20,6 +20,8 @@ SPLIT_CHR ?= true
 
 ###### RECIPES #######
 
+%.intervals : %.vcf
+	$(INIT) sed '/^#/d' $< | awk '{print $$1":"$$2 }' > $@
 
 #### if SPLIT_CHR is set to true, we will split gatk processing by chromosome
 ifeq ($(SPLIT_CHR),true)
@@ -27,7 +29,7 @@ ifeq ($(SPLIT_CHR),true)
 ## call sample sets
 ifdef SAMPLE_SETS
 define hapcall-vcf-sets-chr
-gatk/chr_vcf/$$(subst $$( ),_,$1).$2.variants.vcf : $$(foreach sample,$1,gatk/chr_vcf/$$(sample).$2.variants.vcf) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
+gatk/chr_vcf/$$(subst $$( ),_,$1).$2.variants.vcf : $$(foreach sample,$1,gatk/chr_vcf/$$(sample).$2.variants.intervals) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
 	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) \
 		$$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
 endef
