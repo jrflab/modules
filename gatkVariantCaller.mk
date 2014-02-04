@@ -57,7 +57,7 @@ endif
 FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX)
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
@@ -68,7 +68,7 @@ SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
 SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.chasm.fathmm
 SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX)
 SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann)))
-SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
+SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
 VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
 TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
 TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),alltables/allSS.$(suff).txt)
