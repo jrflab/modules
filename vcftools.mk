@@ -27,7 +27,7 @@ endif
 
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,9G,14G,"$(call CHECK_VCF,$<,$@,$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@)")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@"))
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
@@ -43,7 +43,7 @@ endif
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@)")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@"))
 #$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@")
 
 # apply sample depth filter
