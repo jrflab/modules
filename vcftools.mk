@@ -27,15 +27,15 @@ endif
 
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@  2> $(LOGDIR)/$(@F).log")
+	$(call LSCRIPT_MEM,9G,14G,"$(call CHECK_VCF,$<,$@,$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@)")
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< > $@ 2> $(LOG)")
+	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< > $@")
 
 # run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,5G,8G,"$(call SNP_EFF_MEM,4G) -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@  2> $(LOGDIR)/$(@F).log")
+	$(call LSCRIPT_MEM,5G,8G,"$(call SNP_EFF_MEM,4G) -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@")
 
 # process snp eff output with gatk %=sample.indels/snps
 %.annotated.vcf : %.vcf %.gatk_eff.vcf %.gatk_eff.vcf.idx %.vcf.idx 
@@ -43,7 +43,7 @@ endif
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ 2> $(LOG))")
+	$(call LSCRIPT_MEM,9G,12G,"$(call CHECK_VCF,$<,$@,$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@)")
 #$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@")
 
 # apply sample depth filter
