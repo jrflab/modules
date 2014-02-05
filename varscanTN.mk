@@ -16,6 +16,9 @@ VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
 
+FP_FILTER = $(HOME)/share/usr/bin/fpfilter.pl
+BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
+
 MIN_MAP_QUAL ?= 1
 
 MIN_VAR_FREQ ?= 0.05
@@ -118,7 +121,7 @@ $(foreach i,$(SETS_SEQ),\
 endif
 
 define varscan-copynum-tumor-normal
-varscan/copynum/$1_$2.copynumber :  $1.bam $2.bam
+varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1 &> $$(LOG)")
 endef
 $(foreach i,$(SETS_SEQ),\
@@ -137,5 +140,15 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 
 varscan/segment/%.varscan2copynumber.txt : varscan/copycall/%.copycall
 	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=varscan/segment/$* $<")
+
+define bamrc-chr
+bamrc/%.$1.chr_bamrc : bam/%.bam
+	$$(call LSCRIPT_MEM,2G,3G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 > $$@")
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
+
+bamrc/%.bamrc : $(foreach chr,$(CHROMOSOMES),bamrc/%.$(chr).chr_bamrc)
+	$(INIT) cat $^ > $@ 2> $(LOG)
+
 
 include ~/share/modules/gatk.mk
