@@ -31,13 +31,13 @@ CHIMERASCAN = PYTHONPATH=$(CHIMSCAN_PYTHONPATH) $(CHIMSCAN_PYTHON) /home/limr/sh
 CHIMERASCAN_OPTS = -v --quals illumina
 
 chimscan/%.chimscan_timestamp : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,4,6G,12G,"$(CHECK_MD5) $(CHIMERASCAN) $(CHIMERASCAN_OPTS) -p 4 $(CHIMSCAN_INDEX) $(^M) $(@D)/$* && touch $@ && $(RM) -r $(@D)/$*/tmp")
+	$(call LSCRIPT_PARALLEL_MEM,4,6G,12G,"$(CHECK_MD5) $(CHIMERASCAN) $(CHIMERASCAN_OPTS) -p 4 $(CHIMSCAN_INDEX) $(^M) $(@D)/$* && touch $@")
 
 #chimerascan/tables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimerascan/$(sample).chimscan_timestamp)
 #$(INIT) head -1 $(basename $<)/chimeras.bedpe > $@ && for x in $(addsuffix /chimeras.bedpe,$(basename $^)); do sed '1d' $$x >> $@; done
 
 chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
-	$(INIT) ln -f $(basename $<)/chimeras.bedpe $@
+	$(INIT) cp $(basename $<)/chimeras.bedpe $@ && $(RM) chimscan/$*
 
 chimscan/tables/%.chimscan_results.nft.txt : chimscan/tables/%.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
