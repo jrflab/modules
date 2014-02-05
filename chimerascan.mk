@@ -37,7 +37,7 @@ chimscan/%.chimscan_timestamp : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 #$(INIT) head -1 $(basename $<)/chimeras.bedpe > $@ && for x in $(addsuffix /chimeras.bedpe,$(basename $^)); do sed '1d' $$x >> $@; done
 
 chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
-	$(INIT) cp $(basename $<)/chimeras.bedpe $@ && $(RM) chimscan/$*
+	$(INIT) cp $(basename $<)/chimeras.bedpe $@ && rm chimscan/$*
 
 chimscan/tables/%.chimscan_results.nft.txt : chimscan/tables/%.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
