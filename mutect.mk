@@ -15,7 +15,7 @@ $(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
-MUTECT_JAR := /home/ngk1/software/muTect-1.1.4.jar
+MUTECT_JAR := $(HOME)/share/usr/lib/java/muTect-1.1.4.jar
 MUTECT_MAX_ALT_IN_NORMAL ?= 500
 MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_OPTS = --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION)
