@@ -224,7 +224,7 @@ freec_lohTN :
 
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f ~/share/modules/defuse.mk -j15 -k $(TARGET)
+	$(MAKE) -e -f ~/share/modules/defuse.mk -j5 -k $(TARGET)
 
 TARGETS += chimscan
 chimscan :
