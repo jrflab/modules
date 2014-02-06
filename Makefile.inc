@@ -46,6 +46,8 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 #$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval tumor_lookup.$(lastword $(set.$i)) += $(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i))))
 #$(foreach tumor,$(TUMOR_SAMPLES),$(foreach normal,$(normal_lookup.$(tumor)),$(eval SAMPLE_PAIRS += $(tumor)_$(normal))))
 #endif
+
+UNMATCHED_SAMPLES = $(shell cat $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
 endif
 
 
@@ -258,7 +260,7 @@ LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$
 LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
-QSUB_PRIORITY ?= 0
+QSUB_PRIORITY ?= -100
 override QSUB_ARGS = -V -cwd -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL) -p $(QSUB_PRIORITY)
 QSUB_BIN = /common/sge/bin/lx24-amd64/qsub
 QSUB_QUEUE = $(QSUB_BIN) -q $1
