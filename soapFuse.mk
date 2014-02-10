@@ -14,7 +14,7 @@ PREPARE_SOAPFUSE = $(HOME)/share/scripts/prepareSoapFuse.pl
 .DELETE_ON_ERROR:
 .PHONY: all sample_tables soapfuse
 
-all : soapfuse/tables/all.sfuse.txt soapfuse/tables/all.sfuse.isoforms.txt
+all : soapfuse/alltables/all.sfuse.txt soapfuse/alltables/all.sfuse.isoforms.txt
 sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse.isoforms.txt)
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
@@ -35,5 +35,5 @@ soapfuse/tables/%.sfuse.txt : soapfuse/%.timestamp
 soapfuse/tables/%.sfuse.isoforms.txt : soapfuse/%.timestamp
 	$(INIT) ln -t $(@D) soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans
 
-soapfuse/tables/all.sfuse.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.%.txt)
+soapfuse/alltables/all.sfuse.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.%.txt)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.sfuse.$*.txt})\t/" $$i >> $@; done
