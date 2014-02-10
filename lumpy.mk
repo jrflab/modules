@@ -21,6 +21,8 @@ BWASW_OPTS = -H
 .DELETE_ON_ERROR:
 .PHONY: all
 
+all : $(foreach sample,$(SAMPLES),lumpy/bed/$(sample).sr.bedpe lumpy/bed/$(sample).pe.bedpe)
+
 lumpy/fastq/%.um.fastq.gz : bam/%.bam
 	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(LUMPY_UNMAPPED_TO_FASTA) $(LUMPY_UNMAPPED_TO_FASTQ_OPTS) | gzip -c > $@")
 
