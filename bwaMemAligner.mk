@@ -16,6 +16,7 @@ VPATH ?= unprocessed_bam
 
 # use fastq; otherwise use bams
 DUP_TYPE ?= markdup
+NO_FILTER ?= true
 NO_RECAL ?= false
 NO_REALN ?= false
 SPLIT_CHR ?= true
@@ -31,7 +32,11 @@ BWA_ALN_OPTS ?= -M
 .SECONDARY:
 .DELETE_ON_ERROR: 
 
-BAM_SUFFIX := bwamem.sorted.filtered
+BAM_SUFFIX := bwamem.sorted
+
+ifeq ($(NO_FILTER),false)
+BAM_SUFFIX := $(BAM_SUFFIX).filtered
+endif
 
 ifeq ($(NO_REALN),false)
 BAM_SUFFIX := $(BAM_SUFFIX).realn
