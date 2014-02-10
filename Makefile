@@ -226,6 +226,10 @@ TARGETS += defuse
 defuse :
 	$(MAKE) -e -f ~/share/modules/defuse.mk -j5 -k $(TARGET)
 
+TARGETS += lumpy
+lumpy :
+	$(MAKE) -e -f ~/share/modules/lumpy.mk -j5 -k $(TARGET)
+
 TARGETS += chimscan
 chimscan :
 	$(MAKE) -e -f ~/share/modules/chimerascan.mk $(FLAGS) $(TARGET)
