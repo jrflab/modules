@@ -14,7 +14,7 @@ PREPARE_SOAPFUSE = $(HOME)/share/scripts/prepareSoapFuse.pl
 .DELETE_ON_ERROR:
 .PHONY: all sample_tables soapfuse
 
-all : soapfuse/alltables/all.sfuse.txt soapfuse/alltables/all.sfuse.isoforms.txt
+all : soapfuse/alltables/all.sfuse.txt soapfuse/alltables/all.sfuse_isoforms.txt
 sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse.isoforms.txt)
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
@@ -32,8 +32,8 @@ soapfuse/sample_lists/%.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 soapfuse/tables/%.sfuse.txt : soapfuse/%.timestamp
 	$(INIT) ln -t $(@D) soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.genes
 
-soapfuse/tables/%.sfuse.isoforms.txt : soapfuse/%.timestamp
+soapfuse/tables/%.sfuse_isoforms.txt : soapfuse/%.timestamp
 	$(INIT) ln -t $(@D) soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans
 
-soapfuse/alltables/all.sfuse.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.%.txt)
+soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.sfuse.$*.txt})\t/" $$i >> $@; done
