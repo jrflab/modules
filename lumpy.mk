@@ -24,7 +24,7 @@ BWASW_OPTS = -H
 all : $(foreach sample,$(SAMPLES),lumpy/bed/$(sample).sr.bedpe lumpy/bed/$(sample).pe.bedpe)
 
 lumpy/fastq/%.um.fastq.gz : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(LUMPY_UNMAPPED_TO_FASTA) $(LUMPY_UNMAPPED_TO_FASTQ_OPTS) | gzip -c > $@")
+	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(LUMPY_UNMAPPED_TO_FASTQ) $(LUMPY_UNMAPPED_TO_FASTQ_OPTS) | gzip -c > $@")
 
 lumpy/sr_bam/%.sr.bam : lumpy/fastq/%.um.fastq.gz
 	$(call LSCRIPT_PARALLEL_MEM,4,1G,2G,"$(BWA) bwasw $(BWASW_OPTS) -t 4 $(REF_FASTA) $< | samtools view -Sb - > $@")
