@@ -12,7 +12,7 @@ LUMPY_UNMAPPED_TO_FASTQ = $(PERL) $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.p
 LUMPY_UNMAPPED_TO_FASTQ_OPTS = -b 20
 
 LUMPY_OPTS = -tt 1e-3 -mw 4
-LUMPY_PE_PARAMS = min_non_verlap:150$(,)discordant_z:4$(,)back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
+LUMPY_PE_PARAMS = min_non_overlap:150$(,)discordant_z:4$(,)back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
 LUMPY_SR_PARAMS = back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
 
 BWASW_OPTS = -H
