@@ -34,7 +34,7 @@ lumpy/metrics/%.read_len : bam/%.bam
 
 lumpy/metrics/%.histo lumpy/metrics/%.histo.txt: bam/%.bam lumpy/metrics/%.read_len
 	READ_LEN=`cat $(word 2,$^)`; \
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | tail -n+100000 | $(LUMPY_HISTO) -rl $$READ_LEN -X 4 -N 10000 -o lumpy/metrics/$*.histo > lumpy/metrics/%.histo.txt")
+	$(call LSCRIPT,"$(SAMTOOLS) view $< | tail -n+100000 | $(LUMPY_HISTO) -rl $$READ_LEN -X 4 -N 10000 -o lumpy/metrics/$*.histo > lumpy/metrics/$*.histo.txt")
 
 lumpy/bed/%.pe.bedpe : bam/%.bam lumpy/metrics/%.read_len lumpy/metrics/%.histo lumpy/metrics/%.histo.txt
 	READ_LEN=`cat $(word 2,$^)`; \
