@@ -93,7 +93,7 @@ export LD_LIBRARY_PATH
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-functgenomics/modules/
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-compara/modules/
 
-PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5
+PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
 
 export PERL5LIB
 
