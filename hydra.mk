@@ -5,7 +5,7 @@ LOGDIR = log/hydra.$(NOW)
 HYDRA = $(HOME)/share/usr/bin/hydra
 override HYDRA_OPTS ?= -mld 500 -mn 1500
 BAM_TO_FASTQ = $(HOME)/share/usr/bin/bamToFastq
-BAM_TO_BED = $(HOME)/share/usr/bin/bamToBed
+BAM_TO_BED = /opt/common/bedtools/bedtools-2.17.0/bin/bamToBed
 DEDUP_DISCORDANTS = $(HOME)/share/usr/bin/dedupDiscordants.py
 PAIR_DISCORDANTS = $(HOME)/share/usr/bin/pairDiscordants.py
 
