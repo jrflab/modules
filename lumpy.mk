@@ -7,8 +7,8 @@ include ~/share/modules/gatk.inc
 
 LUMPY_SCRIPTS_DIR = $(HOME)/share/usr/lumpy-sv/scripts
 LUMPY = $(HOME)/share/usr/lumpy-sv/bin/lumpy
-LUMPY_HISTO = $(LUMPY_SCRIPTS_DIR)/pairend_distro.pl
-LUMPY_UNMAPPED_TO_FASTQ = $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.pl
+LUMPY_HISTO = $(PERL) $(LUMPY_SCRIPTS_DIR)/pairend_distro.pl
+LUMPY_UNMAPPED_TO_FASTQ = $(PERL) $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.pl
 LUMPY_UNMAPPED_TO_FASTQ_OPTS = -b 20
 
 LUMPY_OPTS = -tt 1e-3 -mw 4
