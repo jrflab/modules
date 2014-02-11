@@ -99,7 +99,7 @@ export PERL5LIB
 
 #Interpreters
 PYTHON = /opt/common/python/python-2.7.3/bin/python
-PERL = /usr/bin/perl
+PERL = $(HOME)/share/usr/ActivePerl-5.18/bin/perl
 #RSCRIPT = /usr/bin/Rscript
 #R = /opt/common/R/R-3.0.0/bin/R
 R = $(HOME)/share/usr/bin/R
