@@ -10,7 +10,7 @@ SOAPFUSE = $(HOME)/usr/SOAPfuse-v1.26/SOAPfuse-RUN.pl
 SOAPFUSE_CONFIG = $(HOME)/share/usr/SOAPfuse-v1.26/config/config.txt
 PREPARE_SOAPFUSE = $(HOME)/share/scripts/prepareSoapFuse.pl
 
-ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
+ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 .SECONDARY:
