@@ -5,7 +5,7 @@ LOGDIR = log/lumpy.$(NOW)
 include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
-LUMPY_SCRIPTS_DIR = $(HOME)/share/usr/lump-sv/scripts
+LUMPY_SCRIPTS_DIR = $(HOME)/share/usr/lumpy-sv/scripts
 LUMPY = $(HOME)/share/usr/lumpy-sv/bin/lumpy
 LUMPY_HISTO = $(LUMPY_SCRIPTS_DIR)/pairend_distro.pl
 LUMPY_UNMAPPED_TO_FASTQ = $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.pl
