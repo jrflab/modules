@@ -12,8 +12,8 @@ LUMPY_UNMAPPED_TO_FASTQ = $(PERL) $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.p
 LUMPY_UNMAPPED_TO_FASTQ_OPTS = -b 20
 
 LUMPY_OPTS = -tt 1e-3 -mw 4
-LUMPY_PE_PARAMS = min_non_verlap:150$,discordant_z:4$,back_distance:20$,weight:1$,id:1$,min_mapping_threshold:1
-LUMPY_SR_PARAMS = back_distance:20$,weight:1$,id:1$,min_mapping_threshold:1
+LUMPY_PE_PARAMS = min_non_verlap:150$(,)discordant_z:4$(,)back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
+LUMPY_SR_PARAMS = back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
 
 BWASW_OPTS = -H
 
@@ -40,13 +40,13 @@ lumpy/bed/%.pe.bedpe : bam/%.bam lumpy/metrics/%.read_len lumpy/metrics/%.histo 
 	READ_LEN=`cat $(word 2,$^)`; \
 	MEAN=`cut -f1 $(word 4,$^)`; \
 	STDEV=`cut -f2 $(word 4,$^)`; \
-	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -pe bam_file:$<$,histo_file:$(word 3,$^)$,$$MEAN,$$STDEV$,read_length:$$READ_LEN$,$(LUMPY_PE_PARAMS) > $@")
+	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -pe bam_file:$<$(,)histo_file:$(word 3,$^)$(,)$$MEAN,$$STDEV$(,)read_length:$$READ_LEN$(,)$(LUMPY_PE_PARAMS) > $@")
 
 lumpy/bed/%.sr.bedpe : lumpy/sr_bam/%.sr.bam lumpy/metrics/%.read_len lumpy/metrics/%.histo lumpy/metrics/%.histo.txt
 	READ_LEN=`cat $(word 2,$^)`; \
 	MEAN=`cut -f1 $(word 4,$^)`; \
 	STDEV=`cut -f2 $(word 4,$^)`; \
-	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -sr bam_file:$<$,$(LUMPY_SR_PARAMS) > $@")
+	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -sr bam_file:$<$(,)$(LUMPY_SR_PARAMS) > $@")
 
 ifdef SAMPLE_PAIRS
 define lumpy-tumor-normal
@@ -58,8 +58,8 @@ lumpy/bed/$1_$2.pe.bedpe : bam/$1.bam bam/$2.bam lumpy/metrics/$1.read_len lumpy
 	STDEV1=`cut -f2 $$(word 6,$$^)`; \
 	STDEV2=`cut -f2 $$(word 7,$$^)`; \
 	$$(call LSCRIPT_MEM,4G,8G,"$$(LUMPY) $$(LUMPY_OPTS) \
-	    -pe bam_file:$$<,histo_file:$$(word 5,$$^)$$,$$$$MEAN1$$,$$$$STDEV1$$,read_length:$$$$READ_LEN1$$,$(LUMPY_PE_PARAMS) \
-	    -pe bam_file:$$(word 2,$$^)$$,histo_file:$$(word 6,$$^)$$,$$$$MEAN2,$$$$STDEV2$$,read_length:$$$$READ_LEN2$$,$(LUMPY_PE_PARAMS) > $@")
+	    -pe bam_file:$$<,histo_file:$$(word 5,$$^)$$(,)$$$$MEAN1$$(,)$$$$STDEV1$$(,)read_length:$$$$READ_LEN1$$(,)$(LUMPY_PE_PARAMS) \
+	    -pe bam_file:$$(word 2,$$^)$$(,)histo_file:$$(word 6,$$^)$$(,)$$$$MEAN2,$$$$STDEV2$$(,)read_length:$$$$READ_LEN2$$(,)$(LUMPY_PE_PARAMS) > $@")
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
