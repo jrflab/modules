@@ -18,7 +18,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 .PHONY: all sample_tables soapfuse
 
 all : soapfuse/alltables/all.sfuse.oncofuse.merged.txt soapfuse/alltables/all.sfuse_isoforms.txt
-sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse.isoforms.txt)
+sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse_isoforms.txt)
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
 soapfuse/%.timestamp : soapfuse/sample_lists/%.txt
