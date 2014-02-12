@@ -33,10 +33,10 @@ soapfuse/sample_lists/%.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	echo -e "$*\t$*\t$*\t$$READLEN" > $@
 
 soapfuse/tables/%.sfuse.txt : soapfuse/%.timestamp
-	$(INIT) ln soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.genes $@
+	$(INIT) ln -f soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.genes $@
 
 soapfuse/tables/%.sfuse_isoforms.txt : soapfuse/%.timestamp
-	$(INIT) ln soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans $@
+	$(INIT) ln -f soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans $@
 
 soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.sfuse.$*.txt})\t/" $$i >> $@; done
