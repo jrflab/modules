@@ -94,12 +94,6 @@ $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call convert-varscan-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(chr)))))
 
-vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.pass.vcf
-	$(INIT) ln $< $@
-
-vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.pass.vcf
-	$(INIT) ln $< $@
-
 else # no splitting by chr
 
 define varscan-somatic-tumor-normal
@@ -116,6 +110,13 @@ $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 endif
+
+vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.fp_pass.vcf
+	$(INIT) ln $< $@
+
+vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.fp_pass.vcf
+	$(INIT) ln $< $@
+
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
@@ -148,8 +149,8 @@ bamrc/%.bamrc : $(foreach chr,$(CHROMOSOMES),bamrc/%.$(chr).chr_bamrc)
 	$(INIT) cat $^ > $@ 2> $(LOG)
 
 define fp-filter-tumor-normal
-varscan/tables/$1_$2.%.pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.txt varscan/tables/$1_$2.$$*.pass.txt
+varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
+	$$(call LSCRIPT,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
