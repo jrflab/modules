@@ -35,7 +35,7 @@ ALLTABLE = defuse/alltables/all.defuse_results.nft.txt
 else
 ALLTABLE = defuse/alltables/all.defuse_results.txt
 endif
-all : $(ALLTABLE) tables
+all : $(ALLTABLE) tables defuse/recur_tables/recurGenes.txt
 
 tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
 
@@ -51,7 +51,7 @@ defuse/alltables/all.defuse_results.txt : $(foreach sample,$(SAMPLES),defuse/tab
 defuse/alltables/%.defuse_results.nft.txt : defuse/alltables/%.defuse_results.txt $(NORMAL_DEFUSE_RESULTS)
 	$(INIT) $(PERL) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
 
-defuse/recurtables/recurGenes.txt : $(ALLTABLE)
+defuse/recur_tables/recurGenes.txt : $(ALLTABLE)
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outDir $(@D) $< 
 
 include ~/share/modules/fastq.mk
