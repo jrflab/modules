@@ -10,6 +10,8 @@ DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 DEFUSE_FILTER = $(HOME)/share/scripts/filterDefuse.pl
 DEFUSE_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterDefuse.pl
 
+RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
+
 LOGDIR = log/defuse.$(NOW)
 
 # Runs defuse locally on the same node
@@ -29,10 +31,11 @@ endif
 
 #all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
 ifdef NORMAL_DEFUSE_RESULTS
-all : defuse/tables/all.defuse_results.nft.txt tables
+ALLTABLE = defuse/alltables/all.defuse_results.nft.txt
 else
-all : defuse/tables/all.defuse_results.txt tables
+ALLTABLE = defuse/alltables/all.defuse_results.txt
 endif
+all : $(ALLTABLE) tables
 
 tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
 
@@ -42,10 +45,13 @@ defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 defuse/tables/%.defuse_results.txt : defuse/%.defuse_timestamp
 	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && rm -r defuse/$*
 
-defuse/tables/all.defuse_results.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
+defuse/alltables/all.defuse_results.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
 	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
 
-defuse/tables/%.defuse_results.nft.txt : defuse/tables/%.defuse_results.txt $(NORMAL_DEFUSE_RESULTS)
+defuse/alltables/%.defuse_results.nft.txt : defuse/alltables/%.defuse_results.txt $(NORMAL_DEFUSE_RESULTS)
 	$(INIT) $(PERL) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
+
+defuse/recurtables/recurGenes.txt : $(ALLTABLE)
+	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outDir $(@D) $< 
 
 include ~/share/modules/fastq.mk
