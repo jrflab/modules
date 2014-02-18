@@ -74,6 +74,9 @@ varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam
 varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
+varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bamrc/$1.$3.chr_bamrc
+	$$(call LSCRIPT_MEM,5G,8G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$^ && mv varscan/chr_tables/$1_$2.$3.$$*.pass varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
+
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach i,$(SETS_SEQ), \
@@ -89,6 +92,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-varscan-tables,$(pair))))
 define convert-varscan-tumor-normal
 varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
 	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $< > $@
+
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
@@ -105,6 +109,10 @@ varscan/tables/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam
 
 varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
 varscan/tables/$1_$2.snp.txt : varscan/tables/$1_$2.varscan_timestamp
+
+varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
+	$$(call LSCRIPT_MEM,5G,8G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
+
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
@@ -147,13 +155,5 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 bamrc/%.bamrc : $(foreach chr,$(CHROMOSOMES),bamrc/%.$(chr).chr_bamrc)
 	$(call LSCRIPT,"cat $^ > $@ && $(RM) $^")
-
-define fp-filter-tumor-normal
-varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT_MEM,5G,8G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt && $(RM) $(word 2,$^)")
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call fp-filter-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 include ~/share/modules/gatk.mk
