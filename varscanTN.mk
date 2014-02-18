@@ -146,7 +146,7 @@ endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 bamrc/%.bamrc : $(foreach chr,$(CHROMOSOMES),bamrc/%.$(chr).chr_bamrc)
-	$(call LSCRIPT,"cat $^ > $@")
+	$(call LSCRIPT,"cat $^ > $@ && $(RM) $^")
 
 define fp-filter-tumor-normal
 varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
