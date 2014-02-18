@@ -13,6 +13,7 @@ CHIMSCAN_PYTHON := $(HOME)/share/usr/bin/python
 CHIMSCAN_INDEX := $(HOME)/share/reference/chimerascan_index
 CHIMSCAN_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterChimerascan.pl
 
+RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
