@@ -82,7 +82,7 @@ $(foreach chr,$(CHROMOSOMES), \
 
 define merge-varscan-tables
 varscan/tables/$1.%.txt : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_tables/$1.$$(chr).%.txt)
-	head -1 $$< > $$@ && foreach x in $$^; do sed 1d $$$$x >> $$@; done
+	$(INIT) head -1 $$< > $$@ && for x in $$^; do sed 1d $$$$x >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-varscan-tables,$(pair))))
 
