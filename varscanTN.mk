@@ -61,7 +61,7 @@ segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).varscan2copynu
 
 
 %.Somatic.txt : %.txt
-	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**)
+	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
 
 ifeq ($(SPLIT_CHR),true)
 define varscan-somatic-tumor-normal-chr
