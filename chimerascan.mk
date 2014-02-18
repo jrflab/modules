@@ -19,11 +19,14 @@ CHIMSCAN_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterChimerascan.pl
 .PHONY : all 
 
 ALL = $(foreach sample,$(SAMPLES),chimscan/$(sample).chimscan_timestamp)
-ALL += chimscan/tables/all.chimscan_results.txt
 ifdef NORMAL_CHIMSCAN_RESULTS
 ALL += $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.nft.txt)
-ALL += chimscan/tables/all.chimscan_results.nft.txt
+ALLTABLE = chimscan/tables/all.chimscan_results.nft.txt
+else 
+ALLTABLE = chimscan/tables/all.chimscan_results.txt
 endif
+
+ALL += $(ALLTABLE)
 
 all : $(ALL)
 
@@ -44,3 +47,6 @@ chimscan/tables/%.chimscan_results.nft.txt : chimscan/tables/%.chimscan_results.
 
 chimscan/tables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
 	head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan_results.txt})\t/" $$i >> $@; done
+
+chimscan/recur_tables/recurGenes.txt : $(ALLTABLE)
+	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 genes5p --geneCol2 genes3p --sampleCol Sample --outDir $(@D) $< 
