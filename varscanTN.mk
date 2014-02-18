@@ -111,7 +111,7 @@ varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
 varscan/tables/$1_$2.snp.txt : varscan/tables/$1_$2.varscan_timestamp
 
 varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT_MEM,5G,8G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
+	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
 
 endef
 $(foreach i,$(SETS_SEQ),\
