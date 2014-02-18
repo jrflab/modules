@@ -27,6 +27,7 @@ ALLTABLE = chimscan/tables/all.chimscan_results.txt
 endif
 
 ALL += $(ALLTABLE)
+ALL += chimscan/recur_tables/recurGenes.txt
 
 all : $(ALL)
 
