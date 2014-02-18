@@ -18,7 +18,7 @@ LOGDIR = log/fastqc.$(NOW)
 all : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt) fastqc/all_summary.png
 
 fastqc/%_fastqc/summary.txt : %.bam
-	$(call LSCRIPT_MEM,4G,12G,"$(FASTQC) -o fastqc $^ &> $(LOG)")
+	$(call LSCRIPT_NAMED_MEM,$*_fastqc,4G,12G,"$(FASTQC) -o fastqc $^")
 
 fastqc/all_summary.txt : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt)
 	cut -f2 $< | tr '\n' '\t' | sed 's/^/Sample\t/; s/\t$$/\n/' > $@; \
