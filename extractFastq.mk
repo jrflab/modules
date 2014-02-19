@@ -7,9 +7,6 @@ include ~/share/modules/hg19.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx4G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
 
-SAMPLE_FILE ?= samplesToExtract.txt
-SAMPLES = $(shell cat $(SAMPLE_FILE))
-
 LOGDIR ?= log/fastq.$(NOW)
 
 .DELETE_ON_ERROR:
@@ -21,13 +18,9 @@ EXTRACT_TOOL ?= PICARD
 all : $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz)
 
 ifeq (${EXTRACT_TOOL},PICARD)
-fastq/%.1.fastq fastq/%.2.fastq : gsc_bam/%.bam
-	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,10G,40G)" $(MKDIR) $(LOGDIR);\
-	$(SAM_TO_FASTQ) I=$< FASTQ=fastq/$*.1.fastq SECOND_END_FASTQ=fastq/$*.2.fastq &> ${LOGDIR}/$(@F).SamToFastq.log && $(RM) $<
+fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
+	$(call LSCRIPT_MEM,10G,20G,"$(SAM_TO_FASTQ) I=$< FASTQ=>(gzip -c > fastq/$*.1.fastq.gz) SECOND_END_FASTQ=>(gzip -c > fastq/$*.2.fastq.gz)")
 else
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : gsc_bam/%.bam
-	$(INIT_MEM,10G,40G) $(BAM2FASTQ) -o fastq/$*#.fastq $< &> $(LOGDIR)/$(@F).bam2fastq.log && mv fastq/$*_1.fastq fastq/$*.1.fastq && mv fastq/$*_2.fastq fastq/$*.2.fastq
+fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
+	$(call LSCRIPT_MEM,10G,20G,"$(BAM2FASTQ) -o fastq/$*#.fastq $< && mv fastq/$*_1.fastq fastq/$*.1.fastq && mv fastq/$*_2.fastq fastq/$*.2.fastq")
 endif
-
-fastq/%.fastq.gz : fastq/%.fastq
-	$(INIT_MEM,1G,2G) gzip $<
