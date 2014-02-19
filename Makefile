@@ -230,6 +230,10 @@ TARGETS += lumpy
 lumpy :
 	$(MAKE) -e -f ~/share/modules/lumpy.mk -j5 -k $(TARGET)
 
+TARGETS += hydra
+hydra :
+	$(MAKE) -e -f ~/share/modules/hydra.mk $(FLAGS) $(TARGET)
+
 TARGETS += chimscan
 chimscan :
 	$(MAKE) -e -f ~/share/modules/chimerascan.mk $(FLAGS) $(TARGET)
