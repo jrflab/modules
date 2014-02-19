@@ -44,7 +44,7 @@ chimscan/%.chimscan_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
 	$(INIT) cp $(basename $<)/chimeras.bedpe $@ && rm chimscan/$*
 
-chimscan/tables/%.chimscan_results.nft.txt : chimscan/tables/%.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
+%.chimscan_results.nft.txt : %.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
 
 chimscan/alltables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
