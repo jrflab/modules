@@ -20,6 +20,7 @@ NUM_CORES ?= 4
 DUP_TYPE ?= rmdup
 NO_RECAL ?= false
 NO_REALN ?= false
+NO_FILTER ?= false
 SPLIT_FASTQ ?= false
 
 ifeq ($(PHRED64),true)
@@ -30,7 +31,11 @@ ifeq ($(LOCAL),true)
   BOWTIE_OPTS += --local
 endif
 
-BAM_SUFFIX := bwt.sorted.filtered
+BAM_SUFFIX := bwt.sorted
+
+ifeq ($(NO_FILTER),false)
+BAM_SUFFIX := $(BAM_SUFFIX).filtered
+endif
 
 ifeq ($(NO_REALN),false)
 BAM_SUFFIX := $(BAM_SUFFIX).realn
