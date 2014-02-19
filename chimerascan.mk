@@ -21,7 +21,7 @@ RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
 
 ALL = $(foreach sample,$(SAMPLES),chimscan/$(sample).chimscan_timestamp)
 ifdef NORMAL_CHIMSCAN_RESULTS
-ALL += $(foreach sample,$(SAMPLES),chimscan/alltables/$(sample).chimscan_results.nft.txt)
+ALL += $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.nft.txt)
 ALLTABLE = chimscan/alltables/all.chimscan_results.nft.txt
 else 
 ALLTABLE = chimscan/alltables/all.chimscan_results.txt
