@@ -21,10 +21,10 @@ RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
 
 ALL = $(foreach sample,$(SAMPLES),chimscan/$(sample).chimscan_timestamp)
 ifdef NORMAL_CHIMSCAN_RESULTS
-ALL += $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.nft.txt)
-ALLTABLE = chimscan/tables/all.chimscan_results.nft.txt
+ALL += $(foreach sample,$(SAMPLES),chimscan/alltables/$(sample).chimscan_results.nft.txt)
+ALLTABLE = chimscan/alltables/all.chimscan_results.nft.txt
 else 
-ALLTABLE = chimscan/tables/all.chimscan_results.txt
+ALLTABLE = chimscan/alltables/all.chimscan_results.txt
 endif
 
 ALL += $(ALLTABLE)
@@ -47,7 +47,7 @@ chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
 chimscan/tables/%.chimscan_results.nft.txt : chimscan/tables/%.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
 
-chimscan/tables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
+chimscan/alltables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
 	head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan_results.txt})\t/" $$i >> $@; done
 
 chimscan/recur_tables/recurGenes.txt : $(ALLTABLE)
