@@ -91,7 +91,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-varscan-tables,$(pair))))
 
 define convert-varscan-tumor-normal
 varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
-	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $< > $@
+	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< > $$@
 
 endef
 $(foreach i,$(SETS_SEQ), \
