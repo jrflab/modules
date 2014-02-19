@@ -75,7 +75,7 @@ varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_time
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
 varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bamrc/$1.$3.chr_bamrc
-	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$^ && head -1 $$< > $$@ && cat varscan/chr_tables/$1_$2.$3.$$*.pass >> varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
+	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$^ && head -1 $$< > $$@ && cat varscan/chr_tables/$1_$2.$3.$$*.pass >> varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt")
 
 endef
 $(foreach chr,$(CHROMOSOMES), \
@@ -111,7 +111,7 @@ varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
 varscan/tables/$1_$2.snp.txt : varscan/tables/$1_$2.varscan_timestamp
 
 varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt && $$(RM) $$(word 2,$$^)")
+	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt")
 
 endef
 $(foreach i,$(SETS_SEQ),\
@@ -153,7 +153,5 @@ bamrc/%.$1.chr_bamrc : bam/%.bam
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
-bamrc/%.bamrc : $(foreach chr,$(CHROMOSOMES),bamrc/%.$(chr).chr_bamrc)
-	$(call LSCRIPT,"cat $^ > $@ && $(RM) $^")
 
 include ~/share/modules/gatk.mk
