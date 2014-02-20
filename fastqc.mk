@@ -7,7 +7,7 @@ SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 VPATH ?= bam fastq
 
-FASTQC = /opt/common/FastQC/fastqc 
+FASTQC = $(PERL) /opt/common/FastQC/fastqc 
 FASTQC_SUMMARY_PLOT = $(RSCRIPT) $(HOME)/share/scripts/fastqcSummaryPlot.R
 
 LOGDIR = log/fastqc.$(NOW)
