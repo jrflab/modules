@@ -21,7 +21,11 @@ FASTQ_TRIMMER = $(PERL) $(HOME)/share/scripts/trimFastq.pl
 .DELETE_ON_ERROR: 
 .PHONY : fastq
 
+ifdef UNSPLIT_SAMPLES
+fastq: $(foreach split,$(UNSPLIT_SAMPLES),fastq/$(split).1.fastq.gz.md5)
+else
 fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5)
+endif
 
 ifdef FASTQ_FILTER
 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_fastq/%.1.$(FASTQ_FILTER).fastq.gz.md5 unprocessed_fastq/%.2.$(FASTQ_FILTER).fastq.gz.md5
