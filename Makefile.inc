@@ -60,6 +60,7 @@ ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
 A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
 B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
 $(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += $(word $i,$(B))))
+UNSPLIT_SAMPLES = $(B)
 SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
 endif
 
