@@ -41,11 +41,11 @@ ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = varscan_snps varscan_indels
 
-FILTER_SUFFIX := dp_ft.vaf_ft.dbsnp
+FILTER_SUFFIX := dp_ft.vaf_ft.pass.dbsnp
 FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm
 FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).pass.novel)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
@@ -111,7 +111,7 @@ varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
 varscan/tables/$1_$2.snp.txt : varscan/tables/$1_$2.varscan_timestamp
 
 varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT_MEM,8G,14G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt")
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt")
 
 endef
 $(foreach i,$(SETS_SEQ),\
