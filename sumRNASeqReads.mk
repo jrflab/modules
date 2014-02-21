@@ -9,12 +9,7 @@ SUM_READS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReads.R
 SUM_EXONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByExon.R
 SUM_INTRONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntron.R
 
-HAS_CHR ?= false
-ifeq ($(HAS_CHR),true)
 SUM_READS_OPTS =
-else
-SUM_READS_OPTS = -r
-endif
 
 
 #SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntronByTranscript.R
@@ -24,29 +19,35 @@ endif
 .DELETE_ON_ERROR: 
 .SECONDARY: 
 
-.PHONY : all sumreads sumreads.intron.window sumexons sumintrons
+.PHONY : all sumreads
 
-all : sumreads # sumexons sumintrons
+SUM_TYPE = byGene byExon
 
-sumreads : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt) sumreads/rpkm.txt sumreads/countsByGene.txt sumreads/countsByExon.txt
-#sumexons : $(foreach sample,$(SAMPLES),sumexons/$(sample).sumexons.txt)
+all : $(foreach type,$(SUM_TYPE),$(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.$(type).txt)) sumreads/geneRPKM.txt sumreads/exonRPKM.txt sumreads/geneCounts.txt sumreads/exonCounts.txt
+
 #sumintrons : $(foreach sample,$(SAMPLES),sumintrons/$(sample).sumintrons.txt)
 
-sumreads/%.sumreads.txt : bam/%.bam bam/%.bam.bai
+sumreads/%.sumreads.byGene.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,15G,30G,"$(SUM_READS_RSCRIPT) --outFile $@ $(SUM_READS_OPTS) $<")
 
-sumreads/rpkm.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
+sumreads/%.sumreads.byExon.txt : bam/%.bam bam/%.bam.bai
+	$(call LSCRIPT_MEM,15G,30G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
+
+sumreads/geneRPKM.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byGene.txt)
 	cut -f 2 $< > $@; \
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 7 $$x | sed "s/exonRPKM/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
-sumreads/countsByGene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
+sumreads/exonRPKM.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byExon.txt)
+	cut -f 2 $< > $@; \
+	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 6 $$x | sed "s/exonRPKM/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
+
+sumreads/geneCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byGene.txt)
 	cut -f 2 $< > $@; \
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 3 $$x | sed "s/countsByGene/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
-sumreads/countsByExon.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.txt)
+sumreads/exonCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byExon.txt)
 	cut -f 2 $< > $@; \
-	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 3 $$x | sed "s/countsByExon/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
-
+	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/countsByExon/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 
 include ~/share/modules/processBamMD5.mk
