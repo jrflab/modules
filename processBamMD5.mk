@@ -23,9 +23,9 @@ BAM_FILTER_FLAGS ?= 768
 .DELETE_ON_ERROR:
 .SECONDARY: 
 
-NO_ALIGN ?= false
-ifeq ($(NO_ALIGN),true)
-BAM_SUFFIX := sorted.filtered
+REPROCESS ?= false
+ifeq ($(REPROCESS),true)
+BAM_SUFFIX := .sorted.filtered
 ifeq ($(NO_REALN),false)
 BAM_SUFFIX := $(BAM_SUFFIX).realn
 endif
@@ -39,14 +39,24 @@ endif
 ifeq ($(NO_RECAL),false)
 BAM_SUFFIX := $(BAM_SUFFIX).recal
 endif
+endif
 
+FIX_RG ?= false
+ifeq ($(FIX_RG),true)
+BAM_SUFFIX := $(BAM_SUFFIX).rg
+endif
+
+ifdef BAM_SUFFIX
 BAM_SUFFIX := $(BAM_SUFFIX).bam
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 processed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 
-bam/%.bam.md5 : unprocessed_bam/%.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 endif
+
+
+
 
 # indices
 # if bam file is a symlink, need to create a symlink to index
@@ -57,7 +67,7 @@ endif
 	$(call LSCRIPT_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<M) $@")
 
 %.bam.md5 : %.bam
-	$(INIT) $(MD5)
+	$(call LSCRIPT,"$(MD5)")
 
 # sam to bam
 #%.bam : %.sam
