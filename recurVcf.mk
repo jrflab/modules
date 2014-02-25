@@ -9,9 +9,16 @@ include ~/share/modules/gatk.inc
 .SECONDARY: 
 .PHONY : all
 
-VCF_SUFFIXES = gatk_snps.dp_ft.dbsnp.nsfp.chasm.fathmm.eff som_sniper.ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff mutect.som_ad_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
+SET_VCF_SUFFIXES = gatk_snps.dp_ft.dbsnp.nsfp.chasm.fathmm.eff
+PAIR_VCF_SUFFIXES = som_sniper.ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff mutect.som_ad_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
+SAMPLE_SUFFIX = $(foreach suff,$(SET_VCF_SUFFIXES),$(foreach vcf/$(get_set.$1).$(suff).vcf)) $(foreach suff,$(PAIR_VCF_SUFFIXES),vcf/$(get_pair.$1).$(suff).vcf)
 
 RECUR_VCF = $(RSCRIPT) $(HOME)/share/scripts/recurVcf.R
 
-recur_pos/%.recur.txt : $(foreach suffix,$(VCF_SUFFIXES),vcf/%.$(suffix).vcf)
-	$(INIT) $(RECUR_VCF) --outFile $@ $^
+all : $(foreach sample,$(TUMOR_SAMPLES),recur_pos/$(sample).recur.txt)
+
+define recur-pos-tumor
+recur_pos/$1.recur.txt : $$(call SAMPLE_SUFFIX,$1)
+	$$(INIT) $$(RECUR_VCF) --outFile $$@ $$^
+endef
+$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call recur-pos-tumor,$(tumor))))
