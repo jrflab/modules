@@ -17,7 +17,7 @@ RECUR_VCF = $(RSCRIPT) $(HOME)/share/scripts/recurVcf.R
 .SECONDARY: 
 .PHONY : all
 
-all : $(foreach sample,$(TUMOR_SAMPLES),recur_pos/$(sample).recur.txt)
+all : $(foreach sample,$(TUMOR_SAMPLES),recur_pos/$(sample).recur.bed)
 
 define recur-pos-tumor
 recur_pos/$1.recur.bed : $$(call SAMPLE_SET_PAIR_VCF,$1)
