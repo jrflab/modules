@@ -42,9 +42,6 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
 
-# define get_pair and get_set
-get_pair = $1_$(get_normal,
-
 #ifeq ($(NORMAL_MATCHED),true)
 #ifndef SAMPLE_PAIRS
 #TUMOR_SAMPLES ?= $(shell sed 's/\w*$$//; s/ /\n/' $(SAMPLE_SET_FILE) | sort | uniq)
