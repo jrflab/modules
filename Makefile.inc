@@ -30,17 +30,18 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   $(foreach i,$(SETS_SEQ),$(eval set.$i := $(shell sed -n $(i)p $(SAMPLE_SET_FILE))))
   $(foreach i,$(SETS_SEQ),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
   ifndef SAMPLE_SETS
-  $(foreach i,$(SETS_SEQ),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
-  $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
+    $(foreach i,$(SETS_SEQ),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
+    $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
   endif
   SAMPLE_PAIRS ?= $(foreach i,$(SETS_SEQ), \
 				  $(foreach tumor,$(call get_tumors,$(set.$i)), \
 				  $(tumor)_$(call get_normal,$(set.$i))))
   $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),$(eval get_pair.$(tumor) := $(tumor)_$(call get_normal,$(set.$i)))))
   $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
-  endif
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
+  UNMATCHED_SAMPLES = $(shell cat $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
+endif
 
 #ifeq ($(NORMAL_MATCHED),true)
 #ifndef SAMPLE_PAIRS
@@ -51,8 +52,6 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 #$(foreach tumor,$(TUMOR_SAMPLES),$(foreach normal,$(normal_lookup.$(tumor)),$(eval SAMPLE_PAIRS += $(tumor)_$(normal))))
 #endif
 
-UNMATCHED_SAMPLES = $(shell cat $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
-endif
 
 
 
@@ -61,11 +60,11 @@ endif
 
 
 ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
-A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
-B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
-$(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += $(word $i,$(B))))
-UNSPLIT_SAMPLES = $(B)
-SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
+  A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
+  B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
+  $(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += $(word $i,$(B))))
+  UNSPLIT_SAMPLES = $(B)
+  SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
 endif
 
 #$(foreach i,$(shell seq 1 $(words $(LANES))),$(eval lane_lookup.$(word $i,$(LANES)) := $(word $i,$(LANE_SAMPLES))))
