@@ -31,12 +31,19 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   $(foreach i,$(SETS_SEQ),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
   ifndef SAMPLE_SETS
   $(foreach i,$(SETS_SEQ),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
+  $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
   endif
   SAMPLE_PAIRS ?= $(foreach i,$(SETS_SEQ), \
 				  $(foreach tumor,$(call get_tumors,$(set.$i)), \
 				  $(tumor)_$(call get_normal,$(set.$i))))
+  $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),$(eval get_pair.$(tumor) := $(tumor)_$(call get_normal,$(set.$i)))))
+  $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
+  endif
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
+
+# define get_pair and get_set
+get_pair = $1_$(get_normal,
 
 #ifeq ($(NORMAL_MATCHED),true)
 #ifndef SAMPLE_PAIRS
