@@ -23,25 +23,28 @@ endif
 
 get_tumors = $(wordlist 1,$(shell expr $(words $1) - 1),$1)
 get_normal = $(lastword $1)
+get_space_sets = $(shell sed -n 's/\s\+/ /g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
+get_underscore_sets = $(shell sed -n 's/\s\+/_/g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
 
 ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   NUM_SETS := $(shell wc -l $(SAMPLE_SET_FILE) | cut -f 1 -d' ')
   SETS_SEQ := $(shell seq 1 $(NUM_SETS))
   $(foreach i,$(SETS_SEQ), \
-	  $(eval set.$i := $(shell sed -n 's/\s\+/ /g; s/\s\+$$//; $(i)p' $(SAMPLE_SET_FILE))))
+	  $(eval set.$i := $(call get_space_sets,$i)))
+  # define set_lookup.$(sample)
   $(foreach i,$(SETS_SEQ), \
-	  $(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)), \
+	  $(foreach sample,$(set.$i), \
 		  $(eval set_lookup.$(sample) := $i)))
-  # define tumor.SET and normal.SET to retrieve tumors and normals from sets
-  $(foreach i,$(SETS_SEQ), \
-	  $(eval tumor.$(subst $( ),_,$(set.$i)) := $(call get_tumors,$(set.$i))))
-  $(foreach i,$(SETS_SEQ), \
-	  $(eval normal.$(subst $( ),_,$(set.$i)) := $(call get_normal,$(set.$i))))
   # define SAMPLE_SETS to contain sample_sample_normal
   ifndef SAMPLE_SETS
     $(foreach i,$(SETS_SEQ), \
-		$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
+		$(eval SAMPLE_SETS += $(call get_underscore_sets,$i)))
   endif
+  # define tumor.SET and normal.SET to retrieve tumors and normals from sets
+  $(foreach i,$(SETS_SEQ), \
+	$(eval tumor.$(call get_underscore_sets,$i) := $(call get_tumors,$(set.$i))))
+  $(foreach i,$(SETS_SEQ), \
+	$(eval normal.$(call get_underscore_sets,$i) := $(call get_normal,$(set.$i))))
   SAMPLE_PAIRS ?= $(foreach i,$(SETS_SEQ), \
 				  $(foreach tumor,$(call get_tumors,$(set.$i)), \
 				  $(tumor)_$(call get_normal,$(set.$i))))
