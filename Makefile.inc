@@ -27,17 +27,39 @@ get_normal = $(lastword $1)
 ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   NUM_SETS := $(shell wc -l $(SAMPLE_SET_FILE) | cut -f 1 -d' ')
   SETS_SEQ := $(shell seq 1 $(NUM_SETS))
-  $(foreach i,$(SETS_SEQ),$(eval set.$i := $(shell sed -n $(i)p $(SAMPLE_SET_FILE))))
-  $(foreach i,$(SETS_SEQ),$(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)),$(eval set_lookup.$(sample) := $i)))
+  $(foreach i,$(SETS_SEQ), \
+	  $(eval set.$i := $(shell sed -n 's/\s\+/ /g; s/\s\+$$//; $(i)p' $(SAMPLE_SET_FILE))))
+  $(foreach i,$(SETS_SEQ), \
+	  $(foreach sample,$(shell sed -n $(i)p $(SAMPLE_SET_FILE)), \
+		  $(eval set_lookup.$(sample) := $i)))
+  # define tumor.SET and normal.SET to retrieve tumors and normals from sets
+  $(foreach i,$(SETS_SEQ), \
+	  $(eval tumor.$(subst $( ),_,$(set.$i)) := $(call get_tumors,$(set.$i))))
+  $(foreach i,$(SETS_SEQ), \
+	  $(eval normal.$(subst $( ),_,$(set.$i)) := $(call get_normal,$(set.$i))))
+  # define SAMPLE_SETS to contain sample_sample_normal
   ifndef SAMPLE_SETS
-    $(foreach i,$(SETS_SEQ),$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
-    $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
+    $(foreach i,$(SETS_SEQ), \
+		$(eval SAMPLE_SETS += $(shell sed -n 's/ /_/g;$(i)p' $(SAMPLE_SET_FILE))))
   endif
   SAMPLE_PAIRS ?= $(foreach i,$(SETS_SEQ), \
 				  $(foreach tumor,$(call get_tumors,$(set.$i)), \
 				  $(tumor)_$(call get_normal,$(set.$i))))
-  $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),$(eval get_pair.$(tumor) := $(tumor)_$(call get_normal,$(set.$i)))))
-  $(foreach i,$(SETS_SEQ),$(foreach sample,$(set.$i),$(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
+  # define tumor.pair and normal.pair to retrieve tumor/normal from pairs
+  $(foreach i,$(SETS_SEQ), \
+	  $(foreach tumor,$(call get_tumors,$(set.$i)), \
+		  $(eval tumor.$(tumor)_$(call get_normal,$(set.$i)) := $(tumor))))
+  $(foreach i,$(SETS_SEQ), \
+	  $(foreach tumor,$(call get_tumors,$(set.$i)), \
+		  $(eval normal.$(tumor)_$(call get_normal,$(set.$i)) := $(normal))))
+  # get_pair.$(tumor) to retrieve tumor_normal
+  $(foreach i,$(SETS_SEQ), \
+	  $(foreach tumor,$(call get_tumors,$(set.$i)), \
+		  $(eval get_pair.$(tumor) := $(tumor)_$(call get_normal,$(set.$i)))))
+  # get_set.$(sample) to retrieve sample sets (underscores)
+  $(foreach i,$(SETS_SEQ), \
+	  $(foreach sample,$(set.$i), \
+		  $(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
   UNMATCHED_SAMPLES = $(shell cat $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
