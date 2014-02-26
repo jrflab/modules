@@ -15,12 +15,15 @@ RECUR_VCF = $(RSCRIPT) $(HOME)/share/scripts/recurVcf.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY : all
+.PHONY : all pileups
 
-all : $(foreach sample,$(TUMOR_SAMPLES),recur_pos/$(sample).recur.bed)
+all : $(foreach sample,$(TUMOR_SAMPLES),recur_pos/$(sample).recur.txt)
+pileups : $(foreach sample,$(TUMOR_SAMPLES),pileup/$(sample).pileup)
 
 define recur-pos-tumor
-recur_pos/$1.recur.bed : $$(call SAMPLE_SET_PAIR_VCF,$1)
+recur_pos/$1.recur.txt : $$(call SAMPLE_SET_PAIR_VCF,$1)
 	$$(INIT) $$(RECUR_VCF) --tumor $1 --outFile $$@ $$^
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call recur-pos-tumor,$(tumor))))
+
+
