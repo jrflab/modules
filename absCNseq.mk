@@ -16,7 +16,7 @@ all : $(foreach pair,$(SAMPLE_PAIRS),absCN/$(pair).absCN.txt)
 
 define abs-gatk-tumor-normal
 absCN/$1_$2.gatk.vcf : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -O $$@ -I $$< -I $$(<<) -R $$(REF_FASTA)  --output_mode EMIT_ALL_SITES -L $$(SNV_POS_FILE)")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -o $$@ -I $$< -I $$(<<) -R $$(REF_FASTA)  --output_mode EMIT_ALL_SITES -L $$(SNV_POS_FILE)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call abs-gatk-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
