@@ -54,7 +54,7 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 		  $(eval tumor.$(tumor)_$(call get_normal,$(set.$i)) := $(tumor))))
   $(foreach i,$(SETS_SEQ), \
 	  $(foreach tumor,$(call get_tumors,$(set.$i)), \
-		  $(eval normal.$(tumor)_$(call get_normal,$(set.$i)) := $(normal))))
+		  $(eval normal.$(tumor)_$(call get_normal,$(set.$i)) := $(call get_normal,$(set.$i)))))
   # get_pair.$(tumor) to retrieve tumor_normal
   $(foreach i,$(SETS_SEQ), \
 	  $(foreach tumor,$(call get_tumors,$(set.$i)), \
@@ -336,6 +336,9 @@ CHECK_VCF = if [ `grep -v '^\#' $1 | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $1 | w
 SOMATIC_FILTER_VCF = $(PERL) $(HOME)/share/scripts/somaticFilterVCF.pl
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
+
+<< = $(word 2,$^)
+<<< = $(word 3,$^)
 
 #signature md5
 #makepp_no_builtin = 1
