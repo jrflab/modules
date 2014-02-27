@@ -37,4 +37,4 @@ oncofuse/%.merged_oncofuse_results.txt : $$*/tables/all.$$*_results.nft.txt onco
 		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(word 2,$^) > $@
 
 oncofuse/chimscan.coord.txt : $(CHIMSCAN_RESULTS)
-	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = ($$F[9] eq "+")? 3 : 2; $$coord3 = ($$F[10] eq "+")? 5 : 6; print "$$F[1]\t$$F[$$coord5]\t$$F[4]\t$$F[$$coord3]"; }' $< > $@
+	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = ($$F[9] eq "+")? 3 : 2; $$coord3 = ($$F[10] eq "+")? 5 : 6; print "$$F[1]\t$$F[$$coord5]\t$$F[4]\t$$F[$$coord3]\tEPI"; }' $< > $@
