@@ -25,8 +25,8 @@ ALL_SUFFIX = nft.oncofuse.merged
 else
 ALL_SUFFIX = oncofuse.merged
 endif
-all : soapfuse/alltables/all.sfuse.$(ALL_SUFFIX).txt soapfuse/alltables/all.sfuse_isoforms.$(ALL_SUFFIX).txt
-sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse_isoforms.txt)
+all : soapfuse/alltables/all.sfuse.$(ALL_SUFFIX).txt soapfuse/alltables/all.isoform_sfuse.$(ALL_SUFFIX).txt
+sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).isoform_sfuse.txt)
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
 soapfuse/%.timestamp : soapfuse/sample_lists/%.txt
@@ -43,16 +43,16 @@ soapfuse/sample_lists/%.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 soapfuse/tables/%.sfuse.txt : soapfuse/%.timestamp
 	$(INIT) cp -f soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.genes $@
 
-soapfuse/tables/%.sfuse_isoforms.txt : soapfuse/%.timestamp
+soapfuse/tables/%.isoform_sfuse.txt : soapfuse/%.timestamp
 	$(INIT) cp -f soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans $@
 
 soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.$*.txt})\t/" $$i >> $@; done
 
-soapfuse/alltables/all.sfuse.coord.txt : soapfuse/alltables/all.sfuse.txt
+soapfuse/alltables/all.sfuse%.coord.txt : soapfuse/alltables/all.sfuse%txt
 	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
-soapfuse/alltables/all.sfuse_isoforms.coord.txt : soapfuse/alltables/all.sfuse_isoforms.txt
+soapfuse/alltables/all.isoform_sfuse%.txt : soapfuse/alltables/all.isoform_sfuse%.txt
 	$(INIT) cut -f4,6,11,13 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
