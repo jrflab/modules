@@ -18,16 +18,16 @@ SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh 
 #endif
 
 ifneq ($(wildcard $(SAMPLE_FILE)),)
-  SAMPLES ?= $(shell sed '/^#/d' $(SAMPLE_FILE))
+  SAMPLES ?= $(shell sed '/^\#/d' $(SAMPLE_FILE))
 endif
 
 get_tumors = $(wordlist 1,$(shell expr $(words $1) - 1),$1)
 get_normal = $(lastword $1)
-get_space_sets = $(shell sed -n '/^#/d; s/\s\+/ /g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
-get_underscore_sets = $(shell sed -n '/^#/d; s/\s\+/_/g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
+get_space_sets = $(shell sed -n '/^\#/d; s/\s\+/ /g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
+get_underscore_sets = $(shell sed -n '/^\#/d; s/\s\+/_/g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
 
 ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
-  NUM_SETS := $(shell sed '/^#/d' $(SAMPLE_SET_FILE) | wc -l | cut -f 1 -d' ')
+  NUM_SETS := $(shell sed '/^\#/d' $(SAMPLE_SET_FILE) | wc -l | cut -f 1 -d' ')
   SETS_SEQ := $(shell seq 1 $(NUM_SETS))
   $(foreach i,$(SETS_SEQ), \
 	  $(eval set.$i := $(call get_space_sets,$i)))
@@ -65,7 +65,7 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 		  $(eval get_set.$(sample) := $(word $i,$(SAMPLE_SETS)))))
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
-  UNMATCHED_SAMPLES = $(shell sed '/^#/d' $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
+  UNMATCHED_SAMPLES = $(shell sed '/^\#/d' $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
 endif
 
 #ifeq ($(NORMAL_MATCHED),true)
