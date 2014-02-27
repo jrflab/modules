@@ -49,10 +49,10 @@ soapfuse/tables/%.isoform_sfuse.txt : soapfuse/%.timestamp
 soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.$*.txt})\t/" $$i >> $@; done
 
-soapfuse/alltables/all.sfuse%.coord.txt : soapfuse/alltables/all.sfuse%.txt
+soapfuse/alltables/all.sfuse%coord.txt : soapfuse/alltables/all.sfuse%txt
 	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
-soapfuse/alltables/all.isoform_sfuse%.txt : soapfuse/alltables/all.isoform_sfuse%.txt
+soapfuse/alltables/all.isoform_sfuse%txt : soapfuse/alltables/all.isoform_sfuse%txt
 	$(INIT) cut -f4,6,11,13 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
