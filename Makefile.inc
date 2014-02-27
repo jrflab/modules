@@ -18,7 +18,7 @@ SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh 
 #endif
 
 ifneq ($(wildcard $(SAMPLE_FILE)),)
-  SAMPLES ?= $(shell sed '/^#/d' $(SAMPLE_FILE))
+  SAMPLES ?= $(shell sed '/^\#/d' $(SAMPLE_FILE))
 endif
 
 get_tumors = $(wordlist 1,$(shell expr $(words $1) - 1),$1)
