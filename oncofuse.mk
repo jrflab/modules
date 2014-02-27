@@ -9,13 +9,13 @@ EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
 ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
-DEFUSE_RESULTS := defuse/tables/all.defuse_results.txt
-CHIMSCAN_RESULTS := chimscan/tables/all.chimscan_results.txt
+DEFUSE_RESULTS := defuse/alltables/all.defuse_results.txt
+CHIMSCAN_RESULTS := chimscan/alltables/all.chimscan_results.txt
 ifdef NORMAL_CHIMSCAN_RESULTS
-CHIMSCAN_RESULTS := chimscan/tables/all.chimscan_results.nft.txt
+CHIMSCAN_RESULTS := chimscan/alltables/all.chimscan_results.nft.txt
 endif
 ifdef NORMAL_DEFUSE_RESULTS
-DEFUSE_RESULTS := defuse/tables/all.defuse_results.nft.txt
+DEFUSE_RESULTS := defuse/alltables/all.defuse_results.nft.txt
 endif
 
 
