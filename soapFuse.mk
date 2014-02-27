@@ -10,6 +10,9 @@ SOAPFUSE = $(HOME)/usr/SOAPfuse-v1.26/SOAPfuse-RUN.pl
 SOAPFUSE_CONFIG = $(HOME)/share/usr/SOAPfuse-v1.26/config/config.txt
 PREPARE_SOAPFUSE = $(HOME)/share/scripts/prepareSoapFuse.pl
 
+SOAPFUSE_NORMAL_FILTER = $(PERL) $(HOME)/share/scripts/normalFilterSoapFuse.pl
+SOAPFUSE_NORMAL_FILTER_OPTS = -w 1000
+
 ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
@@ -17,7 +20,12 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 .DELETE_ON_ERROR:
 .PHONY: all sample_tables soapfuse
 
-all : soapfuse/alltables/all.sfuse.oncofuse.merged.txt soapfuse/alltables/all.sfuse_isoforms.txt
+ifdef NORMAL_SOAPFUSE_RESULTS
+ALL_SUFFIX = nft.oncofuse.merged.txt
+else
+ALL_SUFFIX = oncofuse.merged
+endif
+all : soapfuse/alltables/all.sfuse.$(ALL_SUFFIX).txt soapfuse/alltables/all.sfuse_isoforms.$(ALL_SUFFIX).txt
 sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt soapfuse/tables/$(sample).sfuse_isoforms.txt)
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
@@ -46,6 +54,9 @@ soapfuse/alltables/all.sfuse.coord.txt : soapfuse/alltables/all.sfuse.txt
 
 soapfuse/alltables/all.sfuse_isoforms.coord.txt : soapfuse/alltables/all.sfuse_isforms.txt
 	$(INIT) cut -f4,6,11,13 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+
+soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
+	$(INIT) $(SOAPFUSE_NORMAL_FILTER) $(SOAPFUSE_NORMAL_FILTER_OPTS) $(NORMAL_SOAPFUSE_RESULTS) $< > $@
 
 %.oncofuse.txt : %.coord.txt
 	$(call LSCRIPT_MEM,8G,12G,"$(call ONCOFUSE_MEM,7G) $< coord $(ONCOFUSE_TISSUE_TYPE) $@")
