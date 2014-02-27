@@ -39,7 +39,7 @@ soapfuse/tables/%.sfuse_isoforms.txt : soapfuse/%.timestamp
 	$(INIT) cp -f soapfuse/$*/final_fusion_genes/$*/$*.final.Fusion.specific.for.trans $@
 
 soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).%.txt)
-	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.sfuse.$*.txt})\t/" $$i >> $@; done
+	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.$*.txt})\t/" $$i >> $@; done
 
 soapfuse/alltables/all.sfuse.coord.txt : soapfuse/alltables/all.sfuse.txt
 	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
