@@ -21,7 +21,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 .PHONY: all sample_tables soapfuse
 
 ifdef NORMAL_SOAPFUSE_RESULTS
-ALL_SUFFIX = nft.oncofuse.merged.txt
+ALL_SUFFIX = nft.oncofuse.merged
 else
 ALL_SUFFIX = oncofuse.merged
 endif
