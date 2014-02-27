@@ -7,7 +7,6 @@ LOGDIR = log/oncofuse.$(NOW)
 EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
 
 ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
-
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 DEFUSE_RESULTS := defuse/tables/all.defuse_results.txt
@@ -38,5 +37,4 @@ oncofuse/%.merged_oncofuse_results.txt : $$*/tables/all.$$*_results.nft.txt onco
 		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(word 2,$^) > $@
 
 oncofuse/chimscan.coord.txt : $(CHIMSCAN_RESULTS)
-	$(INIT) cut -f 2,4,5,6 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
-
+	$(INIT) perl -lane 'if ($$NR > 1) { $$coord5 = ($$F[9] eq "+")? 2 : 3; $$coord3 = ($$F[10] eq "+")? 5 : 6; print "$$F[1]\t$$F[$$coord5]\t$$F[4]\t$$F[$$coord3]"; }' $< > $@
