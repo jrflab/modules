@@ -39,11 +39,13 @@ endif
 	$(call LSCRIPT,"$(MD5)")
 
 ifeq (${EXTRACT_TOOL},picard)
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
+fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_bam/%.bam
 	$(call LSCRIPT_MEM,8G,10G,"TEMP=`mktemp`; mkfifo $${TEMP}_1; mkfifo $${TEMP}_2; \
 	gzip < $${TEMP}_1 > fastq/$*.1.fastq.gz & \
 	gzip < $${TEMP}_2 > fastq/$*.2.fastq.gz & \
-	QUIET=true I=$< FASTQ=$${TEMP}_1 SECOND_END_FASTQ=$${TEMP}_2 &> $(LOG)")
+	QUIET=true I=$< FASTQ=$${TEMP}_1 SECOND_END_FASTQ=$${TEMP}_2 && \
+	md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz.md5 && \
+	md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz.md5")
 else
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.bam
 	$(call LSCRIPT_MEM,10G,40G,"$(BAM2FASTQ) -o fastq/$*#.fastq $< &> $(LOG).bam2fastq.log && gzip < fastq/$*_1.fastq > fastq/$*.1.fastq.gz && gzip < fastq/$*_2.fastq > fastq/$*.2.fastq.gz")
