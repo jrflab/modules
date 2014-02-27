@@ -52,7 +52,7 @@ soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sam
 soapfuse/alltables/all.sfuse%coord.txt : soapfuse/alltables/all.sfuse%txt
 	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
-soapfuse/alltables/all.isoform_sfuse%txt : soapfuse/alltables/all.isoform_sfuse%txt
+soapfuse/alltables/all.isoform_sfuse%coord.txt : soapfuse/alltables/all.isoform_sfuse%txt
 	$(INIT) cut -f4,6,11,13 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
