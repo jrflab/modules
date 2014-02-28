@@ -48,7 +48,7 @@ chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
 
 chimscan/alltables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
-	head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan_results.txt})\t/" $$i >> $@; done
+	$(INIT) head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan_results.txt})\t/" $$i >> $@; done
 
 chimscan/recur_tables/recurGenes.txt : $(ALLTABLE)
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 genes5p --geneCol2 genes3p --sampleCol Sample --outDir $(@D) $< 
