@@ -68,7 +68,7 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   UNMATCHED_SAMPLES = $(shell sed '/^\#/d' $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
 
   SAMPLE_SET_PAIRS = $(shell echo "$(SAMPLE_PAIRS) $(SAMPLE_SETS)" | tr ' ' '\n' | sort | uniq)
-  $(foreach set,$(SAMPLE_SET_PAIRS),
+  $(foreach set,$(SAMPLE_SET_PAIRS), \
 	$(eval samples.$(set) := $(shell echo "$(set)" | sed 's/_/ /')))
 endif
 
