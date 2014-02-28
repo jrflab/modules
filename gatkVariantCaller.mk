@@ -63,14 +63,14 @@ VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
-ifdef SAMPLE_SETS
+ifdef SAMPLE_SET_PAIRS
 SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
 SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.chasm.fathmm
 SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX)
 SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann)))
 SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
-VCFS += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
-TABLES += $(foreach set,$(SAMPLE_SETS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
+VCFS += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
+TABLES += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
 TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),alltables/allSS.$(suff).txt)
 endif
 
