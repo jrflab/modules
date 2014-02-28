@@ -13,7 +13,7 @@ PREPARE_SOAPFUSE = $(HOME)/share/scripts/prepareSoapFuse.pl
 SOAPFUSE_NORMAL_FILTER = $(PERL) $(HOME)/share/scripts/normalFilterSoapFuse.pl
 SOAPFUSE_NORMAL_FILTER_OPTS = -w 1000
 
-ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
+ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 .SECONDARY:
