@@ -52,7 +52,7 @@ endif
 #$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.hasAttribute(\"AD\") && vc.getAD().1 > $(DEPTH_FILTER)' --filterName alleleDepth")
 
 %.pass.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@"))
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
