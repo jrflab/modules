@@ -63,5 +63,5 @@ soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
 
 %.oncofuse.merged.txt : %.txt %.oncofuse.txt 
 	$(INIT) head -1 $< | sed 's/^/RowID\t/' > $<.tmp && awk 'BEGIN {OFS = "\t" } NR > 1 { print NR-1, $$0 }' $< >> $<.tmp ;\
-		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(<<) > $@
+		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(<<) > $@ && rm -f $<.tmp
 
