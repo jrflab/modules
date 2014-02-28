@@ -114,8 +114,10 @@ vcf/$1.%.som_ft.vcf : vcf/$1.%.vcf
 	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $$(word $$(words $1),$1) -f 0.03 $$< > $$@ 2> $$(LOG)
 endef
 $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
+endif
 
-alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SET_PAIRS),tables/$(set).%.txt)
+ifdef SAMPLE_SETS
+alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
 	$(INIT) $(RSCRIPT) $(RBIND) --normalLast $^ > $@
 endif
 
