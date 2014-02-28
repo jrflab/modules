@@ -66,6 +66,10 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
   UNMATCHED_SAMPLES = $(shell sed '/^\#/d' $(SAMPLE_FILE) $(SAMPLE_SET_FILE) | tr ' ' '\n' | sort | uniq -u)
+
+  SAMPLE_SET_PAIRS = $(shell echo "$(SAMPLE_PAIRS) $(SAMPLE_SETS)" | tr ' ' '\n' | sort | uniq)
+  $(foreach set,$(SAMPLE_SET_PAIRS),
+	$(eval samples.$(set) := $(shell echo "$(set)" | sed 's/_/ /')))
 endif
 
 #ifeq ($(NORMAL_MATCHED),true)

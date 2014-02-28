@@ -16,8 +16,6 @@ HARD_FILTER_SNPS ?= true
 POOL_SNP_RECAL ?= false
 SPLIT_CHR ?= true
 
-
-
 ###### RECIPES #######
 
 %.intervals : %.vcf
@@ -27,26 +25,21 @@ SPLIT_CHR ?= true
 ifeq ($(SPLIT_CHR),true)
 
 ## call sample sets
-ifdef SAMPLE_SETS
+ifdef SAMPLE_SET_PAIRS
 define hapcall-vcf-sets-chr
-gatk/chr_vcf/$$(subst $$( ),_,$1).$2.variants.vcf : $$(foreach sample,$1,gatk/chr_vcf/$$(sample).$2.variants.intervals) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
-	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) \
+gatk/chr_vcf/$1.$2.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/chr_vcf/$$(sample).$2.variants.intervals) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam bam/$$(sample).bai)
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper $$(HAPLOTYPE_CALLER_OPTS) \
 		$$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach intervals,$$(filter %.intervals,$$^),-L $$(intervals) ) -o $$@")
 endef
-$(foreach chr,$(CHROMOSOMES),$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call hapcall-vcf-sets-chr,$(set.$i),$(chr)))))
+$(foreach chr,$(CHROMOSOMES),$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call hapcall-vcf-sets-chr,$(set),$(chr)))))
 
 define merge-chr-variants-sets
 gatk/vcf/$1.variants.vcf : $$(foreach chr,$$(CHROMOSOMES),gatk/chr_vcf/$1.$$(chr).variants.vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@")
 endef
-$(foreach set,$(SAMPLE_SETS),$(eval $(call merge-chr-variants-sets,$(set))))
+$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call merge-chr-variants-sets,$(set))))
 endif # def SAMPLE_SETS
 
-#gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam bam/%.bai
-#	$$(call LSCRIPT_PARALLEL_MEM,2,5G,6G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper \
-#	-nt 2 -L $1 -I $$< --dbsnp $$(DBSNP1PC) -o $$@  -glm BOTH -rf BadCigar \
-#	-stand_call_conf $$(VARIANT_CONF_THRESHOLD)  -R $$(REF_FASTA) &> $$(LOGDIR)/$$@.log")
-# $(eval $(call chr-variants,chromosome))
 define chr-variants
 gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam bam/%.bai
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
@@ -57,27 +50,21 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-variants,$(chr))))
 
 define merge-chr-variants
 gatk/vcf/$1.variants.vcf : $$(foreach chr,$$(CHROMOSOMES),gatk/chr_vcf/$1.$$(chr).variants.vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-chr-variants,$(sample))))
-
-#$(call INIT_MEM,2G,3G) grep '^#' $< > $@; cat $^ | grep -v '^#' | vcfsorter.pl $(REF_DICT) - >> $@ 2> $(LOGDIR)/$@.log
 
 else #### no splitting by chr ####
 
 ## call sample sets
 ifdef SAMPLE_SETS
 define hapcall-vcf-sets
-gatk/vcf/$$(subst $$( ),_,$1).variants.vcf : $$(foreach sample,$1,gatk/vcf/$$(sample).variants.vcf) $$(foreach sample,$1,bam/$$(sample).bam bam/$$(sample).bai)
+gatk/vcf/$1.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/vcf/$$(sample).variants.vcf) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam bam/$$(sample).bai)
 	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
 endef
-$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call hapcall-vcf-sets,$(set.$i))))
+$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call hapcall-vcf-sets,$(set))))
 endif
 
-#gatk/vcf/%.variants.vcf : bam/%.bam bam/%.bai
-#	$(call LSCRIPT_PARALLEL_MEM,2,4G,6G,"$(call GATK_MEM,8G) -T UnifiedGenotyper \
-#	-nt 2 -I $< --dbsnp $(DBSNP1PC) -o $@  -glm BOTH -rf BadCigar \
-#	-stand_call_conf $(VARIANT_CONF_THRESHOLD)  -R $(REF_FASTA) &> $(LOG)")
 define hapcall-vcf
 gatk/vcf/$1.variants.vcf : bam/$1.bam bam/$1.bai
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
@@ -91,12 +78,12 @@ endif # split by chr
 # select snps % = sample
 gatk/vcf/%.variants.snps.vcf : gatk/vcf/%.variants.vcf gatk/vcf/%.variants.vcf.idx
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T SelectVariants  -R $(REF_FASTA)  --variant $<  -o $@ \
-	 -selectType SNP &> $(LOGDIR)/$@.log")
+	 -selectType SNP")
 
 # select indels % = indels
 gatk/vcf/%.variants.indels.vcf : gatk/vcf/%.variants.vcf gatk/vcf/%.variants.vcf.idx
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T SelectVariants -R $(REF_FASTA) --variant $<  -o $@ \
-	-selectType INDEL &> $(LOG)")
+	-selectType INDEL")
 
 %.bai : %.bam
 	$(call LSCRIPT_MEM,4G,8G,"$(SAMTOOLS) index $< $@")
@@ -106,21 +93,6 @@ $(REF_FASTA).fai : $(REF_FASTA)
 
 $(REF_FASTA:.fasta=.dict) : $(REF_FASTA)
 	$(call LSCRIPT_MEM,5G,6G),"$(CREATE_SEQ_DICT) REFERENCE=$< OUTPUT=$@")
-
-# variant recalibrator for snps
-# not recommended for indels (not enough data)
-#ifeq ($(POOL_SNP_RECAL),true)
-#gatk/variant_recal/%snps.recal gatk/variant_recal/%snps.tranches gatk/variant_recal/%snps.plots.R : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).%snps.annotated.vcf)
-#SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,2G,4G) -pe $(PARALLEL_ENV) 6" $(MKDIR) $(@D); \
-#$(GATK) -T VariantRecalibrator -R $(REF_FASTA) $(foreach i,$^, -input $i)  -nt 6 \
-#-resource:hapmap,known=false,training=true,truth=true,prior=15.0 $(HAPMAP) \
-#-resource:omni,known=false,training=true,truth=false,prior=12.0 $(OMNI) \
-#-resource:dbsnp,known=true,training=false,truth=false,prior=8.0 $(DBSNP)  $(foreach i,$(VARIANT_RECAL_ANNOTATIONS), -an $i) \
-#-recalFile gatk/variant_recal/$*snps.recal \
-#-tranchesFile gatk/variant_recal/$*snps.tranches \
-#-rscriptFile gatk/variant_recal/$*snps.plots.R &> $(LOGDIR)/$@.log || ($(RM) $@ && false)
-#else 
-#endif
 
 #$(call VARIANT_RECAL,$@,$^)
 define VARIANT_RECAL
@@ -143,14 +115,14 @@ $(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T ApplyRecalibration  -R $(REF_F
 	-input $2 \
 	-recalFile $3 \
 	--ts_filter_level $(VARIANT_RECAL_TRUTH_SENSITIVITY_LEVEL) \
-	-tranchesFile $(basename $3).tranches -o $1 &> $(LOGDIR)/$1.log")
+	-tranchesFile $(basename $3).tranches -o $1")
 endef
 
 # apply variant recal %=sample
 ifeq ($(HARD_FILTER_SNPS),true)
 gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.vcf.idx
 	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) $(SNP_FILTERS) -o $@ \
-	--variant $< &> $(LOG)")
+	--variant $<")
 else 
 
 # pool sample vcfs for recalibration
@@ -164,13 +136,13 @@ endef
 $(foreach sample,$(SAMPLES),$(eval $(call sample-apply-recal,$(sample))))
 
 ifdef SAMPLE_SETS
-gatk/vcf/sets.snps.recal.vcf : $(foreach set,$(SAMPLE_SETS),gatk/vcf/$(set).variants.snps.vcf gatk/vcf/$(set).variants.snps.vcf.idx )
+gatk/vcf/sets.snps.recal.vcf : $(foreach set,$(SAMPLE_SET_PAIRS),gatk/vcf/$(set).variants.snps.vcf gatk/vcf/$(set).variants.snps.vcf.idx )
 	$(call VARIANT_RECAL,$@,$^)
 define sets-apply-recal
 gatk/vcf/$1.variants.snps.filtered.vcf : gatk/vcf/$1.variants.snps.vcf gatk/vcf/sets.snps.recal.vcf gatk/vcf/sets.snps.recal.vcf.idx gatk/vcf/$1.variants.snps.vcf.idx 
 	$$(call APPLY_VARIANT_RECAL,$$@,$$<,$$(word 2,$$^))
 endef
-$(foreach set,$(SAMPLE_SETS),$(eval $(call sets-apply-recal,$(set))))
+$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call sets-apply-recal,$(set))))
 endif
 
 else 
@@ -184,7 +156,7 @@ endif
 # hard filter indels %=sample
 gatk/vcf/%.variants.indels.filtered.vcf : gatk/vcf/%.variants.indels.vcf gatk/vcf/%.variants.indels.vcf.idx
 	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) $(INDEL_FILTERS) -o $@ \
-	--variant $< &> $(LOGDIR)/$@.log")
+	--variant $<")
 
 # filter for only novel snps/indels
 %.novel.txt : %.txt
