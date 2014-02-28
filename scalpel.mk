@@ -22,6 +22,8 @@ FILTER_SUFFIX := dbsnp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.novel)
 
+..DUMMY := $(shell mkdir -p version; echo "$(SCALPEL) $(SCALPEL_OPTS) > version/scalpel.txt")
+
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: all vcfs tables
