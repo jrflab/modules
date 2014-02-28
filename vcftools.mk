@@ -31,7 +31,7 @@ endif
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< > $@")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< > $@"))
 
 # run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
