@@ -69,7 +69,7 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 
   SAMPLE_SET_PAIRS = $(shell echo "$(SAMPLE_PAIRS) $(SAMPLE_SETS)" | tr ' ' '\n' | sort | uniq)
   $(foreach set,$(SAMPLE_SET_PAIRS), \
-	$(eval samples.$(set) := $(shell echo "$(set)" | sed 's/_/ /')))
+	$(eval samples.$(set) := $(shell echo "$(set)" | sed 's/_/ /g')))
 endif
 
 #ifeq ($(NORMAL_MATCHED),true)
