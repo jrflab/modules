@@ -6,7 +6,7 @@ LOGDIR = log/oncofuse.$(NOW)
 
 EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
 
-ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.3/Oncofuse.jar
+ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 DEFUSE_RESULTS := defuse/alltables/all.defuse_results.txt
