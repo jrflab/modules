@@ -108,14 +108,14 @@ tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
 alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 	$(INIT) $(RBIND) --sampleName $< $^ > $@
 
-ifdef SAMPLE_SETS
+ifdef SAMPLE_SET_PAIRS
 define somatic-filter-vcf-set
-vcf/$$(subst $$( ),_,$1).%.som_ft.vcf : vcf/$$(subst $$( ),_,$1).%.vcf
+vcf/$1.%.som_ft.vcf : vcf/$1.%.vcf
 	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $$(word $$(words $1),$1) -f 0.03 $$< > $$@ 2> $$(LOG)
 endef
-$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call somatic-filter-vcf-set,$(set.$i))))
+$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
 
-alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
+alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SET_PAIRS),tables/$(set).%.txt)
 	$(INIT) $(RSCRIPT) $(RBIND) --normalLast $^ > $@
 endif
 
