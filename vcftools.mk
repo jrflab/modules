@@ -143,7 +143,7 @@ define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $< > $@
 endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $call rename-samples-tumor-normal,$(tumor.$(pair)),$(normal.$(pair))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call rename-samples-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 
 define ad-tumor-normal
