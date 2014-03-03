@@ -139,6 +139,12 @@ $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call som-ad-ft-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
+define rename-samples-tumor-normal
+vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
+	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $< > $@
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $call rename-samples-tumor-normal,$(tumor.$(pair)),$(normal.$(pair))))
+
 
 define ad-tumor-normal
 vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
