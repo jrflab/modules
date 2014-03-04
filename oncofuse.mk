@@ -32,7 +32,7 @@ oncofuse/%.oncofuse_results.txt : oncofuse/%.coord.txt
 
 .SECONDEXPANSION: 
 oncofuse/%.merged_oncofuse_results.txt : $$*/tables/all.$$*_results.nft.txt oncofuse/%.oncofuse_results.txt
-	head -1 $< | sed 's/^/RowID\t/' > $<.tmp && awk 'BEGIN {OFS = "\t" } NR > 1 { print NR-1, $$0 }' $< >> $<.tmp ;\
+	$(INIT) head -1 $< | sed 's/^/RowID\t/' > $<.tmp && awk 'BEGIN {OFS = "\t" } NR > 1 { print NR-1, $$0 }' $< >> $<.tmp ;\
 		cut -f 2- $(<<) > $(<<).tmp; \
 		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(<<).tmp > $@ && rm -f $<.tmp $(<<).tmp
 
