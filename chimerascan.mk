@@ -1,12 +1,9 @@
 # Chimerascan
-##### DEFAULTS ######
-REF ?= hg19
-LOGDIR = log/chimscan.$(NOW)
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
+
+LOGDIR = log/chimscan.$(NOW)
 
 CHIMSCAN_PYTHONPATH := /home/limr/share/usr/lib/python:/home/limr/share/usr/lib/python2.7
 CHIMSCAN_PYTHON := $(HOME)/share/usr/bin/python
@@ -21,14 +18,14 @@ RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
 
 ALL = $(foreach sample,$(SAMPLES),chimscan/$(sample).chimscan_timestamp)
 ifdef NORMAL_CHIMSCAN_RESULTS
-ALL += $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.nft.txt)
-ALLTABLE = chimscan/alltables/all.chimscan_results.nft.txt
+ALL += $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan.nft.bedpe)
+ALLTABLE = chimscan/alltables/all.chimscan.nft.txt
+ALL += chimscan/recur_tables/recurGenes.nft.txt
 else 
-ALLTABLE = chimscan/alltables/all.chimscan_results.txt
-endif
-
-ALL += $(ALLTABLE)
+ALLTABLE = chimscan/alltables/all.chimscan.txt
 ALL += chimscan/recur_tables/recurGenes.txt
+endif
+ALL += $(ALLTABLE)
 
 all : $(ALL)
 
@@ -41,14 +38,17 @@ chimscan/%.chimscan_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 #chimerascan/tables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimerascan/$(sample).chimscan_timestamp)
 #$(INIT) head -1 $(basename $<)/chimeras.bedpe > $@ && for x in $(addsuffix /chimeras.bedpe,$(basename $^)); do sed '1d' $$x >> $@; done
 
-chimscan/tables/%.chimscan_results.txt : chimscan/%.chimscan_timestamp
+chimscan/bedpe/%.chimscan.bedpe : chimscan/%.chimscan_timestamp
 	$(INIT) cp -f $(basename $<)/chimeras.bedpe $@ && rm -r chimscan/$*
 
-%.chimscan_results.nft.txt : %.chimscan_results.txt $(NORMAL_CHIMSCAN_RESULTS)
+%.chimscan.nft.bedpe : %.chimscan.bedpe
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
 
-chimscan/alltables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimscan/tables/$(sample).chimscan_results.txt)
+chimscan/alltables/all.chimscan%txt : $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan%bedpe)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan_results.txt})\t/" $$i >> $@; done
 
-chimscan/recur_tables/recurGenes.txt : $(ALLTABLE)
+chimscan/recur_tables/recurGenes%txt : chimscan/alltables/all.chimscan%txt
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 genes5p --geneCol2 genes3p --sampleCol Sample --outDir $(@D) $< 
+
+chimscan/alltables/all.chimscan%coord.txt : chimscan/alltables/all.chimscan%txt
+	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = ($$F[9] eq "+")? 3 : 2; $$coord3 = ($$F[10] eq "+")? 5 : 6; print "$$F[1]\t$$F[$$coord5]\t$$F[4]\t$$F[$$coord3]\tEPI"; }' $< > $@
