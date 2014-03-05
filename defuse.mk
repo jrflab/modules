@@ -37,7 +37,7 @@ ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
 endif
 all : $(ALLTABLE) tables defuse/recur_tables/recurFusions.txt
 
-tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
+tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 
 defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
