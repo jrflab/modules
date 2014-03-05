@@ -233,5 +233,5 @@ MUT_ASS = $(RSCRIPT) $(HOME)/share/scripts/mutAssVcf.R
 TRANSFIC = $(RSCRIPT) $(HOME)/share/scripts/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
 %.transfic.vcf : %.vcf
-	$(call LSCRIPT_MEM,3G,4G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $<")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,3G,4G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $<"))
 
