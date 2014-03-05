@@ -50,10 +50,10 @@ soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sam
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.$*.txt})\t/" $$i >> $@; done
 
 soapfuse/alltables/all.sfuse%coord.txt : soapfuse/alltables/all.sfuse%txt
-	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$3, $$5 + 1, $$8, $$10 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' $< | sed '1d' > $@
 
 soapfuse/alltables/all.isoform_sfuse%coord.txt : soapfuse/alltables/all.isoform_sfuse%txt
-	$(INIT) cut -f4,7,11,14 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$4, $$7 + 1, $$11, $$14 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
 	$(INIT) $(SOAPFUSE_NORMAL_FILTER) $(SOAPFUSE_NORMAL_FILTER_OPTS) $(NORMAL_SOAPFUSE_RESULTS) $< > $@
