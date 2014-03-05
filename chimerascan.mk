@@ -23,10 +23,10 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 ifdef NORMAL_CHIMSCAN_RESULTS
 ALL += $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan.nft.bedpe)
 ALLTABLE = chimscan/alltables/all.chimscan.nft.oncofuse.merged.txt
-ALL += chimscan/recur_tables/recurGenes.nft.txt
+ALL += chimscan/recur_tables/recurFusions.chimscan.nft.gene.txt
 else 
 ALLTABLE = chimscan/alltables/all.chimscan.oncofuse.merged.txt
-ALL += chimscan/recur_tables/recurGenes.txt
+ALL += chimscan/recur_tables/recurFusions.chimscan.nft.gene.txt
 endif
 ALL += $(ALLTABLE)
 
