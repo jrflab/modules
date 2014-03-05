@@ -31,27 +31,33 @@ endif
 
 #all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
 ifdef NORMAL_DEFUSE_RESULTS
-ALLTABLE = defuse/alltables/all.defuse_results.nft.txt
+ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.merged.txt
 else
-ALLTABLE = defuse/alltables/all.defuse_results.txt
+ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
 endif
-all : $(ALLTABLE) tables defuse/recur_tables/recurGenes.txt
+all : $(ALLTABLE) tables defuse/recur_tables/recurFusions.txt
 
 tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
 
 defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
 
-defuse/tables/%.defuse_results.txt : defuse/%.defuse_timestamp
+defuse/tables/%.defuse.txt : defuse/%.defuse_timestamp
 	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && rm -r defuse/$*
 
-defuse/alltables/all.defuse_results.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse_results.txt)
+defuse/alltables/all.defuse.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
 
-defuse/alltables/%.defuse_results.nft.txt : defuse/alltables/%.defuse_results.txt $(NORMAL_DEFUSE_RESULTS)
+defuse/alltables/%.defuse.nft.txt : defuse/alltables/%.defuse.txt
 	$(INIT) $(PERL) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
 
-defuse/recur_tables/recurGenes.txt : $(ALLTABLE)
-	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outDir $(@D) $< 
+defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
+	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outPrefix $(@D)/recurFusions.$* $< 
+
+EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
+
+defuse/alltables/%.coord.txt : defuse/alltables/%.txt
+	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
 
 include ~/share/modules/fastq.mk
+include ~/share/modules/oncofuse.mk

@@ -51,7 +51,7 @@ chimscan/alltables/all.chimscan%txt : $(foreach sample,$(SAMPLES),chimscan/bedpe
 	$(INIT) head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan$*bedpe})\t/" $$i >> $@; done
 
 chimscan/recur_tables/recurFusions.%.gene.txt : chimscan/alltables/all.%.txt
-	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 genes5p --geneCol2 genes3p --sampleCol Sample --outPrefix chimscan/recur_tables/recurGenes.$*  $< 
+	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 genes5p --geneCol2 genes3p --sampleCol Sample --outPrefix chimscan/recur_tables/recurFusions.$*  $< 
 
 chimscan/alltables/all.chimscan%coord.txt : chimscan/alltables/all.chimscan%txt
 	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = (($$F[9] eq "+")? $$F[3] + 1 : $$F[2] - 1) + 1; $$coord3 = (($$F[10] eq "+")? $$F[5] - 1 : $$F[6] + 1) + 1; print "$$F[1]\t$$coord5\t$$F[4]\t$$coord3\tEPI"; }' $< > $@
