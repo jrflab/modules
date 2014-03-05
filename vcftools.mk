@@ -111,7 +111,7 @@ alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 ifdef SAMPLE_SET_PAIRS
 define somatic-filter-vcf-set
 vcf/$1.%.som_ft.vcf : vcf/$1.%.vcf
-	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $$(word $$(words $1),$1) -f 0.03 $$< > $$@ 2> $$(LOG)
+	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $(normal.$1) -f 0.03 $$< > $$@ 2> $$(LOG)
 endef
 $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
 endif

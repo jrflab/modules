@@ -53,7 +53,7 @@ soapfuse/alltables/all.sfuse%coord.txt : soapfuse/alltables/all.sfuse%txt
 	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$3, $$5 + 1, $$8, $$10 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' $< | sed '1d' > $@
 
 soapfuse/alltables/all.isoform_sfuse%coord.txt : soapfuse/alltables/all.isoform_sfuse%txt
-	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$4, $$7 + 1, $$11, $$14 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$4, $$7 + 1, $$11, $$14 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' $< | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
 	$(INIT) $(SOAPFUSE_NORMAL_FILTER) $(SOAPFUSE_NORMAL_FILTER_OPTS) $(NORMAL_SOAPFUSE_RESULTS) $< > $@
