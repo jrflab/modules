@@ -33,10 +33,10 @@ endif
 ALL = $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 ifdef NORMAL_DEFUSE_RESULTS
 ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.merged.txt
-ALL += defuse/recur_tables/recurFusions.nft.gene.txt
+ALL += defuse/recur_tables/recurFusions.defuse.nft.gene.txt
 else
 ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
-ALL += defuse/recur_tables/recurFusions.gene.txt
+ALL += defuse/recur_tables/recurFusions.defuse.gene.txt
 endif
 all : $(ALLTABLE) $(ALL)
 
