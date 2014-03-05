@@ -50,19 +50,12 @@ soapfuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sam
 	$(INIT) head -1 $< | sed 's/^/Sample\t/;' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.$*.txt})\t/" $$i >> $@; done
 
 soapfuse/alltables/all.sfuse%coord.txt : soapfuse/alltables/all.sfuse%txt
-	$(INIT) cut -f3,5,8,10 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$3, $$5 + 1, $$8, $$10 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' $< | sed '1d' > $@
 
 soapfuse/alltables/all.isoform_sfuse%coord.txt : soapfuse/alltables/all.isoform_sfuse%txt
-	$(INIT) cut -f4,7,11,14 $< | awk 'BEGIN { OFS = "\t" } { print $$0, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
+	$(INIT) awk 'BEGIN { OFS = "\t" } { print $$4, $$7 + 1, $$11, $$14 - 1, "$(ONCOFUSE_TISSUE_TYPE)" }' | sed '1d' > $@
 
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
 	$(INIT) $(SOAPFUSE_NORMAL_FILTER) $(SOAPFUSE_NORMAL_FILTER_OPTS) $(NORMAL_SOAPFUSE_RESULTS) $< > $@
 
-%.oncofuse.txt : %.coord.txt
-	$(call LSCRIPT_MEM,8G,12G,"$(call ONCOFUSE_MEM,7G) $< coord $(ONCOFUSE_TISSUE_TYPE) $@")
-
-%.oncofuse.merged.txt : %.txt %.oncofuse.txt 
-	$(INIT) head -1 $< | sed 's/^/RowID\t/' > $<.tmp && awk 'BEGIN {OFS = "\t" } NR > 1 { print NR-1, $$0 }' $< >> $<.tmp ;\
-		cut -f 2- $(<<) > $(<<).tmp; \
-		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(<<).tmp > $@ && rm -f $<.tmp $(<<).tmp
-
+include ~/share/modules/oncofuse.mk
