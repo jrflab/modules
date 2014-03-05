@@ -10,9 +10,9 @@ include ~/share/modules/gatk.inc
 
 LOGDIR = log/vcf_merge.$(NOW)
 VCF_TYPES = gatk_snps mutect som_sniper
-VCF_SUFFIX.gatk_snps := gatk_snps.dp_ft.som_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
-VCF_SUFFIX.mutect := mutect.som_ad_ft.pass.dbsnp.nsfp.chasm.fathmm.eff
-VCF_SUFFIX.som_sniper := som_sniper.ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff.rn
+VCF_SUFFIX.gatk_snps := gatk_snps.dp_ft.som_ft.pass.dbsnp.nsfp.chasm.fathmm.transfic.eff
+VCF_SUFFIX.mutect := mutect.som_ad_ft.pass.dbsnp.nsfp.chasm.fathmm.transfic.eff
+VCF_SUFFIX.som_sniper := som_sniper.ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff.transfic.rn
 VCF_SUFFIXES := $(foreach type,$(VCF_TYPES),$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIX := tab.ft
 EFF_TYPES = silent missense nonsilent_cds nonsilent
