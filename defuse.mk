@@ -30,14 +30,16 @@ endif
 
 
 #all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
+ALL = $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 ifdef NORMAL_DEFUSE_RESULTS
 ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.merged.txt
+ALL += defuse/recur_tables/recurFusions.nft.gene.txt
 else
 ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
+ALL += defuse/recur_tables/recurFusions.gene.txt
 endif
-all : $(ALLTABLE) tables defuse/recur_tables/recurFusions.txt
+all : $(ALLTABLE) $(ALL)
 
-tables : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 
 defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
