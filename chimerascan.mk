@@ -26,7 +26,7 @@ ALLTABLE = chimscan/alltables/all.chimscan.nft.oncofuse.merged.txt
 ALL += chimscan/recur_tables/recurFusions.chimscan.nft.gene.txt
 else 
 ALLTABLE = chimscan/alltables/all.chimscan.oncofuse.merged.txt
-ALL += chimscan/recur_tables/recurFusions.chimscan.nft.gene.txt
+ALL += chimscan/recur_tables/recurFusions.chimscan.gene.txt
 endif
 ALL += $(ALLTABLE)
 
@@ -56,11 +56,4 @@ chimscan/recur_tables/recurFusions.%.gene.txt : chimscan/alltables/all.%.txt
 chimscan/alltables/all.chimscan%coord.txt : chimscan/alltables/all.chimscan%txt
 	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = (($$F[9] eq "+")? $$F[3] + 1 : $$F[2] - 1) + 1; $$coord3 = (($$F[10] eq "+")? $$F[5] - 1 : $$F[6] + 1) + 1; print "$$F[1]\t$$coord5\t$$F[4]\t$$coord3\tEPI"; }' $< > $@
 
-%.oncofuse.txt : %.coord.txt
-	$(call LSCRIPT_MEM,8G,12G,"$(call ONCOFUSE_MEM,7G) $< coord $(ONCOFUSE_TISSUE_TYPE) $@")
-
-%.oncofuse.merged.txt : %.txt %.oncofuse.txt 
-	$(INIT) head -1 $< | sed 's/^/RowID\t/' > $<.tmp && awk 'BEGIN {OFS = "\t" } NR > 1 { print NR-1, $$0 }' $< >> $<.tmp ;\
-		cut -f 2- $(<<) > $(<<).tmp; \
-		$(RSCRIPT) $(MERGE) -X --byColX 1 --byColY 1 -H $<.tmp $(<<).tmp > $@ && rm -f $<.tmp $(<<).tmp
-
+include ~/share/modules/oncofuse.mk
