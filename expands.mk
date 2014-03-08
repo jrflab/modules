@@ -1,3 +1,7 @@
+# run expands for determining tumor ploidy
+
+include ~/share/modules/Makefile.inc
+
 SHELL=$(HOME)/share/scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -n $(@F) -e 
 
