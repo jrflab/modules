@@ -21,4 +21,4 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call abs-gatk-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 absCN/%.absCN.txt absCN/%.absSNV.txt : varscan/segment/%.varscan2copynumber.txt absCN/%.gatk.vcf
-	$(call LSCRIPT_MEM,4G,6G,"$(ABS_CN_SEQ) --outPrefix absCN/$* $^")
+	$(call LSCRIPT_MEM,4G,6G,"$(ABS_CN_SEQ) --genome $(REF) --outPrefix absCN/$* $^")
