@@ -14,7 +14,7 @@ MEM = 3G
 
 all : $(foreach pair,$(SAMPLE_PAIRS),expands/rdata/$(pair).Rdata)
 
-expands/rdata/%.Rdata : mutect/tables/%.mutect.txt varscan/segment/%.varscan2copynumber.txt
+expands/rdata/%.cbs_snv.Rdata : mutect/tables/%.mutect.txt varscan/segment/%.varscan2copynumber.txt
 	library(expands)
 	snv <- read.table("$<", header = T, sep = "\t")
 	colnames(snv)[1:2] <- c("chr", "startpos")
