@@ -12,7 +12,7 @@ SHELL=$(HOME)/share/scripts/Rshell
 
 MEM = 3G
 
-all : $(foreach pair,$(SAMPLE_PAIRS),expands/rdata/$(pair).Rdata)
+all : $(foreach pair,$(SAMPLE_PAIRS),expands/rdata/$(pair).cbs_snv.Rdata)
 
 expands/rdata/%.cbs_snv.Rdata : mutect/tables/%.mutect.txt varscan/segment/%.varscan2copynumber.txt
 	library(expands)
