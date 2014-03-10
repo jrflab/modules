@@ -21,7 +21,7 @@ VCF_SUFFIXES := $(foreach type,$(VCF_TYPES),$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIX := tab.ft
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 TABLE_SUFFIXES := $(foreach eff,$(EFF_TYPES),$(TABLE_SUFFIX).$(eff))
-MERGE_SUFFIX = gatk_snps.mutect.som_sniper
+MERGE_SUFFIX = $(subst $( ),.,$(VCF_TYPES))
 VCF_FIELDS += set
 
 
