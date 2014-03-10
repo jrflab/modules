@@ -339,6 +339,10 @@ SOMATIC_FILTER_VCF = $(PERL) $(HOME)/share/scripts/somaticFilterVCF.pl
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
+<< = $(word 2,$^)
+<<< = $(word 3,$^)
+<<<< = $(word 4,$^)
+
 #signature md5
 #makepp_no_builtin = 1
 #makepp_percent_subdirs := 1
