@@ -49,8 +49,6 @@ oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infil
 		--hgtable $$(HG_TABLE) \
 		--samplename $1 \
 		--infile $$< \
-		--gcdir $$(GC_DIR) \
-		--mapdir $$(MAP_DIR) \
 		--outdir $$(@D)/$1_$2 \
 		&& touch $$@")
 endef
