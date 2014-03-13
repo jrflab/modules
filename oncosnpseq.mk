@@ -1,7 +1,7 @@
 # apply oncosnpseq
 #
 # how to create dbsnp file: 
-# java -jar ~/share/usr/snpEff/SnpSift.jar filter 'exists GMAF & GMAF < 0.5' < dbsnp_137.b37.vcf | awk '{OFS="\t"; if (!/^#/){print $1,$2-1,$2,$4"/"$5,"+"}}' > dbsnp_gmafLT50p.bed
+# java -jar ~/share/usr/snpEff/SnpSift.jar filter 'exists GMAF & GMAF < 0.5' < dbsnp_137.b37.vcf | awk '{OFS="\t"; if (!/^#/){print $1,$2-1,$2,$3}}' > dbsnp_gmafLT50p.bed
 # perl -ne 'print if (rand() < .01)' dbsnp_gmafLT50p.bed > dbsnp_gmafLT50p.rand.bed
 
 include ~/share/modules/Makefile.inc
@@ -33,7 +33,8 @@ oncoseq/infile/%.oncoseq.txt.gz : bam/%.bam
 
 define oncoseq-tumor-normal
 oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infile/$2.oncoseq.txt.gz
-	$$(call LSCRIPT_MEM,8G,12G,"$$(ONCOSEQ) $$(MCR_DIR) \
+	$$(call LSCRIPT_MEM,8G,12G,"mkdir -p $$(@D)/$1_$2; \
+		$$(ONCOSEQ) $$(MCR_DIR) \
 		--maxcopy 10 \
 		--read_depth_range "[10:40]" \
 		--chr_range "[1:22]" \
