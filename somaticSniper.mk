@@ -9,9 +9,10 @@ include ~/share/modules/gatk.inc
 SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsniper
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
+FIX_AD = $(RSCRIPT) $(HOME)/share/scripts/somaticSniperFixAD.R
 
 VCF_SAMPLES = 0 1
-VCF_GEN_IDS = GT DP DP4 VAQ BQ MQ AMQ SS SSC
+VCF_GEN_IDS = GT AD DP DP4 VAQ BQ MQ AMQ SS SSC
 
 LOGDIR = log/som_sniper.$(NOW)
 
@@ -21,7 +22,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-FILTER_SUFFIX := ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff.transfic.rn
+FILTER_SUFFIX := ss_dp_ft.ss_ft.pass.dbsnp.nsfp.chasm.fathmm.eff.rn
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 ANN_TYPES = eff # annotated
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
@@ -45,11 +46,14 @@ $(foreach i,$(SETS_SEQ),\
 # add pedigree info
 # $(eval $(call pedigree-tumor-normal,tumor,normal))
 define pedigree-tumor-normal
-vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.vcf
+vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fixAD.vcf
 	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call pedigree-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+
+%.fixAD.vcf : %.vcf
+	$(call LSCRIPT,"$(FIX_AD) --genome $(REF) --outFile $@ $<")
 
 include ~/share/modules/vcftools.mk
