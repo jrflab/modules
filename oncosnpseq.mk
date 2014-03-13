@@ -19,6 +19,8 @@ PROCESS_PILEUP = $(PERL) $(ONCOSEQ_PATH)/scripts/process_pileup.pl
 DBSNP_BED = $(HOME)/share/reference/dbsnp_gmafLT50p.rand.bed
 TUMOR_STATES_TABLE = $(ONCOSEQ_PATH)/config/tumourStates.txt
 HG_TABLE = $(ONCOSEQ_PATH)/config/hgTables_b37.txt
+GC_DIR = $(HOME)/share/reference/gc_b37
+MAP_DIR = $(HOME)/share/reference/gc_b37
 
 .SECONDARY:
 .DELETE_ON_ERROR:
@@ -46,6 +48,8 @@ oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infil
 		--hgtable $$(HG_TABLE) \
 		--samplename $1 \
 		--infile $$< \
+		--gcdir $$(GC_DIR) \
+		--mapdir $$(MAP_DIR) \
 		--outdir $$(@D)/$1_$2 \
 		&& touch $$@")
 endef
