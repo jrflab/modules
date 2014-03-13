@@ -52,6 +52,9 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   $(foreach set,$(SAMPLE_SETS), \
 	  $(foreach tumor,$(tumor.$(set)), \
 		  $(eval tumor.$(tumor)_$(normal.$(set)) := $(tumor))))
+  $(foreach set,$(SAMPLE_SETS), \
+	  $(foreach tumor,$(tumor.$(set)), \
+		  $(eval normal.$(tumor)_$(normal.$(set)) := $(normal.$(set)))))
   # tumor_normal.$(tumor) to retrieve tumor_normal
   $(foreach set,$(SAMPLE_SETS), \
 	  $(foreach tumor,$(tumor.$(set)), \
