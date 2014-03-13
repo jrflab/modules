@@ -6,6 +6,8 @@
 
 include ~/share/modules/Makefile.inc
 
+LOGDIR = log/oncoseq.$(NOW)
+
 export LD_LIBRARY_PATH = /home/limr/usr/MATLAB/v82/runtime/glnxa64:/home/limr/usr/MATLAB/v82/bin/glnxa64:/home/limr/usr/MATLAB/v82/sys/os/glnxa64:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64/server:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64
 export XAPPLRESDIR = /home/limr/usr/MATLAB/v82/X11/app-defaults
 
