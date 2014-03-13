@@ -42,6 +42,7 @@ oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infil
 		--tumourheterogeneity \
 		--tumourstatestable $$(TUMOR_STATES_TABLE) \
 		--maxnormalcontamination 0.6 \
+		--seqtype illumina \
 		--hgtable $$(HG_TABLE) \
 		--samplename $1 \
 		--infile $$< \
