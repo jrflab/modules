@@ -46,7 +46,7 @@ oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infil
 		--samplename $1 \
 		--infile $$< \
 		--outdir $$(@D)/$1_$2 \
-		&& touch $@")
+		&& touch $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call oncoseq-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
