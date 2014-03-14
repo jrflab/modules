@@ -42,10 +42,10 @@ EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = varscan_snps varscan_indels
 
 FILTER_SUFFIX := dp_ft.vaf_ft.pass.dbsnp
-FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm
-FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
+FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm.eff.transfic
+FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX).eff
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(FILTER_SUFFIX.$(type)))
+TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(type).novel))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
