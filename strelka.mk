@@ -7,9 +7,10 @@ include ~/share/modules/gatk.inc
 
 LOGDIR = log/strelka.$(NOW)
 
-
 CONFIGURE_STRELKA = $(HOME)/share/usr/bin/configureStrelkaWorkflow.pl
 STRELKA_CONFIG = $(HOME)/share/usr/etc/strelka_config.ini
+
+VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU
 
 .DELETE_ON_ERROR:
 .SECONDARY:
