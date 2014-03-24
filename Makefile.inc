@@ -111,7 +111,7 @@ SHELL = /bin/bash
 
 PATH := $(HOME)/share/usr/bin:$(PATH)
 export PATH
-PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.3/lib:/opt/common/python/python-2.7.3/lib/python2.7
+PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7
 export PYTHONPATH
 #export PYTHONHOME := /opt/common/python/python-2.7.3/
 #Set environment variables
@@ -132,7 +132,7 @@ PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME
 export PERL5LIB
 
 #Interpreters
-PYTHON = /opt/common/python/python-2.7.3/bin/python
+PYTHON = /opt/common/python/python-2.7.5/bin/python
 PERL = $(HOME)/share/usr/ActivePerl-5.18/bin/perl
 #RSCRIPT = /usr/bin/Rscript
 #R = /opt/common/R/R-3.0.0/bin/R
