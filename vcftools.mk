@@ -181,7 +181,7 @@ define hrun-sample
 vcf/$1.%.hrun.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -L $$< -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
 endef
-$(foreach sample,$(SAMPLES),$(eval $(call hrun-sample-chr,$(sample))))
+$(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
 alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
 	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
