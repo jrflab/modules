@@ -32,7 +32,7 @@ strelka/$1_$2 : bam/$1.bam bam/$2.bam
 
 #$$(INIT) qmake -inherit -q jrf.q -- -j 20 -C $$< > $$(LOG) && touch $$@
 strelka/$1_$2/task.complete : strelka/$1_$2
-	$$(call LSCRIPT_PARALLEL_MEM,12,1G,1.5G,"make -j 12 -C $$<")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,12,1G,1.5G,"make -j 12 -C $$<")
 
 vcf/$1_$2.strelka_snps.vcf : strelka/$1_$2/task.complete
 	$$(INIT) cp -f strelka/$1_$2/results/all.somatic.snvs.vcf $$@
