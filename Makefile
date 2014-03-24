@@ -262,6 +262,10 @@ TARGETS += soapfuse
 soapfuse :
 	$(MAKE) -e -f ~/share/modules/soapFuse.mk $(FLAGS) $(TARGET)
 
+TARGETS += strelka
+strelka :
+	$(MAKE) -e -f ~/share/modules/strelka.mk $(FLAGS) $(TARGET)
+
 TARGETS += extract_fastq
 extract_fastq :
 	$(MAKE) -e -f ~/share/modules/extractFastq.mk $(FLAGS) $(TARGET)
