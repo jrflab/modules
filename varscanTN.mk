@@ -45,7 +45,7 @@ FILTER_SUFFIX := dp_ft.vaf_ft.pass.dbsnp
 FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm.eff.transfic
 FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX).eff
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(type).novel))
+TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
@@ -96,7 +96,7 @@ varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
 endef
 $(foreach i,$(SETS_SEQ), \
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call convert-varscan-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(chr)))))
+		$(eval $(call convert-varscan-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 else # no splitting by chr
 
