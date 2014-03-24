@@ -13,7 +13,7 @@ STRELKA_CONFIG = $(HOME)/share/usr/etc/strelka_config.ini
 
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all vcfs tables
+.PHONY: all vcfs tables alltables
 
 VARIANT_TYPES = strelka_snps strelka_indels
 EFF_TYPES = silent missense nonsilent_cds nonsilent
@@ -21,9 +21,10 @@ FILTER_SUFFIX := pass.dbsnp
 FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm.eff.transfic
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
-all : vcfs tables
+all : vcfs tables alltables
 vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair).$(type).$(FILTER_SUFFIX.$(type)).vcf))
 tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),tables/$(pair).$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).txt)))
+alltables : $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),alltables/allTN.$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).txt))
 
 define strelka-tumor-normal
 strelka/$1_$2 : bam/$1.bam bam/$2.bam
