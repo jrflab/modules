@@ -33,7 +33,7 @@ SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR) eff -v -c $(SNP_EFF_CONFIG)
 SNP_SIFT_JAR = $(HOME)/share/usr/snpEff/SnpSift.jar
 SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR)
 SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
-DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.1.txt
+DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.1.txt.gz
 VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff/scripts/vcfEffOnePerLine.pl
 VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
 
