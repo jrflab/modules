@@ -32,11 +32,10 @@ VPATH ?= bam
 all : mutect_vcfs mutect_tables ext_output mut_report
 
 
-FILTER_SUFFIX := som_ad_ft.pass.dbsnp.nsfp.chasm.fathmm.transfic
+FILTER_SUFFIX := som_ad_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-ANN_TYPES = eff # annotated
-VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann))
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),mutect.$(FILTER_SUFFIX).$(ann).tab.$(eff).novel))
+VCF_SUFFIXES = mutect.$(FILTER_SUFFIX)
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab.$(eff).novel)
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
