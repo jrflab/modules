@@ -53,6 +53,6 @@ $(foreach i,$(SETS_SEQ),\
 		$(eval $(call pedigree-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 %.fixAD.vcf : %.vcf
-	$(call LSCRIPT,"$(FIX_AD) --genome $(REF) --outFile $@ $<")
+	$(INIT) $(FIX_AD) --genome $(REF) --outFile $@ $<
 
 include ~/share/modules/vcftools.mk
