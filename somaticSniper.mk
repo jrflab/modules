@@ -22,7 +22,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-FILTER_SUFFIX := ss_dp_ft.ss_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic.rn
+FILTER_SUFFIX := ss_dp_ft.ss_ft.pass.rn.dbsnp.nsfp.eff.chasm.fathmm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),som_sniper.$(FILTER_SUFFIX).tab.$(eff).novel)
