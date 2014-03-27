@@ -46,7 +46,6 @@ VPATH ?= bam
 # create novel indel/snp tables
 
 ##### MAIN TARGETS ######
-ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = gatk_snps gatk_indels
 
@@ -54,10 +53,10 @@ FILTER_SUFFIX := dp_ft.pass.dbsnp
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.chasm.fathmm.transfic
-FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX)
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
+FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
@@ -65,10 +64,10 @@ TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
 ifdef SAMPLE_SET_PAIRS
 SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
-SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.chasm.fathmm.transfic
-SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX)
-SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann)))
-SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach ann,$(ANN_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).$(ann).tab.$(eff).novel)))
+SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
+SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
+SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)))
+SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).tab.$(eff).novel))
 VCFS += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
 TABLES += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
 TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),alltables/allSS.$(suff).txt)
