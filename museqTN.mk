@@ -32,11 +32,10 @@ VPATH ?= bam
 
 all : museq_vcfs museq_tables
 
-FILTER_SUFFIX := dp_ft.dbsnp.nsfp.chasm.fathmm.transfic
+FILTER_SUFFIX := dp_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-ANN_TYPES = eff # annotated
-VCF_SUFFIXES = $(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).vcf)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(foreach ann,$(ANN_TYPES),museq.$(FILTER_SUFFIX).$(ann).tab.$(eff).pass.novel.txt))
+VCF_SUFFIXES = museq.$(FILTER_SUFFIX).vcf
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),museq.$(FILTER_SUFFIX).tab.$(eff).novel.txt)
 
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff)))
 museq_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
