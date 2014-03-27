@@ -141,11 +141,11 @@ ifeq ($(SPLIT_CHR),true)
 # $(eval $(call chr-target-aln,chromosome))
 define chr-target-realn
 %.$1.chr_split.intervals : %.bam.md5 %.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(CHECK_MD5) $$(call GATK_MEM,8G) -T RealignerTargetCreator \
-	-I $$(<:.md5=) \
-	-L $1 \
-	-nt 4 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS) \
-	&> $$(LOG)")
+	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(CHECK_MD5) \
+		$$(call GATK_MEM,8G) -T RealignerTargetCreator \
+		-I $$(<:.md5=) \
+		-L $1 \
+		-nt 4 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS))
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 
