@@ -160,7 +160,7 @@ define chr-target-realn
 		$$(call GATK_MEM,8G) -T RealignerTargetCreator \
 		-I $$(<:.md5=) \
 		-L $1 \
-		-nt 4 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS))
+		-nt 4 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 
