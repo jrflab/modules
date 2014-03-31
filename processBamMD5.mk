@@ -56,6 +56,21 @@ bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
 endif
 
 
+ifdef SPLIT_SAMPLES
+define bam-header
+bam/$1.header.sam : $$(foreach split,$2,bam/$$(split).bam.md5)
+	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
+	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+	uniq $$@.tmp > $$@ && $(RM) $$@.tmp
+endef
+$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
+
+define merged-bam
+bam/$1.bam.md5 : bam/$1.header.sam $$(foreach split,$2,bam/$$(split).bam.md5)
+	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$(<M) $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5)")
+endef
+$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
+endif
 
 
 # indices
