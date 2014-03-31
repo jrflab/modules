@@ -11,6 +11,9 @@ SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
 FIX_AD = $(RSCRIPT) $(HOME)/share/scripts/somaticSniperFixAD.R
 
+BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
+FP_FILTER = $(PERL) $(HOME)/share/usr/bin/somsniper_fpfilter.pl
+
 VCF_SAMPLES = 0 1
 VCF_GEN_IDS = GT AD DP DP4 VAQ BQ MQ AMQ SS SSC
 
@@ -45,7 +48,7 @@ $(foreach i,$(SETS_SEQ),\
 # add pedigree info
 # $(eval $(call pedigree-tumor-normal,tumor,normal))
 define pedigree-tumor-normal
-vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fixAD.vcf
+vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fp.fixAD.vcf
 	$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach i,$(SETS_SEQ),\
@@ -54,5 +57,19 @@ $(foreach i,$(SETS_SEQ),\
 
 %.fixAD.vcf : %.vcf
 	$(INIT) $(FIX_AD) --genome $(REF) --outFile $@ $<
+
+define fpfilter-tumor-normal-chr
+som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.vcf
+	$$(INIT) grep '^#' $$< > $$@ && grep -P '^$3\t' $$< >> $$@
+
+som_sniper/chr_vcf/$1_$2.$3.som_sniper.fp.vcf : som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf bam/$1.bam
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename $$@ --snp-file $$< --readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) && mv $$@.fp_pass $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach chr,$(CHROMOSOMES),\
+		$(eval $(call fpfilter-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
+
+som_sniper/vcf/%.som_sniper.fp.vcf : $(foreach chr,$(CHROMOSOMES),som_sniper/chr_vcf/%.$(chr).som_sniper.fp.vcf)
+	$(INIT) grep '^#' $< > $@ && sed '/^#/d' $^ >> $@
 
 include ~/share/modules/vcftools.mk
