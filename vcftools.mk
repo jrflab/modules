@@ -144,9 +144,7 @@ define hrun-tumor-normal
 vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -L $$< -o $$@ && $$(RM) $$<")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call hrun-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call hrun-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
 define annotate-sample
