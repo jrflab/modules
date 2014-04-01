@@ -111,6 +111,8 @@ $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
 endif
 
 ifdef SAMPLE_PAIRS
+# filter if normal depth > 20 and normal variant depth > 1/5 * tumor variant depth
+# or normal variant depth greater than 1
 define som-ad-ft-tumor-normal
 vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth --filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' --filterName depthFilter && $$(RM) $$<")
