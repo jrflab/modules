@@ -44,6 +44,9 @@ VARIANT_TYPES = varscan_snps varscan_indels
 FILTER_SUFFIX := dp_ft.vaf_ft.pass.dbsnp
 FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX).eff
+ifeq ($(HRUN),true)
+FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX.varscan_indels).hrun
+endif
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
 
