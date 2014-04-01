@@ -41,7 +41,7 @@ ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = varscan_snps varscan_indels
 
-FILTER_SUFFIX := dp_ft.vaf_ft.pass.dbsnp
+FILTER_SUFFIX := dp_ft.som_ad_ft.pass.dbsnp
 FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX).eff
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
