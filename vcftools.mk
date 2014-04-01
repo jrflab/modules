@@ -19,19 +19,24 @@ FATHMM_DIR = $(HOME)/share/usr/fathmm
 FATHMM_PYTHON = $(HOME)/share/usr/bin/python
 FATHMM_PYTHONPATH = $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7
 
+TRANSFIC = $(RSCRIPT) $(HOME)/share/scripts/transficVcf.R
+TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
+
+NON_SILENT_EFF = START_GAINED SPLICE_SITE_ACCEPTOR SPLICE_SITE_DONOR START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
+NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
 
 ifdef NORMAL_VCF
 %.nft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,2G,"$(NORMAL_FILTER) $< $(NORMAL_VCF) > $@")
+	$(call LSCRIPT_MEM,2G,2G,"$(NORMAL_FILTER) $< $(NORMAL_VCF) > $@ && $(RM) $<")
 endif
 
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -q -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -q -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@ && $(RM) $<"))
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/' > $@"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp -f $(subst $( ),$(,),$(NSFP_FIELDS)) -v $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/' > $@ && $(RM) $<"))
 
 # run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
@@ -43,12 +48,12 @@ endif
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ && $(RM) $<"))
 #$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@")
 
 # apply sample depth filter
 %.dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'DP < $(DEPTH_FILTER)' --filterName Depth")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'DP < $(DEPTH_FILTER)' --filterName Depth && $(RM) $<")
 #$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@"))
 
 %.pass.vcf : %.vcf
@@ -56,29 +61,137 @@ endif
 
 # apply dp filter for somatic sniper
 %.ss_dp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getDP() < $(DEPTH_FILTER) || vc.getGenotype(\"NORMAL\").getDP() < $(DEPTH_FILTER)' --filterName depthFilter")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getDP() < $(DEPTH_FILTER) || vc.getGenotype(\"NORMAL\").getDP() < $(DEPTH_FILTER)' --filterName depthFilter && $(RM) $<")
 #$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a DP -i Depth -r PASS -f $< '(exists GEN[ALL].DP) & (GEN[ALL].DP < $(DEPTH_FILTER))' > $@")
 
+# somatic sniper somatic flag filter
 %.ss_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getAttributeAsInt(\"SS\", 0) != 2'  --filterName nonSomatic")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getAttributeAsInt(\"SS\", 0) != 2'  --filterName nonSomatic && $(RM) $<")
 #$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -p -a SS -i 'nonsomatic' -r PASS -f $< '(exists GEN[ALL].SS) & (GEN[1].SS != 2)' > $@")
 
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
 %.freq_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"sed '/##FORMAT=<ID=FREQ/ s/String/Float/; /^#/! s/%//g' $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].FREQ) & (GEN[0].FREQ < 5) & (GEN[1].FREQ[0] > 5)' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"sed '/##FORMAT=<ID=FREQ/ s/String/Float/; /^#/! s/%//g' $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].FREQ) & (GEN[0].FREQ < 5) & (GEN[1].FREQ[0] > 5)' > $@ && $(RM) $<")
 
 %.vaf_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].VAF) & (GEN[0].VAF > 0.05) & (GEN[1].VAF < 0.05)' < $< > $@")
+	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].VAF) & (GEN[0].VAF > 0.05) & (GEN[1].VAF < 0.05)' < $< > $@ && $(RM) $<")
 
 
 # varscan depth filter (b/c varscan is dumb and only gives variant depth)
 %.vdp_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD > $(DEPTH_FILTER))' > $@")
+	$(call LSCRIPT_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter '(exists GEN[*].AD) & (GEN[*].AD > $(DEPTH_FILTER))' > $@ && $(RM) $<")
 
 # add exon distance
 %.exondist.vcf : %.vcf
 	$(call LSCRIPT_MEM,2G,3G,"$(INTRON_POSN_LOOKUP) $< > $@")
+
+%.vcf.idx : %.vcf
+	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $<")
+
+%.chasm.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $<"))
+
+%.fathmm.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM_NET,1G,2G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $<"))
+
+MUT_ASS = $(RSCRIPT) $(HOME)/share/scripts/mutAssVcf.R
+%.mutass.vcf : %.vcf
+	$(call LSCRIPT_MEM,12G,15G,$(MUT_ASS) --outFile $@ --maData $(MUT_ASS_RDATA) $<)
+
+%.transfic.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,3G,4G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $< && $(RM) $<"))
+
+ifdef SAMPLE_SET_PAIRS
+define somatic-filter-vcf-set
+vcf/$1.%.som_ft.vcf : vcf/$1.%.vcf
+	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $(normal.$1) -f 0.03 $$< > $$@ 2> $$(LOG) && $$(RM) $$<
+endef
+$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
+endif
+
+ifdef SAMPLE_PAIRS
+define som-ad-ft-tumor-normal
+vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
+	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth --filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' --filterName depthFilter && $$(RM) $$<")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
+define rename-samples-tumor-normal
+vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
+	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call rename-samples-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
+
+define ad-tumor-normal
+vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
+endef
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call ad-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+
+define annotate-tumor-normal
+vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$< && $$(RM) $$<")
+endef
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call annotate-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+
+define hrun-tumor-normal
+vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -L $$< -o $$@ && $$(RM) $$<")
+endef
+$(foreach i,$(SETS_SEQ),\
+	$(foreach tumor,$(call get_tumors,$(set.$i)), \
+		$(eval $(call hrun-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+endif
+
+define annotate-sample
+vcf/$1.%.ann.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -L $$< -V $$< -o $$@ && $$(RM) $$<")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call annotate-sample,$(sample))))
+
+define hrun-sample
+vcf/$1.%.hrun.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
+	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -L $$< -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ && $$(RM) $$<")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
+
+# VariantEval: generate vcf report
+reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf) $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf.idx)
+	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
+ifdef SAMPLE_PAIRS
+reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf vcf/$(pair).%.vcf.idx)
+	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
+endif
+
+# merge tables
+alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
+	$(call LSCRIPT_MEM,2G,3G,"$(RBIND) --sampleName $< $^ > $@")
+ifdef SAMPLE_SETS
+alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
+	$(call LSCRIPT_MEM,2G,3G,"$(RSCRIPT) $(RBIND) --normalLast $^ > $@")
+endif
+ifdef SAMPLE_PAIRS
+alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
+	$(call LSCRIPT_MEM,2G,3G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
+endif
+
+%.nonsilent.txt : %.txt
+	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
+
+%.nonsilent_cds.txt : %.txt
+	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+
+%.missense.txt : %.txt
+	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
+
+%.silent.txt : %.txt
+	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
@@ -103,133 +216,4 @@ tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
 	$(INIT) id=`head -1 $< | tr '\t' '\n' | grep -n "^ID$$" | sed 's/:.*//'`; \
 	gmaf=`head -1 $< | tr '\t' '\n' | grep -n "^GMAF$$" | sed 's/:.*//'`; \
 	awk -v id=$$id -v gmaf=$$gmaf 'NR == 1 || length($$id) == 1 || $$gmaf < 0.01 { print }' $< > $@ || true
-
-# merge tables
-alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
-	$(INIT) $(RBIND) --sampleName $< $^ > $@
-
-ifdef SAMPLE_SET_PAIRS
-define somatic-filter-vcf-set
-vcf/$1.%.som_ft.vcf : vcf/$1.%.vcf
-	$$(INIT) $$(SOMATIC_FILTER_VCF) -n $(normal.$1) -f 0.03 $$< > $$@ 2> $$(LOG)
-endef
-$(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
-endif
-
-ifdef SAMPLE_SETS
-alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
-	$(INIT) $(RSCRIPT) $(RBIND) --normalLast $^ > $@
-endif
-
-ifdef SAMPLE_PAIRS
-#define somatic-filter-vcf
-#vcf/$1_$2.%.som_ft.vcf : vcf/$1_$2.%.vcf
-#$$(INIT) $$(SOMATIC_FILTER_VCF)  -n $2 -f 0.03 $$< > $$@ 2> $$(LOG)
-#endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call somatic-filter-vcf,$(tumor),$(normal_lookup.$(tumor)))))
-
-alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
-	$(INIT) $(RSCRIPT) $(RBIND) --tumorNormal $^ > $@
-
-define som-ad-ft-tumor-normal
-vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
-	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth --filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' --filterName depthFilter")
-endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
-
-define rename-samples-tumor-normal
-vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
-	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@
-endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call rename-samples-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
-
-
-define ad-tumor-normal
-vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call ad-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
-define annotate-tumor-normal
-vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call annotate-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
-define hrun-tumor-normal
-vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -L $$< -o $$@")
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call hrun-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-endif
-
-define annotate-sample
-vcf/$1.%.ann.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -L $$< -V $$< -o $$@")
-endef
-$(foreach sample,$(SAMPLES),$(eval $(call annotate-sample,$(sample))))
-
-define hrun-sample
-vcf/$1.%.hrun.vcf : vcf/$1.%.vcf bam/$1.bam bam/$1.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -L $$< -A HomopolymerRun --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@")
-endef
-$(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
-
-alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
-	$(call INIT_MEM,2G,3G) $(RBIND) --sampleName $< $^ > $@
-
-# VariantEval: generate vcf report
-reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf) $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf.idx)
-	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@ &> $(LOG)")
-ifdef SAMPLE_PAIRS
-reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf vcf/$(pair).%.vcf.idx)
-	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@ &> $(LOG)")
-endif
-
-NON_SILENT_EFF = START_GAINED SPLICE_SITE_ACCEPTOR SPLICE_SITE_DONOR START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
-%.nonsilent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
-
-NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
-%.nonsilent_cds.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
-
-%.missense.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
-
-%.silent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
-
-%.vcf.idx : %.vcf
-	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $< &> $(LOG)")
-
-%.chasm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $<"))
-
-%.fathmm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM_NET,1G,2G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $<"))
-#$(INIT) PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< &> $(LOG)
-
-PRED_CODING = $(RSCRIPT) $(HOME)/share/scripts/vcfPredictCoding.R
-%.predCoding.Rdata : %.vcf
-	$(call LSCRIPT_MEM,12G,15G,"$(PRED_CODING) --outFile $@ --genome $(REF) --ref $(REF_FASTA) --ensemblTxdb $(ENSEMBL_TXDB) $<")
-
-FATHMM_INPUT = $(RSCRIPT) $(HOME)/share/scripts/fathmmVcfInput.R
-%.fathmmInput.Rdata : %.predCoding.Rdata
-	$(INIT) $(FATHMM_INPUT) --outFile $@ --genome $(REF) --outFile $@ --ensemblTxdb $(ENSEMBL_TXDB) $< &> $(LOG)
-
-MUT_ASS = $(RSCRIPT) $(HOME)/share/scripts/mutAssVcf.R
-%.mutass.vcf : %.vcf
-	$(call LSCRIPT_MEM,12G,15G,$(MUT_ASS) --outFile $@ --maData $(MUT_ASS_RDATA) $<)
-
-TRANSFIC = $(RSCRIPT) $(HOME)/share/scripts/transficVcf.R
-TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
-%.transfic.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,3G,4G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $<"))
 
