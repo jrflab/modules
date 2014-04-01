@@ -27,7 +27,7 @@ endif
 
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -q -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@"))
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx
@@ -135,9 +135,7 @@ define som-ad-ft-tumor-normal
 vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ --filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' --filterName somaticAlleleDepth --filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' --filterName depthFilter")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call som-ad-ft-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
