@@ -46,11 +46,16 @@ ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
 ANN_SUFFIX := pass.dbsnp.eff
+
 VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm.transfic
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
+
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
 ifeq ($(HRUN),true)
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX.varscan_indels).hrun
+HRUN_FILTER = 2
+VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
 endif
+VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
+
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
 
