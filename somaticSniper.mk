@@ -28,7 +28,7 @@ VPATH ?= bam
 ANN_SUFFIX = pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX := ss_dp_ft.ss_ft.rn.som_ad_ft
 ifdef TARGETS_FILE
-FILTER_SUFFIX := $(FILTER_SUFFIX).targets_ft
+FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIX = som_sniper.$(FILTER_SUFFIX).$(ANN_SUFFIX)
