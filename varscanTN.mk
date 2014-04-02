@@ -41,10 +41,14 @@ ANN_TYPES = eff # annotated
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = varscan_snps varscan_indels
 
-FILTER_SUFFIX := dp_ft.som_ad_ft.pass.dbsnp
-FILTER_SUFFIX.varscan_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
-FILTER_SUFFIX.varscan_indels := $(FILTER_SUFFIX).eff
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
+FILTER_SUFFIX := dp_ft.som_ad_ft
+ifdef TARGETS_FILE
+FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
+endif
+ANN_SUFFIX := pass.dbsnp.eff
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm.transfic
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
