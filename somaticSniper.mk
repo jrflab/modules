@@ -32,7 +32,7 @@ FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIX = som_sniper.$(FILTER_SUFFIX).$(ANN_SUFFIX)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),som_sniper.$(VCF_SUFFIX).tab.$(eff).novel)
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(VCF_SUFFIX).tab.$(eff).novel)
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(VCF_SUFFIX).vcf)
