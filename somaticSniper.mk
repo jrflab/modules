@@ -25,13 +25,17 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-FILTER_SUFFIX := ss_dp_ft.ss_ft.rn.som_ad_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+ANN_SUFFIX = pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+FILTER_SUFFIX := ss_dp_ft.ss_ft.rn.som_ad_ft
+ifdef TARGETS_FILE
+FILTER_SUFFIX := $(FILTER_SUFFIX).targets_ft
+endif
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-VCF_SUFFIXES = som_sniper.$(FILTER_SUFFIX)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),som_sniper.$(FILTER_SUFFIX).tab.$(eff).novel)
+VCF_SUFFIX = som_sniper.$(FILTER_SUFFIX).$(ANN_SUFFIX)
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),som_sniper.$(VCF_SUFFIX).tab.$(eff).novel)
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
-VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
+VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(VCF_SUFFIX).vcf)
 all : somsniper_vcfs somsniper_tables
 somsniper_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 somsniper_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \

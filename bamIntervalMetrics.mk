@@ -13,10 +13,11 @@ LOGDIR = log/metrics.$(NOW)
 EXOME ?= false
 
 ifeq ($(EXOME),true)
-INTERVALS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_intervals.txt
+#INTERVALS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_intervals.txt
 TARGETS_FILE = $(EXOME_BED)
 else
-INTERVALS_FILE ?= intervals.txt
+#INTERVALS_FILE ?= intervals.txt
+TARGETS_FILE = intervals.bed
 endif
 
 PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
@@ -37,13 +38,18 @@ amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metric
 
 report : metrics/interval_report/index.html
 
+
 # interval metrics per sample
 metrics/%.hs_metrics.txt metrics/%.interval_hs_metrics.txt : %.bam %.bam.bai
-	$(call LSCRIPT_MEM,10G,20G,"$(CALC_HS_METRICS) INPUT=$< OUTPUT=$@ METRIC_ACCUMULATION_LEVEL=ALL_READS REFERENCE_SEQUENCE=$(REF_FASTA) PER_TARGET_COVERAGE=metrics/$*.interval_hs_metrics.txt TARGET_INTERVALS=$(INTERVALS_FILE) BAIT_SET_NAME=hs BAIT_INTERVALS=$(INTERVALS_FILE)")
+	TMP=`mktemp`.intervals; \
+	$(SAMTOOLS) view -H $< | grep '^@SQ' > $$TMP && awk 'BEGIN {OFS = "\t"} { print $$1,$$2+1,$$3,$$4,$$6 }' $(TARGETS_FILE)>> $$TMP; \
+	$(call LSCRIPT_MEM,10G,20G,"$(CALC_HS_METRICS) INPUT=$< OUTPUT=$@ METRIC_ACCUMULATION_LEVEL=ALL_READS REFERENCE_SEQUENCE=$(REF_FASTA) PER_TARGET_COVERAGE=metrics/$*.interval_hs_metrics.txt TARGET_INTERVALS=$$TMP BAIT_SET_NAME=hs BAIT_INTERVALS=$$TMP")
 
 # not sure how this differs from above, see picard doc
 metrics/%.amplicon_metrics.txt metrics/%.interval_amplicon_metrics.txt : %.bam %.bam.bai
-	$(call LSCRIPT_MEM,10G,20G,"$(COLLECT_TARGETED_METRICS) INPUT=$< REFERENCE_SEQUENCE=$(REF_FASTA) OUTPUT=$@ AMPLICON_INTERVALS=$(INTERVALS_FILE) TARGET_INTERVALS=$(INTERVALS_FILE) METRIC_ACCUMULATION_LEVEL=ALL_READS PER_TARGET_COVERAGE=metrics/$*.interval_amplicon_metrics.txt")
+	TMP=`mktemp`.intervals; \
+	$(SAMTOOLS) view -H $< | grep '^@SQ' > $$TMP && awk 'BEGIN {OFS = "\t"} { print $$1,$$2+1,$$3,$$4,$$6 }' $(TARGETS_FILE)>> $$TMP; \
+	$(call LSCRIPT_MEM,10G,20G,"$(COLLECT_TARGETED_METRICS) INPUT=$< REFERENCE_SEQUENCE=$(REF_FASTA) OUTPUT=$@ AMPLICON_INTERVALS=$$TMP TARGET_INTERVALS=$$TMP METRIC_ACCUMULATION_LEVEL=ALL_READS PER_TARGET_COVERAGE=metrics/$*.interval_amplicon_metrics.txt")
 
 # summarize metrics into one file
 metrics/hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.txt)
