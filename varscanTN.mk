@@ -48,6 +48,9 @@ endif
 ANN_SUFFIX := pass.dbsnp.eff
 VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm.transfic
 VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
+ifeq ($(HRUN),true)
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX.varscan_indels).hrun
+endif
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
 
