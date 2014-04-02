@@ -51,7 +51,7 @@ VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm.tran
 
 VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
 ifeq ($(HRUN),true)
-HRUN_FILTER = 2
+HRUN_FILTER ?= 1
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
 endif
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
