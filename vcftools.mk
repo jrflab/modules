@@ -76,7 +76,7 @@ endif
 
 # target region filter
 %.target_ft.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ -filterNotInMask $(TARGETS_FILE) && $(RM) $<")
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --mask $(TARGETS_FILE) --maskName targetInterval --filterNotInMask && $(RM) $<")
 
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
