@@ -51,3 +51,5 @@ MUT_ASS_RDATA = $(HOME)/share/reference/MA.hg19/MA.Rdata
 
 ENSEMBL_TXDB = $(HOME)/share/reference/ensembl_biomart.sqlite
 
+MAPSPLICE_REF_DIR = $(HOME)/share/reference/GATK_bundle/2.3/mapsplice_ref
+MAPSPLICE_REF_BASENAME = $(HOME)/share/reference/GATK_bundle/2.3/align_index
