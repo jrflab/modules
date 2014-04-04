@@ -262,6 +262,10 @@ TARGETS += soapfuse
 soapfuse :
 	$(MAKE) -e -f ~/share/modules/soapFuse.mk $(FLAGS) $(TARGET)
 
+TARGETS += mapsplice
+mapsplice :
+	$(MAKE) -e -f ~/share/modules/mapsplice.mk $(FLAGS) $(TARGET)
+
 TARGETS += strelka
 strelka :
 	$(MAKE) -e -f ~/share/modules/strelka.mk $(FLAGS) $(TARGET)
