@@ -24,9 +24,7 @@ endif
 all : $(foreach sample,$(SAMPLES),mapsplice/$(sample).mapsplice_timestamp)
 
 mapsplice/%.mapsplice_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,6,2G,3G,"TMP1=`mktemp --tmpdir=$(TMPDIR)`.fastq; \
-		TMP2=`mktemp --tmpdir=$(TMPDIR)`.fastq; \
-		zcat $< > \$$TMP1 && zcat $(<<) \$$TMP2; \
+	$(call LSCRIPT_PARALLEL_MEM,6,2G,3G,"gzip -fd $^;
 		mkdir -p mapsplice/$*; \
-		$(MAPSPLICE) $(MAPSPLICE_OPTS) -p 6 -o mapsplice/$* -1 \$$TMP1 -2 \$$TMP2 && touch $@; \
-		rm -f \$$TMP1 \$$TMP2")
+			$(MAPSPLICE) $(MAPSPLICE_OPTS) -p 6 -o mapsplice/$* -1 $(<:.gz=) -2 $(<<:.gz=) && touch $@; \
+		gzip -f $(^:.gz=)")
