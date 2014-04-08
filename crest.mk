@@ -5,6 +5,7 @@
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 
+LOGDIR = log/crest.$(NOW)
 CREST_DIR = $(HOME)/share/usr/crest
 CREST = PERL5LIB=$(PERL5LIB):$(CREST_DIR) $(PERL) $(CREST_DIR)/CREST.pl
 
