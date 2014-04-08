@@ -4,6 +4,7 @@ GSNAP_REF_DIR = $(HOME)/share/references/gmapdb
 #UCSC_REF_FASTA := $(HOME)/share/references/genomes/ucsc.hg19.fasta
 #UCSC_REF_DICT = $(HOME)/share/references/genomes/ucsc.hg19.dict
 REF_FASTA ?= $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+REF_2BIT ?= $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37.2bit
 REF_NAME := 1000GenomesPilot-NCBI37
 REF_DATE := 2010517
 #REF_CHR_ORD = $(HOME)/share/references/genomes/ucsc.hg19.chr_order
