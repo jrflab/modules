@@ -270,6 +270,10 @@ TARGETS += strelka
 strelka :
 	$(MAKE) -e -f ~/share/modules/strelka.mk $(FLAGS) $(TARGET)
 
+TARGETS += crest
+crest :
+	$(MAKE) -e -f ~/share/modules/crest.mk $(FLAGS) $(TARGET)
+
 TARGETS += extract_fastq
 extract_fastq :
 	$(MAKE) -e -f ~/share/modules/extractFastq.mk $(FLAGS) $(TARGET)
