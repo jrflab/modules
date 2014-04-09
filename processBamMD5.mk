@@ -12,6 +12,7 @@ NO_REALN ?= false
 SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
 SPLIT_SORT ?= false
+MERGE_SPLIT_BAMS ?= false # merge processed bams
 NUM_SORT_SPLITS ?= 50
 SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
 
@@ -56,8 +57,7 @@ bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
 endif
 
 
-ifdef SPLIT_SAMPLES
-define bam-header
+ifeq ($(MERGE_SPLIT_BAMS),true)
 bam/$1.header.sam : $$(foreach split,$2,bam/$$(split).bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
