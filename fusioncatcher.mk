@@ -7,8 +7,8 @@ LOGDIR = log/fusioncatcher.$(NOW)
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 
-FUSIONCATCHER = $(HOME)/usr/fusioncatcher/bin/fusioncatcher
-FUSIONCATCHER_OPTS = -d /home/limr/usr/fusioncatcher/data
+FUSIONCATCHER = $(HOME)/share/usr/fusioncatcher/bin/fusioncatcher
+FUSIONCATCHER_OPTS = -d $(HOME)/share/usr/fusioncatcher/data
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -17,4 +17,4 @@ FUSIONCATCHER_OPTS = -d /home/limr/usr/fusioncatcher/data
 all : $(foreach sample,$(SAMPLES),fusioncatcher/$(sample).fusioncatcher_timestamp)
 
 fusioncatcher/%.fusioncatcher_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(FUSIONCATCHER) $(FUSIONCATCHER_OPTS) -p 8 -o $(@D)/$* -i $<$(,)$(<<)")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(FUSIONCATCHER) $(FUSIONCATCHER_OPTS) -p 8 -o $(@D)/$* -i $<$(,)$(<<) && touch $@")
