@@ -92,7 +92,7 @@ $(foreach i,$(SETS_SEQ),\
 
 define freec-tumor-normal
 freec/$1.bam_ratio.txt : freec/$1_$2.config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$< &> $$(LOG)")
+	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$<")
 endef
 #$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 $(foreach i,$(SETS_SEQ),\
@@ -100,7 +100,7 @@ $(foreach i,$(SETS_SEQ),\
 		$(eval $(call freec-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
-	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
+	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
 
 freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt))
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outPrefix $(@:.png=) --centromereTable $(CENTROMERE_TABLE) $^
