@@ -1,5 +1,4 @@
-# Run VarScan on tumour-normal matched pairs
-# Detect point mutations
+# Run mapsplice
 ##### DEFAULTS ######
 
 REF ?= hg19
