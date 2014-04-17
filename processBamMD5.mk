@@ -12,7 +12,7 @@ NO_REALN ?= false
 SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
 SPLIT_SORT ?= false
-MERGE_SPLIT_BAMS ?= false # merge processed bams
+MERGE_SPLIT_BAMS ?= false # merge processed split bams
 NUM_SORT_SPLITS ?= 50
 SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
 
