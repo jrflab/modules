@@ -12,7 +12,7 @@ VPATH ?= bam
 .SECONDARY: 
 .PHONY : all
 
-DBSNP_SUBSET = dbsnp_interval_intersect.bed
+DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 
 all : snp_vcf/snps_filtered.vcf
 
