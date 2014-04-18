@@ -266,6 +266,10 @@ TARGETS += mapsplice
 mapsplice :
 	$(MAKE) -e -f ~/share/modules/mapsplice.mk $(FLAGS) $(TARGET)
 
+TARGETS += fusioncatcher
+fusioncatcher :
+	$(MAKE) -e -f ~/share/modules/fusioncatcher.mk $(FLAGS) $(TARGET)
+
 TARGETS += strelka
 strelka :
 	$(MAKE) -e -f ~/share/modules/strelka.mk $(FLAGS) $(TARGET)
