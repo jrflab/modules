@@ -5,6 +5,7 @@
 #
 include ~/share/modules/Makefile.inc
 
+DEFUSE = $(HOME)/share/usr/bin/perl $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 #DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
 DEFUSE_FILTER = $(HOME)/share/scripts/filterDefuse.pl
