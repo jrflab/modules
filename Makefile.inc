@@ -165,7 +165,6 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #BAM2FASTQ = $(HOME)/share/usr/bin/bam2fastq
 #QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
 #TOPHAT = $(HOME)/share/usr/tophat-2.0.8.Linux_x86_64/tophat2
-DEFUSE = $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 #DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 TMPDIR = $(HOME)/share/tmp
 
@@ -294,7 +293,7 @@ LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$
 LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
-QSUB_PRIORITY ?= -100
+QSUB_PRIORITY ?= -500
 override QSUB_ARGS = -V -cwd -now n -sync y -notify -r y -e $(LOG).e -o $(LOG).o -S $(SHELL) -p $(QSUB_PRIORITY)
 QSUB_BIN = /common/sge/bin/lx24-amd64/qsub
 QSUB_QUEUE = $(QSUB_BIN) -q $1

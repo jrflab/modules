@@ -1,7 +1,6 @@
 # This module is used to extract fastq files from bam files
 
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
+include ~/share/modules/Makefile.inc
 
 VPATH ?= unprocessed_bam
 
@@ -21,10 +20,10 @@ FASTQ_TRIMMER = $(PERL) $(HOME)/share/scripts/trimFastq.pl
 .DELETE_ON_ERROR: 
 .PHONY : fastq
 
-ifdef UNSPLIT_SAMPLES
-fastq: $(foreach split,$(UNSPLIT_SAMPLES),fastq/$(split).1.fastq.gz.md5)
-else
+ifeq ($(MERGE_FASTQ),true)
 fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5)
+else
+fastq: $(foreach split,$(UNSPLIT_SAMPLES),fastq/$(split).1.fastq.gz.md5)
 endif
 
 ifdef FASTQ_FILTER
@@ -36,6 +35,9 @@ fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_fastq/%.1.fastq.gz.m
 endif
 
 %.fastq.gz.md5 : %.fastq.gz
+	$(call LSCRIPT,"$(MD5)")
+
+%.fastq.md5 : %.fastq
 	$(call LSCRIPT,"$(MD5)")
 
 ifeq (${EXTRACT_TOOL},picard)
@@ -68,7 +70,9 @@ unprocessed_fastq/%.readtrim.1.fastq.gz unprocessed_fastq/%.readtrim.2.fastq.gz 
 
 define merged-fastq
 unprocessed_fastq/$1.%.fastq.gz.md5 : $$(foreach split,$2,unprocessed_fastq/$$(split).%.fastq.gz.md5)
-	$$(INIT) $$(CHECK_MD5) zcat $^ | gzip > $@ 2> $$(LOG) && $$(MD5)
+	$$(INIT) $$(CHECK_MD5) zcat $$(^M) | gzip > $$(@M) 2> $$(LOG) && $$(MD5)
+unprocessed_fastq/$1.%.fastq.gz.md5 : $$(foreach split,$2,unprocessed_fastq/$$(split).%.fastq.md5)
+	$$(INIT) $$(CHECK_MD5) cat $$(^M) | gzip > $$(@M) 2> $$(LOG) && $$(MD5)
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-fastq,$(sample),$(split_lookup.$(sample)))))
 
