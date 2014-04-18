@@ -111,7 +111,7 @@ SHELL = /bin/bash
 
 PATH := $(HOME)/share/usr/bin:$(PATH)
 export PATH
-PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7
+PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
 export PYTHONPATH
 #export PYTHONHOME := /opt/common/python/python-2.7.3/
 #Set environment variables
@@ -229,8 +229,8 @@ $(space) +=
 
 #CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
 CHR_CHROMOSOMES ?= false
-ifdef INTERVALS_FILE
-   CHROMOSOMES := $(shell grep -v '@' $(INTERVALS_FILE) | cut -f1 | sort | uniq)
+ifdef TARGETS_FILE
+   CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
 else
    ifeq ($(CHR_CHROMOSOMES),true)
       CHROMOSOMES := chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrM
