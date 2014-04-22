@@ -81,7 +81,7 @@ define varscan-chr-type
 varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	--output-vcf $$(VARSCAN_OPTS) > $$@")
+	--output-vcf $$(VARSCAN_OPTS) --vcf-sample-list $$* > $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-type,$(chr),$(type)))))
 
@@ -97,7 +97,7 @@ define varscan-type
 varscan/vcf/%.$1.vcf : bam/%.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$1 \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	--output-vcf $$(VARSCAN_OPTS) > $$@")
+	--output-vcf --vcf-sample-list $$* $$(VARSCAN_OPTS) > $$@")
 endef
 $(foreach type,snp indel, $(eval $(call varscan-type,$(chr),$(type))))
 endif
