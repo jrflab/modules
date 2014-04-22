@@ -137,6 +137,11 @@ TARGETS += varscanTN
 varscanTN :
 	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/varscanTN.mk $(FLAGS) vcfs tables
 
+TARGETS += varscan
+varscan :
+	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/varscan.mk $(FLAGS)
+
+
 # single sample mutation seq
 TARGETS += museqTN
 museqTN :
