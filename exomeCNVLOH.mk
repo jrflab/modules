@@ -17,7 +17,7 @@ all : loh
 loh : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
 
 define exomecnv-baf-tumor-normal-set
-exomecnv/baf/$1_$2.baf_timestamp : vcf/$(subst $( ),_,$3).gatk_snps.vcf
+exomecnv/baf/$1_$2.baf_timestamp : gatk/vcf/$(subst $( ),_,$3).variants.snps.filtered.vcf
 	normal=`grep -m1 '^#CHROM' $$< | cut -f10- | tr '\t' '\n' | grep -n '^$2$$$$' | cut -f1 -d:`; \
 	tumor=`grep -m1 '^#CHROM' $$< | cut -f10- | tr '\t' '\n' | grep -n '^$1$$$$' | cut -f1 -d:`; \
 	$$(INIT) $$(CREATE_BAF) $$< exomecnv/baf/$1_$2.baf_1.txt exomecnv/baf/$1_$2.baf_2.txt $$$$normal $$$$tumor && touch $$@
