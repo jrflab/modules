@@ -11,6 +11,6 @@ EXOME_BED = $(HOME)/share/reference/mus_musculus_known_genes_exons_GRCm38.bed
 FREEC_REF := $(HOME)/share/reference/Mus_musculus_GRCm38/freec
 CHR_LEN = $(HOME)/share/reference/Mus_musculus_GRCm38/mm10.len
 
-BOWTIE_REF = $(HOME)/share/reference/Mus_musculus.GRCm38.71.dna.chromosome.genome
+BOWTIE_REF = $(HOME)/share/reference/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome
 
 #TXDB = $(HOME)/ensmusg70.08032013.sqlite
