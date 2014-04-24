@@ -32,7 +32,7 @@ BOWTIE_REF = $(HOME)/share/reference/GATK_bundle/2.3/human_g1k_v37
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
 
 EXOME_BED = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
-EXOME_BED_NOHEADER = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
+EXOME_BED_NOHEADER = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
 FREEC_REF = $(HOME)/share/reference/GATK_bundle/2.3/FREEC_ref
 CHR_LEN = $(HOME)/share/reference/GATK_bundle/2.3/hg19.len
 
