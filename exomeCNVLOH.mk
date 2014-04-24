@@ -13,8 +13,9 @@ CREATE_BAF = $(PERL) $(HOME)/share/usr/bin/for.loh.files.pl
 .PHONY: all loh
 
 all : loh
-	
-loh : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
+
+ifdef SAMPLE_PAIRS
+LOH += $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
 
 define exomecnv-baf-tumor-normal-set
 exomecnv/baf/$1_$2.baf_timestamp : vcf/$(subst $( ),_,$3).gatk_snps.vcf
@@ -34,3 +35,11 @@ exomecnv/loh/$1.loh.txt : exomecnv/baf/$1.baf_1.txt exomecnv/baf/$1.baf_2.txt
 	$$(call LSCRIPT_MEM,4G,6G,"$$(RSCRIPT) $$(EXOMECNVLOH) --tumor $$< --normal $$(word 2,$$^) --outPrefix $$(@D)/$1")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-loh-pair,$(pair))))
+
+else
+LOH += $(foreach sample,$(SAMPLES),exomecnv/loh/$(sample).loh.txt)
+
+
+endif
+
+loh : $(LOH) 
