@@ -13,6 +13,7 @@ include ~/share/modules/Makefile.inc
 VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.6.jar
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
+FIX_VARSCAN_VCF = $(PERL) ~/share/scripts/fixVarscanVcf.pl
 
 
 VPATH ?= bam
@@ -81,13 +82,13 @@ define varscan-chr-type
 varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	--output-vcf $$(VARSCAN_OPTS) --vcf-sample-list $$* > $$@")
+	--output-vcf $$(VARSCAN_OPTS) --vcf-sample-list $$* | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-type,$(chr),$(type)))))
 
 define merge-varscan-vcfs
 varscan/vcf/$1.%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1.$$(chr).%.vcf)
-	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; do grep -v '^#' $$$$x >> $$@; done
+	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; do grep -v '^#' $$$$x >> $$@ || true; done
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-varscan-vcfs,$(sample))))
 
@@ -97,7 +98,7 @@ define varscan-type
 varscan/vcf/%.$1.vcf : bam/%.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$1 \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	--output-vcf --vcf-sample-list $$* $$(VARSCAN_OPTS) > $$@")
+	--output-vcf --vcf-sample-list $$* $$(VARSCAN_OPTS) | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
 endef
 $(foreach type,snp indel, $(eval $(call varscan-type,$(chr),$(type))))
 endif
