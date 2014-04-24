@@ -12,14 +12,6 @@ LOGDIR = log/metrics.$(NOW)
 
 EXOME ?= false
 
-ifeq ($(EXOME),true)
-#INTERVALS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr_intervals.txt
-TARGETS_FILE = $(EXOME_BED)
-else
-#INTERVALS_FILE ?= intervals.txt
-TARGETS_FILE = intervals.bed
-endif
-
 PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
 
 .DELETE_ON_ERROR:
