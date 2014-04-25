@@ -51,10 +51,13 @@ endif
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@ && $(RM) $^"))
 #$(call LSCRIPT_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(DBSNP) $< > $@")
 
-# apply sample depth filter
+# apply overall depth filter
 %.dp_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'DP < $(DEPTH_FILTER)' --filterName Depth && $(RM) $<")
 #$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@"))
+
+%.sdp_ft.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a SampleDepth -i SampleDepth '(exists GEN[*].DP) & (GEN[*].DP > 20)' > $@"))
 
 # apply HRun filter
 %.hrun_ft.vcf : %.vcf
