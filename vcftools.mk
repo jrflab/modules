@@ -57,7 +57,7 @@ endif
 #$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a AllelicDepth -i AllelicDepth '(exists GEN[*].AD) & (GEN[*].AD[1] > $(DEPTH_FILTER))' > $@"))
 
 %.sdp_ft.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< -p -a SampleDepth -i SampleDepth '(exists GEN[*].DP) & (GEN[*].DP > 20)' > $@"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter -f $< '(exists GEN[*].DP) & (GEN[*].DP > 20)' > $@"))
 
 # apply HRun filter
 %.hrun_ft.vcf : %.vcf
