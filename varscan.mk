@@ -88,7 +88,7 @@ $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-
 
 define merge-varscan-vcfs
 varscan/vcf/$1.%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1.$$(chr).%.vcf)
-	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; do grep -v '^#' $$$$x >> $$@ || true; done
+	$$(INIT) grep '^##' $$< > $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-varscan-vcfs,$(sample))))
 
