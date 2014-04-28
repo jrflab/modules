@@ -28,7 +28,7 @@ all : $(foreach type,$(SUM_TYPE),$(foreach sample,$(SAMPLES),sumreads/$(sample).
 #sumintrons : $(foreach sample,$(SAMPLES),sumintrons/$(sample).sumintrons.txt)
 
 sumreads/%.sumreads.byGene.txt : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_MEM,15G,30G,"$(SUM_READS_RSCRIPT) --outFile $@ $(SUM_READS_OPTS) $<")
+	$(call LSCRIPT_MEM,15G,30G,"$(SUM_READS_RSCRIPT) -g $(REF) --outFile $@ $(SUM_READS_OPTS) $<")
 
 sumreads/%.sumreads.byExon.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,15G,30G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
