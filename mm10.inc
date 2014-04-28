@@ -13,6 +13,8 @@ CHR_LEN = $(HOME)/share/reference/Mus_musculus_GRCm38/mm10.len
 
 BOWTIE_REF = $(HOME)/share/reference/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome
 
+ENSEMBL_TXDB = $(HOME)/share/reference/mus_musculus_ensembl_biomart.2014-04-28.sqlite
+
 #TXDB = $(HOME)/ensmusg70.08032013.sqlite
 
 CHR_CHROMOSOMES ?= false
