@@ -182,14 +182,14 @@ endif
 
 # merge tables
 alltables/all.%.txt : $(foreach sample,$(SAMPLES),tables/$(sample).%.txt)
-	$(call LSCRIPT_MEM,2G,3G,"$(RBIND) --sampleName $< $^ > $@")
+	$(call LSCRIPT_MEM,5G,12G,"$(RBIND) --sampleName $< $^ > $@")
 ifdef SAMPLE_SETS
 alltables/allSS.%.txt : $(foreach set,$(SAMPLE_SETS),tables/$(set).%.txt)
-	$(call LSCRIPT_MEM,2G,3G,"$(RSCRIPT) $(RBIND) --normalLast $^ > $@")
+	$(call LSCRIPT_MEM,5G,12G,"$(RSCRIPT) $(RBIND) --normalLast $^ > $@")
 endif
 ifdef SAMPLE_PAIRS
 alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
-	$(call LSCRIPT_MEM,2G,3G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
+	$(call LSCRIPT_MEM,5G,12G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
 endif
 
 %.nonsilent.txt : %.txt
