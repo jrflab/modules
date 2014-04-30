@@ -37,4 +37,4 @@ snp_vcf/%.snps.vcf : bam/%.bam
 snp_vcf/%.clust.png : snp_vcf/%.vcf
 	$(INIT) $(CLUSTER_VCF) --outFile $@ $<
 
-
+include ~/share/modules/vcftools.mk
