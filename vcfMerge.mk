@@ -16,7 +16,6 @@ MERGE_SUFFIX = $(subst $( ),_,$(VARIANT_TYPES))
 
 all : $(foreach 
 
-
 merged_vcf/%.$(MERGE_SUFFIX).vcf : vcf/%.$(FILTER_SUFFIX).vcf
 	
 

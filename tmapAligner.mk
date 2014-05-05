@@ -10,7 +10,6 @@ include ~/share/modules/gatk.inc
 LOGDIR := log/tmap.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
-SEQ_PLATFORM = illumina
 
 VPATH ?= unprocessed_bam
 
