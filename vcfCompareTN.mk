@@ -2,17 +2,6 @@
 ##### DEFAULTS ######
 REF ?= hg19
 LOGDIR = log/vcfCompTN.$(NOW)
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
-SAMPLE_FILE ?= samples.txt
-TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
-#SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
-
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
-
 
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
@@ -24,6 +13,18 @@ include ~/share/modules/Makefile.inc
 
 FILTER_SUFFIX := dp_ft
 VARIANT_TYPES := mutect museq
+
+VCF_TYPES = varscan_snps strelka_snps
+VCF_SUFFIX.gatk_snps := gatk_snps.dp_ft.som_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+VCF_SUFFIX.gatk_indels := gatk_indels.dp_ft.som_ft.pass.dbsnp.eff
+VCF_SUFFIX.strelka_snps := strelka_snps.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+VCF_SUFFIX.strelka_indels := strelka_indels.pass.dbsnp.eff
+VCF_SUFFIX.varscan_snps := varscan_snps.dp_ft.som_ad_ft.pass.dbsnp.eff.nsfp.chasm.fathmm.transfic
+VCF_SUFFIX.varscan_indels := varscan_indels.dp_ft.som_ad_ft.pass.dbsnp.eff
+VCF_SUFFIX.mutect := mutect.som_ad_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+VCF_SUFFIX.som_sniper := som_sniper.ss_dp_ft.ss_ft.rn.som_ad_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+VCF_SUFFIX.scalpel := scalpel.dbsnp.eff
+VCF_SUFFIXES := $(foreach type,$(VCF_TYPES),$(VCF_SUFFIX.$(type)))
 
 
 all : gt_concordance variant_eval
@@ -40,10 +41,10 @@ cmp_vcf/vcf/$1.%.vcf : vcf/$1_$2.%.vcf
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call select-tumor-variants,$(tumor),$(normal_lookup.$(tumor)))))
 
-cmp_vcf/grp/%.gt_concord.grp : $(foreach type,$(VARIANT_TYPES),cmp_vcf/vcf/%.$(type).$(FILTER_SUFFIX).vcf)
-	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T GenotypeConcordance --dbsnp $(DBSNP) -R $(REF_FASTA)  --eval:$(<F:.$(FILTER_SUFFIX).vcf=) $< $(foreach i,$(wordlist 2,$(words $^),$^),--comp:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) -o $@ &> $(LOG)")
+cmp_vcf/grp/%.gt_concord.grp : $(foreach type,$(VCF_TYPES),cmp_vcf/vcf/%.$(VCF_SUFFIX.$(type)).vcf)
+	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T GenotypeConcordance --dbsnp $(DBSNP) -R $(REF_FASTA)  --eval:$(<F:.$(FILTER_SUFFIX).vcf=) $< $(foreach i,$(wordlist 2,$(words $^),$^),--comp:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) -o $@")
 	
-cmp_vcf/grp/%.variant_eval.grp : $(foreach type,$(VARIANT_TYPES),cmp_vcf/vcf/%.$(type).$(FILTER_SUFFIX).vcf)
-	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantEval --dbsnp $(DBSNP) -R $(REF_FASTA) $(foreach i,$^,--eval:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) $(foreach i,$^,--comp:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) -o $@ &> $(LOG)")
+cmp_vcf/grp/%.variant_eval.grp : $(foreach type,$(VCF_TYPES),cmp_vcf/vcf/%.$(VCF_SUFFIX.$(type)).vcf)
+	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantEval --dbsnp $(DBSNP) -R $(REF_FASTA) $(foreach i,$^,--eval:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) $(foreach i,$^,--comp:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) -o $@")
 
 include ~/share/modules/gatk.inc

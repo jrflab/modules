@@ -35,7 +35,7 @@ crest/sclip/%.sclip.txt : $(foreach chr,$(CHROMOSOMES),crest/sclip/%.$(chr).scli
 
 define sv-tumor-normal-chr
 crest/sv/$1_$2.$3.predSV.txt : bam/$1.bam bam/$2.bam crest/sclip/$1.cover 
-	$$(call LSCRIPT_MEM,4G,6G,"$$(CREST) -p crest/sv/$1_$2.$3 -f $$(<<<) -d $$< -g $$(<<) --ref_genome $$(REF_FASTA) -t $$(REF_2BIT) -r $3")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(CREST) -p $1_$2.$3 -f $$(<<<) -d $$< -g $$(<<) --ref_genome $$(REF_FASTA) -t $$(REF_2BIT) -r $3")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach chr,$(CHROMOSOMES),\
@@ -43,7 +43,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define sv-chr
 crest/sv/%.$1.predSV.txt : bam/%.bam crest/sclip/%.cover 
-	$$(call LSCRIPT_MEM,4G,6G,"$$(CREST) -p crest/sv/$$*.$1 -f $$(<<) -d $$< --ref_genome $$(REF_FASTA) -t $$(REF_2BIT) -r $1")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(CREST) -p $$*.$1 -f $$(<<) -d $$< --ref_genome $$(REF_FASTA) -t $$(REF_2BIT) -r $1")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call sv-chr,$(chr))))
 
