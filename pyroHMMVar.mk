@@ -13,7 +13,7 @@ PYROHMM2VCF = $(PERL) $(HOME)/share/scripts/pyroHMMVcf.pl
 .DELETE_ON_ERROR: 
 .PHONY: all
 
-FILTER_SUFFIX := ann
+FILTER_SUFFIX := 
 
 tables : $(foreach sample,$(SAMPLES),pyrohmm/tables/$(sample).pyrohmm.txt)
 vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).pyrohmm.ann.vcf)

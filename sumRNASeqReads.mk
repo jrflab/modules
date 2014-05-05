@@ -47,7 +47,7 @@ sumreads/geneCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumread
 
 sumreads/exonCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byExon.txt)
 	cut -f 2 $< > $@; \
-	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/countsByExon/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
+	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/exonCount/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 
 include ~/share/modules/processBamMD5.mk

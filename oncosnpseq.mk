@@ -35,16 +35,9 @@ define oncoseq-tumor-normal
 oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infile/$2.oncoseq.txt.gz
 	$$(call LSCRIPT_MEM,8G,12G,"mkdir -p $$(@D)/$1_$2; \
 		$$(ONCOSEQ) $$(MCR_DIR) \
-		--maxcopy 10 \
-		--read_depth_range "[10:40]" \
-		--chr_range "[1:22]" \
-		--n_train 30000 \
-		--maxploidy 4.5 \
-		--minploidy 1.5 \
 		--normalcontamination \
 		--tumourheterogeneity \
 		--tumourstatestable $$(TUMOR_STATES_TABLE) \
-		--maxnormalcontamination 0.6 \
 		--seqtype illumina \
 		--hgtable $$(HG_TABLE) \
 		--samplename $1 \
@@ -54,3 +47,10 @@ oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infil
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call oncoseq-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
+#		--maxcopy 10 \
+#		--read_depth_range "[10:40]" \
+#		--chr_range "[1:22]" \
+#		--n_train 30000 \
+#		--maxploidy 4.5 \
+#		--minploidy 1.5 \
+#		--maxnormalcontamination 0.6 \
