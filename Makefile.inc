@@ -274,11 +274,11 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
 QSUB_PRIORITY ?= -500
-override QSUB_ARGS = -V -cwd -now n -notify -e $(LOG).e -o $(LOG).o -S $(SHELL) -p $(QSUB_PRIORITY)
+override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY)
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl -d /common/sge/bin/lx24-amd64 /common/sge/bin/lx24-amd64/qsub
+QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl --
 QSUB_QUEUE = $(QSUB_BIN) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
 USE_CLUSTER ?= true
@@ -299,13 +299,13 @@ LSCRIPT = $(call LSCRIPT_NAMED,$(@F),$1)
 LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
 
-LSCRIPT_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -l internet=1 -- -
-LSCRIPT_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1 -- -
-LSCRIPT_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1 -- -
+LSCRIPT_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -l internet=1
+LSCRIPT_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
+LSCRIPT_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
 
-LSCRIPT_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB) -N X$1 $(QSUB_ARGS) -- -
-LSCRIPT_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4) -- -
-LSCRIPT_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) -N X$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3) -- -
+LSCRIPT_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB) -N X$1 $(QSUB_ARGS)
+LSCRIPT_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
+LSCRIPT_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) -N X$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1
