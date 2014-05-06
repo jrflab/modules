@@ -15,7 +15,7 @@ QMAKE_BINARY = /common/sge/bin/lx-amd64/qmake
 QMAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
 MAKE = ~/share/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 QMAKEFLAGS = -cwd -v -inherit -q jrf.q 
-FLAGS ?= -j 50
+FLAGS ?= -j 100
 
 #SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
 #FIND_LANES = ssh xhost08 sh $(HOME)/share/scripts/findLanes.sh $(SAMPLE_DIRS)
