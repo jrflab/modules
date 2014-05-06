@@ -274,7 +274,7 @@ LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
 # launch read script from stdin
 QSUB_PRIORITY ?= -500
-override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY)
+override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
