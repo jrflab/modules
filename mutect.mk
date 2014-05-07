@@ -32,7 +32,7 @@ VPATH ?= bam
 all : mutect_vcfs mutect_tables ext_output mut_report
 
 
-FILTER_SUFFIX := som_ad_ft.target_ft
+FILTER_SUFFIX := som_ad_ft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
