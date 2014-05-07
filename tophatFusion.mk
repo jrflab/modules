@@ -2,7 +2,7 @@ include ~/share/modules/Makefile.inc
 include ~/share/modules/gatk.inc
 
 TOPHAT := $(HOME)/share/usr/bin/tophat2
-TOPHAT_OPTS := --no-coverage-search --fusion-ignore-chromosomes MT --fusion-search --keep-fasta-order
+TOPHAT_OPTS := --no-coverage-search --fusion-ignore-chromosomes MT --bowtie1 --fusion-search --keep-fasta-order
 
 ifeq ($(PHRED64),true)
 	TOPHAT_OPTS += --solexa1.3-quals
