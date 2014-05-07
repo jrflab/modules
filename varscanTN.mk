@@ -131,16 +131,16 @@ $(foreach i,$(SETS_SEQ),\
 		$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 endif
 
-vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.fp_pass.vcf
+vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 	$(INIT) ln $< $@
 
-vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.fp_pass.vcf
+vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
 	$(INIT) ln $< $@
 
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1 &> $$(LOG)")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
