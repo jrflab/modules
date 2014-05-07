@@ -53,6 +53,9 @@ FILTER_SUFFIX := dp_ft.pass.dbsnp
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
+ifdef TARGETS_FILE
+FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
+endif
 FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
@@ -64,6 +67,9 @@ TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
 ifdef SAMPLE_SET_PAIRS
 SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
+ifdef TARGETS_FILE
+SS_FILTER_SUFFIX := target_ft.$(SS_FILTER_SUFFIX)
+endif
 SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
 SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)))
