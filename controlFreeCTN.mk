@@ -68,7 +68,7 @@ $(FREEC_TARGET_CONFIG)
 endef
 
 PLOT_FREEC_COPY_NUM = $(RSCRIPT) $(HOME)/share/scripts/plotFreeCCopyNum.R
-GENE_FREEC_COPY_NUM = $(RSCRIPT) $(HOME)/share/scripts/createGeneCNTable.R
+ANNOTATE_FREEC = $(RSCRIPT) $(HOME)/share/scripts/annotateFreeC.R
 CBIND_CNV = $(RSCRIPT) $(HOME)/share/scripts/cbindCNVs.R
 
 .SECONDARY:
@@ -79,7 +79,7 @@ all : cnv config plots png tables
 cnv : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt.png))
 config : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair).config.txt)
 png : freec/cnvs.png
-tables : freec/recurrent_cnv.txt
+tables : freec/recurrent_cnv.txt freec/annotated_cnv.txt
 
 #$(call config-tumor-normal,tumor,normal)
 define freec-config-tumor-normal
@@ -103,7 +103,7 @@ $(foreach i,$(SETS_SEQ),\
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
 
-freec/annotated_copynum.txt : $(foreach tumor,freec/$(tumor).bam_ratio.txt)
+freec/annotated_cnv.txt : $(foreach tumor,freec/$(tumor).bam_ratio.txt)
 	$(call LSCRIPT_MEM,2G,4G,"$(GENE_FREEC_COPYNUM) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $<")
 
 freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt))
