@@ -32,7 +32,11 @@ VPATH ?= bam
 all : mutect_vcfs mutect_tables ext_output mut_report
 
 
-FILTER_SUFFIX := som_ad_ft.target_ft.pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
+FILTER_SUFFIX := som_ad_ft.target_ft
+ifdef TARGETS_FILE
+FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
+endif
+FILTER_SUFFIX := $(FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIXES = mutect.$(FILTER_SUFFIX)
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab.$(eff).novel)
