@@ -19,6 +19,9 @@ VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU
 VARIANT_TYPES = strelka_snps strelka_indels
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 FILTER_SUFFIX := pass.dbsnp
+ifdef TARGETS_FILE
+FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
+endif
 FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
