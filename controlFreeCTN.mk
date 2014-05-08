@@ -76,15 +76,16 @@ CBIND_CNV = $(RSCRIPT) $(HOME)/share/scripts/cbindCNVs.R
 .PHONY: all cnv config plots png tables
 
 all : cnv config plots png tables
-cnv : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt.png))
-config : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair).config.txt)
+cnv : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt.png)
+#cnv : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt.png))
+config : $(foreach pair,$(SAMPLE_PAIRS),freec/config/$(pair).config.txt)
 png : freec/cnvs.png
 tables : freec/recurrent_cnv.txt freec/annotated_cnv.txt
 
 #$(call config-tumor-normal,tumor,normal)
 define freec-config-tumor-normal
-freec/$1_$2.config.txt : $1.bam $2.bam
-	$$(INIT) echo -e "$$(call FREEC_CONFIG,$$<,$$(word 2,$$^),$$(@D))" | sed 's/ //' >  $$@
+freec/config/$1_$2.config.txt : $1.bam $2.bam
+	$$(INIT) echo -e "$$(call FREEC_CONFIG,$$<,$$(word 2,$$^),freec/$1_$2)" | sed 's/ //' >  $$@
 endef
 #$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-config-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 $(foreach i,$(SETS_SEQ),\
@@ -92,7 +93,7 @@ $(foreach i,$(SETS_SEQ),\
 		$(eval $(call freec-config-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 define freec-tumor-normal
-freec/$1.bam_ratio.txt : freec/$1_$2.config.txt
+freec/$1_$2/$1.bam_ratio.txt : freec/config/$1_$2.config.txt
 	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$<")
 endef
 #$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
@@ -103,11 +104,11 @@ $(foreach i,$(SETS_SEQ),\
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
 
-freec/annotated_cnv.txt : $(foreach tumor,freec/$(tumor).bam_ratio.txt)
-	$(call LSCRIPT_MEM,2G,4G,"$(GENE_FREEC_COPYNUM) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $<")
+freec/annotated_cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
+	$(call LSCRIPT_MEM,2G,4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $<")
 
-freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt))
+freec/cnvs.png : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outPrefix $(@:.png=) --centromereTable $(CENTROMERE_TABLE) $^
 
-freec/recurrent_cnv.txt : $(foreach tumor,$(TUMOR_SAMPLES),freec/$(tumor).bam_ratio.txt)
+freec/recurrent_cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
 	$(INIT) $(CBIND_CNV) --ensemblTxdb $(ENSEMBL_TXDB) --outDir $(@D) $(^:ratio.txt=CNVs)
