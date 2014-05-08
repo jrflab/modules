@@ -85,3 +85,5 @@ else
 endif
 INCLUDE_CHR_Y ?= false
 
+KNOWN_CNVS = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
+
