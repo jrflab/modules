@@ -105,7 +105,7 @@ freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
 	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
 
 freec/annotated_cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
-	$(call LSCRIPT_MEM,2G,4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $<")
+	$(call LSCRIPT_MEM,2G,4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $^")
 
 freec/cnvs.png : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outPrefix $(@:.png=) --centromereTable $(CENTROMERE_TABLE) $^
