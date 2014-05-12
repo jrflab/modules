@@ -3,18 +3,14 @@ include ~/share/modules/Makefile.inc
 QUALIMAP_BAMQC_OPTS = -gd HUMAN 
 QUALIMAP = unset DISPLAY; $(JAVA) -Xmx16G -classpath $(HOME)/share/usr/qualimap/qualimap.jar:$(HOME)/share/usr/qualimap/lib/* org.bioinfo.ngs.qc.qualimap.main.NgsSmartMain 
 
-
-SAMPLE_FILE = samples.txt
-SAMPLES = $(shell cat $(SAMPLE_FILE))
-
 LOGDIR = log/qualimap.$(NOW)
 
 ifeq ($(EXOME),true)
-TARGETS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr.bed
+QUALIMAP_TARGETS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr.bed
 endif
 
-ifdef TARGETS_FILE
-QUALIMAP_BAMQC_OPTS += -gff $(TARGETS_FILE) -os
+ifdef QUALIMAP_TARGETS_FILE
+QUALIMAP_BAMQC_OPTS += -gff $(QUALIMAP_TARGETS_FILE) -os
 endif
 
 .SECONDARY:
