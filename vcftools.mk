@@ -104,7 +104,7 @@ endif
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $<"))
 
 %.fathmm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM_NET,1G,2G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $<"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM_NET,1G,2G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $<"))
 
 MUT_ASS = $(RSCRIPT) $(HOME)/share/scripts/mutAssVcf.R
 %.mutass.vcf : %.vcf
