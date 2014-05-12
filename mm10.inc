@@ -17,6 +17,9 @@ ENSEMBL_TXDB = $(HOME)/share/reference/mus_musculus_ensembl_biomart.2014-04-28.s
 
 #TXDB = $(HOME)/ensmusg70.08032013.sqlite
 
+RIBOSOMAL_INTERVALS = $(HOME)/share/reference/mm10_rrna_intervals.txt
+GENE_REF_FLAT = $(HOME)/share/reference/mm10_genes.refFlat.txt
+
 CHR_CHROMOSOMES ?= false
 ifdef TARGETS_FILE
    CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
