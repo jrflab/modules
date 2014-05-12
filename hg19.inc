@@ -57,6 +57,7 @@ MAPSPLICE_REF_BASENAME = $(HOME)/share/reference/GATK_bundle/2.3/mapsplice_ref/h
 
 ifeq ($(EXOME),true)
 TARGETS_FILE = $(EXOME_BED_NOHEADER)
+QUALIMAP_TARGETS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr.bed
 endif
 
 #CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
