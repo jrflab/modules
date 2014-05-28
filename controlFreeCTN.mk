@@ -24,13 +24,13 @@ VPATH ?= bam
 ifeq ($(EXOME),true)
 FREEC_TARGET_CONFIG =[target]\n\
 captureRegions=$(EXOME_BED)
-NOISY_DATA = true
+NOISY_DATA = false
 PRINT_NA = false
 else
 ifdef TARGETS_FILE
 FREEC_TARGET_CONFIG =[target]\n\
 captureRegions=$(TARGETS_FILE)
-NOISY_DATA = true
+NOISY_DATA = false
 PRINT_NA = false
 else
 FREEC_TARGET_CONFIG = 
@@ -49,7 +49,6 @@ samtools=$(SAMTOOLS)\n\
 outputDir=$3\n\
 noisyData=$(NOISY_DATA)\n\
 ploidy=2\n\
-coefficientOfVariation=0.05\n\
 window=$(FREEC_WINDOW_SIZE)\n\
 gemMappabilityFile=$(GEM_MAP_FILE)\n\
 printNA=$(PRINT_NA)\n\
