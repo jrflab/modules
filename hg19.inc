@@ -10,7 +10,8 @@ REF_DATE := 2010517
 #REF_CHR_ORD = $(HOME)/share/references/genomes/ucsc.hg19.chr_order
 #REF_FA = $(HOME)/share/references/genomes/hg19.fa
 REF_DICT = $(REF_FASTA:.fasta=.dict)
-SNP_EFF_GENOME = GRCh37.70 # == hg19
+#SNP_EFF_GENOME = GRCh37.70
+SNP_EFF_GENOME = hg19
 DBSNP := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.vcf
 DBSNP1PC := $(HOME)/share/reference/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.vcf
 KNOWN_INDELS := $(HOME)/share/reference/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
