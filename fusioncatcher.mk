@@ -8,7 +8,7 @@ LOGDIR = log/fusioncatcher.$(NOW)
 include ~/share/modules/Makefile.inc
 
 FUSIONCATCHER = $(HOME)/share/usr/fusioncatcher/bin/fusioncatcher
-FUSIONCATCHER_OPTS = -d $(HOME)/share/usr/fusioncatcher/data/current --extract-buffer-size=20000000000
+FUSIONCATCHER_OPTS = -d $(HOME)/share/usr/fusioncatcher/data/current --extract-buffer-size=35000000000
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
