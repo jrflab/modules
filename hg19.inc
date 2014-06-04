@@ -65,7 +65,7 @@ INCLUDE_CHR_Y ?= false
 
 KNOWN_CNVS = $(REF_DIR)/GRCh37_hg19_variants_2013-07-23.txt
 
-ifeq ($(UCSC_REF),true)
+ifeq ($(UCSC_REF),false)
    REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
    REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
    DBSNP ?= $(REF_DIR)/GATK_bundle/2.3/dbsnp_137.b37.vcf
