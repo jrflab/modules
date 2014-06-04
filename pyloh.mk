@@ -25,7 +25,7 @@ pyloh/%.readpos_timestamp : bam/%.bam
 
 define bicseq-tumor-normal-chr
 pyloh/$1_$2_chr_segments/$3.bicseq.txt : pyloh/$1.readpos_timestamp pyloh/$2.readpos_timestamp
-	$$(call LSCRIPT_MEM,6G,8G,"$$(BICSEQ) pyloh/$1_readpos/$3.seq pyloh/$2_readpos/$3.seq > $$@")
+	$$(call LSCRIPT_MEM,6G,8G,"$$(BICSEQ) -l 10 pyloh/$1_readpos/$3.seq pyloh/$2_readpos/$3.seq > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach chr,$(CHROMOSOMES),\
