@@ -283,6 +283,10 @@ TARGETS += crest
 crest :
 	$(MAKE) -e -f ~/share/modules/crest.mk $(FLAGS) $(TARGET)
 
+TARGETS += pyloh
+pyloh :
+	$(MAKE) -e -f ~/share/modules/pyloh.mk $(FLAGS) $(TARGET)
+
 TARGETS += extract_fastq
 extract_fastq :
 	$(MAKE) -e -f ~/share/modules/extractFastq.mk $(FLAGS) $(TARGET)
