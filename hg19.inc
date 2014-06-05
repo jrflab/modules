@@ -8,8 +8,6 @@ REF_DIR = $(HOME)/share/reference
 #UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
 
-EXOME_BED = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
-EXOME_BED_NOHEADER = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
 FREEC_REF = $(REF_DIR)/GATK_bundle/2.3/FREEC_ref
 CHR_LEN = $(REF_DIR)/GATK_bundle/2.3/hg19.len
 
@@ -69,12 +67,16 @@ ifeq ($(UCSC_REF),false)
    HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf
    COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v64_02042013_noLimit.vcf
    BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
+   EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
+   EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
 else
    REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
    DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf
    KNOWN_INDELS ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/Mills_and_1000G_gold_standard.indels.hg19.vcf
    OMNI ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/1000G_omni2.5.hg19.vcf
    HAPMAP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/hapmap_3.3.hg19.vcf
+   EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions.bed
+   EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions.bed
 endif
 
 REF_NAME := 1000GenomesPilot-NCBI37
