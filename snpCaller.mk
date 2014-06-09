@@ -35,6 +35,6 @@ snp_vcf/%.snps.vcf : bam/%.bam
 	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach bam,$(filter %.bam,$^),-I $(bam) ) -L $(DBSNP_SUBSET) -o $@ --output_mode EMIT_ALL_SITES")
 
 snp_vcf/%.clust.png : snp_vcf/%.vcf
-	$(INIT) $(CLUSTER_VCF) --outFile $@ $<
+	$(INIT) $(CLUSTER_VCF) --outPrefix snp_vcf/$* $<
 
 include ~/share/modules/vcftools.mk
