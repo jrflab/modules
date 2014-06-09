@@ -13,7 +13,7 @@ VPATH ?= bam
 .PHONY : all
 
 ifeq ($(EXOME),true)
-DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_137_exome.bed
+DBSNP_SUBSET ?= $(HOME)/share/reference/dbsnp_137_exome.bed
 else
 DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 endif
