@@ -21,6 +21,11 @@ LOCAL ?= FALSE
 # Only applies if LOCAL is set to TRUE
 NUM_CORES ?= 2
 
+RMR ?= rm -r
+ifeq ($(NO_RM),true)
+RMR = touch
+endif
+
 ifeq ($(LOCAL),true)
 	DEFUSE_OPTS = -p $(NUM_CORES)
 else
@@ -46,7 +51,7 @@ defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
 
 defuse/tables/%.defuse.txt : defuse/%.defuse_timestamp
-	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && rm -r defuse/$*
+	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && $(RMR) defuse/$*
 
 defuse/alltables/all.defuse.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
