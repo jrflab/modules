@@ -6,7 +6,7 @@
 
 export
 
-NUM_ATTEMPTS ?= 6
+NUM_ATTEMPTS ?= 15
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
