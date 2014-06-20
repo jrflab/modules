@@ -6,7 +6,7 @@
 
 export
 
-NUM_ATTEMPTS ?= 15
+NUM_ATTEMPTS ?= 10
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
@@ -66,7 +66,7 @@ gsnap_iadb :
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e  -k -f ~/share/modules/gsnapIADB.mk PHRED64=$(PHRED64) $(FLAGS) $(TARGET)
 
 TARGETS += bwa
-bwa : 
+bwa : NUM_ATTEMPTS = 50
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS) $(TARGET)
 
 #TARGETS += bwa_md5
