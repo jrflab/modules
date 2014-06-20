@@ -59,6 +59,7 @@ gatk :
 # 		   POOL_SNP_RECAL = true/false
 TARGETS += gsnap
 gsnap : NUM_ATTEMPTS := 50
+gsnap :
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e  -k -f ~/share/modules/gsnapAligner.mk PHRED64=$(PHRED64) $(FLAGS) $(TARGET)
 
 TARGETS += gsnap_iadb
@@ -67,6 +68,7 @@ gsnap_iadb :
 
 TARGETS += bwa
 bwa : NUM_ATTEMPTS := 50
+bwa :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS) $(TARGET)
 
 #TARGETS += bwa_md5
@@ -75,10 +77,12 @@ bwa : NUM_ATTEMPTS := 50
 
 TARGETS += bowtie
 bowtie : NUM_ATTEMPTS := 50
+bowtie :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bowtieAlignerMD5.mk $(FLAGS) $(TARGET)
 
 TARGETS += tmap
 tmap : NUM_ATTEMPTS := 50
+tmap :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/tmapAligner.mk $(FLAGS) $(TARGET)
 
 TARGETS += tophat_fusion
