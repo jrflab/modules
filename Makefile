@@ -68,7 +68,6 @@ gsnap_iadb :
 
 TARGETS += bwa
 bwa : NUM_ATTEMPTS = 50
-bwa :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS) $(TARGET)
 
 #TARGETS += bwa_md5
