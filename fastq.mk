@@ -42,7 +42,7 @@ endif
 
 ifeq (${EXTRACT_TOOL},picard)
 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_bam/%.bam
-	$(call LSCRIPT_MEM,12G,18G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
+	$(call LSCRIPT_MEM,12G,40G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
 	gzip < \$${TEMP}_1 > fastq/$*.1.fastq.gz & \
 	gzip < \$${TEMP}_2 > fastq/$*.2.fastq.gz & \
 	$(SAM_TO_FASTQ) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 && \
