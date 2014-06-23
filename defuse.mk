@@ -39,10 +39,14 @@ endif
 ALL = $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 ifdef NORMAL_DEFUSE_RESULTS
 ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.merged.txt
+ALLTABLE += defuse/alltables/all.defuse_ft.nft.oncofuse.merged.txt
 ALL += defuse/recur_tables/recurFusions.defuse.nft.gene.txt
+ALL += defuse/recur_tables/recurFusions.defuse_ft.nft.gene.txt
 else
 ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
+ALLTABLE += defuse/alltables/all.defuse_ft.oncofuse.merged.txt
 ALL += defuse/recur_tables/recurFusions.defuse.gene.txt
+ALL += defuse/recur_tables/recurFusions.defuse_ft.gene.txt
 endif
 all : $(ALLTABLE) $(ALL)
 
@@ -50,13 +54,15 @@ all : $(ALLTABLE) $(ALL)
 defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
 
-defuse/tables/%.defuse.txt : defuse/%.defuse_timestamp
-	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && $(RMR) defuse/$*
+defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : defuse/%.defuse_timestamp
+	$(INIT) $(PERL) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && \
+	$(PERL) $(DEFUSE_FILTER) defuse/$*/results.tsv > $@ 2>> $(LOG) \
+	&& $(RMR) defuse/$*
 
-defuse/alltables/all.defuse.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
+defuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
 
-defuse/alltables/%.defuse.nft.txt : defuse/alltables/%.defuse.txt
+defuse/alltables/%.defuse_ft.nft.txt : defuse/alltables/%.defuse_ft.txt
 	$(INIT) $(PERL) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
 
 defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
