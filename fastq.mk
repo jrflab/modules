@@ -42,10 +42,10 @@ endif
 
 ifeq (${EXTRACT_TOOL},picard)
 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_bam/%.bam
-	$(call LSCRIPT_MEM,12G,40G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
+	$(call LSCRIPT_MEM,22G,40G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
 	gzip < \$${TEMP}_1 > fastq/$*.1.fastq.gz & \
 	gzip < \$${TEMP}_2 > fastq/$*.2.fastq.gz & \
-	$(SAM_TO_FASTQ) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 && \
+	$(call SAM_TO_FASTQ_MEM,21G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 && \
 	md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz.md5 && \
 	md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz.md5")
 else
@@ -57,13 +57,13 @@ unprocessed_fastq/%.trim.fastq.gz.md5 : unprocessed_fastq/%.fastq.gz.md5
 	$(call LSCRIPT_MEM,2G,3G,"$(CHECK_MD5) zcat $(<M) | $(FASTQ_TRIMMER) $(TRIM_OPTS) | gzip -c > $(@M) && $(MD5)")
 
 unprocessed_fastq/%.readtrim.1.fastq.gz unprocessed_fastq/%.readtrim.2.fastq.gz : %.bam %.read_len
-	$(call LSCRIPT_MEM,10G,12G,"NUM_READS=`awk '{ sum += $$1 } END { print sum }' $(word 2,$^)`; \
+	$(call LSCRIPT_MEM,22G,32G,"NUM_READS=`awk '{ sum += $$1 } END { print sum }' $(word 2,$^)`; \
 	MAX_LENGTH=`sort -k 2 $(word 2,$^) | awk -v nreads="$$NUM_READS" '$$1 / nreads > 0.4 { print $$2 }' | head -1`; \
 	if [ "$$MAX_LENGTH" = "" ]; then MAX_LENGTH=`cut -d' ' -f 2 $(word 2,$^) | head -1`; fi; \
 	TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
 	gzip < \$${TEMP}_1 > fastq/$*.readtrim.1.fastq.gz & \
 	gzip < \$${TEMP}_2 > fastq/$*.readtrim.2.fastq.gz & \
-	$(SAM_TO_FASTQ) I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 READ1_MAX_BASES_TO_WRITE=\$$MAX_LENGTH READ2_MAX_BASES_TO_WRITE=\$$MAX_LENGTH")
+	$(call SAM_TO_FASTQ_MEM,21G) I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 READ1_MAX_BASES_TO_WRITE=\$$MAX_LENGTH READ2_MAX_BASES_TO_WRITE=\$$MAX_LENGTH")
 
 %.read_len : %.bam
 	$(call LSCRIPT_MEM,4G,6G,"$(SAMTOOLS) view $< | awk '{ print length($$10) }' | sort -n | uniq -c | sort -rn | sed 's/^ \+//' | awk ' > $@")
