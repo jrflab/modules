@@ -73,7 +73,7 @@ bowtie/bam/%.bwt.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 
 bowtie/bam/%.bwt.bam.md5 : fastq/%.fastq.gz.md5
 	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[0-9]\+//'`; \
-		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) --12 $(<:.md5=) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) -U $(<:.md5=) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 
 
 bam/%.bam.md5 : bowtie/bam/%.$(BAM_SUFFIX).md5
