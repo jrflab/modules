@@ -96,14 +96,14 @@ $(REF_FASTA:.fasta=.dict) : $(REF_FASTA)
 
 #$(call VARIANT_RECAL,$@,$^)
 define VARIANT_RECAL
-$(call LSCRIPT_PARALLEL_MEM,6,2.5G,3G,"$(call GATK_MEM,8G) -T VariantRecalibrator \
+$(call LSCRIPT_PARALLEL_MEM,6,4G,5G,"$(call GATK_MEM,22G) -T VariantRecalibrator \
 	-R $(REF_FASTA) -nt 6 \
 -resource:hapmap$(,)known=false$(,)training=true$(,)truth=true$(,)prior=15.0 $(HAPMAP) \
 	-resource:omni$(,)known=false$(,)training=true$(,)truth=false$(,)prior=12.0 $(OMNI) \
 	-resource:dbsnp$(,)known=true$(,)training=false$(,)truth=false$(,)prior=8.0 $(DBSNP) \
 	$(foreach i,$(VARIANT_RECAL_ANNOTATIONS), -an $i) \
 	$(foreach i,$(filter %.vcf,$2), -input $i) \
-	-recalFile $1 -tranchesFile $(basename $1).tranches -rscriptFile $(basename $1).snps.plots.R &> $(LOGDIR)/$1.log")
+	-recalFile $1 -tranchesFile $(basename $1).tranches -rscriptFile $(basename $1).snps.plots.R")
 endef
 
 
