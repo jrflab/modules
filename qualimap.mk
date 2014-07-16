@@ -5,10 +5,6 @@ QUALIMAP = unset DISPLAY; $(JAVA) -Xmx16G -classpath $(HOME)/share/usr/qualimap/
 
 LOGDIR = log/qualimap.$(NOW)
 
-ifeq ($(EXOME),true)
-QUALIMAP_TARGETS_FILE = $(HOME)/share/reference/SureSelect_50MB_S02972011_Regions_nochr.bed
-endif
-
 ifdef QUALIMAP_TARGETS_FILE
 QUALIMAP_BAMQC_OPTS += -gff $(QUALIMAP_TARGETS_FILE) -os
 endif

@@ -8,6 +8,8 @@ LOGDIR ?= log/fastq.$(NOW)
 
 EXTRACT_TOOL ?= picard
 
+BAM2FASTX = $(HOME)/usr/bin/bam2fastx
+
 ifeq ($(TRIM_READS),true)
    FASTQ_FILTER := trim
    TRIM_LENGTH ?= 150
@@ -48,10 +50,16 @@ fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : unprocessed_bam/%.bam
 	$(call SAM_TO_FASTQ_MEM,21G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 && \
 	md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz.md5 && \
 	md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz.md5")
+else ifeq ($(EXTRACT_TOOL),bam2fastx)
+fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.nsorted.bam
+	$(call LSCRIPT_MEM,12G,14G,"$(BAM2FASTX) --fastq --sam --all -o $@ -P -N $<")
+%.nsorted.bam : %.bam
+	$(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=queryname")
 else
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.bam
 	$(call LSCRIPT_MEM,10G,40G,"$(BAM2FASTQ) -o fastq/$*#.fastq $< &> $(LOG).bam2fastq.log && gzip < fastq/$*_1.fastq > fastq/$*.1.fastq.gz && gzip < fastq/$*_2.fastq > fastq/$*.2.fastq.gz")
 endif
+
 
 unprocessed_fastq/%.trim.fastq.gz.md5 : unprocessed_fastq/%.fastq.gz.md5
 	$(call LSCRIPT_MEM,2G,3G,"$(CHECK_MD5) zcat $(<M) | $(FASTQ_TRIMMER) $(TRIM_OPTS) | gzip -c > $(@M) && $(MD5)")

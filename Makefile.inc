@@ -110,6 +110,7 @@ SHELL = /bin/bash
 #SHELL = export SGE_RREQ="-q all.q -now no" && umask $(UMASK) && exec /bin/bash
 
 PATH := $(HOME)/share/usr/bin:$(PATH)
+PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
 export PATH
 PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
 export PYTHONPATH
@@ -128,6 +129,11 @@ export LD_LIBRARY_PATH
 #PERL5LIB += :$(HOME)/share/usr/lib/ensembl-compara/modules/
 
 PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
+PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-compara/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-variation/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-funcgen/modules
 
 export PERL5LIB
 
