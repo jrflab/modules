@@ -55,8 +55,8 @@ defuse/%.defuse_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$^) -2 $(word 2,$^) -o $(@D)/$* $(DEFUSE_OPTS) &> $(LOG) && touch $@
 
 defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : defuse/%.defuse_timestamp
-	$(INIT) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > $@ 2> $(LOG) && \
-	$(DEFUSE_FILTER) defuse/$*/results.tsv > $@ 2>> $(LOG) \
+	$(INIT) $(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > defuse/tables/$*.defuse_ft.txt 2> $(LOG) && \
+	$(DEFUSE_FILTER) defuse/$*/results.tsv > defuse/tables/$*.defuse.txt 2>> $(LOG) \
 	&& $(RMR) defuse/$*
 
 defuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).%.txt)
