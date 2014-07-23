@@ -233,7 +233,7 @@ freec_lohTN :
 
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f ~/share/modules/defuse.mk -j5 -k $(TARGET)
+	$(MAKE) -e -f ~/share/modules/defuse.mk -j10 -k $(TARGET)
 
 TARGETS += oncofuse
 oncofuse :
@@ -249,7 +249,7 @@ hydra :
 
 TARGETS += chimscan
 chimscan :
-	$(MAKE) -e -f ~/share/modules/chimerascan.mk $(FLAGS) $(TARGET)
+	$(MAKE) -e -f ~/share/modules/chimerascan.mk -j10 $(TARGET)
 
 TARGETS += pindel
 pindel :
