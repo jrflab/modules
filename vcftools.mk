@@ -98,7 +98,7 @@ endif
 	$(call LSCRIPT_MEM,2G,3G,"$(INTRON_POSN_LOOKUP) $< > $@")
 
 %.vcf.idx : %.vcf
-	$(call LSCRIPT_MEM,4G,8G,"$(IGVTOOLS) index $<")
+	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(IGVTOOLS) index $<")
 
 %.chasm.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $<"))
