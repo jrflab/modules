@@ -284,9 +284,13 @@ override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p 
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl --
-QSUB_QUEUE = $(QSUB_BIN) -q $1
+QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl $1 --
+QSUB_QUEUE = $(call QSUB_BIN,$2) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
+# check output file
+QSUB_CHECK = $(call QSUB_QUEUE,$(QUEUE),-o $@)
+QSUB_CHECK_QUEUE = $(call QSUB_QUEUE,$1,-o $@)
+
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
 LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL) > $(LOG).o 2> $(LOG).e
@@ -312,6 +316,18 @@ LSCRIPT_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,out.q) -
 LSCRIPT_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB) -N X$1 $(QSUB_ARGS)
 LSCRIPT_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
 LSCRIPT_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) -N X$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+
+LSCRIPT_CHECK = $(call LSCRIPT_CHECK_NAMED,$(@F),$1)
+LSCRIPT_CHECK_PARALLEL_MEM = $(call LSCRIPT_CHECK_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
+LSCRIPT_CHECK_MEM = $(call LSCRIPT_CHECK_NAMED_MEM,$(@F),$1,$2,$3)
+
+LSCRIPT_CHECK_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_CHECK_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -l internet=1
+LSCRIPT_CHECK_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_CHECK_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
+LSCRIPT_CHECK_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_CHECK_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
+
+LSCRIPT_CHECK_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
+LSCRIPT_CHECK_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1
