@@ -11,7 +11,7 @@ SPLIT_CHR ?= true
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.6.jar
+VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
