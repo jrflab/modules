@@ -16,6 +16,11 @@ MERGE_SPLIT_BAMS ?= false # merge processed split bams
 NUM_SORT_SPLITS ?= 50
 SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
 
+ifneq ($(KNOWN_INDELS),)
+REALN_OPTS = --knownAlleles $(KNOWN_INDELS)
+REALN_TARGET_OPTS = --known $(KNOWN_INDELS)
+endif
+
 # not primary alignment
 # read fails platform/vendor quality checks
 BAM_FILTER_FLAGS ?= 768
@@ -161,7 +166,7 @@ define chr-target-realn
 		$$(call GATK_MEM,11G) -T RealignerTargetCreator \
 		-I $$(<:.md5=) \
 		-L $1 \
-		-nt 4 -R $$(REF_FASTA)  -o $$@  --known $$(KNOWN_INDELS)")
+		-nt 4 -R $$(REF_FASTA)  -o $$@ $$(REALN_TARGET_OPTS)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 
@@ -173,7 +178,7 @@ define chr-realn
 %.$(1).chr_realn.bam.md5 : %.bam.md5 %.$(1).chr_split.intervals %.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(CHECK_MD5) if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM,8G) -T IndelRealigner \
 	-I $$(<:.md5=) -R $$(REF_FASTA) -L $1 -targetIntervals $$(word 2,$$^) \
-	-o $$(@:.md5=) --knownAlleles $$(KNOWN_INDELS); \
+	-o $$(@:.md5=) $$(REALN_OPTS); \
 	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$(<:.md5=) -L $1 -o $$(@:.md5=) ; fi && $$(MD5)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
@@ -186,12 +191,12 @@ else # no splitting by chr
 %.realn.bam.md5 : %.bam.md5 %.intervals %.bam.bai
 	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,9G,12G,"$(CHECK_MD5) $(call GATK_MEM,8G) -T IndelRealigner \
 	-I $(<:.md5=) -R $(REF_FASTA) -targetIntervals $(word 2,$^) \
-	-o $(@:.md5=) --knownAlleles $(KNOWN_INDELS) && $(MD5) && $(RM) $< $(<:.md5=)") ; \
+	-o $(@:.md5=) $(REALN_OPTS) && $(MD5) && $(RM) $< $(<:.md5=)") ; \
 	else mv $(<:.md5=) $(@:.md5=) && $(MD5) ; fi
 
 %.intervals : %.bam.md5 %.bam.bai
 	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(CHECK_MD5) $(call GATK_MEM,8G) -T RealignerTargetCreator \
 	-I $(<:.md5=) \
-	-nt 4 -R $(REF_FASTA)  -o $@  --known $(KNOWN_INDELS)")
+	-nt 4 -R $(REF_FASTA)  -o $@ $(REALN_TARGET_OPTS)")
 endif
 
