@@ -15,6 +15,7 @@ VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
+CGHCALL = $(HOME)/share/scripts/cghCall.R
 
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
@@ -156,8 +157,11 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	fi; \
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
-varscan/segment/%.varscan2copynumber.txt : varscan/copycall/%.copycall
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=varscan/segment/$* $<")
+varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+
+varscan/cgh_call/%.cgh_call.txt : varscan/segment/%.segment.Rdata
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 define bamrc-chr
 bamrc/%.$1.chr_bamrc : bam/%.bam
