@@ -12,7 +12,6 @@ FREEC_THREADS = 4
 FREEC_MEM = 4G
 FREEC_HMEM = 6G
 
-MAKE_GRAPH = $(HOME)/share/scripts/makeGraph.R
 
 FREEC_WINDOW_SIZE = 10000
 
@@ -66,6 +65,7 @@ SNPfile=$(SNP_TXT)\n\
 $(FREEC_TARGET_CONFIG)
 endef
 
+PLOT_FREEC_LOG_RATIO = $(RSCRIPT) $(HOME)/share/scripts/plotFreeCLogRatio.R
 PLOT_FREEC_COPY_NUM = $(RSCRIPT) $(HOME)/share/scripts/plotFreeCCopyNum.R
 ANNOTATE_FREEC = $(RSCRIPT) $(HOME)/share/scripts/annotateFreeC.R
 CBIND_CNV = $(RSCRIPT) $(HOME)/share/scripts/cbindCNVs.R
@@ -75,7 +75,7 @@ CBIND_CNV = $(RSCRIPT) $(HOME)/share/scripts/cbindCNVs.R
 .PHONY: all cnv config plots png tables
 
 all : cnv config plots png tables
-cnv : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt.png)
+cnv : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.png)
 #cnv : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).bam_ratio.txt.png))
 config : $(foreach pair,$(SAMPLE_PAIRS),freec/config/$(pair).config.txt)
 png : freec/cnvs.png
@@ -103,8 +103,8 @@ $(foreach i,$(SETS_SEQ),\
 		$(eval $(call freec-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
 
-freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
-	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
+freec/%.bam_ratio.png : freec/%.bam_ratio.txt
+	$(INIT) $(PLOT_FREEC_LOG_RATIO) --outFile $(@) --centromereTable $(CENTROMERE_TABLE) $^
 
 freec/annotated_cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
 	$(call LSCRIPT_MEM,2G,4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $^")
