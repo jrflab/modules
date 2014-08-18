@@ -24,18 +24,18 @@ VPATH ?= bam
 ifeq ($(EXOME),true)
 FREEC_TARGET_CONFIG =[target]\n\
 captureRegions=$(EXOME_BED)
-NOISY_DATA = false
-PRINT_NA = false
+NOISY_DATA ?= false
+PRINT_NA ?= false
 else
 ifdef TARGETS_FILE
 FREEC_TARGET_CONFIG =[target]\n\
 captureRegions=$(TARGETS_FILE)
-NOISY_DATA = false
-PRINT_NA = false
+NOISY_DATA ?= false
+PRINT_NA ?= false
 else
 FREEC_TARGET_CONFIG = 
-NOISY_DATA = false
-PRINT_NA = true
+NOISY_DATA ?= false
+PRINT_NA ?= true
 endif
 endif
 
