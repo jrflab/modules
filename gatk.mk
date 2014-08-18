@@ -162,6 +162,19 @@ gatk/vcf/%.variants.indels.filtered.vcf : gatk/vcf/%.variants.indels.vcf gatk/vc
 %.novel.txt : %.txt
 	$(INIT) /bin/awk 'NR == 1 || $$4 == "."' $< > $@
 
+
+vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
+	$(INIT) ln -f $< $@
+
+vcf/%.gatk_indels.vcf : gatk/vcf/%.variants.indels.filtered.vcf
+	$(INIT) ln -f $< $@
+
+VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) $(HOME)/share/scripts/variantEvalGatkReport.R
+
+reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
+	$(call LSCRIPT,"$(VARIANT_EVAL_GATK_REPORT) --metrics $(word 2,$^) --outDir $(@D) $<")
+
+
 # merge variants 
 include ~/share/modules/processBamMD5.mk
 include ~/share/modules/vcftools.mk
