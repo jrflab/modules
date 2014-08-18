@@ -43,3 +43,5 @@ LOH += $(foreach sample,$(SAMPLES),exomecnv/loh/$(sample).loh.txt)
 endif
 
 loh : $(LOH) 
+
+include ~/share/modules/vcftools.mk
