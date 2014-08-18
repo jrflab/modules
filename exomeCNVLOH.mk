@@ -45,4 +45,4 @@ endif
 loh : $(LOH) 
 
 include ~/share/modules/vcftools.mk
-include ~/share/modules/gatk.mk
+include ~/share/modules/gatkVariantCaller.mk
