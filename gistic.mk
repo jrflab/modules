@@ -99,13 +99,14 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 	results <- parLapply(cl, lohFiles, function(file, targets) {
 		s <- read.delim(file, header=T, as.is=T)
 		s <- s[which(s$$LOH=="TRUE"),]
-		s <- s[ which(unlist(apply(s[,2:3],1,function(x){x[1]!=x[2]}))),]
+		s <- s[which(unlist(apply(s[,2:3],1,function(x){x[1]!=x[2]}))),]
 		s$$chr <- gsub("chr", "", s$$chr)
 		thissample <- rep(FALSE, length(targets))
 		for (j in 1:nrow(s)) {
-		x=which(seqnames(targets) == s$$chr[j] & as.numericstart(targets)) >= as.numeric(s$$position.start[j]) & as.numeric(start(targets)) <= as.numeric(s$$position.end[j]))
-		if (length(x)>0) {
-		thissample[x] <- s$$LOH[j]}
+			x <- which(seqnames(targets) == s$$chr[j] & as.numeric(start(targets)) >= as.numeric(s$$position.start[j]) & as.numeric(start(targets)) <= as.numeric(s$$position.end[j]))
+			if (length(x) > 0) {
+				thissample[x] <- s$$LOH[j]
+			}
 		}
 		as.numeric(thissample)
 	}, targets)
