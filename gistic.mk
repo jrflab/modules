@@ -129,6 +129,6 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	cols <- c(brewer.pal(8, "Dark2"), brewer.pal(8, "Set1"), brewer.pal(8, "Set2"))
 	chr <- unlist(lapply(rownames(lohmat), function(x) {strsplit(x, split="_", fixed=T)[[1]][1]}))
 	dir.create('$(@D)', showWarnings = F)
-	png("$@", height=1200, width=600, type="cairo")
+	png("$@", height=600, width=1200, type="cairo")
 	heatmap.2(t(lohmat), trace="none", scale = 'none', Colv = NA, col=c("white", "red"), margin=c(5,15), labCol="", ColSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4, dendrogram = 'row', key = F)
 	null <- dev.off()
