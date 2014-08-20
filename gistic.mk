@@ -117,6 +117,7 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 	save(lohmat, file = "$@")
 
 gistic/cnv.%.txt : gistic/markersfile.txt
+	suppressPackageStartupMessages(library("GenomicRanges"));
 	dgv <- read.delim("$(DGV_FILE)", as.is=T)
 	dgv <- dgv[which(dgv[,5]=="CNV"),]
 	dgv <- dgv[,1:4]
@@ -124,8 +125,11 @@ gistic/cnv.%.txt : gistic/markersfile.txt
 	dgv <-dgv[which(dgv$$size <= $*),]
 	dgv <- dgv[which(dgv$$chr %in% 1:22),]
 	markers <- read.delim("$<", as.is=T, header=F)
-	markers <- cbind(markers, apply(markers, 1, function(x, dgv) {
-		length(which(dgv$$chr==x[2] & dgv$$start <= x[3] & dgv$$end >= x[3])) }, dgv))
+	dgvGR <- GRanges(seqnames = dgv$$chr, ranges = IRanges(start = dgv$$start, end = dgv$$end))
+	markersGR <- GRanges(seqnames = markers[,2], ranges = IRanges(start = markers[,3], end = markers[,3]))
+	markers <- cbind(markers, countOverlaps(markersGR, dgvGR))
+	#markers <- cbind(markers, apply(markers, 1, function(x, dgv) {
+	#	length(which(dgv$$chr==x[2] & dgv$$start <= x[3] & dgv$$end >= x[3])) }, dgv))
 	cnv <- markers[which(markers[,4] > 0),]
 	cnv <- cbind(cnv[,1], cnv[,1])
 	dir.create('$(@D)', showWarnings = F)
