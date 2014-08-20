@@ -97,6 +97,7 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 	}
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	lohmat <- as.data.frame(mcols(targets))
+	rownames(lohmat) <- names(targets)
 	dir.create('$(@D)', showWarnings = F)
 	save(lohmat, file = "$@")
 
@@ -127,5 +128,5 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	chr <- unlist(lapply(rownames(lohmat), function(x) {strsplit(x, split="_", fixed=T)[[1]][1]}))
 	dir.create('$(@D)', showWarnings = F)
 	png("$@", height=1200, width=600, type="cairo")
-	heatmap.2(lohmat, trace="none", Rowv=F, col=c("white", "red"), margin=c(12,5), labRow="", RowSideColors=col[chr], cexCol=1.4)
+	heatmap.2(lohmat, trace="none", Rowv=F, col=c("white", "red"), margin=c(12,5), labRow="", RowSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4)
 	null <- dev.off()
