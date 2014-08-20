@@ -20,15 +20,18 @@ CNV_SIZES = 100000 300000
 all : gistic_inputs gistic/lohheatmap.png
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
+gistic/varscanmat.Rdata : PE := 8
+gistic/varscanmat.Rdata : MEM := 1G
 gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).seg.txt)
+	suppressPackageStartupMessages(library("rtracklayer"));
+	suppressPackageStartupMessages(library("foreach"));
+	suppressPackageStartupMessages(library("doMC"));
 	segFiles <- unlist(strsplit("$^", " "));
 	segNames <- sub(".*/", "", sub("\\..*", "", segFiles))
-	suppressPackageStartupMessages(library("rtracklayer"));
-	suppressPackageStartupMessages(library("snow"));
 	targets <- import('$(TARGETS_FILE)')
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
-	cl <- makeSOCKcluster(8)
-	for (i in 1:length(segFiles)) {
+	registerDoMC(8)
+	foreach (i = 1:length(segFiles)) %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
 		s <- read.delim(segFile, header = T, as.is = T)
@@ -38,11 +41,11 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 		ends <- cumsum(rr$$lengths)
 		starts <- c(1, ends[-length(ends)]+1)
 		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = rr$$values)
+		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = as.numeric(rr$$values))
 		x <- suppressWarnings(findOverlaps(targets, gr))
 		mcols(targets)[queryHits(x), segName] <- gr[subjectHits(x)]$$segmented
 	}
-	varscanmat <- mcols(targets)
+	varscanmat <- as.data.frame(mcols(targets))
 	dir.create('$(@D)', showWarnings = F)
 	save(varscanmat, file = "$@")
 
