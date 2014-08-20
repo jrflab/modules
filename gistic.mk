@@ -31,7 +31,7 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 	targets <- import('$(TARGETS_FILE)')
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	registerDoMC(8)
-	null <- foreach (i = 1:length(segFiles)) %dopar% {
+	varscanmat <- foreach (i = 1:length(segFiles)) %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
 		s <- read.delim(segFile, header = T, as.is = T)
@@ -43,7 +43,8 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
 		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = as.numeric(rr$$values))
 		x <- suppressWarnings(findOverlaps(targets, gr))
-		mcols(targets)[queryHits(x), segName] <- gr[subjectHits(x)]$$segmented
+		#mcols(targets)[queryHits(x), segName] <-
+		gr[subjectHits(x)]$$segmented
 	}
 	varscanmat <- as.data.frame(mcols(targets))
 	dir.create('$(@D)', showWarnings = F)
