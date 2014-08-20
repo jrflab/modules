@@ -44,7 +44,9 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = as.numeric(rr$$values))
 		x <- suppressWarnings(findOverlaps(targets, gr))
 		#mcols(targets)[queryHits(x), segName] <-
-		gr[subjectHits(x)]$$segmented
+		xx <- rep(NA, length(targets))
+		xx[queryHits(x)] <- gr[subjectHits(x)]$$segmented
+		xx
 	}
 	varscanmat <- as.data.frame(mcols(targets))
 	dir.create('$(@D)', showWarnings = F)
