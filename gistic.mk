@@ -22,24 +22,23 @@ gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach siz
 
 gistic/varscanmat.Rdata : MEM := 2G
 gistic/varscanmat.Rdata : PE := 8
-gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIR),varscan/segment/$(pair).seg.txt)
+gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).seg.txt)
 	segFiles <- unlist(strsplit("$^", " "));
-	segNames <- sub(".*/", "", sub("\..*", "", segFiles))
+	segNames <- sub(".*/", "", sub("\\..*", "", segFiles))
 	suppressPackageStartupMessages(library("rtracklayer"));
 	suppressPackageStartupMessages(library("snow"));
-	dir.create('gistic', showWarnings = F)
 	targets <- import('$(TARGETS_FILE)')
 	cl <- makeSOCKcluster(8)
 	results <- parLapply(cl, segFiles, function(file, targets) {
-		print(file)
 		s <- read.delim(file, header=T, as.is=T)
 		s$$Chromosome[s$$Chromosome==23] <- "X"
 		s$$Chromosome[s$$Chromosome==24] <- "Y"
-		rr <- rle(paste(s$$Chromosome, s$$Segmented, sep="_"))
+		rr <- rle(paste(s$$Chromosome, s$$log2_ratio_seg, sep="_"))
 		ends <- cumsum(rr$$lengths)
 		starts <- c(1, ends[-length(ends)]+1)
 		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		tab <- cbind(gsub(".varscan2copynumber", "", file), s$$Chromosome[starts], s$$Start[starts], s$$End[ends], rr$$lengths, rr$$values)
+		segName <- sub(".*/", "", sub("\\..*", "", file))
+		tab <- cbind(segName, s$$Chromosome[starts], s$$Start[starts], s$$End[ends], rr$$lengths, rr$$values)
 		tab <- as.data.frame(tab, stringsAsFactors=F)
 		colnames(tab) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
 		thissample <- rep(NA, length(targets))
@@ -54,6 +53,7 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIR),varscan/segment/$(pair).
 	varscanmat <- do.call("cbind", results)
 	colnames(varscanmat) <- segNames
 	rownames(varscanmat) <- paste(seqnames(targets), start(targets), sep="_")
+	dir.create('$(@D)', showWarnings = F)
 	save(varscanmat, file = "$@")
 
 
@@ -61,10 +61,12 @@ gistic/markersfile.txt : gistic/varscanmat.Rdata
 	load('$<')
 	markers <- matrix(unlist(lapply(rownames(varscanmat), function(x) { strsplit(x, split="_", fixed=T) })), ncol=2, byrow=2)
 	rownames(markers) <- 1:nrow(markers)
-	write.table(markers, col.names=F, file=markers_output, sep="\t", quote=F, na="")
+	dir.create('$(@D)', showWarnings = F)
+	write.table(markers, col.names=F, file="$@", sep="\t", quote=F, na="")
 
-gistic/segmentationfile.txt : gistic/varscanmat.Rdata
+gistic/segmentationfile.txt : gistic/varscanmat.Rdata gistic/markersfile.txt
 	load('$<')
+	markers <- read.table("$(<<)", sep = "\t")
 	seg <- matrix(nrow=0, ncol=6)
 	colnames(seg) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
 	chr <- markers[,1]
@@ -73,7 +75,7 @@ gistic/segmentationfile.txt : gistic/varscanmat.Rdata
 		rr <- rle(paste(chr[notna], varscanmat[notna,i], sep="_"))
 		ends <- cumsum(rr$$lengths)
 		starts <- c(1, ends[-length(ends)]+1)
-		rr$$values <- unlist(lapply(rr$values, function(x) { strsplit(x, split="_")[[1]][2]}))
+		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
 		tab <- cbind(colnames(varscanmat)[i], 
 		markers[starts,1], markers[starts,2], markers[ends,2], 
 		as.vector(rr$$lengths), as.vector(rr$$values))
@@ -81,6 +83,7 @@ gistic/segmentationfile.txt : gistic/varscanmat.Rdata
 		colnames(tab) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
 		seg <- rbind(seg, tab)
 	}
+	dir.create('$(@D)', showWarnings = F)
 	write.table(seg, file="$@", sep="\t", row.names=F, col.names=F, quote=F)
 
 
@@ -88,7 +91,7 @@ gistic/lohmat.Rdata : MEM := 2G
 gistic/lohmat.Rdata : PE := 8
 gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
 	lohFiles <- unlist(strsplit("$^", " "))
-	lohNames <- sub(".*/", "", sub("\..*", "", lohFiles))
+	lohNames <- sub(".*/", "", sub("\\..*", "", lohFiles))
 	suppressPackageStartupMessages(library("rtracklayer"));
 	suppressPackageStartupMessages(library("snow"));
 	targets <- import('$(TARGETS_FILE)');
@@ -110,10 +113,11 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 	lohmat <- do.call("cbind", results)
 	colnames(lohmat) <- lohNames
 	rownames(lohmat) <- paste(seqnames(targets), start(targets), sep="_")
+	dir.create('$(@D)', showWarnings = F)
 	save(lohmat, file = "$@")
 
 gistic/cnv.%.txt : gistic/markersfile.txt
-	dgv <- read.delim($(DGV_FILE), as.is=T)
+	dgv <- read.delim("$(DGV_FILE)", as.is=T)
 	dgv <- dgv[which(dgv[,5]=="CNV"),]
 	dgv <- dgv[,1:4]
 	dgv$$size = dgv[,4]-dgv[,3]+1
@@ -124,6 +128,7 @@ gistic/cnv.%.txt : gistic/markersfile.txt
 		length(which(dgv$$chr==x[2] & dgv$$start <= x[3] & dgv$$end >= x[3])) }, dgv))
 	cnv <- markers[which(markers[,4] > 0),]
 	cnv <- cbind(cnv[,1], cnv[,1])
+	dir.create('$(@D)', showWarnings = F)
 	write.table(cnv, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F, na = "")
 
 gistic/lohheatmap.png : gistic/lohmat.Rdata
@@ -131,6 +136,7 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	suppressPackageStartupMessages(library("gplots"));
 	cols <- c(brewer.pal(8, "Dark2"), brewer.pal(8, "Set1"), brewer.pal(8, "Set2"))
 	chr <- unlist(lapply(rownames(lohmat), function(x) {strsplit(x, split="_", fixed=T)[[1]][1]))
+	dir.create('$(@D)', showWarnings = F)
 	png("$@", height=1200, width=600, type="cairo")
 	heatmap.2(lohmat, trace="none", Rowv=F, col=c("white", "red"), margin=c(12,5), labRow="", RowSideColors=col[chr], cexCol=1.4)
 	null <- dev.off()
