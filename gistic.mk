@@ -20,39 +20,29 @@ CNV_SIZES = 100000 300000
 all : gistic_inputs gistic/lohheatmap.png
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
-gistic/varscanmat.Rdata : MEM := 2G
-gistic/varscanmat.Rdata : PE := 8
 gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).seg.txt)
 	segFiles <- unlist(strsplit("$^", " "));
 	segNames <- sub(".*/", "", sub("\\..*", "", segFiles))
 	suppressPackageStartupMessages(library("rtracklayer"));
 	suppressPackageStartupMessages(library("snow"));
 	targets <- import('$(TARGETS_FILE)')
+	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	cl <- makeSOCKcluster(8)
-	results <- parLapply(cl, segFiles, function(file, targets) {
-		s <- read.delim(file, header=T, as.is=T)
+	for (i in 1:length(segFiles)) {
+		segFile <- segFiles[i]
+		segName <- segNames[i]
+		s <- read.delim(segFile, header = T, as.is = T)
 		s$$Chromosome[s$$Chromosome==23] <- "X"
 		s$$Chromosome[s$$Chromosome==24] <- "Y"
 		rr <- rle(paste(s$$Chromosome, s$$log2_ratio_seg, sep="_"))
 		ends <- cumsum(rr$$lengths)
 		starts <- c(1, ends[-length(ends)]+1)
 		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		segName <- sub(".*/", "", sub("\\..*", "", file))
-		tab <- cbind(segName, s$$Chromosome[starts], s$$Start[starts], s$$End[ends], rr$$lengths, rr$$values)
-		tab <- as.data.frame(tab, stringsAsFactors=F)
-		colnames(tab) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
-		thissample <- rep(NA, length(targets))
-		for (j in 1:nrow(tab)) {
-			thissample[which(seqnames(targets) == tab$$Chromosome[j] & as.numeric(start(targets)) >= as.numeric(tab$$Start[j]) & 
-				as.numeric(start(targets)) <= as.numeric(tab$$End[j]))] <- as.numeric(tab$$segmented[j])
-			if (j %% 100 == 0) { print (j); gc()}
-		}
-		as.numeric(thissample)
-	}, targets)
-	stopCluster(cl)
-	varscanmat <- do.call("cbind", results)
-	colnames(varscanmat) <- segNames
-	rownames(varscanmat) <- paste(seqnames(targets), start(targets), sep="_")
+		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = rr$$values)
+		x <- suppressWarnings(findOverlaps(targets, gr))
+		mcols(targets)[queryHits(x), segName] <- gr[subjectHits(x)]$$segmented
+	}
+	varscanmat <- mcols(targets)
 	dir.create('$(@D)', showWarnings = F)
 	save(varscanmat, file = "$@")
 
@@ -87,33 +77,21 @@ gistic/segmentationfile.txt : gistic/varscanmat.Rdata gistic/markersfile.txt
 	write.table(seg, file="$@", sep="\t", row.names=F, col.names=F, quote=F)
 
 
-gistic/lohmat.Rdata : MEM := 2G
-gistic/lohmat.Rdata : PE := 8
 gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
 	lohFiles <- unlist(strsplit("$^", " "))
 	lohNames <- sub(".*/", "", sub("\\..*", "", lohFiles))
 	suppressPackageStartupMessages(library("rtracklayer"));
-	suppressPackageStartupMessages(library("snow"));
 	targets <- import('$(TARGETS_FILE)');
-	cl <- makeSOCKcluster(8)
-	results <- parLapply(cl, lohFiles, function(file, targets) {
-		s <- read.delim(file, header=T, as.is=T)
-		s <- s[which(s$$LOH=="TRUE"),]
-		s <- s[which(unlist(apply(s[,2:3],1,function(x){x[1]!=x[2]}))),]
-		s$$chr <- gsub("chr", "", s$$chr)
-		thissample <- rep(FALSE, length(targets))
-		for (j in 1:nrow(s)) {
-			x <- which(seqnames(targets) == s$$chr[j] & as.numeric(start(targets)) >= as.numeric(s$$position.start[j]) & as.numeric(start(targets)) <= as.numeric(s$$position.end[j]))
-			if (length(x) > 0) {
-				thissample[x] <- s$$LOH[j]
-			}
-		}
-		as.numeric(thissample)
-	}, targets)
-	stopCluster(cl)
-	lohmat <- do.call("cbind", results)
-	colnames(lohmat) <- lohNames
-	rownames(lohmat) <- paste(seqnames(targets), start(targets), sep="_")
+	for (i in 1:length(lohFiles)) {
+		lohFile <- lohFiles[i]
+		lohName <- lohNames[i]
+		s <- read.delim(lohFile, header = T, as.is = T)
+		lohGR <- GRanges(seqnames = sub('chr', '', s[, "chr"],), ranges = IRanges(start = s[, "position.start"], end = s[, "position.end"]), loh = s[, "LOH"])
+		x <- suppressWarnings(findOverlaps(targets, lohGR))
+		mcols(targets)[queryHits(x), lohName] <- lohGR[subjectHits(x)]$$loh
+	}
+	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
+	lohmat <- as.data.frame(mcols(targets))
 	dir.create('$(@D)', showWarnings = F)
 	save(lohmat, file = "$@")
 
