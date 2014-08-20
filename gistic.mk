@@ -31,7 +31,7 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 	targets <- import('$(TARGETS_FILE)')
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	registerDoMC(8)
-	foreach (i = 1:length(segFiles)) %dopar% {
+	null <- foreach (i = 1:length(segFiles)) %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
 		s <- read.delim(segFile, header = T, as.is = T)
@@ -69,9 +69,7 @@ gistic/segmentationfile.txt : gistic/varscanmat.Rdata gistic/markersfile.txt
 		ends <- cumsum(rr$$lengths)
 		starts <- c(1, ends[-length(ends)]+1)
 		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		tab <- cbind(colnames(varscanmat)[i], 
-		markers[starts,1], markers[starts,2], markers[ends,2], 
-		as.vector(rr$$lengths), as.vector(rr$$values))
+		tab <- cbind(colnames(varscanmat)[i], markers[starts,1], markers[starts,2], markers[ends,2], as.vector(rr$$lengths), as.vector(rr$$values))
 		tab <- as.data.frame(tab, stringsAsFactors=F)
 		colnames(tab) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
 		seg <- rbind(seg, tab)
