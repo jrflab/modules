@@ -98,9 +98,9 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	lohmat <- as.matrix(mcols(targets))
 	rownames(lohmat) <- names(targets)
-	dir.create('$(@D)', showWarnings = F)
 	lohmat[lohmat] <- 1
 	lohmat[which(!lohmat | is.na(lohmat))] <- 0
+	dir.create('$(@D)', showWarnings = F)
 	save(lohmat, file = "$@")
 
 gistic/cnv.%.txt : gistic/markersfile.txt
