@@ -31,7 +31,7 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 	targets <- import('$(TARGETS_FILE)')
 	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
 	registerDoMC(8)
-	varscanmat <- foreach (i = 1:length(segFiles)) %dopar% {
+	varscanmat <- foreach (i = 1:length(segFiles), .combine = 'cbind') %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
 		s <- read.delim(segFile, header = T, as.is = T)
