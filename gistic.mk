@@ -130,5 +130,5 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	chr <- unlist(lapply(rownames(lohmat), function(x) {strsplit(x, split="_", fixed=T)[[1]][1]}))
 	dir.create('$(@D)', showWarnings = F)
 	png("$@", height=1200, width=600, type="cairo")
-	heatmap.2(lohmat, trace="none", scale = 'none', Rowv = NA, col=c("white", "red"), margin=c(12,5), labRow="", RowSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4)
+	heatmap.2(t(lohmat), trace="none", scale = 'none', Colv = NA, col=c("white", "red"), margin=c(5,15), labCol="", ColSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4, dendrogram = 'row', key = F)
 	null <- dev.off()
