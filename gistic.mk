@@ -13,16 +13,16 @@ SHELL = $(HOME)/share/scripts/Rshell
 MEM := 2G
 PE := 1
 
-export LD_LIBRARY_PATH = /home/limr/usr/MATLAB/v82/runtime/glnxa64:/home/limr/usr/MATLAB/v82/bin/glnxa64:/home/limr/usr/MATLAB/v82/sys/os/glnxa64:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64/server:/home/limr/usr/MATLAB/v82/sys/java/jre/glnxa64/jre/lib/amd64
-export XAPPLRESDIR = /home/limr/usr/MATLAB/v82/X11/app-defaults
+export LD_LIBRARY_PATH = /home/limr/usr/MATLAB/v714/runtime/glnxa64:/home/limr/usr/MATLAB/v714/bin/glnxa64:/home/limr/usr/MATLAB/v714/sys/os/glnxa64:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/server:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64
+export XAPPLRESDIR = /home/limr/usr/MATLAB/v714/X11/app-defaults
 MCR_DIR = $(HOME)/share/usr/MATLAB
-GISTIC = $(HOME)/usr/gistic_2_0_21/gp_gist2_from_seg
+GISTIC = $(HOME)/usr/gistic_2_0_21/gp_gistic2_from_seg
 GISTIC_OPTS = -genegistic 0 -smallmem 1 -maxseg 5000 -savegene 1 -saveseg 1 -savedata 0 -v 30 -ta 0.4 -td 0.4 -js 15 -qvt 0.25 -conf 0.99 -broad 1 -brlen 0.5 -rx 0
 DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
 
 CNV_SIZES = 100000 300000
 
-all : gistic_inputs gistic/lohheatmap.png $(foreach size,$(CNV_SIZES),gistic/gistic.$(size).timestamp)
+all : gistic_inputs gistic/lohheatmap.png $(foreach size,$(CNV_SIZES),gistic/gistic_$(size).timestamp)
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
 gistic/varscanmat.Rdata : PE := 8
@@ -138,6 +138,7 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	heatmap.2(t(lohmat), trace="none", scale = 'none', Colv = NA, col=c("white", "red"), margin=c(5,15), labCol="", ColSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4, dendrogram = 'row', key = F)
 	null <- dev.off()
 
+gistic/gistic_%.timestamp : MEM := 8G
 gistic/gistic_%.timestamp : gistic/segmentationfile.txt gistic/markersfile.txt gistic/cnv.%.txt
 	dir.create('$(@D)/gistic_$*', showWarnings = F, recursive = T)
 	system("$(GISTIC) -b $(@D)/gistic_$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS)")
