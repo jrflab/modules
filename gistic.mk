@@ -48,7 +48,8 @@ gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair)
 		xx[queryHits(x)] <- gr[subjectHits(x)]$$segmented
 		xx
 	}
-	varscanmat <- as.data.frame(mcols(targets))
+	rownames(varscanmat) <- names(targets)
+	colnames(varscanmat) <- segNames
 	dir.create('$(@D)', showWarnings = F)
 	save(varscanmat, file = "$@")
 
