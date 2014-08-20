@@ -120,6 +120,7 @@ gistic/cnv.%.txt : gistic/markersfile.txt
 	write.table(cnv, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F, na = "")
 
 gistic/lohheatmap.png : gistic/lohmat.Rdata
+	load("$<")
 	suppressPackageStartupMessages(library("RColorBrewer"));
 	suppressPackageStartupMessages(library("gplots"));
 	cols <- c(brewer.pal(8, "Dark2"), brewer.pal(8, "Set1"), brewer.pal(8, "Set2"))
