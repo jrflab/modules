@@ -218,6 +218,9 @@ TARGETS += exomecnvloh
 exomecnvloh : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/exomeCNVLOH.mk $(FLAGS) $(TARGET) 
 
+TARGETS += gistic
+gistic :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/gistic.mk $(FLAGS) $(TARGET) 
 
 TARGETS += freec
 freec : 
