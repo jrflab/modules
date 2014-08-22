@@ -22,70 +22,47 @@ DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
 
 CNV_SIZES = 100000 300000
 
-all : gistic_inputs gistic/lohheatmap.png $(foreach size,$(CNV_SIZES),gistic/gistic_$(size).timestamp)
+all : gistic_inputs gistic/lohheatmap.png $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp)
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
-gistic/varscanmat.Rdata : PE := 8
-gistic/varscanmat.Rdata : MEM := 1G
-gistic/varscanmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).seg.txt)
+gistic/markersfile.txt :
+	suppressPackageStartupMessages(library("rtracklayer"));
+	targets <- import('$(TARGETS_FILE)')
+	markers <- data.frame(chr = seqnames(targets), pos = start(targets))
+	dir.create('$(@D)', showWarnings = F)
+	write.table(markers, col.names = F, file = "$@", sep = "\t", quote = F, na = "")
+	
+gistic/segmentationfile.txt : PE := 8
+gistic/segmentationfile.txt : MEM := 1G
+gistic/segmentationfile.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).seg.txt)
 	suppressPackageStartupMessages(library("rtracklayer"));
 	suppressPackageStartupMessages(library("foreach"));
 	suppressPackageStartupMessages(library("doMC"));
 	segFiles <- unlist(strsplit("$^", " "));
 	segNames <- sub(".*/", "", sub("\\..*", "", segFiles))
 	targets <- import('$(TARGETS_FILE)')
-	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
+	width(targets) <- 1
 	registerDoMC(8)
-	varscanmat <- foreach (i = 1:length(segFiles), .combine = 'cbind') %dopar% {
+	seg <- foreach (i = 1:length(segFiles), .combine = 'rbind') %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
-		s <- read.delim(segFile, header = T, as.is = T)
-		s$$Chromosome[s$$Chromosome==23] <- "X"
-		s$$Chromosome[s$$Chromosome==24] <- "Y"
-		rr <- rle(paste(s$$Chromosome, s$$log2_ratio_seg, sep="_"))
-		ends <- cumsum(rr$$lengths)
-		starts <- c(1, ends[-length(ends)]+1)
-		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		gr <- GRanges(seqnames = s$$Chromosome[starts], range = IRanges(start = s$$Start[starts], end = s$$End[ends]), segmented = as.numeric(rr$$values))
-		x <- suppressWarnings(findOverlaps(targets, gr))
-		#mcols(targets)[queryHits(x), segName] <-
-		xx <- rep(NA, length(targets))
-		xx[queryHits(x)] <- gr[subjectHits(x)]$$segmented
-		xx
-	}
-	rownames(varscanmat) <- names(targets)
-	colnames(varscanmat) <- segNames
-	dir.create('$(@D)', showWarnings = F)
-	save(varscanmat, file = "$@")
-
-
-gistic/markersfile.txt : gistic/varscanmat.Rdata
-	load('$<')
-	markers <- matrix(unlist(lapply(rownames(varscanmat), function(x) { strsplit(x, split="_", fixed=T) })), ncol=2, byrow=2)
-	rownames(markers) <- 1:nrow(markers)
-	dir.create('$(@D)', showWarnings = F)
-	write.table(markers, col.names=F, file="$@", sep="\t", quote=F, na="")
-
-gistic/segmentationfile.txt : gistic/varscanmat.Rdata gistic/markersfile.txt
-	load('$<')
-	markers <- read.table("$(<<)", sep = "\t")
-	seg <- matrix(nrow=0, ncol=6)
-	colnames(seg) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
-	chr <- markers[,1]
-	for (i in 1:ncol(varscanmat)) {
-		notna <- which(!is.na(varscanmat[,i]))
-		rr <- rle(paste(chr[notna], varscanmat[notna,i], sep="_"))
-		ends <- cumsum(rr$$lengths)
-		starts <- c(1, ends[-length(ends)]+1)
-		rr$$values <- unlist(lapply(rr$$values, function(x) { strsplit(x, split="_")[[1]][2]}))
-		tab <- cbind(colnames(varscanmat)[i], markers[starts,1], markers[starts,2], markers[ends,2], as.vector(rr$$lengths), as.vector(rr$$values))
-		tab <- as.data.frame(tab, stringsAsFactors=F)
-		colnames(tab) <- c("Sample", "Chromosome", "Start", "End", "Num.markers", "segmented")
-		seg <- rbind(seg, tab)
+		s <- read.delim(segFile, header = T, as.is = T, row.names = 1)
+		s[['Chromosome']][s[['Chromosome']] == 23] <- "X"
+		s[['Chromosome']][s[['Chromosome']] == 24] <- "Y"
+		gr <- with(s, GRanges(seqnames = Chromosome, range = IRanges(start = Start, end = End), segmented = as.numeric(log2_ratio_seg)))
+		redGr <- reduce(gr)
+		x <- findOverlaps(redGr, gr, select = 'first')
+		redGr$$segmented <- gr[x]$$segmented
+		# reduced the genomic range, need to intersect with targets
+		numMarkers <- countOverlaps(redGr, targets)
+		Start <- start(targets)[findOverlaps(redGr, targets, select = 'first')]
+		End <- start(targets)[findOverlaps(redGr, targets, select = 'last')]
+		seg <- data.frame(segName, chrom = seqnames(redGr), start = Start, end = End, numMarkers, segmented = redGr$$segmented)
+		seg <- subset(seg, numMarkers > 0)
+		seg[!duplicated(seg), ]
 	}
 	dir.create('$(@D)', showWarnings = F)
-	write.table(seg, file="$@", sep="\t", row.names=F, col.names=F, quote=F)
-
+	write.table(seg, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F)
 
 gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
 	lohFiles <- unlist(strsplit("$^", " "))
@@ -111,11 +88,11 @@ gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.tx
 gistic/cnv.%.txt : gistic/markersfile.txt
 	suppressPackageStartupMessages(library("GenomicRanges"));
 	dgv <- read.delim("$(DGV_FILE)", as.is=T)
-	dgv <- dgv[which(dgv[,5]=="CNV"),]
-	dgv <- dgv[,1:4]
+	dgv <- dgv[which(dgv[,5]=="CNV"), ]
+	dgv <- dgv[, 1:4]
 	dgv$$size = dgv[,4]-dgv[,3]+1
-	dgv <-dgv[which(dgv$$size <= $*),]
-	dgv <- dgv[which(dgv$$chr %in% 1:22),]
+	dgv <- dgv[which(dgv$$size <= $*), ]
+	dgv <- dgv[which(dgv$$chr %in% 1:22), ]
 	markers <- read.delim("$<", as.is=T, header=F)
 	dgvGR <- GRanges(seqnames = dgv$$chr, ranges = IRanges(start = dgv$$start, end = dgv$$end))
 	markersGR <- GRanges(seqnames = markers[,2], ranges = IRanges(start = markers[,3], end = markers[,3]))
@@ -138,7 +115,8 @@ gistic/lohheatmap.png : gistic/lohmat.Rdata
 	heatmap.2(t(lohmat), trace="none", scale = 'none', Colv = NA, col=c("white", "red"), margin=c(5,15), labCol="", ColSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4, dendrogram = 'row', key = F)
 	null <- dev.off()
 
-gistic/gistic_%.timestamp : MEM := 8G
-gistic/gistic_%.timestamp : gistic/segmentationfile.txt gistic/markersfile.txt gistic/cnv.%.txt
+gistic/gistic_cnv%.timestamp : MEM := 8G
+gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.txt gistic/cnv.%.txt
 	dir.create('$(@D)/gistic_$*', showWarnings = F, recursive = T)
-	system("$(GISTIC) -b $(@D)/gistic_$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS)")
+	system("$(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1")
+	system("touch $@")
