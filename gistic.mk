@@ -120,6 +120,5 @@ gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.tx
 	Sys.setenv(LD_LIBRARY_PATH = "/home/limr/usr/MATLAB/v714/runtime/glnxa64:/home/limr/usr/MATLAB/v714/bin/glnxa64:/home/limr/usr/MATLAB/v714/sys/os/glnxa64:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/server:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64")
 	Sys.setenv(XAPPLRESDIR = "/home/limr/usr/MATLAB/v714/X11/app-defaults")
 	Sys.setenv(MCR_DIR = "$(HOME)/share/usr/MATLAB")
-	dir.create('$(@D)/gistic_$*', showWarnings = F, recursive = T)
-	system("$(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1")
-	system("touch $@")
+	dir.create('$(@D)/gistic_cnv$*', showWarnings = F, recursive = T)
+	system("$(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1 && touch $@")
