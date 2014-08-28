@@ -48,7 +48,7 @@ FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
 ANN_SUFFIX := pass.dbsnp.eff
 
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm.transfic
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.transfic
 
 VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
 ifeq ($(HRUN),true)
