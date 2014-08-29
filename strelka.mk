@@ -26,10 +26,12 @@ endif
 FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.transfic
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
+TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
+TABLE_SUFFIXES := $(TABLE_SUFFIXES) $(addsuffix .novel,$(TABLE_SUFFIXES))
+
 all : vcfs tables alltables
 vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair).$(type).$(FILTER_SUFFIX.$(type)).vcf))
-tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),tables/$(pair).$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel.txt)))
-alltables : $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),alltables/allTN.$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel.txt))
+tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt) alltables/allTN.$(suff).txt) 
 
 define strelka-tumor-normal
 strelka/$1_$2 : bam/$1.bam bam/$2.bam
