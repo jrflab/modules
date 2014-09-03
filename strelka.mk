@@ -49,4 +49,4 @@ vcf/$1_$2.strelka_indels.vcf : strelka/$1_$2/task.complete
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call strelka-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-include ~/share/modules/variant_callers/tools/vcftools.mk
+include ~/share/modules/vcf_tools/vcftools.mk
