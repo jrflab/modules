@@ -73,4 +73,4 @@ metrics/%.interval_nonref_freq.txt : %.bam
 	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

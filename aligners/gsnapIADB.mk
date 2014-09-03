@@ -42,4 +42,4 @@ iadb/bam/%.gsnap.bam : iadb/fastq/%.1.fastq iadb/fastq/%.2.fastq
 iadb/bam/%.bam : iadb/bam/%.gsnap.sorted.filtered.markdup.bam
 	$(MKDIR) $(@D); ln -v $< $@
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

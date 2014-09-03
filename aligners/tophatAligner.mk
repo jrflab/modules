@@ -55,5 +55,5 @@ tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) $(TOPHAT) $(TOPHAT_OPTS) -o $(@D)/$* $(BOWTIE_REF) $(word 1,$^) $(word 2,$^) && ln -f tophat/$*/accepted_hits.bam $(@M) && $(MD5)")
 
 
-include ~/share/modules/fastq.mk
-include ~/share/modules/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk

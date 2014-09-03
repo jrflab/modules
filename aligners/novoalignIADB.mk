@@ -28,4 +28,4 @@ iadb/bam/%.novoalign.bam : iadb/fastq/%.1.fastq.gz iadb/fastq/%.2.fastq.gz
 iadb/processed_bam/%.bam : iadb/bam/%.novoalign.sorted.filtered.fixmate.markdup.bam
 	$(MKDIR) $(@D); ln -v $< $@
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

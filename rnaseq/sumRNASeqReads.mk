@@ -50,4 +50,4 @@ sumreads/exonCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumread
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/exonCount/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

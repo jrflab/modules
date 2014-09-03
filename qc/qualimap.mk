@@ -19,4 +19,4 @@ qualimap/%_bamqc.timestamp : bam/%.bam
 	$(call LSCRIPT_PARALLEL_MEM,4,4.5G,5G,"$(QUALIMAP) bamqc $(QUALIMAP_BAMQC_OPTS) -bam $< -nr 6 -nt 8 -outdir qualimap/$*_bamqc && touch $@")
 
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

@@ -91,5 +91,5 @@ bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
 	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^:.md5=) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 
-include ~/share/modules/processBam.mk
-include ~/share/modules/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk

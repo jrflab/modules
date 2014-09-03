@@ -26,4 +26,4 @@ bam/$1.bam.md5 : merged_bam/$1.header.sam $$(foreach split,$2,bam/$$(split).bam)
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

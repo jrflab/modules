@@ -43,4 +43,4 @@ bwa/bam/%.bwa.sam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2
 bam/%.bam : bwa/bam/%.bwa.sorted.filtered.fixmate.markdup.bam
 	$(MKDIR) $(@D); ln -f $< $@
 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk

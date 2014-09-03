@@ -81,5 +81,5 @@ endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
 
-include ~/share/modules/processBam.mk
-include ~/share/modules/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk

@@ -96,5 +96,5 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(
 endif
 
 
-include ~/share/modules/fastq.mk
-include ~/share/modules/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk

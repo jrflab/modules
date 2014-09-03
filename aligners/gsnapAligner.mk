@@ -105,5 +105,5 @@ bam/%.bam : gsnap/bam/%.$(BAM_SUFFIX)
 #	rm -f gsnap/bam/*.bam
 #	rm -fr gsnap/log/*
 
-include ~/share/modules/processBam.mk
-include ~/share/modules/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk
