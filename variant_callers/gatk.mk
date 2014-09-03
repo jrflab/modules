@@ -176,5 +176,5 @@ reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
 
 
 # merge variants 
-include ~/share/modules/processBam.mk
+include ~/share/modules/bam_tools/processBam.mk
 include ~/share/modules/vcf_tools/vcftools.mk
