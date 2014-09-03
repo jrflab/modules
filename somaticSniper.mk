@@ -76,4 +76,4 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 som_sniper/vcf/%.som_sniper.fp.vcf : $(foreach chr,$(CHROMOSOMES),som_sniper/chr_vcf/%.$(chr).som_sniper.fp.vcf)
 	$(INIT) grep '^#' $< > $@ && sed '/^#/d' $^ >> $@
 
-include ~/share/modules/vcftools.mk
+include ~/share/modules/vcf_tools/vcftools.mk
