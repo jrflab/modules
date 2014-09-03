@@ -22,7 +22,7 @@ DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
 
 CNV_SIZES = 100000 300000
 
-all : gistic_inputs gistic/lohheatmap.png $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp)
+all : gistic_inputs $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp)
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
 gistic/markersfile.txt :
