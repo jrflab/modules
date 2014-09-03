@@ -61,6 +61,14 @@ gistic/segmentationfile.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(p
 		seg <- subset(seg, numMarkers > 0)
 		seg[!duplicated(seg), ]
 	}
+	splitSeg <- split(seg, list(as.factor(seg$$segName), as.factor(seg$$chrom)))
+	seg <- do.call('rbind', lapply(splitSeg, function(x) {
+		rx <- Rle(x$$segmented)
+		nx <- x[start(rx), ]
+		nx$$end <- x[end(rx), "end"]
+		nx$$numMarkers <- aggregate(x$$numMarkers, rx, sum)
+		nx
+	}))
 	dir.create('$(@D)', showWarnings = F)
 	write.table(seg, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F)
 
