@@ -91,4 +91,4 @@ reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 filtered_snps : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.filtered.vcf)
 
 
-include ~/share/modules/gatk.mk
+include ~/share/modules/variant_callers/gatk.mk

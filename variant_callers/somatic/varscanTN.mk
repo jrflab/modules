@@ -170,4 +170,4 @@ endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 
-include ~/share/modules/gatk.mk
+include ~/share/modules/variant_callers/gatk.mk

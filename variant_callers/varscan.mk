@@ -110,4 +110,4 @@ vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.vcf
 	$(INIT) ln $< $@
 
 
-include ~/share/modules/gatk.mk
+include ~/share/modules/variant_callers/gatk.mk

@@ -81,4 +81,4 @@ tables/%.mutect_som_indels.txt : tables/%.mutect.dp_ft.annotated.nsfp.pass.novel
 	$(call LSCRIPT,"$(RSCRIPT) $(RBIND) $^ > $@")
 
 
-include ~/share/modules/gatk.mk
+include ~/share/modules/variant_callers/gatk.mk
