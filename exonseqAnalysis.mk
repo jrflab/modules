@@ -13,7 +13,7 @@ FLAGS = -j 25
 all : variants qc cnv qc
 
 alignment.timestamp :
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAlignerMD5.mk $(FLAGS) && touch $@
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bwaAligner.mk $(FLAGS) && touch $@
 
 variants: alignment.timestamp
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/gatkVariantCaller.mk $(FLAGS)

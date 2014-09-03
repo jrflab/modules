@@ -13,7 +13,7 @@ FLAGS = -j 25
 all : alignment variants qc fusions sum_reads
 
 alignment :
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bowtieAlignerMD5.mk $(FLAGS)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bowtieAligner.mk $(FLAGS)
 
 variants : alignment
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/gatkVariantCaller.mk $(FLAGS)
