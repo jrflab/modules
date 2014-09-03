@@ -33,4 +33,4 @@ endef
 $(foreach i,$(shell seq 1 $(NSAMPLES)),$(eval $(call nfuse-wgss-wtss,$(word $i,$(WGSS_SAMPLES)),$(word $i,$(WTSS_SAMPLES)))))
 
 
-#include ~/share/modules/fastq.mk
+#include ~/share/modules/fastq_tools/fastq.mk
