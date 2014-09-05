@@ -30,7 +30,7 @@ ENSEMBL_TXDB = $(REF_DIR)/hsapiens_ensembl_biomart.sqlite
 MAPSPLICE_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/chr
 MAPSPLICE_REF_BASENAME = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/hg19
 
-GISTIC_REF ?= $(HOME)/usr/gistic_2_0_21/refgenefiles/hg19.mat
+GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 
 EXOME ?= false
 ifeq ($(EXOME),true)
