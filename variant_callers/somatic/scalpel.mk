@@ -6,7 +6,7 @@ include ~/share/modules/variant_callers/gatk.inc
 
 LOGDIR = log/scalpel.$(NOW)
 
-SCALPEL = $(PERL) $(HOME)/share/usr/scalpel-0.1.1/scalpel
+SCALPEL = $(PERL) $(HOME)/share/usr/scalpel-0.2.2/scalpel
 SCALPEL_OPTS = --ref $(REF_FASTA)
 ifeq ($(EXOME),true)
 BED_DIR = $(HOME)/share/reference/splitExonBed/
