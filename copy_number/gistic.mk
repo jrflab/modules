@@ -72,27 +72,6 @@ gistic/segmentationfile.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(p
 	dir.create('$(@D)', showWarnings = F)
 	write.table(seg, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F)
 
-gistic/lohmat.Rdata : $(foreach pair,$(SAMPLE_PAIRS),exomecnv/loh/$(pair).loh.txt)
-	lohFiles <- unlist(strsplit("$^", " "))
-	lohNames <- sub(".*/", "", sub("\\..*", "", lohFiles))
-	suppressPackageStartupMessages(library("rtracklayer"));
-	targets <- import('$(TARGETS_FILE)');
-	for (i in 1:length(lohFiles)) {
-		lohFile <- lohFiles[i]
-		lohName <- lohNames[i]
-		s <- read.delim(lohFile, header = T, as.is = T)
-		lohGR <- GRanges(seqnames = sub('chr', '', s[, "chr"],), ranges = IRanges(start = s[, "position.start"], end = s[, "position.end"]), loh = s[, "LOH"])
-		x <- suppressWarnings(findOverlaps(targets, lohGR))
-		mcols(targets)[queryHits(x), lohName] <- lohGR[subjectHits(x)]$$loh
-	}
-	names(targets) <- paste(seqnames(targets), start(targets), sep="_")
-	lohmat <- as.matrix(mcols(targets))
-	rownames(lohmat) <- names(targets)
-	lohmat[lohmat] <- 1
-	lohmat[which(!lohmat | is.na(lohmat))] <- 0
-	dir.create('$(@D)', showWarnings = F)
-	save(lohmat, file = "$@")
-
 gistic/cnv.%.txt : gistic/markersfile.txt
 	suppressPackageStartupMessages(library("GenomicRanges"));
 	dgv <- read.delim("$(DGV_FILE)", as.is=T)
@@ -112,16 +91,6 @@ gistic/cnv.%.txt : gistic/markersfile.txt
 	dir.create('$(@D)', showWarnings = F)
 	write.table(cnv, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F, na = "")
 
-gistic/lohheatmap.png : gistic/lohmat.Rdata
-	load("$<")
-	suppressPackageStartupMessages(library("RColorBrewer"));
-	suppressPackageStartupMessages(library("gplots"));
-	cols <- c(brewer.pal(8, "Dark2"), brewer.pal(8, "Set1"), brewer.pal(8, "Set2"))
-	chr <- unlist(lapply(rownames(lohmat), function(x) {strsplit(x, split="_", fixed=T)[[1]][1]}))
-	dir.create('$(@D)', showWarnings = F)
-	png("$@", height=600, width=1200, type="cairo")
-	heatmap.2(t(lohmat), trace="none", scale = 'none', Colv = NA, col=c("white", "red"), margin=c(5,15), labCol="", ColSideColors=cols[as.integer(as.factor(chr))], cexCol=1.4, dendrogram = 'row', key = F)
-	null <- dev.off()
 
 gistic/gistic_cnv%.timestamp : MEM := 8G
 gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.txt gistic/cnv.%.txt
