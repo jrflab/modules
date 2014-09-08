@@ -72,4 +72,4 @@ defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
 
 include ~/share/modules/fastq_tools/fastq.mk
-include ~/share/modules/oncofuse.mk
+include ~/share/modules/sv_callers/oncofuse.mk
