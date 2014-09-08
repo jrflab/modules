@@ -58,4 +58,4 @@ soapfuse/alltables/all.isoform_sfuse%coord.txt : soapfuse/alltables/all.isoform_
 soapfuse/alltables/all.%.nft.txt : soapfuse/alltables/all.%.txt
 	$(INIT) $(SOAPFUSE_NORMAL_FILTER) $(SOAPFUSE_NORMAL_FILTER_OPTS) $(NORMAL_SOAPFUSE_RESULTS) $< > $@
 
-include ~/share/modules/oncofuse.mk
+include ~/share/modules/sv_callers/oncofuse.mk
