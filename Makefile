@@ -233,7 +233,7 @@ freec_lohTN :
 
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f ~/share/modules/rnaseq/sv_callers/defuse.mk -j10 -k $(TARGET)
+	$(MAKE) -e -f ~/share/modules/sv_callers/defuse.mk -j10 -k $(TARGET)
 
 TARGETS += oncofuse
 oncofuse :
