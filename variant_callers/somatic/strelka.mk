@@ -34,12 +34,12 @@ vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair
 tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt) alltables/allTN.$(suff).txt) 
 
 define strelka-tumor-normal
-strelka/$1_$2 : bam/$1.bam bam/$2.bam
+strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
 	$$(INIT) $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=strelka/$1_$2 &> $$(LOG)
 
 #$$(INIT) qmake -inherit -q jrf.q -- -j 20 -C $$< > $$(LOG) && touch $$@
-strelka/$1_$2/task.complete : strelka/$1_$2
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,12,1G,1.5G,"make -j 12 -C $$<")
+strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,12,1G,1.5G,"make -j 12 -C $$(<D)")
 
 vcf/$1_$2.strelka_snps.vcf : strelka/$1_$2/task.complete
 	$$(INIT) cp -f strelka/$1_$2/results/all.somatic.snvs.vcf $$@
