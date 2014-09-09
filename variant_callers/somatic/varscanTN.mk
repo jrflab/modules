@@ -66,9 +66,10 @@ TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
 all : vcfs tables cnv
 variants : vcfs tables
-cnv : copycalls cghcalls
+cnv : copycalls segments cghcalls
 vcfs : $(VCFS)
 tables : $(TABLES)
+segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
 copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
 cghcalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/cgh_call/$(pair).cgh_call.txt)
 
