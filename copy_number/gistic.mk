@@ -17,7 +17,8 @@ export LD_LIBRARY_PATH = /home/limr/usr/MATLAB/v714/runtime/glnxa64:/home/limr/u
 export XAPPLRESDIR = /home/limr/usr/MATLAB/v714/X11/app-defaults
 MCR_DIR = $(HOME)/share/usr/MATLAB
 GISTIC = $(HOME)/usr/gistic_2_0_21/gp_gistic2_from_seg
-GISTIC_OPTS = -genegistic 0 -smallmem 1 -maxseg 5000 -savegene 1 -saveseg 1 -savedata 0 -v 30 -ta 0.4 -td 0.4 -js 15 -qvt 0.25 -conf 0.99 -broad 1 -brlen 0.5 -rx 0
+GISTIC_THRESHOLD ?= 0.4
+GISTIC_OPTS = -genegistic 0 -smallmem 1 -maxseg 5000 -savegene 1 -saveseg 1 -savedata 0 -v 30 -ta $(GISTIC_THRESHOLD) -td $(GISTIC_THRESHOLD) -js 15 -qvt 0.25 -conf 0.99 -broad 1 -brlen 0.5 -rx 0
 DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
 
 CNV_SIZES = 100000 300000
