@@ -36,7 +36,7 @@ FILTER_SUFFIX := som_ad_ft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
-FILTER_SUFFIX := $(FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.transfic
+FILTER_SUFFIX := $(FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIXES = mutect.$(FILTER_SUFFIX)
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab.$(eff).novel mutect.$(FILTER_SUFFIX).tab.$(eff))
