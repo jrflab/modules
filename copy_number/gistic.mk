@@ -30,7 +30,7 @@ gistic/markersfile.txt :
 	suppressPackageStartupMessages(library("rtracklayer"));
 	targets <- import('$(TARGETS_FILE)')
 	markers <- data.frame(chr = seqnames(targets), pos = start(targets))
-	dir.create('$(@D)', showWarnings = F, mode = 775)
+	dir.create('$(@D)', showWarnings = F)
 	write.table(markers, col.names = F, file = "$@", sep = "\t", quote = F, na = "")
 	
 gistic/segmentationfile.txt : PE := 8
@@ -70,7 +70,7 @@ gistic/segmentationfile.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(p
 		nx$$numMarkers <- aggregate(x$$numMarkers, rx, sum)
 		nx
 	}))
-	dir.create('$(@D)', showWarnings = F, mode = 775)
+	dir.create('$(@D)', showWarnings = F)
 	write.table(seg, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F)
 
 gistic/cnv.%.txt : gistic/markersfile.txt
@@ -89,14 +89,14 @@ gistic/cnv.%.txt : gistic/markersfile.txt
 	#	length(which(dgv$$chr==x[2] & dgv$$start <= x[3] & dgv$$end >= x[3])) }, dgv))
 	cnv <- markers[which(markers[,4] > 0),]
 	cnv <- cbind(cnv[,1], cnv[,1])
-	dir.create('$(@D)', showWarnings = F, mode = 775)
+	dir.create('$(@D)', showWarnings = F)
 	write.table(cnv, file = "$@", sep = "\t", row.names = F, col.names = F, quote = F, na = "")
 
 
-gistic/gistic_cnv%.timestamp : MEM := 8G
+gistic/gistic_cnv%.timestamp : MEM := 12G
 gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.txt gistic/cnv.%.txt
 	Sys.setenv(LD_LIBRARY_PATH = "/home/limr/usr/MATLAB/v714/runtime/glnxa64:/home/limr/usr/MATLAB/v714/bin/glnxa64:/home/limr/usr/MATLAB/v714/sys/os/glnxa64:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/native_threads:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64/server:/home/limr/usr/MATLAB/v714/sys/java/jre/glnxa64/jre/lib/amd64")
 	Sys.setenv(XAPPLRESDIR = "/home/limr/usr/MATLAB/v714/X11/app-defaults")
 	Sys.setenv(MCR_DIR = "$(HOME)/share/usr/MATLAB")
-	dir.create('$(@D)/gistic_cnv$*', showWarnings = F, recursive = T, mode = 775)
-	system("umask 022; $(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1 && touch $@")
+	dir.create('$(@D)/gistic_cnv$*', showWarnings = F, recursive = T)
+	system("umask 002; $(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1 && touch $@")
