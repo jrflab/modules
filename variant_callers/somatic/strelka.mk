@@ -23,7 +23,7 @@ FILTER_SUFFIX := pass.dbsnp
 ifdef TARGETS_FILE
 FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.transfic
+FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
 TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
