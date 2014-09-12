@@ -63,6 +63,9 @@ defuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample)
 defuse/alltables/%.defuse_ft.nft.txt : defuse/alltables/%.defuse_ft.txt
 	$(INIT) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
 
+defuse/alltables/%.defuse.nft.txt : defuse/alltables/%.defuse.txt
+	$(INIT) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
+
 defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outPrefix $(@D)/recurFusions.$* $< 
 
