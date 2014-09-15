@@ -231,9 +231,10 @@ TARGETS += freec_lohTN
 freec_lohTN : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/copy_number/controlFreeCLOHTN.mk $(FLAGS) $(TARGET) 
 
+NUM_DEFUSE_JOBS ?= 10
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f ~/share/modules/sv_callers/defuse.mk -j10 -k $(TARGET)
+	$(MAKE) -e -f ~/share/modules/sv_callers/defuse.mk -j$(NUM_DEFUSE_JOBS) -k $(TARGET)
 
 TARGETS += oncofuse
 oncofuse :
