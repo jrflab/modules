@@ -27,8 +27,8 @@ all : gistic_inputs $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timesta
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
 gistic/markersfile.txt : gistic/segmentationfile.txt
-	seg <- read.table('$<', sep = '\t', stringsAsFactors = F, col.names = c('samplePair', 'chr', 'start', 'end', 'logRatio'))
 	suppressPackageStartupMessages(library("rtracklayer"));
+	seg <- read.table('$<', sep = '\t', stringsAsFactors = F, col.names = c('samplePair', 'chr', 'start', 'end', 'logRatio'), row.names = F)
 	targets <- import('$(TARGETS_FILE)')
 	markers <- data.frame(chr = seqnames(targets), pos = start(targets))
 	markers <- markers[markers$$chr %in% seg$$chr, ]
