@@ -28,7 +28,7 @@ gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach siz
 
 gistic/markersfile.txt : gistic/segmentationfile.txt
 	suppressPackageStartupMessages(library("rtracklayer"));
-	seg <- read.table('$<', sep = '\t', stringsAsFactors = F, col.names = c('samplePair', 'chr', 'start', 'end', 'logRatio'), row.names = F)
+	seg <- read.table('$<', sep = '\t', stringsAsFactors = F, col.names = c('samplePair', 'chr', 'start', 'end', 'numMarkers', 'logRatio'), row.names = F)
 	targets <- import('$(TARGETS_FILE)')
 	markers <- data.frame(chr = seqnames(targets), pos = start(targets))
 	markers <- markers[markers$$chr %in% seg$$chr, ]
