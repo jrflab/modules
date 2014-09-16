@@ -26,10 +26,12 @@ CNV_SIZES = 100000 300000
 all : gistic_inputs $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp)
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
 
-gistic/markersfile.txt :
+gistic/markersfile.txt : gistic/segmentationfile.txt
+	seg <- read.table('$<', sep = '\t', stringsAsFactors = F, col.names = c('samplePair', 'chr', 'start', 'end', 'logRatio'))
 	suppressPackageStartupMessages(library("rtracklayer"));
 	targets <- import('$(TARGETS_FILE)')
 	markers <- data.frame(chr = seqnames(targets), pos = start(targets))
+	markers <- markers[markers$$chr %in% seg$$chr, ]
 	dir.create('$(@D)', showWarnings = F)
 	write.table(markers, col.names = F, file = "$@", sep = "\t", quote = F, na = "")
 	
