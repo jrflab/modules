@@ -18,6 +18,8 @@ endif
 
 SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
+export LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(HOME)/share/usr/scalpel-0.2.2/bamtools-2.3.0/lib/ 
+
 FILTER_SUFFIX := dbsnp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.novel)
