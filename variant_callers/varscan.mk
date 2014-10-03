@@ -22,7 +22,7 @@ VPATH ?= bam
 
 .SECONDARY: 
 
-.PHONY: all vcfs copycalls segments cnv
+.PHONY: all vcfs copycalls segments cnv reports
 
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
@@ -48,7 +48,7 @@ override VARSCAN_OPTS = --min-coverage $(VARSCAN_MIN_COVERAGE) \
 	--p-value $(VARSCAN_P_VALUE) \
 	--strand-filter $(VARSCAN_STRAND_FILTER) 
 
-FILTER_SUFFIX := dp_ft
+FILTER_SUFFIX := dp_ft.fp_ft.dgd_ft.encode_ft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
@@ -75,6 +75,7 @@ variants : vcfs tables
 cnv : copycalls segments
 vcfs : $(VCFS)
 tables : $(TABLES)
+reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 
 ifeq ($(SPLIT_CHR),true)
@@ -108,6 +109,5 @@ vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.vcf
 
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.vcf
 	$(INIT) ln $< $@
-
 
 include ~/share/modules/variant_callers/gatk.mk
