@@ -48,7 +48,7 @@ override VARSCAN_OPTS = --min-coverage $(VARSCAN_MIN_COVERAGE) \
 	--p-value $(VARSCAN_P_VALUE) \
 	--strand-filter $(VARSCAN_STRAND_FILTER) 
 
-FILTER_SUFFIX := dp_ft.fp_ft.dgd_ft.encode_ft
+FILTER_SUFFIX := dp_ft.fp_ft.dgd_ft.encode_ft.nft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
