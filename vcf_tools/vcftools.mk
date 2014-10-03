@@ -219,7 +219,6 @@ tables/%.opl_tab.txt : vcf/%.vcf
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \
 	done")
 
-
 %.tab.txt : %.opl_tab.txt
 	$(INIT) $(PERL) $(VCF_JOIN_EFF) < $< > $@ 2> $(LOG)
 	
@@ -234,3 +233,14 @@ tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
 	gmaf=`head -1 $< | tr '\t' '\n' | grep -n "^GMAF$$" | sed 's/:.*//'`; \
 	awk -v id=$$id -v gmaf=$$gmaf 'NR == 1 || length($$id) == 1 || $$gmaf < 0.01 { print }' $< > $@ || true
 
+FALSE_POSITIVE_BED = $(HOME)/share/reference/fuentes_blacklist.include_cosmic.hg19.bed
+%.fp_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'FuentesFalsePositive' --mask $(FALSE_POSITIVE_BED) && $(RM) $<")
+
+DGD_BED = $(HOME)/share/reference/dgd.include_cosmic.hg19.bed
+%.dgd_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'DuplicateGenesDB' --mask $(DGD_BED) && $(RM) $<")
+
+ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.include_cosmic.bed
+%.encode_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'encode' --mask $(ENCODE_BED) && $(RM) $<")
