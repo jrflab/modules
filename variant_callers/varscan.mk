@@ -22,7 +22,7 @@ VPATH ?= bam
 
 .SECONDARY: 
 
-.PHONY: all vcfs copycalls segments cnv reports
+.PHONY: all vcfs copycalls segments cnv reports tables
 
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
@@ -68,13 +68,14 @@ TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suf
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt
+ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt
+$(info $(TABLES))
 
 all : vcfs tables cnv
 variants : vcfs tables
 cnv : copycalls segments
 vcfs : $(VCFS)
-tables : $(TABLES)
+tables : $(TABLES) $(ALLTABLES)
 reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 
