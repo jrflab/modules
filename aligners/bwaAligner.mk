@@ -31,6 +31,7 @@ BWA_ALN_OPTS ?=
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
+.PHONY: all splits
 
 BAM_SUFFIX := bwa.sorted
 
@@ -56,6 +57,7 @@ BAM_SUFFIX := $(BAM_SUFFIX).bam
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 all : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
+splits : $(foreach sample,$(SPLIT_SAMPLES),bwa/bam/$(split_lookup.$(sample)).bwa.sorted.bam.md5)
 
 bam/%.bam.md5 : bwa/bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
@@ -79,6 +81,7 @@ bwa/bam/$1.bwa.sorted.bam.md5 : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/ba
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
+
 
 fastq/%.fastq.gz.md5 : fastq/%.fastq
 	$(call LSCRIPT,"gzip -c $< > $(@:.md5=) && $(RM) $< && $(MD5)")
