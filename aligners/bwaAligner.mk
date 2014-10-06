@@ -57,7 +57,7 @@ BAM_SUFFIX := $(BAM_SUFFIX).bam
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 all : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
-splits : $(foreach sample,$(SPLIT_SAMPLES),bwa/bam/$(split_lookup.$(sample)).bwa.sorted.bam.md5)
+splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam.md5))
 
 bam/%.bam.md5 : bwa/bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
