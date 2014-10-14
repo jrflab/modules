@@ -48,7 +48,7 @@ override VARSCAN_OPTS = --min-coverage $(VARSCAN_MIN_COVERAGE) \
 	--p-value $(VARSCAN_P_VALUE) \
 	--strand-filter $(VARSCAN_STRAND_FILTER) 
 
-FILTER_SUFFIX := dp_ft.fp_ft.dgd_ft.encode_ft.nft
+FILTER_SUFFIX := dp_ft.dgd_ft.encode_ft.nft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
@@ -68,8 +68,7 @@ TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suf
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt
-$(info $(TABLES))
+ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt alltables/all.varscan_indels.$(VCF_SUFFIX.varscan_indels).tab.txt
 
 all : vcfs tables cnv
 variants : vcfs tables
