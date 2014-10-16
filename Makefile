@@ -128,7 +128,7 @@ jsm :
 
 TARGETS += mutect
 mutect :
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/variant_callers/somatic/mutect.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/variant_callers/somatic/mutectVariantCaller.mk $(FLAGS) $(TARGET)
 
 TARGETS += varscan_cnv
 varscan_cnv :
