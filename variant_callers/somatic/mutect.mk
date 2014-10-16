@@ -8,9 +8,6 @@ VCF_GEN_IDS = GT AD DP FA
 
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer -canon
 
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
-
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
@@ -87,7 +84,6 @@ endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
 
 include ~/share/modules/vcf_tools/vcftools.mk
 
