@@ -292,6 +292,11 @@ TARGETS += pyloh
 pyloh :
 	$(MAKE) -e -f ~/share/modules/ploidy/pyloh.mk $(FLAGS) $(TARGET)
 
+TARGETS += emu
+emu :
+	$(MAKE) -e -f ~/share/modules/mut_sigs/emu.mk $(FLAGS) $(TARGET)
+
+
 TARGETS += extract_fastq
 extract_fastq :
 	$(MAKE) -e -f ~/share/modules/fastq_tools/extractFastq.mk $(FLAGS) $(TARGET)
