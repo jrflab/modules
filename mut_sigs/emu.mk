@@ -27,7 +27,7 @@ emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_
 	done
 
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
-	$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) -bin 10000 --regions $(TARGETS_FILE)
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) -bin 10000 --regions $(TARGETS_FILE)")
 
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
-	$(EMU) --mut $< --opp human-exome --pre emu/emu_results
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
