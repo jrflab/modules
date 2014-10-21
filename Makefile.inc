@@ -174,6 +174,11 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 TMPDIR = $(HOME)/share/tmp
 
+#VARSCAN
+VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
+VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
+VARSCAN = $(call VARSCAN_MEM,8G)
+
 # PICARD tools
 PICARD_MEM = 10G
 PICARD_OPTS = VALIDATION_STRINGENCY=LENIENT MAX_RECORDS_IN_RAM=4000000
