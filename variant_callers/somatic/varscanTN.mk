@@ -14,8 +14,6 @@ include ~/share/modules/Makefile.inc
 VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
-SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
-CGHCALL = $(HOME)/share/scripts/cghCall.R
 
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
@@ -30,10 +28,8 @@ MIN_VAR_FREQ ?= 0.05
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
-
 .SECONDARY: 
-
-.PHONY: all vcfs copycalls segments cnv
+.PHONY: all vcfs copycalls segments 
 
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
@@ -64,15 +60,10 @@ VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair)
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
-all : vcfs tables cnv
+all : vcfs tables
 variants : vcfs tables
-cnv : copycalls segments cghcalls
 vcfs : $(VCFS)
 tables : $(TABLES)
-segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
-copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
-cghcalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/cgh_call/$(pair).cgh_call.txt)
-
 
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
@@ -139,36 +130,10 @@ vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
 	$(INIT) ln $< $@
 
-
-define varscan-copynum-tumor-normal
-varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call varscan-copynum-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
-varscan/copycall/%.copycall : varscan/copynum/%.copynumber
-	$(call LSCRIPT_MEM,9G,12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \
-	if [ \$$(bc <<< \"\$$n > 0\") -eq 1 ]; then \
-		recenter_opt=\"--recenter-up \$$n\"; \
-	else \
-		n=\$$(bc <<< \"\$$n*-1\"); \
-		recenter_opt=\"--recenter-down \$$n\"; \
-	fi; \
-	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
-
-varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
-
-varscan/cgh_call/%.cgh_call.txt : varscan/segment/%.segment.Rdata
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
-
 define bamrc-chr
 bamrc/%.$1.chr_bamrc : bam/%.bam
 	$$(call LSCRIPT_MEM,2G,3G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 > $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
-
 
 include ~/share/modules/variant_callers/gatk.mk
