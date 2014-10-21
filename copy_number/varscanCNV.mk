@@ -51,10 +51,10 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 
 define varscan-segment-sd-alpha-smooth
 varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata : varscan/copycall/%.copycall
-	$$(call LSCRIPT_MEM,4G,6G,"$$(RSCRIPT) $$(SEGMENTCNV) --undoSD $1 --alpha $2 --smoothRegion $3 --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
+	$$(call LSCRIPT_NAMED_MEM,$$*_seg_$1_$2_$3,4G,6G,"$$(RSCRIPT) $$(SEGMENTCNV) --undoSD $1 --alpha $2 --smoothRegion $3 --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
 
 varscan/segment_sd$1_alpha$2_smooth$3/%.cgh_call.txt : varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata
-	$$(call LSCRIPT_MEM,4G,6G,"$$(RSCRIPT) $$(CGHCALL) --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
+	$$(call LSCRIPT_NAMED_MEM,$$*_cgh_$1_$2_$3,4G,6G,"$$(RSCRIPT) $$(CGHCALL) --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
 endef
 $(foreach sd,$(SEG_SDS),\
 	$(foreach alpha,$(SEG_ALPHAS),\
