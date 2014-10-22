@@ -35,7 +35,7 @@ MIN_MAP_QUAL ?= 1
 VARSCAN_MIN_COVERAGE ?= 8
 VARSCAN_MIN_READS2 ?= 2
 VARSCAN_MIN_AVG_QUAL ?= 15
-VARSCAN_MIN_VAR_FREQ ?= 0.1
+VARSCAN_MIN_VAR_FREQ ?= 0.03
 VARSCAN_MIN_FREQ_FOR_HOM ?= 0.75
 VARSCAN_P_VALUE ?= 99e-02
 VARSCAN_STRAND_FILTER ?= 1
@@ -80,7 +80,7 @@ reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 ifeq ($(SPLIT_CHR),true)
 define varscan-chr-type
-varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam
+varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam bam/%.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 	--output-vcf $$(VARSCAN_OPTS) --vcf-sample-list $$* | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
@@ -96,7 +96,7 @@ $(foreach sample,$(SAMPLES),$(eval $(call merge-varscan-vcfs,$(sample))))
 else # no splitting by chr
 
 define varscan-type
-varscan/vcf/%.$1.vcf : bam/%.bam
+varscan/vcf/%.$1.vcf : bam/%.bam bam/%.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$1 \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 	--output-vcf --vcf-sample-list $$* $$(VARSCAN_OPTS) | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
