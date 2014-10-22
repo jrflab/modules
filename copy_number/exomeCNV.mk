@@ -49,4 +49,4 @@ $(OUTDIR)/loh/$1_$2.loh.txt : $(OUTDIR)/baf/$1.baf.txt $(OUTDIR)/baf/$2.baf.txt
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call exomecnv-loh-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
 
-include ~/share/modules/readDepth.mk
+include ~/share/modules/qc/readDepth.mk
