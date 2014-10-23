@@ -12,6 +12,7 @@ include ~/share/modules/Makefile.inc
 
 FIX_VARSCAN_VCF = $(PERL) ~/share/scripts/fixVarscanVcf.pl
 
+
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
