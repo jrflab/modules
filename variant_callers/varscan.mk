@@ -10,11 +10,7 @@ SPLIT_CHR ?= true
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.6.jar
-VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
-VARSCAN = $(call VARSCAN_MEM,8G)
 FIX_VARSCAN_VCF = $(PERL) ~/share/scripts/fixVarscanVcf.pl
-
 
 VPATH ?= bam
 
