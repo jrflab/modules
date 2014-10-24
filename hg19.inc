@@ -63,7 +63,7 @@ ifeq ($(UCSC_REF),false)
    REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
    REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
    DBSNP ?= $(REF_DIR)/GATK_bundle/2.3/dbsnp_137.b37.vcf
-   DBSNP1PC ?= $(REF_DIR)/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.vcf
+   DBSNP1PC ?= $(REF_DIR)/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.include_cosmic.vcf
    KNOWN_INDELS ?= $(REF_DIR)/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
    OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf
    HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf
