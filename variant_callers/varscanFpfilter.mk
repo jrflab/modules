@@ -76,13 +76,13 @@ reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 define varscan-chr-type
 varscan/chr_tables/%.$1.$2.fp_pass.txt : varscan/chr_tables/%.$1.$2.txt bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$< <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) && head -1 $$< > $$@ && cat varscan/chr_tables/$1_$2.$3.$$*.pass >> varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt")
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$$*.$1.$2 $$< <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $1) && head -1 $$< > $$@ && cat varscan/chr_tables/$$*.$1.$2.pass >> varscan/chr_tables/$$*.$1.$2.fp_pass.txt")
 
 varscan/chr_tables/%.$1.$2.txt : bam/%.bam bam/%.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) $$(VARSCAN_OPTS) > $$@")
 
-varscan/chr_vcf/%.$1.$2.vcf : varscan/chr_vcf/%.$1.$2.fp_pass.txt
+varscan/chr_vcf/%.$1.$2.vcf : varscan/chr_tables/%.$1.$2.fp_pass.txt
 	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-type,$(chr),$(type)))))
