@@ -50,5 +50,5 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-fastq,$(sample),$(sample_lookup
 bam/%.bam : merge_bam/%.rg.rmdup.bam
 	$(MKDIR) $(@D); ln -f $< $@
 
-include ~/share/modules/processBam.mk
-include ~/share/modules/fastq.mk
+include ~/share/modules/bam_tools/processBam.mk
+include ~/share/modules/fastq_tools/fastq.mk

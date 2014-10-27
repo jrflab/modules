@@ -1,5 +1,5 @@
 # Run emu on tumour/normal data
-# Detect mutation signatures using mutect calls
+# Detect mutation signatures using mutect calls and control FreeC
 ##### DEFAULTS ######
 
 include ~/share/modules/Makefile.inc

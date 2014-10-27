@@ -67,7 +67,7 @@ TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suf
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt alltables/all.varscan_indels.$(VCF_SUFFIX.varscan_indels).tab.txt
+ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.novel.txt alltables/all.varscan_indels.$(VCF_SUFFIX.varscan_indels).tab.novel.txt
 
 all : vcfs tables cnv
 variants : vcfs tables

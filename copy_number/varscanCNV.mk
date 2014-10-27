@@ -11,12 +11,10 @@ include ~/share/modules/Makefile.inc
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
 CGHCALL = $(HOME)/share/scripts/cghCall.R
 
-#SEG_SDS = 1 2 3
-#SEG_SMOOTHS = 10 5
-#SEG_ALPHAS = 0.01 0.0001 0.000001 0.0000000001
-SEG_SDS ?= 2
-SEG_SMOOTHS ?= 10
-SEG_ALPHAS ?= 0.000001
+MULTIPARAM_SEGMENT ?= false
+SEG_SDS = 1 2 3
+SEG_SMOOTHS = 10 5
+SEG_ALPHAS = 0.01 0.0001 0.000001 0.0000000001
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -24,14 +22,18 @@ SEG_ALPHAS ?= 0.000001
 
 all : copycalls segments cghcalls
 
-
-segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
-copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
-cghcalls : $(foreach pair,$(SAMPLE_PAIRS),\
+CGHCALLS := $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).cgh_call.txt)
+ifeq ($(MULTIPARAM_SEGMENT),true) 
+CGHCALLS += $(foreach pair,$(SAMPLE_PAIRS),\
 				$(foreach sd,$(SEG_SDS),\
 					$(foreach alpha,$(SEG_ALPHAS),\
 						$(foreach smooth,$(SEG_SMOOTHS),\
 							varscan/segment_sd$(sd)_alpha$(alpha)_smooth$(smooth)/$(pair).cgh_call.txt))))
+endif
+
+segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
+copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
+cghcalls : $(CGHCALLS)
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
@@ -51,6 +53,11 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	fi; \
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
+varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $$<")
+
+varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 define varscan-segment-sd-alpha-smooth
 varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata : varscan/copycall/%.copycall

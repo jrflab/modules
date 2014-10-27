@@ -1,16 +1,11 @@
-# Run mutect on tumour-normal matched pairs
-# Detect point mutations
-##### DEFAULTS ######
-REF ?= hg19
-LOGDIR = log/mutect.$(NOW)
+##### MAKE INCLUDES #####
+include ~/share/modules/Makefile.inc
+include ~/share/modules/variant_callers/gatk.inc
+
 VCF_SAMPLES = 0 1
 VCF_GEN_IDS = GT AD DP FA
 
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer -canon
-
-##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
 
 MUTECT_JAR := $(HOME)/share/usr/lib/java/muTect-1.1.4.jar
 MUTECT_MAX_ALT_IN_NORMAL ?= 500
@@ -19,14 +14,6 @@ MUTECT_OPTS = --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --ma
 MUTECT = $(JAVA) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
 MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/plotSeqLogoFromMutect.R
-
-VPATH ?= bam
-
-.DELETE_ON_ERROR:
-.SECONDARY: 
-.PHONY : all mutect_vcfs mutect_tables ext_output mut_report
-
-all : mutect_vcfs mutect_tables ext_output mut_report
 
 
 FILTER_SUFFIX := som_ad_ft
@@ -43,11 +30,6 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab.$(eff).n
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
-mutect_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
-mutect_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt)) \
-	$(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
-ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-mut_report : mutect/report/report.timestamp mutect/lowAFreport/report.timestamp mutect/highAFreport/report.timestamp
 
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)

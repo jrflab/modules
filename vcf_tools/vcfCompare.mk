@@ -1,25 +1,24 @@
 # Compare vcf files
 ##### DEFAULTS ######
-REF ?= hg19
-LOGDIR = log/vcfComp.$(NOW)
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
-##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
+
+LOGDIR = log/vcfComp.$(NOW)
+##### MAKE INCLUDES #####
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY : all variant_eval gt_concordance
 
-
-FILTER_SUFFIX := dp_ft
+FILTER_SUFFIX := dp_ft.target_ft
+ifdef TARGETS_FILE
+FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
+endif
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
 #VARIANT_TYPES := gatk_snps snvmix2
-EVAL_TYPES := rnaseq_gatk_snps
-COMP_TYPES := exonseq_museq exonseq_mutect
+EVAL_TYPES ?= rnaseq_gatk_snps
+COMP_TYPES ?= exonseq_museq exonseq_mutect
 
 all : variant_eval
 
