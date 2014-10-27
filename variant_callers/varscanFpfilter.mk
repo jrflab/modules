@@ -66,7 +66,8 @@ VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
 ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.txt alltables/all.varscan_indels.$(VCF_SUFFIX.varscan_indels).tab.txt
 
-all : vcfs tables cnv
+all : $(foreach sample,$(SAMPLES),varscan/vcf/$(sample).snp.vcf varscan/vcf/$(sample).indel.vcf)
+#all : vcfs tables cnv
 variants : vcfs tables
 cnv : copycalls segments
 vcfs : $(VCFS)
@@ -75,7 +76,7 @@ reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 
 define varscan-chr-type
-varscan/chr_tables/%.$1.$2.fp_pass.txt : varscan/chr_tables/%.$1.$2.txt bam/$1.bam
+varscan/chr_tables/%.$1.$2.fp_pass.txt : varscan/chr_tables/%.$1.$2.txt bam/%.bam
 	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$$*.$1.$2 $$< <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $1) && head -1 $$< > $$@ && cat varscan/chr_tables/$$*.$1.$2.pass >> varscan/chr_tables/$$*.$1.$2.fp_pass.txt")
 
 varscan/chr_tables/%.$1.$2.txt : bam/%.bam bam/%.bam.bai
