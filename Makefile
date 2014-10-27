@@ -134,6 +134,10 @@ TARGETS += varscan_cnv
 varscan_cnv :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/copy_number/varscanCNV.mk $(FLAGS) $(TARGET)
 
+TARGETS += varscan_fpfilter
+varscan_fpfilter :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/variant_callers/varscanFpfilter.mk $(FLAGS) $(TARGET)
+
 TARGETS += varscanTN
 varscanTN :
 	$(MAKE) $(MAKEFLAGS) -f ~/share/modules/variant_callers/somatic/varscanTN.mk $(FLAGS) vcfs tables
