@@ -14,7 +14,7 @@ include ~/share/modules/Makefile.inc
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 
-VARSCAN_TO_VCF = $(PERL) $(HOME)/share/scripts/varscanToVcf.pl
+VARSCAN_TO_VCF = $(PERL) $(HOME)/share/scripts/varscanTNtoVcf.pl
 
 
 MIN_MAP_QUAL ?= 1
