@@ -24,7 +24,7 @@ emu/mutations.txt : alltables/allTN.mutect.$(FILTER_SUFFIX).tab.txt
 emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
 	$(INIT) rm -f $@; for x in $^; do \
 		sample=`echo $$x | sed 's:freec/::; s:/.*::'`; \
-		awk -v sample=$$sample 'BEGIN {OFS = "\t"} NR > 1 { sub("chr", "", $$2); sub("X", "23" , $$2); sub("Y", "24", $$2); sub("MT", "25", $$2); print sample, $$2, $$3, $$4, $$11; }' $$x >> $@; \
+		awk -v sample=$$sample 'BEGIN {OFS = "\t"} NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
 	done
 
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
