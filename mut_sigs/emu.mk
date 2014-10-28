@@ -3,7 +3,6 @@
 ##### DEFAULTS ######
 
 include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/somatic/mutect.mk
 
 LOGDIR = log/emu.$(NOW)
 
@@ -31,3 +30,5 @@ emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
 
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
+
+include ~/share/modules/variant_callers/somatic/mutect.mk
