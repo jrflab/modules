@@ -8,7 +8,6 @@ LOGDIR = log/emu.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 EMU = $(HOME)/usr/bin/EMu
-EMU_REF_DIR = $(MAPSPLICE_REF_DIR)
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
