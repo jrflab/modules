@@ -56,15 +56,19 @@ ifdef BAM_SUFFIX
 BAM_SUFFIX := $(BAM_SUFFIX).bam
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 processed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
-endif
-
 bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
-
+else
 ifeq ($(MERGE_SPLIT_BAMS),true)
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 merged_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
+bam/%.bam.md5 : unprocessed_bam/%.bam.md5
+	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+endif
+endif
 
+
+ifeq ($(MERGE_SPLIT_BAMS),true)
 define bam-header
 unprocessed_bam/$1.header.sam : $$(foreach split,$2,unprocessed_bam/$$(split).bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
