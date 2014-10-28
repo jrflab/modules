@@ -63,6 +63,9 @@ endif
 
 
 ifeq ($(MERGE_SPLIT_BAMS),true)
+BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
+merged_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
+
 define bam-header
 unprocessed_bam/$1.header.sam : $$(foreach split,$2,unprocessed_bam/$$(split).bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
