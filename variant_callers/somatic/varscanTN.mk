@@ -66,7 +66,7 @@ tables : $(TABLES)
 
 ifeq ($(SPLIT_CHR),true)
 define varscan-somatic-tumor-normal-chr
-varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam
+varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
 	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
@@ -102,7 +102,7 @@ $(foreach i,$(SETS_SEQ), \
 else # no splitting by chr
 
 define varscan-somatic-tumor-normal
-varscan/tables/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam
+varscan/tables/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
