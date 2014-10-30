@@ -43,7 +43,7 @@ somsniper_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIR
 
 define somsniper-tumor-normal
 som_sniper/vcf/$1_$2.som_sniper.vcf : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,4G,8G,"$$(SOMATIC_SNIPER) $$(SOMATIC_SNIPER_OPTS) -F vcf -f $$(REF_FASTA) $$< $$(word 2,$$^) $$@")
+	$$(call LSCRIPT_MEM,4G,8G,"$$(SOMATIC_SNIPER) $$(SOMATIC_SNIPER_OPTS) -F vcf -f $$(REF_FASTA) $$< $$(word 2,$$^) $$@ &> /dev/null")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
