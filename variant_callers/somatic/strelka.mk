@@ -26,7 +26,8 @@ endif
 FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
-TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES),$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
+TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES), $(type).$(FILTER_SUFFIX.$(type)).tab \
+	$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
 TABLE_SUFFIXES := $(TABLE_SUFFIXES) $(addsuffix .novel,$(TABLE_SUFFIXES))
 
 all : vcfs tables alltables
