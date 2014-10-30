@@ -25,7 +25,7 @@ VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY: all vcfs copycalls segments 
+.PHONY: all vcfs tables copycalls segments 
 
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
