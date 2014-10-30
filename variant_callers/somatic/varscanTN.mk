@@ -50,7 +50,8 @@ endif
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
 
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel $(suff).tab.$(eff)))
+TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab \
+				 $(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel $(suff).tab.$(eff)))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
