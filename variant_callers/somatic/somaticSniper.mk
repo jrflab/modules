@@ -67,7 +67,7 @@ som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.vcf
 	$$(INIT) grep '^#' $$< > $$@ && grep -P '^$3\t' $$< >> $$@ || true
 
 som_sniper/chr_vcf/$1_$2.$3.som_sniper.fp.vcf : som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename $$@ --snp-file $$< --readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) && mv $$@.fp_pass $$@")
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename $$@ --snp-file $$< --readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) &> /dev/null && mv $$@.fp_pass $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach chr,$(CHROMOSOMES),\
