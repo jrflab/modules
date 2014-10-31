@@ -26,7 +26,7 @@ endif
 FILTER_SUFFIX := $(FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VCF_SUFFIXES = mutect.$(FILTER_SUFFIX)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab.$(eff).novel mutect.$(FILTER_SUFFIX).tab.$(eff))
+TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab mutect.$(FILTER_SUFFIX).tab.$(eff).novel mutect.$(FILTER_SUFFIX).tab.$(eff))
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
