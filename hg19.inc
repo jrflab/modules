@@ -38,6 +38,7 @@ EXOME ?= false
 ifeq ($(EXOME),true)
    TARGETS_FILE = $(EXOME_BED_NOHEADER)
    QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
+   EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
 else
    ifdef TARGETS_FILE
       CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
