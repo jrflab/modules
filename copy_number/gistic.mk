@@ -3,7 +3,7 @@ include ~/share/modules/Makefile.inc
 LOGDIR = log/gistic.$(NOW)
 
 SHELL = $(HOME)/share/scripts/Rshell
-.SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
+.SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:
 .DELETE_ON_ERROR:
