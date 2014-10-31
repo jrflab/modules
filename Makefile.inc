@@ -40,9 +40,10 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
     $(foreach i,$(SETS_SEQ), \
 		$(eval SAMPLE_SETS += $(call get_underscore_sets,$i)))
   endif
-  # define tumor.SET and normal.SET to retrieve tumors and normals from sets
+  # tumor.SET => tumors
   $(foreach i,$(SETS_SEQ), \
 	$(eval tumor.$(call get_underscore_sets,$i) := $(call get_tumors,$(set.$i))))
+  # normal.SET => normal
   $(foreach i,$(SETS_SEQ), \
 	$(eval normal.$(call get_underscore_sets,$i) := $(call get_normal,$(set.$i))))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
