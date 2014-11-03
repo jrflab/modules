@@ -246,4 +246,8 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 %.encode_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'encode' --mask $(ENCODE_BED) && $(RM) $<")
 
+%.het_ft.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ \
+		--genotypeFilterExpression 'isHet == 1' --genotypeFilterName 'Heterozygous positions'")
+
 
