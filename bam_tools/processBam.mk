@@ -90,8 +90,8 @@ endif
 %.bam.bai : %.bam.md5
 	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<M)")
 
-%.bai : %.bam.md5
-	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(CHECK_MD5) $(SAMTOOLS) index $(<M) $@")
+%.bai : %.bam.bai
+	$(INIT) cp $< $@
 
 %.bam.md5 : %.bam
 	$(call LSCRIPT_CHECK,"$(MD5)")
