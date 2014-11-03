@@ -159,7 +159,7 @@ BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #GSNAP = $(HOME)/share/usr/bin/gsnap
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
-SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
+SAMTOOLS = $(HOME)/share/usr/bin/samtools-1.1
 BCFTOOLS = /opt/bin/bcftools
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
@@ -355,6 +355,7 @@ GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 << = $(word 2,$^)
 <<< = $(word 3,$^)
 <<<< = $(word 4,$^)
+<<<<< = $(word 5,$^)
 
 #signature md5
 #makepp_no_builtin = 1
