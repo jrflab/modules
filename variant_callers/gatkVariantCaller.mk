@@ -3,9 +3,6 @@
 # 
 
 ##### DEFAULTS ######
-REF ?= hg19
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 LOGDIR = log/gatk.$(NOW)
 
 VCF_GEN_IDS = GT AD GQ PL
