@@ -71,6 +71,10 @@ bwa : NUM_ATTEMPTS = 50
 bwa :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/bwaAligner.mk $(FLAGS) $(TARGET)
 
+TARGETS += bwamem
+bwamem :
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/bwaMemAligner.mk $(FLAGS) $(TARGET)
+
 
 TARGETS += bowtie
 bowtie : NUM_ATTEMPTS = 50
