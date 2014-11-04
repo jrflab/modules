@@ -54,7 +54,7 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
 varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $$<")
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
 	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
