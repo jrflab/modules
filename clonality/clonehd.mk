@@ -25,7 +25,7 @@ clonehd/cov/%.cov.txt : bam/%.bam
 	$(call LSCRIPT_MEM,4G,7G,"$(SAMTOOLS) bedcov $(TARGETS_FILE) $< > $@")
 
 clonehd/cna/%.cna.txt : clonehd/cov/%.cov.txt
-	$(call LSCRIPT_MEM,2G,3G,"awk 'BEGIN { OFS = \"\t\" } {print $$1$(,)$$3$(,)int(0.5+$$4/1000.0)$(,)1}' $< > $@")
+	$(call LSCRIPT_MEM,2G,3G,"awk 'BEGIN { OFS = \"\t\" } {print \$$1$(,)\$$3$(,)int(0.5+\$$4/1000.0)$(,)1}' $< > $@")
 
 clonehd/cna/%.cna.pref.txt : clonehd/cna/%.cna.txt
 	$(call LSCRIPT_MEM,2G,4G,"$(PREFILTER) --data $< --pre clonehd/cna/$*.cna --print-tracks 1")
