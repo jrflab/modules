@@ -302,7 +302,7 @@ pyloh :
 
 TARGETS += clonehd
 clonehd :
-	$(MAKE) -e -f ~/share/modules/copy_number/clonehd.mk $(FLAGS) $(TARGET)
+	$(MAKE) -e -f ~/share/modules/clonality/clonehd.mk $(FLAGS) $(TARGET)
 
 TARGETS += emu
 emu :
