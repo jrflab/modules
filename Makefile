@@ -300,6 +300,10 @@ TARGETS += pyloh
 pyloh :
 	$(MAKE) -e -f ~/share/modules/ploidy/pyloh.mk $(FLAGS) $(TARGET)
 
+TARGETS += clonehd
+clonehd :
+	$(MAKE) -e -f ~/share/modules/copy_number/clonehd.mk $(FLAGS) $(TARGET)
+
 TARGETS += emu
 emu :
 	$(MAKE) -e -f ~/share/modules/mut_sigs/emu.mk $(FLAGS) $(TARGET)
