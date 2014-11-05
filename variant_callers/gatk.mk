@@ -51,7 +51,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-variants,$(chr))))
 
 define merge-chr-variants
 gatk/vcf/$1.variants.vcf : $$(foreach chr,$$(CHROMOSOMES),gatk/chr_vcf/$1.$$(chr).variants.vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --genotypemergeoption UNIQUIFY --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-chr-variants,$(sample))))
 
