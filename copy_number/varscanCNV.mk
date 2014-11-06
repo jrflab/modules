@@ -11,10 +11,14 @@ include ~/share/modules/Makefile.inc
 SEGMENTCNV = $(HOME)/share/scripts/segmentCNV2.R
 CGHCALL = $(HOME)/share/scripts/cghCall.R
 
+SEG_SD ?= 2
+SEG_SMOOTH ?= 10
+SEG_ALPHA ?= 0.000001
+
 MULTIPARAM_SEGMENT ?= false
-SEG_SDS = 1 2 3
-SEG_SMOOTHS = 10 5
-SEG_ALPHAS = 0.01 0.0001 0.000001 0.0000000001
+SEG_SDS ?= 1 2 3
+SEG_SMOOTHS ?= 10 5
+SEG_ALPHAS ?= 0.01 0.0001 0.000001 0.0000000001
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -54,7 +58,7 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
 varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
-	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
 	$(call LSCRIPT_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
