@@ -8,7 +8,7 @@ CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
 PREFILTER = $(HOME)/share/usr/bin/pre-filter
 
-TABLE_TO_BAF = $(PERL) $(HOME)/share/scripts/tableToCloneHDBaf.pl
+TABLE_TO_BAF = $(PERL) $(HOME)/share/scripts/tableToCloneHDFormat.pl
 
 LOGDIR = log/clonehd.$(NOW)
 
