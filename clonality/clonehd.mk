@@ -36,7 +36,7 @@ clonehd/cna/%.cna.posterior-1.txt : clonehd/cna/%.cna.txt
 
 # we need depth for positions in tumours that are heterozygous in the normal
 define clonehd-set-tumors-normal
-vcf/$1.gatk_het.vcf : vcf/$3.gatk_snps.het_ft.pass.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) 
+vcf/$1.gatk_het.vcf : vcf/$3.gatk_snps.het_ft.pass.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) bam/$3.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/baf/$1.baf.txt : tables/$1.gatk_het.tab.txt
@@ -66,7 +66,7 @@ clonehd/results/$1.snv.summary.txt : clonehd/snv/$1.snv.txt clonehd/results/$1.s
 		--mean-tcn clonehd/results/$1.mean-tcn.txt \
 		--avail-cn clonehd/results/$1.avail-cn.txt")
 
-vcf/$1.gatk_som.vcf : $$(foreach tumor,$2,bam/$$(tumor).bam vcf/$$(tumor)_$3.mutect.$$(MUTECT_FILTER_SUFFIX).vcf) 
+vcf/$1.gatk_som.vcf : $$(foreach tumor,$2,bam/$$(tumor).bam vcf/$$(tumor)_$3.mutect.$$(MUTECT_FILTER_SUFFIX).vcf) bam/$3.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) $$(foreach vcf,$$(filter%.vcf,$$^), -L $$(vcf) ) -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/snv/$1.snv.txt : tables/$1.gatk_som.tab.txt
