@@ -76,7 +76,8 @@ override HAPLOTYPE_CALLER_OPTS = --dbsnp $(DBSNP) -rf BadCigar -stand_call_conf 
 
 INDEL_FILTERS = --filterName 'QD' --filterExpression 'QD < 2.0' --filterName 'ReadPosRankSum' --filterExpression 'ReadPosRankSum < -20.0'  --filterName 'InbreedingCoeff' --filterExpression 'InbreedingCoeff < -0.8'  --filterName 'FS' --filterExpression 'FS > 200.0' --filterName 'DP' --filterExpression 'DP < 5'
 
-SNP_FILTERS = --filterName 'QD' --filterExpression 'QD < 2.0' --filterName 'MQ' --filterExpression 'MQ < 40.0' --filterName 'FS' --filterExpression 'FS > 60.0' --filterName 'HapScore' --filterExpression 'HaplotypeScore > 13.0' --filterName 'MQRankSum' --filterExpression 'MQRankSum < -12.5' --filterName 'ReadPosRankSum' --filterExpression 'ReadPosRankSum < -8.0' --filterName 'Depth' --filterExpression 'DP < 5'
+MQ_THRESHOLD ?= 40.0
+SNP_FILTERS := --filterName 'QD' --filterExpression 'QD < 2.0' --filterName 'MQ' --filterExpression 'MQ < $(MQ_THRESHOLD)' --filterName 'FS' --filterExpression 'FS > 60.0' --filterName 'HapScore' --filterExpression 'HaplotypeScore > 13.0' --filterName 'MQRankSum' --filterExpression 'MQRankSum < -12.5' --filterName 'ReadPosRankSum' --filterExpression 'ReadPosRankSum < -8.0' --filterName 'Depth' --filterExpression 'DP < 5'
 SNP_FILTER_INTRON = false
 ifeq ($(SNP_FILTER_INTRON),true)
 SNP_FILTERS += --filterName 'SnpEff' --filterExpression \"SNPEFF_EFFECT == 'UPSTREAM' || SNPEFF_EFFECT == 'DOWNSTREAM' || SNPEFF_EFFECT == 'INTERGENIC' || SNPEFF_EFFECT == 'INTRAGENIC' || SNPEFF_EFFECT == 'INTRON'\"
