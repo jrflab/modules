@@ -16,20 +16,20 @@ MUTECT = $(JAVA) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS
 MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/plotSeqLogoFromMutect.R
 
 
-FILTER_SUFFIX := som_ad_ft
+MUTECT_FILTER_SUFFIX := som_ad_ft
 ifdef TARGETS_FILE
 TARGET_FILTER ?= true
 ifeq ($(TARGET_FILTER),true)
-FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
+MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).target_ft
 endif
 endif
-FILTER_SUFFIX := $(FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.transfic
+MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.transfic
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-VCF_SUFFIXES = mutect.$(FILTER_SUFFIX)
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(FILTER_SUFFIX).tab mutect.$(FILTER_SUFFIX).tab.$(eff).novel mutect.$(FILTER_SUFFIX).tab.$(eff))
+MUTECT_VCF_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX)
+MUTECT_TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
-VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
+VCFS = $(foreach suff,$(MUTECT_VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
 
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)

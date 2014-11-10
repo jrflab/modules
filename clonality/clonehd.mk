@@ -8,7 +8,7 @@ CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
 PREFILTER = $(HOME)/share/usr/bin/pre-filter
 
-TABLE_TO_BAF = $(PERL) $(HOME)/share/scripts/tableToCloneHDBaf.pl
+TABLE_TO_CLONEHD = $(PERL) $(HOME)/share/scripts/tableToCloneHDFormat.pl
 
 LOGDIR = log/clonehd.$(NOW)
 
@@ -25,7 +25,7 @@ clonehd/cov/%.cov.txt : bam/%.bam
 	$(call LSCRIPT_MEM,4G,7G,"$(SAMTOOLS) bedcov $(TARGETS_FILE) $< > $@")
 
 clonehd/cna/%.cna.txt : clonehd/cov/%.cov.txt
-	$(call LSCRIPT_MEM,2G,3G,"awk 'BEGIN { OFS = \"\t\" } {print $$1$,$$3$,int(0.5+$$4/1000.0)$,1}' $< > $@")
+	$(call LSCRIPT_MEM,2G,3G,"awk 'BEGIN { OFS = \"\t\" } {print \$$1$(,)\$$3$(,)int(0.5+\$$4/1000.0)$(,)1}' $< > $@")
 
 clonehd/cna/%.cna.pref.txt : clonehd/cna/%.cna.txt
 	$(call LSCRIPT_MEM,2G,4G,"$(PREFILTER) --data $< --pre clonehd/cna/$*.cna --print-tracks 1")
@@ -36,11 +36,11 @@ clonehd/cna/%.cna.posterior-1.txt : clonehd/cna/%.cna.txt
 
 # we need depth for positions in tumours that are heterozygous in the normal
 define clonehd-set-tumors-normal
-vcf/$1.gatk_het.vcf : vcf/$3.gatk_snps.het_ft.pass.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) 
+vcf/$1.gatk_het.vcf : vcf/$3.gatk_snps.het_ft.pass.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) bam/$3.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/baf/$1.baf.txt : tables/$1.gatk_het.tab.txt
-	$$(INIT) $$(TABLE_TO_BAF) $2 < $$< > $$@
+	$$(INIT) $$(TABLE_TO_CLONEHD) $2 < $$< > $$@
 
 clonehd/cna/$1.cna.txt : $$(foreach tumor,$2,clonehd/cna/$$(tumor).cna.txt)
 	$$(INIT) cut -f1,2 $$< > $$@; \
@@ -66,11 +66,11 @@ clonehd/results/$1.snv.summary.txt : clonehd/snv/$1.snv.txt clonehd/results/$1.s
 		--mean-tcn clonehd/results/$1.mean-tcn.txt \
 		--avail-cn clonehd/results/$1.avail-cn.txt")
 
-vcf/$1.gatk_som.vcf : $$(foreach tumor,$2,bam/$$(tumor).bam vcf/$$(tumor)_$3.mutect.$$(MUTECT_FILTER_SUFFIX).vcf) 
+vcf/$1.gatk_som.vcf : $$(foreach tumor,$2,bam/$$(tumor).bam vcf/$$(tumor)_$3.mutect.$$(MUTECT_FILTER_SUFFIX).vcf) bam/$3.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) $$(foreach vcf,$$(filter%.vcf,$$^), -L $$(vcf) ) -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/snv/$1.snv.txt : tables/$1.gatk_som.tab.txt
-	$$(INIT) $$(TABLE_TO_BAF) $2 < $$< > $$@
+	$$(INIT) $$(TABLE_TO_CLONEHD) $2 < $$< > $$@
 endef
 $(foreach s,$(SAMPLE_SETS),$(eval $(call clonehd-set-tumors-normal,$s,$(tumor.$s),$(normal.$s))))
 
