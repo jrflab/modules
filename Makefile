@@ -42,14 +42,9 @@ TARGETS += lane_bwa
 lane_bwa : 
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/bwaAligner.mk SAMPLE_FILE=$(LANE_SAMPLE_FILE) $(FLAGS) $(TARGET)
 
-# merge lanes
-TARGETS += merge
-merge : 
-	$(MAKE) -e -f ~/share/modules/bam_tools/merge.mk $(FLAGS) $(TARGET)
-	
 TARGETS += merge_fastq
 merge_fastq : 
-	$(MAKE) -e -f ~/share/modules/fastq_tools/mergeFastq.mk $(FLAGS) $(TARGET)
+	$(MAKE) -e -f ~/share/modules/fastq_tools/fastq.mk MERGE_FASTQ=true $(FLAGS) $(TARGET)
 
 TARGETS += gatk
 gatk : 
