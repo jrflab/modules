@@ -234,7 +234,7 @@ TARGETS += freec_lohTN
 freec_lohTN : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/copy_number/controlFreeCLOHTN.mk $(FLAGS) $(TARGET) 
 
-NUM_DEFUSE_JOBS ?= 10
+NUM_DEFUSE_JOBS ?= 5
 TARGETS += defuse
 defuse :
 	$(MAKE) -e -f ~/share/modules/sv_callers/defuse.mk -j$(NUM_DEFUSE_JOBS) -k $(TARGET)
@@ -251,9 +251,10 @@ TARGETS += hydra
 hydra :
 	$(MAKE) -e -f ~/share/modules/sv_callers/hydra.mk $(FLAGS) $(TARGET)
 
+NUM_CHIMSCAN_JOBS ?= 5
 TARGETS += chimscan
 chimscan :
-	$(MAKE) -e -f ~/share/modules/sv_callers/chimerascan.mk -j10 $(TARGET)
+	$(MAKE) -e -f ~/share/modules/sv_callers/chimerascan.mk -j$(NUM_CHIMSCAN_JOBS) $(TARGET)
 
 TARGETS += pindel
 pindel :
