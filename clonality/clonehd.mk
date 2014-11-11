@@ -16,7 +16,7 @@ LOGDIR = log/clonehd.$(NOW)
 .SECONDARY: 
 .PHONY : all
 
-all : $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt) $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt)
+all : $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt) $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.snv.summary.txt)
 
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/somatic/mutect.mk
