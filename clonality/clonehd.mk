@@ -72,7 +72,7 @@ clonehd/results/$1.snv.summary.txt : clonehd/snv/$1.snv.txt clonehd/results/$1.s
 		--avail-cn clonehd/results/$1.avail-cn.txt")
 
 vcf/$1.gatk_som.vcf : $$(foreach tumor,$2,bam/$$(tumor).bam vcf/$$(tumor)_$3.mutect.$$(MUTECT_FILTER_SUFFIX).vcf) bam/$3.bam
-	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) $$(foreach vcf,$$(filter%.vcf,$$^), -L $$(vcf) ) -o $$@ --output_mode EMIT_ALL_SITES")
+	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^), -L $$(vcf) ) -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/snv/$1.snv.txt : tables/$1.gatk_som.tab.txt
 	$$(INIT) $$(TABLE_TO_CLONEHD) $2 < $$< > $$@
