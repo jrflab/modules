@@ -8,7 +8,7 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all gistic_inputs
+.PHONY: all gistic_inputs gistic_heatmaps
 
 MEM := 2G
 PE := 1
@@ -21,11 +21,13 @@ GISTIC_THRESHOLD ?= 0.3
 GISTIC_JS ?= 15
 GISTIC_OPTS = -genegistic 0 -smallmem 1 -maxseg 5000 -savegene 1 -saveseg 1 -savedata 0 -v 30 -ta $(GISTIC_THRESHOLD) -td $(GISTIC_THRESHOLD) -js $(GISTIC_JS) -qvt 0.25 -conf 0.99 -broad 1 -brlen 0.5 -rx 0
 DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
+PLOT_GISTIC_HEATMAP = $(RSCRIPT) $(HOME)/share/scripts/plotGisticHeatmap.R
 
 CNV_SIZES = 100000 300000
 
-all : gistic_inputs $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp)
+all : gistic_inputs $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size).timestamp) gistic_heatmaps
 gistic_inputs : gistic/markersfile.txt gistic/segmentationfile.txt $(foreach size,$(CNV_SIZES),gistic/cnv.$(size).txt)
+gistic_heatmaps : $(foreach size,$(CNV_SIZES),gistic/gistic_cnv$(size)/gistic_cnv_heatmap.pdf)
 
 gistic/markersfile.txt : gistic/segmentationfile.txt
 	suppressPackageStartupMessages(library("rtracklayer"));
@@ -103,3 +105,9 @@ gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.tx
 	Sys.setenv(MCR_DIR = "$(HOME)/share/usr/MATLAB")
 	dir.create('$(@D)/gistic_cnv$*', showWarnings = F, recursive = T)
 	system("umask 002; $(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1 && touch $@")
+
+gistic/gistic_cnv%/gistic_cnv_heatmap.pdf : gistic/gistic_cnv%.timestamp
+	system("$(PLOT_GISTIC_HEATMAP) --out $@ gistic/gistic_cnv$*/")
+
+
+
