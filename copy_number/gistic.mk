@@ -107,7 +107,7 @@ gistic/gistic_cnv%.timestamp : gistic/segmentationfile.txt gistic/markersfile.tx
 	system("umask 002; $(GISTIC) -b $(@D)/gistic_cnv$* -seg $< -mk $(<<) -refgene $(GISTIC_REF) -cnv $(<<<) $(GISTIC_OPTS) 2>&1 && touch $@")
 
 gistic/gistic_cnv%/gistic_cnv_heatmap.pdf : gistic/gistic_cnv%.timestamp
-	system("$(PLOT_GISTIC_HEATMAP) --out $@ gistic/gistic_cnv$*/")
+	system("$(PLOT_GISTIC_HEATMAP) --out $@ gistic/gistic_cnv$*/all_thresholded.by_genes.txt")
 
 
 
