@@ -56,7 +56,7 @@ endif
 FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.transfic
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTERSUFFIX.$(TYPE)).tab \
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTERSUFFIX.$(type)).tab \
 				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
