@@ -25,7 +25,7 @@ VPATH ?= bam
 .SECONDARY:
 .PHONY: all somsniper_vcfs somsniper_tables
 
-ANN_SUFFIX = pass.dbsnp.nsfp.eff.chasm.transfic
+ANN_SUFFIX = pass.dbsnp.nsfp.eff.chasm.fathmm.transfic
 FILTER_SUFFIX := ss_dp_ft.ss_ft.rn.som_ad_ft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
