@@ -17,7 +17,7 @@ all : emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt
 
 include ~/share/modules/variant_callers/somatic/mutect.mk
 
-emu/mutations.txt : alltables/allTN.mutect.$(FILTER_SUFFIX).tab.txt
+emu/mutations.txt : alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
 	$(INIT) awk 'NR > 1 { sub("X", "23", $$3); sub("Y", "24", $$3); sub("MT", "25", $$3); print $$1 "_" $$2, $$3, $$4, $$6 ">" $$7 }' $< | cat - $(EMU_REF_MUTATIONS) > $@
 
 emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
