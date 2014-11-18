@@ -89,3 +89,6 @@ REF_NAME := 1000GenomesPilot-NCBI37
 REF_DATE := 2010517
 REF_DICT = $(REF_FASTA:.fasta=.dict)
 SNP_EFF_GENOME = hg19
+
+EMU_REF_MUTATIONS ?= $(HOME)/share/reference/alexandrov_emu_mutations.txt
+EMU_REF_CNV ?= $(HOME)/share/reference/alexandrov_emu_cnv.txt
