@@ -14,7 +14,12 @@ EMU = $(HOME)/usr/bin/EMu
 .SECONDARY: 
 .PHONY: all
 
-all : emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt
+ALL := emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt
+ifdef NUM_SPECTRA
+ALL += emu/emu_$(NUM_SPECTRA).timestamp
+endif
+
+all : $(ALL)
 
 include ~/share/modules/variant_callers/somatic/mutect.mk
 
@@ -30,11 +35,10 @@ emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
 
-ifdef NUM_SPECTRA
-emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results")
-else
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
-endif
 
+ifdef NUM_SPECTRA
+emu/emu_$(NUM_SPECTRA).timestamp : emu/mutations.txt.mut.matrix
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results && touch $@")
+endif
