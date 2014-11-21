@@ -9,12 +9,13 @@ LOGDIR = log/emu.$(NOW)
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 EMU = $(HOME)/usr/bin/EMu
 
+PLOT_EMU = $(HOME)/share/scripts/plotEmuSignatures.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: all
 
-ALL := emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt
+ALL := emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt emu/report/index.html
 ifdef NUM_SPECTRA
 ALL += emu/emu_$(NUM_SPECTRA).timestamp
 endif
@@ -42,3 +43,9 @@ ifdef NUM_SPECTRA
 emu/emu_$(NUM_SPECTRA).timestamp : emu/mutations.txt.mut.matrix
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results && touch $@")
 endif
+
+emu/sample_pairs.txt : 
+	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/' > $@
+
+emu/report/index.html : emu/emu_results_bic.txt emu/sample_pairs.txt emu/mutations.txt emu/mutations.txt.mut.matrix
+	$(call LSCRIPT_MEM,4G,8G,"$(PLOT_EMU) --inDir $(<D) --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
