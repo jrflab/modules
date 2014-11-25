@@ -100,6 +100,10 @@ endif
 #%.bam : %.sam
 #	$(call INIT_MEM,2G,3G) $(SAMTOOLS) view -bS $< > $@
 
+# limit coverage
+%.dcov.bam.md5 : %.bam.md5
+	$(call LSCRIPT_MEM,11G,13G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $(<M) -dcov 50 -o $(@M) && $(MD5)")
+
 # filter
 %.filtered.bam.md5 : %.bam.md5
 	$(call LSCRIPT_MEM,6G,7G,"$(CHECK_MD5) $(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $(<M) > $(@M) && $(MD5) && $(RM) $(<M) $<")
