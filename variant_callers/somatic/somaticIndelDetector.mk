@@ -6,11 +6,6 @@ include ~/share/modules/variant_callers/gatk.inc
 
 REF ?= hg19
 LOGDIR = log/gatk_som_indel.$(NOW)
-SAMPLE_PAIR_FILE ?= sample_pairs.txt
-SAMPLE_FILE ?= samples.txt
-TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
 SPLIT_CHR ?= true
 
 GATK_OLD_JAR = /opt/common/gatk/GenomeAnalysisTK-2.3-9-ge5ebf34/GenomeAnalysisTK.jar
