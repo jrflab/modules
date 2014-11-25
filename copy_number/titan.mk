@@ -1,0 +1,32 @@
+# titan module
+include ~/share/modules/Makefile.inc
+
+LOGDIR = log/titan.$(NOW)
+
+EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) $(HOME)/share/scripts/extractTitanAlleleReadCounts.R
+TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
+MAX_CLUSTERS ?= 5
+
+READ_COUNTER = $(HOME)/share/usr/bin/readCounter
+MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
+GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
+
+.SECONDARY:
+.DELETE_ON_ERROR:
+.PHONY : all
+
+titan/wig/%.wig : bam/%.bam
+	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
+
+define titan-tumor-normal
+vcf/$1_$2.gatk_het.vcf : vcf/$1_$2.gatk_snps.het_ft.pass.vcf bam/$1.bam bam/$2.bam
+	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
+
+titan/allele_count/$1_$2.ac.txt : bam/$1.bam vcf/$1_$2.gatk_het.vcf
+	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) --out $$@ --vcf $$(<<) $$<")
+
+titan/results/$1_$2.titan_$$(MAX_CLUSTERS).txt : titan/wig/$1.wig titan/wig/$2.wig
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --targetBed $$(TARGETS_FILE) --numCores 8 --outPrefix titan/results/$1_$2")
+endef
+
+include ~/share/modules/variant_callers/gatk.mk
