@@ -30,8 +30,8 @@ vcf/$1_$2.gatk_het.vcf : vcf/$1_$2.gatk_snps.het_ft.pass.vcf bam/$1.bam bam/$2.b
 titan/allele_count/$1_$2.ac.txt : bam/$1.bam vcf/$1_$2.gatk_het.vcf
 	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) --out $$@ --vcf $$(<<) $$<")
 
-titan/results/$1_$2.titan_$$(MAX_CLUSTERS).txt : titan/wig/$1.wig titan/wig/$2.wig
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --targetBed $$(TARGETS_FILE) --numCores 8 --outPrefix titan/results/$1_$2")
+titan/results/$1_$2.titan_$$(MAX_CLUSTERS).txt : titan/wig/$1.wig titan/wig/$2.wig titan/allele_count/$1_$2.ac.txt
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --targetBed $$(TARGETS_FILE) --numCores 8 --outPrefix titan/results/$1_$2 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
