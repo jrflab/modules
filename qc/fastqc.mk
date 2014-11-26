@@ -3,10 +3,6 @@
 
 include ~/share/modules/Makefile.inc
 
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-VPATH ?= bam fastq
-
 FASTQC = $(PERL) /opt/common/FastQC/fastqc 
 FASTQC_SUMMARY_PLOT = $(RSCRIPT) $(HOME)/share/scripts/fastqcSummaryPlot.R
 
