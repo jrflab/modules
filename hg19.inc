@@ -30,7 +30,6 @@ ENSEMBL_TXDB = $(REF_DIR)/hsapiens_ensembl_biomart.sqlite
 MAPSPLICE_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/chr
 MAPSPLICE_REF_BASENAME = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/hg19
 
-EMU_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/emu_ref
 
 GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 
@@ -90,6 +89,7 @@ REF_DATE := 2010517
 REF_DICT = $(REF_FASTA:.fasta=.dict)
 SNP_EFF_GENOME = hg19
 
+EMU_REF_DIR ?= $(REF_DIR)/GATK_bundle/2.3/emu_ref
 EMU_REF_MUTATIONS ?= $(HOME)/share/reference/alexandrov_emu_mutations.txt
 EMU_REF_CNV ?= $(HOME)/share/reference/alexandrov_emu_cnv.txt
 
