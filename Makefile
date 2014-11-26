@@ -309,9 +309,9 @@ TARGETS += extract_fastq
 extract_fastq :
 	$(MAKE) -e -f ~/share/modules/fastq_tools/extractFastq.mk $(FLAGS) $(TARGET)
 
-TARGETS += cleanlinks
-cleanlinks :
-	symlinks -dr .
+TARGETS += titan
+titan :
+	$(MAKE) -e -f ~/share/modules/copy_number/titan.mk $(FLAGS) $(TARGET)
 
 TARGETS += clean
 clean :
