@@ -92,3 +92,6 @@ SNP_EFF_GENOME = hg19
 
 EMU_REF_MUTATIONS ?= $(HOME)/share/reference/alexandrov_emu_mutations.txt
 EMU_REF_CNV ?= $(HOME)/share/reference/alexandrov_emu_cnv.txt
+
+HMMCOPY_GC_WIG = $(HOME)/share/reference/GATK_bundle/2.3/gc_hg19.wig
+HMMCOPY_MAP_WIG = $(HOME)/share/reference/map_hg19.wig
