@@ -8,6 +8,11 @@ TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
 MAX_CLUSTERS ?= 5
 
+TITAN_OPTS ?= 
+ifdef TARGETS_FILE
+TITAN_OPTS += --targetBed $(TARGETS_FILE)
+endif
+
 READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
 GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
@@ -31,7 +36,7 @@ titan/allele_count/$1_$2.ac.txt : bam/$1.bam vcf/$1_$2.gatk_het.vcf
 	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) --out $$@ --vcf $$(<<) $$<")
 
 titan/results/$1_$2.titan_$$(MAX_CLUSTERS).txt : titan/wig/$1.wig titan/wig/$2.wig titan/allele_count/$1_$2.ac.txt
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --targetBed $$(TARGETS_FILE) --numCores 8 --outPrefix titan/results/$1_$2 $$(<<<)")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results/$1_$2 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
