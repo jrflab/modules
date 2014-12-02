@@ -37,7 +37,7 @@ vcf/$1_$2.gatk_het.vcf : vcf/$1_$2.gatk_snps.het_ft.pass.vcf bam/$1.bam bam/$2.b
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 titan/allele_count/$1_$2.ac.txt : bam/$1.bam vcf/$1_$2.gatk_het.vcf
-	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) $$(<<) $$< $$(REF_FASTA) $$(BQ_THRESHOLD) $$(MQ_THRESHOLD)")
+	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) $$(<<) $$< $$(REF_FASTA) $$(BQ_THRESHOLD) $$(MQ_THRESHOLD) > $$@")
 
 titan/results/$1_$2.titan_$$(MAX_CLUSTERS).txt : titan/wig/$1.wig titan/wig/$2.wig titan/allele_count/$1_$2.ac.txt
 	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results/$1_$2 $$(<<<)")
