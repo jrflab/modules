@@ -140,6 +140,7 @@ export PERL5LIB
 
 #Interpreters
 PYTHON = /opt/common/python/python-2.7.5/bin/python
+ANACONDA_PYTHON = $(HOME)/share/usr/anaconda/bin/python
 PERL = $(HOME)/share/usr/ActivePerl-5.18/bin/perl
 #RSCRIPT = /usr/bin/Rscript
 #R = /opt/common/R/R-3.0.0/bin/R
