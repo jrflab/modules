@@ -9,7 +9,7 @@ LOGDIR = log/emu.$(NOW)
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 EMU = $(HOME)/usr/bin/EMu
 
-PLOT_EMU = $(HOME)/share/scripts/plotEmuSignatures.R
+PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuSignatures.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
