@@ -4,7 +4,7 @@ include ~/share/modules/Makefile.inc
 LOGDIR = log/titan.$(NOW)
 
 #EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) $(HOME)/share/scripts/extractTitanAlleleReadCounts.R
-EXTRACT_ALLELE_READ_COUNTS = $(PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
+EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
 TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
 MAX_CLUSTERS ?= 5
