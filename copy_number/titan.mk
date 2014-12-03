@@ -26,7 +26,7 @@ GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 .PHONY : all results seg
 
 all : results seg
-results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results_$i/$(pair).titan_$i.txt))
+results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).titan_$i.txt))
 seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pair).titan_$i.seg))
 
 titan/wig/%.wig : bam/%.bam
