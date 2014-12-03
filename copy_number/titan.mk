@@ -26,7 +26,7 @@ GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 .PHONY : all results seg
 
 all : results seg
-results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).titan_$i.txt))
+results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results_$i/$(pair).titan_$i.txt))
 seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pair).titan_$i.seg))
 
 titan/wig/%.wig : bam/%.bam
@@ -43,8 +43,8 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define titan-tumor-normal-numcluster
-titan/results_$3/$1_$2.titan_$3.txt : titan/wig/$1.wig titan/wig/$2.wig titan/allele_count/$1_$2.ac.txt
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --numClusters $3 --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results_$3/$1_$2 $$(<<<)")
+titan/results/$1_$2.titan_$3.txt : titan/wig/$1.wig titan/wig/$2.wig titan/allele_count/$1_$2.ac.txt
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(HMMCOPY_GC_WIG) --mapWig $$(HMMCOPY_MAP_WIG)  --numClusters $3 --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results/$1_$2 --plotPrefix titan/results/$1_$2 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
