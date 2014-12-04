@@ -24,6 +24,6 @@ include ~/share/modules/variant_callers/somatic/mutect.mk
 nmf_mutsig/mutations.txt : alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
 	$(INIT) awk 'NR > 1 { sub("X", "23", $$3); sub("Y", "24", $$3); sub("MT", "25", $$3); print $$1 "_" $$2, $$3, $$4, $$6 ">" $$7 }' $< > $@
 
-nmf_mutsig/mutations.txt.mut.matrix : emu/mutations.txt
+nmf_mutsig/mutations.txt.mut.matrix : nmf_mutsig/mutations.txt
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
 
