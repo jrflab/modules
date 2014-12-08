@@ -66,7 +66,7 @@ clonehd/results/$1.summary.txt : clonehd/baf/$1.baf.txt clonehd/cna/$1.cna.txt c
 		--min-jump 0.01 --restarts $$(NUM_RESTARTS) --mass-gauging 1")
 
 clonehd/results/$1.snv.summary.txt : clonehd/snv/$1.snv.txt clonehd/results/$1.summary.txt
-	$$(call LSCRIPT_MEM,4G,8G,"$$(CLONEHD) --snv $$< --pre clonehd/results/$1.snv \
+	$$(call LSCRIPT_MEM,10G,16G,"$$(CLONEHD) --snv $$< --pre clonehd/results/$1.snv \
 		--seed 123 --trials 2 --nmax $$(MAX_SUBCLONE_NUM) --force --max-tcn $$(MAX_TOTAL_COPY_NUM) \
 		--mean-tcn clonehd/results/$1.mean-tcn.txt \
 		--avail-cn clonehd/results/$1.avail-cn.txt")
