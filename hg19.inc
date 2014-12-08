@@ -90,7 +90,7 @@ REF_DICT = $(REF_FASTA:.fasta=.dict)
 SNP_EFF_GENOME = hg19
 
 EMU_REF_DIR ?= $(REF_DIR)/GATK_bundle/2.3/emu_ref
-EMU_REF_MUTATIONS ?= $(HOME)/share/reference/alexandrov_emu_mutations.txt
+EMU_REF_MUTATIONS ?= $(REF_DIR)/emu_ref/exome_ref/Breast_clean_somatic_mutations_for_signature_analysis.emu.mutations.txt
 EMU_REF_CNV ?= $(HOME)/share/reference/alexandrov_emu_cnv.txt
 
 HMMCOPY_GC_WIG = $(HOME)/share/reference/GATK_bundle/2.3/gc_hg19.wig
