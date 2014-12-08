@@ -60,7 +60,7 @@ clonehd/baf/$1.baf.jumps.txt : clonehd/baf/$1.baf.txt
 	$$(call LSCRIPT_MEM,8G,17G,"$$(FILTERHD) --data $$< --mode 1 --pre clonehd/baf/$1.baf --sigma 0 --jumps 1 --reflect 1 --dist 1")
 
 clonehd/results/$1.summary.txt : clonehd/baf/$1.baf.txt clonehd/cna/$1.cna.txt clonehd/baf/$1.baf.jumps.txt clonehd/cna/$1.cna.bias.jumps.txt clonehd/cna/$3.cna.posterior-1.txt
-	$$(call LSCRIPT_MEM,4G,8G,"$$(CLONEHD) --cna $$(<<) --baf $$< \
+	$$(call LSCRIPT_MEM,10G,16G,"$$(CLONEHD) --cna $$(<<) --baf $$< \
 		--pre clonehd/results/$1 --bias $$(5<) --seed 123 --trials $$(NUM_TRIALS) \
 		--nmax $$(MAX_SUBCLONE_NUM) --force --max-tcn $$(MAX_TOTAL_COPY_NUM) --cna-jumps $$(4<) --baf-jumps $$(<<<) \
 		--min-jump 0.01 --restarts $$(NUM_RESTARTS) --mass-gauging 1")
