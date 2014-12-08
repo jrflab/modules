@@ -69,7 +69,7 @@ ifeq ($(UCSC_REF),false)
    KNOWN_INDELS ?= $(REF_DIR)/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
    OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf
    HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf
-   COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v64_02042013_noLimit.vcf
+   COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.vcf
    BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
    EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
    EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
@@ -90,7 +90,7 @@ REF_DICT = $(REF_FASTA:.fasta=.dict)
 SNP_EFF_GENOME = hg19
 
 EMU_REF_DIR ?= $(REF_DIR)/GATK_bundle/2.3/emu_ref
-EMU_REF_MUTATIONS ?= $(HOME)/share/reference/alexandrov_emu_mutations.txt
+EMU_REF_MUTATIONS ?= $(REF_DIR)/emu_ref/exome_ref/Breast_clean_somatic_mutations_for_signature_analysis.emu.mutations.txt
 EMU_REF_CNV ?= $(HOME)/share/reference/alexandrov_emu_cnv.txt
 
 HMMCOPY_GC_WIG = $(HOME)/share/reference/GATK_bundle/2.3/gc_hg19.wig
