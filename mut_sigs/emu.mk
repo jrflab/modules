@@ -24,7 +24,9 @@ all : $(ALL)
 
 include ~/share/modules/variant_callers/somatic/mutect.mk
 
-emu/mutations.txt : alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
+ALL_TABLE ?= alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
+
+emu/mutations.txt : $(ALL_TABLE)
 	$(INIT) awk 'NR > 1 { sub("X", "23", $$3); sub("Y", "24", $$3); sub("MT", "25", $$3); print $$1 "_" $$2, $$3, $$4, $$6 ">" $$7 }' $< | cat - $(EMU_REF_MUTATIONS) > $@
 
 emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
@@ -48,4 +50,4 @@ emu/sample_pairs.txt :
 	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
 
 emu/report/index.html : emu/emu_results_bic.txt emu/sample_pairs.txt emu/mutations.txt emu/mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(PLOT_EMU) --inDir $(<D) --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
+	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inDir $(<D) --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
