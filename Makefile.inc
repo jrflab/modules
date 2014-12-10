@@ -161,6 +161,7 @@ BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
 SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
+$(VCFUTILS) = $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS = /opt/bin/bcftools
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
