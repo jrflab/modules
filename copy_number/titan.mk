@@ -33,7 +33,7 @@ titan/wig/%.wig : bam/%.bam
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
 
 vcf/%.het_snp.vcf : bam/%.bam
-	$(call LSCRIPT_MEM,6G,8G,"$(SAMTOOLS) mpileup -f $(REF_FASTA) -g -I $< | $(BCFTOOLS) call -c | $(BCFTOOLS) view -g het | $(VCFUTILS) varFilter -d 10 -a 5 - > $@")
+	$(call LSCRIPT_MEM,6G,8G,"$(SAMTOOLS2) mpileup -f $(REF_FASTA) -g -I $< | $(BCFTOOLS2) call -c | $(BCFTOOLS2) view -g het | $(VCFUTILS) varFilter -d 10 -a 5 - > $@")
 
 define titan-tumor-normal
 vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
