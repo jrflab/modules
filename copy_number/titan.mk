@@ -29,9 +29,11 @@ all : results seg
 results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).titan_$i.txt))
 seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pair).titan_$i.seg))
 
+include ~/share/modules/variant_callers/gatk.mk
+include ~/share/modules/variant_callers/samtoolsHet.mk
+
 titan/wig/%.wig : bam/%.bam
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
-
 
 define titan-tumor-normal
 titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
@@ -57,4 +59,3 @@ titan/seg/%.titan_$1.seg : titan/results/%.titan_$1.txt
 endef
 $(foreach i,$(NUM_CLUSTERS),$(eval $(call titan-numcluster,$i)))
 
-include ~/share/modules/variant_callers/gatk.mk
