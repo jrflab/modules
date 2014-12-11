@@ -24,6 +24,7 @@ LOGDIR = log/clonehd.$(NOW)
 all : $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt) $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.snv.summary.txt)
 
 include ~/share/modules/variant_callers/gatk.mk
+include ~/share/modules/variant_callers/samtoolsHet.mk
 include ~/share/modules/variant_callers/somatic/mutect.mk
 
 clonehd/cov/%.cov.txt : bam/%.bam
