@@ -313,6 +313,10 @@ TARGETS += titan
 titan :
 	$(MAKE) -e -f ~/share/modules/copy_number/titan.mk $(FLAGS) $(TARGET)
 
+TARGETS += samtools_het
+samtools_het :
+	$(MAKE) -e -f ~/share/modules/variant_callers/samtoolsHet.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
