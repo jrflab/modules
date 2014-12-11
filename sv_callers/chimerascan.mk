@@ -33,7 +33,7 @@ ALL += $(ALLTABLE)
 all : $(ALL)
 
 CHIMERASCAN = PYTHONPATH=$(CHIMSCAN_PYTHONPATH) $(CHIMSCAN_PYTHON) /home/limr/share/usr/lib/python/chimerascan/chimerascan_run.py
-override CHIMERASCAN_OPTS := -v --quals illumina
+CHIMERASCAN_OPTS := -v --quals illumina
 
 #chimerascan/tables/all.chimscan_results.txt : $(foreach sample,$(SAMPLES),chimerascan/$(sample).chimscan_timestamp)
 #$(INIT) head -1 $(basename $<)/chimeras.bedpe > $@ && for x in $(addsuffix /chimeras.bedpe,$(basename $^)); do sed '1d' $$x >> $@; done
