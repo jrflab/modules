@@ -33,15 +33,6 @@ titan/wig/%.wig : bam/%.bam
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
 
 
-define hetsnp-chr
-chr_vcf/%.$1.het_snp.vcf : bam/%.bam
-	$$(call LSCRIPT_MEM,6G,8G,"$$(SAMTOOLS2) mpileup -r $1 -f $$(REF_FASTA) -g -I $$< | $$(BCFTOOLS2) call -c | $$(BCFTOOLS2) view -g het | $$(VCFUTILS) varFilter -d 10 -a 5 - > $$@")
-endef
-$(foreach chr,$(CHROMOSOMES),$(eval $(call hetsnp-chr,$(chr))))
-
-vcf/%.het_snp.vcf : $(foreach chr,$(CHROMOSOMES),chr_vcf/%.$(chr).het_snp.vcf)
-	$(INIT) grep -P '^#' $< > $@ && sed '/^#/d' $^ >> $@
-
 define titan-tumor-normal
 vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
