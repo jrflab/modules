@@ -255,4 +255,12 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ \
 		--genotypeFilterExpression 'isHet == 1' --genotypeFilterName 'Heterozygous positions'")
 
+define hetsnp-chr
+chr_vcf/%.$1.het_snp.vcf : bam/%.bam
+	$$(call LSCRIPT_MEM,6G,8G,"$$(SAMTOOLS2) mpileup -r $1 -f $$(REF_FASTA) -g -I $$< | $$(BCFTOOLS2) call -c | $$(BCFTOOLS2) view -g het | $$(VCFUTILS) varFilter -d 10 -a 5 - > $$@")
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call hetsnp-chr,$(chr))))
+
+vcf/%.het_snp.vcf : $(foreach chr,$(CHROMOSOMES),chr_vcf/%.$(chr).het_snp.vcf)
+	$(INIT) grep -P '^#' $< > $@ && sed '/^#/d' $^ >> $@
 
