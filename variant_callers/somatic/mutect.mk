@@ -23,10 +23,10 @@ ifeq ($(TARGET_FILTER),true)
 MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).target_ft
 endif
 endif
-MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm.transfic
+MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.nsfp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 MUTECT_VCF_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX)
-MUTECT_TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))
+MUTECT_TABLE_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX).tab $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(MUTECT_VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))
