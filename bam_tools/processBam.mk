@@ -210,3 +210,4 @@ else # no splitting by chr
 	-nt 4 -R $(REF_FASTA)  -o $@ $(REALN_TARGET_OPTS)")
 endif
 
+
