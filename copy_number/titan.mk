@@ -10,6 +10,7 @@ TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegme
 NUM_CLUSTERS ?= $(shell seq 1 5)
 BQ_THRESHOLD ?= 20
 MQ_THRESHOLD ?= 20
+WINDOW_SIZE ?= 10000
 
 
 TITAN_OPTS ?= 
@@ -33,7 +34,7 @@ include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
 
 titan/wig/%.wig : bam/%.bam
-	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
+	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
 
 define titan-tumor-normal
 titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
