@@ -10,7 +10,7 @@ TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegme
 NUM_CLUSTERS ?= $(shell seq 1 5)
 BQ_THRESHOLD ?= 20
 MQ_THRESHOLD ?= 20
-WINDOW_SIZE ?= 10000
+TITAN_WINDOW_SIZE ?= 10000
 
 
 TITAN_OPTS ?= 
@@ -33,14 +33,14 @@ seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pai
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
 
-titan/wig/%.w$(WINDOW_SIZE).wig : bam/%.bam
-	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
+titan/wig/%.w$(TITAN_WINDOW_SIZE).wig : bam/%.bam
+	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
 
-titan/wig/gc.w$(WINDOW_SIZE).wig :
-	$(call LSCRIPT_MEM,6G,8G,"$(GC_COUNTER) -w $(WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(REF_FASTA) > $@")
+titan/wig/gc.w$(TITAN_WINDOW_SIZE).wig :
+	$(call LSCRIPT_MEM,6G,8G,"$(GC_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(REF_FASTA) > $@")
 
-titan/wig/map.w$(WINDOW_SIZE).wig :
-	$(call LSCRIPT_MEM,6G,8G,"$(MAP_COUNTER) -w $(WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(MAP_BIGWIG) > $@")
+titan/wig/map.w$(TITAN_WINDOW_SIZE).wig :
+	$(call LSCRIPT_MEM,6G,8G,"$(MAP_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(MAP_BIGWIG) > $@")
 
 define titan-tumor-normal
 titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
@@ -58,7 +58,7 @@ titan/results/$1_$2.titan_$3.txt : titan/wig/$1.w$4.wig titan/wig/$2.w$4.wig tit
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
-	$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$(WINDOW_SIZE)))))
+	$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$(TITAN_WINDOW_SIZE)))))
 
 define titan-numcluster
 titan/seg/%.titan_$1.seg : titan/results/%.titan_$1.txt
