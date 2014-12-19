@@ -366,3 +366,8 @@ GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 #signature md5
 #makepp_no_builtin = 1
 #makepp_percent_subdirs := 1
+
+define R_INIT
+dir.create('$(@D)', showWarnings = F)
+qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
+endef
