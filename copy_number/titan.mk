@@ -52,7 +52,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-define titan-tumor-normal-numcluster-windowsize
+define titan-tumor-normal-numcluster
 titan/results/$1_$2.titan_$3.txt : titan/wig/$1.w$4.wig titan/wig/$2.w$4.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$4.wig titan/wig/map.w$4.wig
 	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results/$1_$2 --plotPrefix titan/results/$1_$2 $$(<<<)")
 endef
