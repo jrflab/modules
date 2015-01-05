@@ -107,7 +107,7 @@ endif
 	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(IGVTOOLS) index $< && sleep 10")
 
 %.chasm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $<"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --classifier $(CHASM_CLASSIFIER) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $<"))
 
 %.fathmm.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM_NET,1G,2G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $<"))
