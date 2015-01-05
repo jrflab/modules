@@ -12,7 +12,7 @@ CHASM = $(RSCRIPT) $(HOME)/share/scripts/chasmVcf.R
 #CHASM_DIR = /ifs/opt/common/CHASM/CHASMDL.1.0.7
 CHASM_DIR = $(HOME)/share/usr/CHASM
 CHASM_PYTHON = $(HOME)/share/usr/bin/python
-CHASM_CLASSIFIER = Breast
+CHASM_CLASSIFIER ?= Breast
 
 FATHMM = $(MY_RSCRIPT) $(HOME)/share/scripts/fathmmVcf.R 
 FATHMM_DIR = $(HOME)/share/usr/fathmm
