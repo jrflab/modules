@@ -19,11 +19,11 @@ VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
 
 VARIANT_TYPES = strelka_snps strelka_indels
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-FILTER_SUFFIX := pass.dbsnp
+FILTER_SUFFIX := pass.dbsnp.cosmic
 ifdef TARGETS_FILE
 FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).eff.nsfp.chasm.transfic#.fathmm
+FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).eff.nsfp.chasm.transfic.#.fathmm
 FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
 
 TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES), $(type).$(FILTER_SUFFIX.$(type)).tab \
