@@ -317,6 +317,10 @@ TARGETS += samtools_het
 samtools_het :
 	$(MAKE) -e -f ~/share/modules/variant_callers/samtoolsHet.mk $(FLAGS) $(TARGET)
 
+TARGETS += absolute_seq
+absolute_seq :
+	$(MAKE) -e -f ~/share/modules/clonality/absoluteSeq.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
