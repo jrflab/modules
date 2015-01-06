@@ -14,7 +14,7 @@ SHELL = $(HOME)/share/scripts/Rshell
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/review/all.PP-modes_data.RData
+all : absolute/reviewed/all.segtab.txt
 
 define LIB_INIT
 library(ABSOLUTE)
@@ -47,11 +47,15 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
 	output.fn.base = "$*"
 	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = NULL, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
 
-absolute/review/all.PP-modes_data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
+absolute/review/%_PP-calls_tab.txt absolute/review/%_PP-modes_data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 	$(R_INIT)
 	$(LIB_INIT)
 	absolute.files <- qw("$^")
 	indv.results.dir <- "$(@D)"
 	copynum.type <- "total"
-	CreateReviewObject(obj.name = "all", absolute.files, indv.results.dir, copynum.type, plot.modes = T, verbose = T)
+	CreateReviewObject(obj.name = "$*", absolute.files, indv.results.dir, copynum.type, plot.modes = T, verbose = T)
 
+absolute/reviewed/all.segtab.txt : absolute/review/all_PP-calls_tab.txt absolute/review/all_PP-modes_data.RData
+	$(R_INIT)
+	$(LIB_INIT)
+	ExtractReviewedResults("$<", 'absolute-workflow', "$(<<)", "absolute", "all", verbose = T)
