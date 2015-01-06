@@ -38,7 +38,6 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
 	primary.disease <- "$(PRIMARY_DISEASE)"
 	sample.name <- "$*"
 	platform <- "$(PLATFORM)"
-	platform <-"SNP_6.0" (if you are using oncoscan or SNP6 segmentation files)
 	max.as.seg.count <- 1500
 	copynum.type <- "total"
 	max.neg.genome <- 0
