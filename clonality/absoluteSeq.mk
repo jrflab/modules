@@ -24,7 +24,7 @@ endef
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<")
+	X <- read.table("$<", header = T, sep = '\t')
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 
