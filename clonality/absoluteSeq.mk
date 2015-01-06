@@ -47,7 +47,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
 	output.fn.base = "$*"
 	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = NULL, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
 
-absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes_data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
+absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 	$(R_INIT)
 	$(LIB_INIT)
 	absolute.files <- qw("$^")
@@ -55,7 +55,7 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes_data.RData : $(for
 	copynum.type <- "total"
 	CreateReviewObject(obj.name = "$*", absolute.files, indv.results.dir, copynum.type, plot.modes = T, verbose = T)
 
-absolute/reviewed/all.segtab.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes_data.RData
+absolute/reviewed/all.segtab.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
 	ExtractReviewedResults("$<", 'absolute-workflow', "$(<<)", "absolute", "all", verbose = T)
