@@ -367,6 +367,6 @@ GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 #makepp_percent_subdirs := 1
 
 define R_INIT
-dir.create('$(@D)', showWarnings = F)
+dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
