@@ -169,7 +169,6 @@ IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 SNP_EFF = $(JAVA) -Xmx4G -jar $(JARDIR)/snpEff.jar
-SNP_EFF_CONFIG = $(HOME)/share/modules/snpEff.config 
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
 CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #SNVMIX = $(HOME)/share/usr/bin/SNVMix2

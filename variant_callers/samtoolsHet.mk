@@ -3,7 +3,7 @@
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
 
-LOGDIR = log/samtools_het.$(NOW)
+LOGDIR ?= log/samtools_het.$(NOW)
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
