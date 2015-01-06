@@ -58,4 +58,4 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(for
 absolute/reviewed/all.segtab.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
-	ExtractReviewedResults("$<", 'absolute-workflow', "$(<<)", "absolute", "all", verbose = T)
+	ExtractReviewedResults("$<", 'absolute-workflow', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
