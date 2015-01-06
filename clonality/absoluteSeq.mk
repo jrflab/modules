@@ -1,7 +1,9 @@
 include ~/share/modules/Makefile.inc
 
+LOGDIR = log/absoluteSeq.$(NOW)
+
 SHELL = $(HOME)/share/scripts/Rshell
-.SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
+.SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
