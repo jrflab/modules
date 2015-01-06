@@ -1,20 +1,19 @@
 include ~/share/modules/Makefile.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
+MEM := 2G
+PE := 1
 
 SHELL = $(HOME)/share/scripts/Rshell
 .SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
-
-PRIMARY_DISEASE ?= breast
-PLATFORM ?= Illumina_WES
 
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: all
 
-MEM := 2G
-PE := 1
+PRIMARY_DISEASE ?= breast
+PLATFORM ?= Illumina_WES
 
 all : absolute/review/all.PP-modes_data.RData
 
