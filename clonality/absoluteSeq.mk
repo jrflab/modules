@@ -46,7 +46,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
 	seg.dat.fn <- "$<"
 	results.dir <- "$(@D)"
 	output.fn.base = "$*"
-	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, copynum.type, maf.fn = NULL, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
+	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, copy_num_type = copynum.type, maf.fn = NULL, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
 
 absolute/review/all.PP-modes_data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 	$(R_INIT)
