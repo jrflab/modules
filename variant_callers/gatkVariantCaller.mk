@@ -46,7 +46,7 @@ VPATH ?= bam
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = gatk_snps gatk_indels
 
-FILTER_SUFFIX := dp_ft.pass.dbsnp
+FILTER_SUFFIX := dp_ft.pass.dbsnp.cosmic
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
 endif
