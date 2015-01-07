@@ -55,7 +55,7 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(for
 	copynum.type <- "total"
 	CreateReviewObject(obj.name = "$*", absolute.files, indv.results.dir, copynum.type, plot.modes = T, verbose = T)
 
-absolute/reviewed/all.segtab.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes.data.RData
+absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
-	ExtractReviewedResults("$<", 'absolute-workflow', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
+	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
