@@ -169,7 +169,6 @@ IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 SNP_EFF = $(JAVA) -Xmx4G -jar $(JARDIR)/snpEff.jar
-SNP_EFF_CONFIG = $(HOME)/share/modules/snpEff.config 
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
 CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #SNVMIX = $(HOME)/share/usr/bin/SNVMix2
@@ -368,6 +367,6 @@ GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 #makepp_percent_subdirs := 1
 
 define R_INIT
-dir.create('$(@D)', showWarnings = F)
+dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef

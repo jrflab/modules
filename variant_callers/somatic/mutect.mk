@@ -1,4 +1,4 @@
-##### MAKE INCLUDES #####
+#### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
 
@@ -23,7 +23,7 @@ ifeq ($(TARGET_FILTER),true)
 MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).target_ft
 endif
 endif
-MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.nsfp.eff.chasm
+MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.cosmic.nsfp.eff.chasm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 MUTECT_VCF_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX)
 MUTECT_TABLE_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX).tab $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))
@@ -35,7 +35,8 @@ VCFS = $(foreach suff,$(MUTECT_VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect-tumor-normal-chr
 mutect/chr_vcf/$1_$2.$3.mutect%vcf mutect/chr_tables/$1_$2.$3.mutect%txt : bam/$1%bam bam/$2%bam
-	$$(MKDIR) mutect/chr_tables mutect/chr_vcf; $$(call LSCRIPT_MEM,12G,16G,"$$(MUTECT) --enable_extended_output --intervals $3 --reference_sequence $$(REF_FASTA) --cosmic $$(COSMIC) --dbsnp $$(DBSNP1PC) --input_file:tumor $$< --input_file:normal $$(word 2,$$^) -vcf mutect/chr_vcf/$1_$2.$3.mutect.vcf --out mutect/chr_tables/$1_$2.$3.mutect.txt")
+#	$$(MKDIR) mutect/chr_tables mutect/chr_vcf; $$(call LSCRIPT_MEM,12G,16G,"$$(MUTECT) --enable_extended_output --intervals $3 --reference_sequence $$(REF_FASTA) --cosmic $$(COSMIC) --dbsnp $$(DBSNP1PC) --input_file:tumor $$< --input_file:normal $$(word 2,$$^) -vcf mutect/chr_vcf/$1_$2.$3.mutect.vcf --out mutect/chr_tables/$1_$2.$3.mutect.txt")
+	$$(MKDIR) mutect/chr_tables mutect/chr_vcf; $$(call LSCRIPT_MEM,12G,16G,"$$(MUTECT) --enable_extended_output --intervals $3 --reference_sequence $$(REF_FASTA) --dbsnp $$(DBSNP1PC) --input_file:tumor $$< --input_file:normal $$(word 2,$$^) -vcf mutect/chr_vcf/$1_$2.$3.mutect.vcf --out mutect/chr_tables/$1_$2.$3.mutect.txt")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach i,$(SETS_SEQ), \
