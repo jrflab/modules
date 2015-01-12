@@ -19,19 +19,19 @@ VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
 
 VARIANT_TYPES = strelka_snps strelka_indels
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-FILTER_SUFFIX := pass.dbsnp.cosmic
+STRELKA_FILTER_SUFFIX := pass.dbsnp.cosmic
 ifdef TARGETS_FILE
-FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
+STRELKA_FILTER_SUFFIX := target_ft.$(STRELKA_FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.strelka_snps := $(FILTER_SUFFIX).eff.nsfp.chasm.transfic.fathmm
-FILTER_SUFFIX.strelka_indels := $(FILTER_SUFFIX).eff
+STRELKA_FILTER_SUFFIX.strelka_snps := $(STRELKA_FILTER_SUFFIX).eff.nsfp.chasm.transfic.#.fathmm
+STRELKA_FILTER_SUFFIX.strelka_indels := $(STRELKA_FILTER_SUFFIX).eff
 
-TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES), $(type).$(FILTER_SUFFIX.$(type)).tab \
-	$(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
+TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES), $(type).$(STRELKA_FILTER_SUFFIX.$(type)).tab \
+	$(foreach eff,$(EFF_TYPES),$(type).$(STRELKA_FILTER_SUFFIX.$(type)).tab.$(eff)))
 TABLE_SUFFIXES := $(TABLE_SUFFIXES) $(addsuffix .novel,$(TABLE_SUFFIXES))
 
 all : vcfs tables alltables
-vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair).$(type).$(FILTER_SUFFIX.$(type)).vcf))
+vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair).$(type).$(STRELKA_FILTER_SUFFIX.$(type)).vcf))
 tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt) alltables/allTN.$(suff).txt) 
 
 define strelka-tumor-normal
