@@ -12,6 +12,8 @@ BQ_THRESHOLD ?= 20
 MQ_THRESHOLD ?= 20
 TITAN_WINDOW_SIZE ?= 10000
 
+TITAN_SELF_TRANSITION ?= 1e10
+TITAN_CLONAL_CLUSTER_TRANSITION ?= 5e3
 
 TITAN_OPTS ?= 
 ifdef TARGETS_FILE
@@ -54,7 +56,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 
 define titan-tumor-normal-numcluster
 titan/results/$1_$2.titan_$3.txt : titan/wig/$1.w$4.wig titan/wig/$2.w$4.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$4.wig titan/wig/map.w$4.wig
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --numCores 8 --outPrefix titan/results/$1_$2 --plotPrefix titan/results/$1_$2 $$(<<<)")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results/$1_$2 --plotPrefix titan/results/$1_$2 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
