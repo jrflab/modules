@@ -39,7 +39,7 @@ CHIMERASCAN_OPTS ?=
 #$(INIT) head -1 $(basename $<)/chimeras.bedpe > $@ && for x in $(addsuffix /chimeras.bedpe,$(basename $^)); do sed '1d' $$x >> $@; done
 
 chimscan/bedpe/%.chimscan.bedpe : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,4,20G,48G,"$(CHIMERASCAN) $(CHIMERASCAN_OPTS) -v --quals illumina -p 4 $(CHIMSCAN_INDEX) $^ chimscan/$* && cp -f chimscan/$*/chimeras.bedpe $@ && rm -r chimscan/$*")
+	$(call LSCRIPT_PARALLEL_MEM,4,20G,94G,"$(CHIMERASCAN) $(CHIMERASCAN_OPTS) -v --quals illumina -p 4 $(CHIMSCAN_INDEX) $^ chimscan/$* && cp -f chimscan/$*/chimeras.bedpe $@ && rm -r chimscan/$*")
 # was 8 and 20
 %.chimscan.nft.bedpe : %.chimscan.bedpe
 	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
