@@ -19,7 +19,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 .SECONDARY: 
 .PHONY : all 
 
-#ALL = $(foreach sample,$(SAMPLES),chimscan/$(sample).chimscan_timestamp)
+ALL = $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan.bedpe)
 ifdef NORMAL_CHIMSCAN_RESULTS
 ALL += $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan.nft.bedpe)
 ALLTABLE = chimscan/alltables/all.chimscan.nft.oncofuse.merged.txt
