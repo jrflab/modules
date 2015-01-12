@@ -27,7 +27,23 @@ absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 
-absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
+absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX).tab.txt
+	$(R_INIT)
+	$(LIB_INIT)
+	tn <- unlist(strsplit("$*", '_'))
+	snvs <- read.table("$<", header = T, sep = '\t', comment.char = '', as.is = T)
+	snvs.tref <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
+	snvs.talt <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
+	indels <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
+	indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TAR"]], ','), function (x) x[1]))
+	indels.tref <- indels[["TUMOR.DP"]] - indels.talt
+	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]])
+	chr <- as.integer(sub('X', '23', chr))
+	Data <- data.frame(Tumor_Sample_Barcode = tn[1], Hugo_Symbol = c(snvs[['EFF....GENE']], indels[['EFF....GENE']]), t_ref_count = c(snvs.tref, indels.tref), t_alt_count = c(snvs.talt, indels.talt), dbSNP_Val_Status = "validated", Chromosome = chr, Start_position = c(snvs[["POS"]], indels[["POS"]]), stringsAsFactors = F)
+	Data <- subset(Data, Hugo_Symbol != ".")
+	write.table(Data, file = "$@", sep = '\t', quote = F)
+
+absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	sigma.p <- 0
@@ -45,7 +61,8 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt
 	seg.dat.fn <- "$<"
 	results.dir <- "$(@D)"
 	output.fn.base = "$*"
-	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = NULL, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
+	maf.fn = "$(<<)"
+	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = maf.fn, min.mut.af = NULL, output.fn.base = output.fn.base, verbose = T)
 
 absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 	$(R_INIT)
