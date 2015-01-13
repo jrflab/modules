@@ -41,17 +41,14 @@ scalpel/$2_$3/$1/somatic.5x.indel.vcf : bam/$2.bam bam/$3.bam
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
-	$(foreach i,$(SETS_SEQ),\
-		$(foreach tumor,$(call get_tumors,$(set.$i)), \
-			$(eval $(call scalpel-bed-tumor-normal,$(bed),$(tumor),$(call get_normal,$(set.$i)))))))
+	$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call scalpel-bed-tumor-normal,$(bed),$(tumor.$(pair)),$(normal.$(pair))))))
 
 define merge-scalpel-tumor-normal
 scalpel/vcf/$1_$2.scalpel.vcf : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.vcf)
 	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; grep -v '^#' $$$$x >> $$@; done
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call merge-scalpel-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 #define scalpel2vcf-tumor-normal
 #vcf/$1_$2.scalpel.vcf : scalpel/tables/$1_$2.scalpel.txt
@@ -66,21 +63,13 @@ define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.vcf : bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
 
-vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.vcf
-	$$(INIT) cp $$< $$@
+#vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
+#$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call scalpel-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
-define scalpel2vcf-tumor-normal
-vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
-	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call scalpel2vcf-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
+vcf/%.scalpel.vcf : scalpel/%/somatic.5x.indel.vcf
+	$(INIT) cp $< $@
 
 include ~/share/modules/vcf_tools/vcftools.mk
