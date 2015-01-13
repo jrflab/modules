@@ -1,6 +1,6 @@
 include ~/share/modules/Makefile.inc
-include ~/share/modules/varian_callers/somatic/mutect.inc
-include ~/share/modules/varian_callers/somatic/strelka.inc
+include ~/share/modules/variant_callers/somatic/mutect.inc
+include ~/share/modules/variant_callers/somatic/strelka.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
