@@ -37,7 +37,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
-scalpel/$2_$3/$1/somatic.5x.indel.vcf : bam/$2.bam bam/$3.bam
+scalpel/$2_$3/$1/somatic.5x.indel.vcf : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
@@ -60,7 +60,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.
 else
 
 define scalpel-tumor-normal
-scalpel/$1_$2/somatic.5x.indel.vcf : bam/$1.bam bam/$2.bam
+scalpel/$1_$2/somatic.5x.indel.vcf : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --dir $$(@D)")
 
 #vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
@@ -73,3 +73,4 @@ vcf/%.scalpel.vcf : scalpel/%/somatic.5x.indel.vcf
 	$(INIT) cp $< $@
 
 include ~/share/modules/vcf_tools/vcftools.mk
+include ~/share/modules/bam_tools/processBam.mk
