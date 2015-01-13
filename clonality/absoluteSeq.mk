@@ -1,4 +1,6 @@
 include ~/share/modules/Makefile.inc
+include ~/share/modules/varian_callers/somatic/mutect.inc
+include ~/share/modules/varian_callers/somatic/strelka.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
@@ -14,14 +16,11 @@ SHELL = $(HOME)/share/scripts/Rshell
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/reviewed/all.segtab.txt
+all : absolute/review/all.segtab.txt
 
 define LIB_INIT
 library(ABSOLUTE)
 endef
-
-include ~/share/modules/variant_callers/somatic/strelka.mk
-include ~/share/modules/variant_callers/somatic/mutect.mk
 
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
