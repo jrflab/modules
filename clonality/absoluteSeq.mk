@@ -16,7 +16,7 @@ SHELL = $(HOME)/share/scripts/Rshell
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/review/all.segtab.txt
+all : absolute/review/all.PP-calls_tab.txt
 
 define LIB_INIT
 library(ABSOLUTE)
