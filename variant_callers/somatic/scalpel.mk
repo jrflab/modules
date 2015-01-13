@@ -37,7 +37,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
-scalpel/$2_$3/$1/somatic.5x.indel.txt : bam/$2.bam bam/$3.bam
+scalpel/$2_$3/$1/somatic.5x.indel.vcf : bam/$2.bam bam/$3.bam
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(word 1,$$^) --normal $$(word 2,$$^) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
@@ -47,7 +47,7 @@ $(foreach bed,$(BED_FILES),\
 
 define merge-scalpel-tumor-normal
 scalpel/vcf/$1_$2.scalpel.vcf : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.vcf)
-	$$(INIT) head -1 $$< > $$@ && for x in $$^; do sed '1d' $$$$x >> $$@; done
+	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; grep -v '^#' $$$$x >> $$@; done
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
