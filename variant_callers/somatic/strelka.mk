@@ -2,37 +2,20 @@
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/variant_callers/strelka.inc
 ##### DEFAULTS ######
 
 
 LOGDIR = log/strelka.$(NOW)
 
-CONFIGURE_STRELKA = $(PERL) $(HOME)/share/usr/bin/configureStrelkaWorkflow.pl
-STRELKA_CONFIG = $(HOME)/share/usr/etc/strelka_config.ini
-
-VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU TAR TIR TOR
-VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
-
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: all vcfs tables alltables
 
-VARIANT_TYPES = strelka_snps strelka_indels
-EFF_TYPES = silent missense nonsilent_cds nonsilent
-STRELKA_FILTER_SUFFIX := pass.dbsnp.cosmic
-ifdef TARGETS_FILE
-STRELKA_FILTER_SUFFIX := target_ft.$(STRELKA_FILTER_SUFFIX)
-endif
-STRELKA_FILTER_SUFFIX.strelka_snps := $(STRELKA_FILTER_SUFFIX).eff.nsfp.chasm.transfic#.fathmm
-STRELKA_FILTER_SUFFIX.strelka_indels := $(STRELKA_FILTER_SUFFIX).eff
-
-TABLE_SUFFIXES := $(foreach type,$(VARIANT_TYPES), $(type).$(STRELKA_FILTER_SUFFIX.$(type)).tab \
-	$(foreach eff,$(EFF_TYPES),$(type).$(STRELKA_FILTER_SUFFIX.$(type)).tab.$(eff)))
-TABLE_SUFFIXES := $(TABLE_SUFFIXES) $(addsuffix .novel,$(TABLE_SUFFIXES))
 
 all : vcfs tables alltables
 vcfs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf/$(pair).$(type).$(STRELKA_FILTER_SUFFIX.$(type)).vcf))
-tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt) alltables/allTN.$(suff).txt) 
+tables : $(foreach suff,$(STRELKA_TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(suff).txt) alltables/allTN.$(suff).txt) 
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
