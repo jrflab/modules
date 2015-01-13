@@ -20,6 +20,9 @@ define LIB_INIT
 library(ABSOLUTE)
 endef
 
+include ~/share/modules/variant_callers/somatic/strelka.mk
+include ~/share/modules/variant_callers/somatic/mutect.mk
+
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
 	$(LIB_INIT)
