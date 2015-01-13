@@ -19,7 +19,7 @@ ifeq ($(TARGET_FILTER),true)
 MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).target_ft
 endif
 endif
-MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.cosmic.nsfp.eff.chasm.transfic
+MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.cosmic.nsfp.eff.chasm
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 MUTECT_VCF_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX)
 MUTECT_TABLE_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX).tab $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))
