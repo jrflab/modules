@@ -22,7 +22,7 @@ endif
 
 all : $(ALL)
 
-include ~/share/modules/variant_callers/somatic/mutect.mk
+include ~/share/modules/variant_callers/somatic/mutect.inc
 
 ALL_TABLE ?= alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
 
