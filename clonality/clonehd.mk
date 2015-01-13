@@ -3,6 +3,7 @@
 ##### DEFAULTS ######
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/variant_callers/somatic/mutect.inc
 
 CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
@@ -25,7 +26,6 @@ all : $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt) $(foreach s,$(S
 
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
-include ~/share/modules/variant_callers/somatic/mutect.mk
 
 clonehd/cov/%.cov.txt : bam/%.bam
 	$(call LSCRIPT_MEM,4G,7G,"$(SAMTOOLS) bedcov $(TARGETS_FILE) $< > $@")
