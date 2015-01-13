@@ -2,7 +2,7 @@
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/variant_callers/strelka.inc
+include ~/share/modules/variant_callers/somatic/strelka.inc
 ##### DEFAULTS ######
 
 
