@@ -7,7 +7,7 @@ include ~/share/modules/variant_callers/gatk.inc
 LOGDIR = log/scalpel.$(NOW)
 
 SCALPEL_DIR = $(HOME)/share/usr/scalpel-0.3.2
-SCALPEL = $(PERL) $(SCALPEL_DIR)/scalpel
+SCALPEL = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/; $(PERL) $(SCALPEL_DIR)/scalpel
 SCALPEL_OPTS = --ref $(REF_FASTA)
 ifeq ($(EXOME),true)
 BED_DIR = $(HOME)/share/reference/splitExonBed/
@@ -18,8 +18,6 @@ SCALPEL_OPTS += --bed $(TARGETS_FILE)
 endif
 
 SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
-
-export LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/ 
 
 FILTER_SUFFIX := dbsnp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
