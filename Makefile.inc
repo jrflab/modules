@@ -346,6 +346,8 @@ CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi
 <M = $(<:.md5=)
 ^M = $(^:.md5=)
 @M = $(@:.md5=)
+<<M = $(word 2,$(^M))
+<<<M = $(word 3,$(^M))
 
 # $(call CHECK_VCF,vcf.file,target,command)
 # check for valid header, ie non-empty vcf file
