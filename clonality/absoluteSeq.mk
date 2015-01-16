@@ -29,8 +29,6 @@ absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 
-$(info $(MUTECT_FILTER_SUFFIX))
-$(info $(STRELKA_FILTER_SUFFIX))
 absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt
 	$(R_INIT)
 	$(LIB_INIT)
