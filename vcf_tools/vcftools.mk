@@ -256,5 +256,5 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 		--genotypeFilterExpression 'isHet == 1' --genotypeFilterName 'Heterozygous positions'")
 
 %.dbsnp_ft.vcf : %.vcf
-	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' >> $@
+	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' $< > $@
 
