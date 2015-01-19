@@ -45,7 +45,7 @@ titan/wig/map.w$(TITAN_WINDOW_SIZE).wig :
 	$(call LSCRIPT_MEM,6G,8G,"$(MAP_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(MAP_BIGWIG) > $@")
 
 define titan-tumor-normal
-titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.vcf bam/$1.bam bam/$2.bam
+titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.dbsnp_ft.pass.vcf bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM2,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 titan/allele_count/$1_$2.ac.txt : bam/$1.bam titan/vcf/$1_$2.gatk_het.vcf
@@ -67,4 +67,6 @@ titan/seg/%.titan_$1.seg : titan/results/%.titan_$1.txt
 	$$(call LSCRIPT_MEM,4G,6G,"$$(TITAN_SEG) -id=$$*_cluster$3 -infile=$$< -outfile=$$(@:.seg=.txt) -outIGV=$$@")
 endef
 $(foreach i,$(NUM_CLUSTERS),$(eval $(call titan-numcluster,$i)))
+
+titan/summary/%.titan_summary.txt : $(foreach i,$(NUM_CLUSTERS),titan/results/%.titan_$i.txt)
 
