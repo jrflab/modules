@@ -255,3 +255,6 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ \
 		--genotypeFilterExpression 'isHet == 1' --genotypeFilterName 'Heterozygous positions'")
 
+%.dbsnp_ft.vcf : %.vcf
+	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' >> $@
+
