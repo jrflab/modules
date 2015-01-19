@@ -24,6 +24,12 @@ READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
 GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 
+HET_FILTER_SUFFIX := dbsnp.dbsnp_ft
+ifdef TARGETS_FILE
+HET_FILTER_SUFFIX := $(HET_FILTER_SUFFIX).target_ft
+endif
+
+
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : all results seg
@@ -44,9 +50,10 @@ titan/wig/gc.w$(TITAN_WINDOW_SIZE).wig :
 titan/wig/map.w$(TITAN_WINDOW_SIZE).wig :
 	$(call LSCRIPT_MEM,6G,8G,"$(MAP_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(MAP_BIGWIG) > $@")
 
+
 define titan-tumor-normal
-titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.dbsnp.dbsnp_ft.pass.vcf bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM2,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
+titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.$(HET_FILTER_SUFFIX).pass.vcf bam/$1.bam bam/$2.bam
+	$$(call LSCRIPT_PARALLEL_MEM,8,1.5G,3G,"$$(call GATK_MEM2,12G) -T UnifiedGenotyper -nt 8 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 titan/allele_count/$1_$2.ac.txt : bam/$1.bam titan/vcf/$1_$2.gatk_het.vcf
 	$$(call LSCRIPT_MEM,4G,6G,"$$(EXTRACT_ALLELE_READ_COUNTS) $$(<<) $$< $$(REF_FASTA) $$(BQ_THRESHOLD) $$(MQ_THRESHOLD) > $$@")
@@ -69,4 +76,5 @@ endef
 $(foreach i,$(NUM_CLUSTERS),$(eval $(call titan-numcluster,$i)))
 
 titan/summary/%.titan_summary.txt : $(foreach i,$(NUM_CLUSTERS),titan/results/%.titan_$i.txt)
+
 
