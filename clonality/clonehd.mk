@@ -12,7 +12,7 @@ PREFILTER = $(HOME)/share/usr/bin/pre-filter
 TABLE_TO_CLONEHD = $(PERL) $(HOME)/share/scripts/tableToCloneHDFormat.pl
 
 MAX_TOTAL_COPY_NUM ?= 4
-MAX_SUBCLONE_NUM ?= 4
+MAX_SUBCLONE_NUM ?= 3
 NUM_TRIALS ?= 2
 NUM_RESTARTS ?= 10
 
@@ -42,7 +42,7 @@ clonehd/cna/%.cna.posterior-1.txt : clonehd/cna/%.cna.txt
 
 # we need depth for positions in tumours that are heterozygous in the normal
 define clonehd-set-tumors-normal
-clonehd/vcf/$1.gatk_het.vcf : vcf/$3.het_snp.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) bam/$3.bam
+clonehd/vcf/$1.gatk_het.vcf : vcf/$3.het_snp.dbsnp.dbsnp_ft.pass.vcf $$(foreach tumor,$2,bam/$$(tumor).bam) bam/$3.bam
 	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM2,8G) -T UnifiedGenotyper -nt 4 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
 
 clonehd/baf/$1.baf.txt : tables/$1.gatk_het.tab.txt
