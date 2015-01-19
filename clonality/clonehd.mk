@@ -12,7 +12,7 @@ PREFILTER = $(HOME)/share/usr/bin/pre-filter
 TABLE_TO_CLONEHD = $(PERL) $(HOME)/share/scripts/tableToCloneHDFormat.pl
 
 MAX_TOTAL_COPY_NUM ?= 4
-MAX_SUBCLONE_NUM ?= 4
+MAX_SUBCLONE_NUM ?= 3
 NUM_TRIALS ?= 2
 NUM_RESTARTS ?= 10
 
