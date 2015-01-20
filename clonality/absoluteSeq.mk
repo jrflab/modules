@@ -11,12 +11,13 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all
+.PHONY: all results
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/review/all.PP-calls_tab.txt
+all : absolute/review/all.PP-calls_tab.txt results
+results : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 
 define LIB_INIT
 library(ABSOLUTE)
@@ -55,7 +56,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	primary.disease <- "$(PRIMARY_DISEASE)"
 	sample.name <- "$*"
 	platform <- "$(PLATFORM)"
-	max.as.seg.count <- 1500
+	max.as.seg.count <- 2000
 	copynum.type <- "total"
 	max.neg.genome <- 0
 	max.non.clonal <- 0
