@@ -32,9 +32,9 @@ endif
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY : all results seg
+.PHONY : titan results seg
 
-all : results seg
+titan : results seg
 results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).titan_$i.txt))
 seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pair).titan_$i.seg))
 

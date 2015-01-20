@@ -7,9 +7,9 @@ LOGDIR ?= log/samtools_het.$(NOW)
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY : all
+.PHONY : het_snps
 
-all : $(foreach s,$(SAMPLES),vcf/$s.het_snp.vcf vcf/$s.het_snp.vcf.idx)
+het_snps : $(foreach s,$(SAMPLES),vcf/$s.het_snp.vcf vcf/$s.het_snp.vcf.idx)
 
 include ~/share/modules/vcf_tools/vcftools.mk
 
