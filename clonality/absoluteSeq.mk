@@ -11,12 +11,13 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all
+.PHONY: all results
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/review/all.PP-calls_tab.txt
+all : absolute/review/all.PP-calls_tab.txt results
+results : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 
 define LIB_INIT
 library(ABSOLUTE)
@@ -29,8 +30,6 @@ absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 
-$(info $(MUTECT_FILTER_SUFFIX))
-$(info $(STRELKA_FILTER_SUFFIX))
 absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt
 	$(R_INIT)
 	$(LIB_INIT)
@@ -57,7 +56,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	primary.disease <- "$(PRIMARY_DISEASE)"
 	sample.name <- "$*"
 	platform <- "$(PLATFORM)"
-	max.as.seg.count <- 1500
+	max.as.seg.count <- 2000
 	copynum.type <- "total"
 	max.neg.genome <- 0
 	max.non.clonal <- 0
