@@ -271,7 +271,7 @@ REQ = SGE_RREQ="$(SGE_RREQ)"
 REQ_PARALLEL_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(PARALLEL_ENV) $(1)"
 REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
 UMASK = 002
-INIT = $(MKDIRS); umask $(UMASK); $(LOG_MEM) 
+INIT = $(MKDIRS); umask $(UMASK); $(LOG_MEM); set -o pipefail; 
 # $(call INIT_MEM,mem_free,h_vmem)
 INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2); $(LOG_MEM) 
 # $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
@@ -320,8 +320,11 @@ LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
 
 LSCRIPT_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -l internet=1
+LSCRIPT_BIG = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,big.q) -N X$(@F) $(QSUB_ARGS)
 LSCRIPT_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
+LSCRIPT_PARALLEL_MEM_BIG = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,big.q) -N X$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
 LSCRIPT_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,out.q) -N X$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
+LSCRIPT_MEM_BIG = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,big.q) -N X$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2)
 
 LSCRIPT_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB) -N X$1 $(QSUB_ARGS)
 LSCRIPT_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)

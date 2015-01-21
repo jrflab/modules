@@ -29,14 +29,17 @@ ifdef TARGETS_FILE
 HET_FILTER_SUFFIX := $(HET_FILTER_SUFFIX).target_ft
 endif
 
-
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : titan results seg
 
 titan : results seg
-results : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).titan_$i.txt))
-seg : $(foreach i,$(NUM_CLUSTERS),$(foreach pair,$(SAMPLE_PAIRS),titan/seg/$(pair).titan_$i.seg))
+results : $(foreach i,$(NUM_CLUSTERS),\
+	$(foreach j,$(PLOIDY_PRIORS),\
+	$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).z$i_p$j.titan.txt)))
+seg : $(foreach i,$(NUM_CLUSTERS),\
+	$(foreach j,$(PLOIDY_PRIORS),\
+	$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).z$i_p$j.titan.seg)))
 
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
@@ -50,7 +53,6 @@ titan/wig/gc.w$(TITAN_WINDOW_SIZE).wig :
 titan/wig/map.w$(TITAN_WINDOW_SIZE).wig :
 	$(call LSCRIPT_MEM,6G,8G,"$(MAP_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $(MAP_BIGWIG) > $@")
 
-
 define titan-tumor-normal
 titan/vcf/$1_$2.gatk_het.vcf : vcf/$2.het_snp.$(HET_FILTER_SUFFIX).pass.vcf bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_PARALLEL_MEM,8,1.5G,3G,"$$(call GATK_MEM2,12G) -T UnifiedGenotyper -nt 8 -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^), -I $$(bam) ) -L $$< -o $$@ --output_mode EMIT_ALL_SITES")
@@ -61,20 +63,17 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-define titan-tumor-normal-numcluster
-titan/results/$1_$2.titan_$3.txt : titan/wig/$1.w$4.wig titan/wig/$2.w$4.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$4.wig titan/wig/map.w$4.wig
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results/$1_$2 --plotPrefix titan/results/$1_$2 $$(<<<)")
+define titan-tumor-normal-numcluster-ploidy-windowsize
+titan/results_w$5/$1_$2.z$3_p$4.titan.txt : titan/wig/$1.w$4.wig titan/wig/$2.w$5.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$5.wig titan/wig/map.w$5.wig
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) ----txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results_w$5/$1_$2.z$3_p$4 --plotPrefix titan/results_w$5/$1_$2.z$3_p$4 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
-	$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$(TITAN_WINDOW_SIZE)))))
+		$(foreach j,$(PLOIDY_PRIORS), \
+			$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE)))))
 
-define titan-numcluster
-titan/seg/%.titan_$1.seg : titan/results/%.titan_$1.txt
-	$$(call LSCRIPT_MEM,4G,6G,"$$(TITAN_SEG) -id=$$*_cluster$3 -infile=$$< -outfile=$$(@:.seg=.txt) -outIGV=$$@")
-endef
-$(foreach i,$(NUM_CLUSTERS),$(eval $(call titan-numcluster,$i)))
+%.titan.seg %.titan_seg.txt : %.titan.txt
+	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@.seg=_seg.txt) -outIGV=$@")
 
-titan/summary/%.titan_summary.txt : $(foreach i,$(NUM_CLUSTERS),titan/results/%.titan_$i.txt)
-
+titan/summary/titan_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(foreach i,$(NUM_CLUSTERS),titan/results/$(pair).titan_$i.txt)
 
