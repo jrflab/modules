@@ -36,12 +36,11 @@ endif
 .PHONY : titan results seg
 
 titan : results seg
-results : $(foreach i,$(NUM_CLUSTERS),\
+RESULT_FILES := $(foreach i,$(NUM_CLUSTERS),\
 	$(foreach j,$(PLOIDY_PRIORS),\
 	$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).z$i_p$j.titan.txt)))
-seg : $(foreach i,$(NUM_CLUSTERS),\
-	$(foreach j,$(PLOIDY_PRIORS),\
-	$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).z$i_p$j.titan.seg)))
+results : $(RESULT_FILES)
+seg : $(RESULT_FILES:.txt=.seg)
 
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
@@ -77,5 +76,5 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@.seg=_seg.txt) -outIGV=$@")
 
-titan/summary/titan_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(foreach i,$(NUM_CLUSTERS),titan/results/$(pair).titan_$i.txt)
+titan/summary/titan_summary.txt : $(RESULT_FILES)
 
