@@ -56,7 +56,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	primary.disease <- "$(PRIMARY_DISEASE)"
 	sample.name <- "$*"
 	platform <- "$(PLATFORM)"
-	max.as.seg.count <- 2500
+	max.as.seg.count <- 3500
 	copynum.type <- "total"
 	max.neg.genome <- 0
 	max.non.clonal <- 0
