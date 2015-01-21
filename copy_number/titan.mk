@@ -8,6 +8,8 @@ EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.
 TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
 NUM_CLUSTERS ?= $(shell seq 1 5)
+PLOIDY_PRIORS = 2 4
+
 BQ_THRESHOLD ?= 20
 MQ_THRESHOLD ?= 20
 TITAN_WINDOW_SIZE ?= 10000
@@ -70,7 +72,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
 		$(foreach j,$(PLOIDY_PRIORS), \
-			$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE)))))
+			$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
 
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@.seg=_seg.txt) -outIGV=$@")
