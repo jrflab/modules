@@ -66,7 +66,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 
 define titan-tumor-normal-numcluster-ploidy-windowsize
 titan/results_w$5/$1_$2.z$3_p$4.titan.txt : titan/wig/$1.w$5.wig titan/wig/$2.w$5.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$5.wig titan/wig/map.w$5.wig
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) ----txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results_w$5/$1_$2.z$3_p$4 --plotPrefix titan/results_w$5/$1_$2.z$3_p$4 $$(<<<)")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --ploidyPrior $4 --txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results_w$5/$1_$2.z$3_p$4 --plotPrefix titan/results_w$5/$1_$2.z$3_p$4 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
