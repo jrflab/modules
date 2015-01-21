@@ -71,7 +71,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
 		$(foreach j,$(PLOIDY_PRIORS), \
-			$(eval $(call titan-tumor-normal-numcluster,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
+			$(eval $(call titan-tumor-normal-numcluster-ploidy-windowsize,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
 
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@.seg=_seg.txt) -outIGV=$@")
