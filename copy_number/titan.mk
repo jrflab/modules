@@ -38,7 +38,7 @@ endif
 titan : results seg
 RESULT_FILES := $(foreach i,$(NUM_CLUSTERS),\
 	$(foreach j,$(PLOIDY_PRIORS),\
-	$(foreach pair,$(SAMPLE_PAIRS),titan/results/$(pair).z$i_p$j.titan.txt)))
+	$(foreach pair,$(SAMPLE_PAIRS),titan/results_$(TITAN_WINDOW_SIZE)/$(pair).z$i_p$j.titan.txt)))
 results : $(RESULT_FILES)
 seg : $(RESULT_FILES:.txt=.seg)
 
