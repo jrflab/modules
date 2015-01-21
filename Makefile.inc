@@ -271,7 +271,7 @@ REQ = SGE_RREQ="$(SGE_RREQ)"
 REQ_PARALLEL_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(PARALLEL_ENV) $(1)"
 REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
 UMASK = 002
-INIT = $(MKDIRS); umask $(UMASK); $(LOG_MEM) ; set -o pipefail
+INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; $(LOG_MEM)
 # $(call INIT_MEM,mem_free,h_vmem)
 INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2); $(LOG_MEM) 
 # $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
