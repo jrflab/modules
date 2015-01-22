@@ -74,7 +74,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 			$(eval $(call titan-tumor-normal-numcluster-ploidy-windowsize,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
 
 %.titan.seg %.titan_seg.txt : %.titan.txt
-	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@.seg=_seg.txt) -outIGV=$@")
+	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@:.seg=_seg.txt) -outIGV=$@")
 
 titan/summary/titan_summary.txt : $(RESULT_FILES)
 
