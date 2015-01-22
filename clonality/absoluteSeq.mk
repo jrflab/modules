@@ -38,7 +38,7 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 	snvs.tref <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
 	snvs.talt <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
 	indels <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
-	indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TAR"]], ','), function (x) x[1]))
+	indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TIR"]], ','), function (x) x[1]))
 	indels.tref <- indels[["TUMOR.DP"]] - indels.talt
 	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]])
 	chr <- as.integer(sub('X', '23', chr))
