@@ -38,8 +38,9 @@ endif
 titan : results seg
 RESULT_FILES := $(foreach i,$(NUM_CLUSTERS),\
 	$(foreach j,$(PLOIDY_PRIORS),\
-	$(foreach pair,$(SAMPLE_PAIRS),titan/results_w$(TITAN_WINDOW_SIZE)/$(pair).z$i_p$j.titan.txt)))
+	$(foreach pair,$(SAMPLE_PAIRS),titan/results_w$(TITAN_WINDOW_SIZE)_p$j/$(pair).z$i.titan.txt)))
 results : $(RESULT_FILES)
+summary : $(foreach j,$(PLOIDY_PRIORS),titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$j/titan_summary.txt)
 seg : $(RESULT_FILES:.txt=.seg)
 
 include ~/share/modules/variant_callers/gatk.mk
@@ -65,16 +66,17 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call titan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define titan-tumor-normal-numcluster-ploidy-windowsize
-titan/results_w$5/$1_$2.z$3_p$4.titan.txt : titan/wig/$1.w$5.wig titan/wig/$2.w$5.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$5.wig titan/wig/map.w$5.wig
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --ploidyPrior $4 --txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results_w$5/$1_$2.z$3_p$4 --plotPrefix titan/results_w$5/$1_$2.z$3_p$4 $$(<<<)")
+titan/results_w$5_p$4/$1_$2.z$3.titan.txt : titan/wig/$1.w$5.wig titan/wig/$2.w$5.wig titan/allele_count/$1_$2.ac.txt titan/wig/gc.w$5.wig titan/wig/map.w$5.wig
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.5G,"$$(TITAN) $$(TITAN_OPTS) --gcWig $$(4<) --mapWig $$(5<) --numClusters $3 --tumorWig $$< --normalWig $$(<<) --ploidyPrior $4 --txnZstrength $$(TITAN_CLONAL_CLUSTER_TRANSITION) --txnExpLen $$(TITAN_SELF_TRANSITION) --numCores 8 --outPrefix titan/results_w$5_p$4/$1_$2.z$3 --plotPrefix titan/results_w$5_p$4/$1_$2.z$3 $$(<<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach i,$(NUM_CLUSTERS), \
 		$(foreach j,$(PLOIDY_PRIORS), \
 			$(eval $(call titan-tumor-normal-numcluster-ploidy-windowsize,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
 
+titan/optclust_results_%/titan_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(foreach i,$(NUM_CLUSTERS),titan/results_%/$(pair).z$i.titan.txt))
+	$(SUMMARIZE_TITAN) --outDir $(@D) $^ 
+
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@:.seg=_seg.txt) -outIGV=$@")
-
-titan/summary/titan_summary.txt : $(RESULT_FILES)
 
