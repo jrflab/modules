@@ -13,7 +13,7 @@ LOGDIR = log/fastqc.$(NOW)
 
 all : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt) fastqc/all_summary.png
 
-fastqc/%_fastqc/summary.txt : %.bam
+fastqc/%_fastqc/summary.txt : bam/%.bam
 	$(call LSCRIPT_NAMED_MEM,$*_fastqc,4G,12G,"$(FASTQC) -o fastqc $^")
 
 fastqc/all_summary.txt : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt)
