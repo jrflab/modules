@@ -57,8 +57,8 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	sigma.p <- 0
 	max.sigma.h <- 0.07
 	avgTumorPloidyEst <- titanResults["$*", "avgTumorPloidyEst"]
-	min.ploidy <- max(0.95, avgTumorPloidyEst - 1]
-	max.ploidy <- min(7, avgTumorPloidyEst + 1]
+	min.ploidy <- max(0.95, avgTumorPloidyEst - 1)
+	max.ploidy <- min(7, avgTumorPloidyEst + 1)
 	primary.disease <- "$(PRIMARY_DISEASE)"
 	sample.name <- "$*"
 	platform <- "$(PLATFORM)"
