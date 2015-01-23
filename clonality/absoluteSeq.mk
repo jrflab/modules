@@ -19,6 +19,9 @@ PLATFORM ?= Illumina_WES
 all : absolute/review/all.PP-calls_tab.txt results
 results : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 
+USE_TITAN_ESTIMATES ?= false
+TITAN_ESTIMATE_FILE ?= titan/optclust_results_w1000_p2/titan_summary.txt
+
 define LIB_INIT
 library(ABSOLUTE)
 endef
@@ -46,6 +49,30 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 	Data <- subset(Data, Hugo_Symbol != ".")
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
+ifeq ($(USE_TITAN_ESTIMATES),true)
+absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE)
+	$(R_INIT)
+	$(LIB_INIT)
+	titanResults <- read.table("$(<<<)", row.names = 1, header = T)
+	sigma.p <- 0
+	max.sigma.h <- 0.07
+	avgTumorPloidyEst <- titanResults["$*", "avgTumorPloidyEst"]
+	min.ploidy <- max(0.95, avgTumorPloidyEst - 1]
+	max.ploidy <- min(7, avgTumorPloidyEst + 1]
+	primary.disease <- "$(PRIMARY_DISEASE)"
+	sample.name <- "$*"
+	platform <- "$(PLATFORM)"
+	max.as.seg.count <- 3500
+	copynum.type <- "total"
+	max.neg.genome <- 0
+	max.non.clonal <- 0
+	min.mut.af <- 0
+	seg.dat.fn <- "$<"
+	results.dir <- "$(@D)"
+	output.fn.base = "$*"
+	maf.fn = "$(<<)"
+	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = maf.fn, min.mut.af = min.mut.af, output.fn.base = output.fn.base, verbose = T)
+else
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt
 	$(R_INIT)
 	$(LIB_INIT)
@@ -66,6 +93,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	output.fn.base = "$*"
 	maf.fn = "$(<<)"
 	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = maf.fn, min.mut.af = min.mut.af, output.fn.base = output.fn.base, verbose = T)
+endif
 
 absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 	$(R_INIT)
