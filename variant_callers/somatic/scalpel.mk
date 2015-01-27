@@ -29,14 +29,14 @@ TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.nov
 .DELETE_ON_ERROR:
 .PHONY: all vcfs tables
 
-all : vcfs tables
+scalpel : vcfs tables
 
 vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(FILTER_SUFFIX).vcf)
 tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt)) $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.scalpel.$(suff).txt)
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
-scalpel/$2_$3/$1/somatic.5x.indel.vcf : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
+scalpel/$2_$3/$1/somatic.5x.indel.txt : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
@@ -44,7 +44,7 @@ $(foreach bed,$(BED_FILES),\
 		$(eval $(call scalpel-bed-tumor-normal,$(bed),$(tumor.$(pair)),$(normal.$(pair))))))
 
 define merge-scalpel-tumor-normal
-scalpel/$2_$3/somatic.5x.indel.txt : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.txt)
+scalpel/$1_$2/somatic.5x.indel.txt : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.txt)
 	$$(INIT) head -1 $$< > $$@ && sed '1d' $$^ >> $$@
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -52,7 +52,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.
 else # dont split across exome bed files
 
 define scalpel-tumor-normal
-scalpel/$1_$2/somatic.5x.indel.vcf : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
+scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
