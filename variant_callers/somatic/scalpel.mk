@@ -69,7 +69,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair
 endif
 
 vcf/%.scalpel.vcf : scalpel/%/somatic.5x.indel.vcf
-	$(INIT) cp $< $@
+	$(INIT) sed 's/sample_name$$/$*/' $< > $@
 
 include ~/share/modules/vcf_tools/vcftools.mk
 include ~/share/modules/bam_tools/processBam.mk
