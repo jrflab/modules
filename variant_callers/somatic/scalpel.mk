@@ -44,32 +44,25 @@ $(foreach bed,$(BED_FILES),\
 		$(eval $(call scalpel-bed-tumor-normal,$(bed),$(tumor.$(pair)),$(normal.$(pair))))))
 
 define merge-scalpel-tumor-normal
-scalpel/vcf/$1_$2.scalpel.vcf : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.vcf)
-	$$(INIT) grep '^#' $$< > $$@ && for x in $$^; grep -v '^#' $$$$x >> $$@; done
+scalpel/$2_$3/somatic.5x.indel.txt : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.txt)
+	$$(INIT) head -1 $$< > $$@ && sed '1d' $$^ >> $$@
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-#define scalpel2vcf-tumor-normal
-#vcf/$1_$2.scalpel.vcf : scalpel/tables/$1_$2.scalpel.txt
-#$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
-#endef
-#$(foreach i,$(SETS_SEQ),\
-#$(foreach tumor,$(call get_tumors,$(set.$i)), \
-#$(eval $(call scalpel2vcf-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-else
+else # dont split across exome bed files
 
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.5x.indel.vcf : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
-
-#vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
-#$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
-vcf/%.scalpel.vcf : scalpel/%/somatic.5x.indel.vcf
-	$(INIT) sed 's/sample_name$$/$*/' $< > $@
+define scalpel2vcf-tumor-normal
+vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
+	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel2vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 include ~/share/modules/vcf_tools/vcftools.mk
 include ~/share/modules/bam_tools/processBam.mk
