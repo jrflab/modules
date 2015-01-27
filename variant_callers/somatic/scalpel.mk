@@ -36,7 +36,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
-scalpel/$2_$3/$1/somatic.5x.indel.txt : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
+scalpel/$2_$3/$1/somatic.5x.indel.annovar : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
@@ -44,22 +44,22 @@ $(foreach bed,$(BED_FILES),\
 		$(eval $(call scalpel-bed-tumor-normal,$(bed),$(tumor.$(pair)),$(normal.$(pair))))))
 
 define merge-scalpel-tumor-normal
-scalpel/$1_$2/somatic.5x.indel.txt : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.txt)
-	$$(INIT) head -1 $$< > $$@ && sed '1d' $$^ >> $$@
+scalpel/$1_$2/somatic.5x.indel.annovar : $$(foreach bed,$$(BED_FILES),scalpel/$1_$2/$$(bed)/somatic.5x.indel.annovar)
+	$$(INIT) grep '^#chr' $$< > $$@ && sed '/^#/d' $$^ >> $$@
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 else # dont split across exome bed files
 
 define scalpel-tumor-normal
-scalpel/$1_$2/somatic.5x.indel.txt : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
+scalpel/$1_$2/somatic.5x.indel.annovar : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
 define scalpel2vcf-tumor-normal
-vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.txt
+vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.5x.indel.annovar
 	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel2vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
