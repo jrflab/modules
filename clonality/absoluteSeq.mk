@@ -44,7 +44,7 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
 ifeq ($(USE_TITAN),true)
-absolute/segment/%.seg.txt : $(wildcard $(TITAN_RESULTS_DIR)/%.z*.titan.seg)
+absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	$(R_INIT)
 	$(LIB_INIT)
 	X <- read.table("$<", header = T, sep = '\t')[,-1]
