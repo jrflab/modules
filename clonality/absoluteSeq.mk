@@ -47,8 +47,9 @@ ifeq ($(USE_TITAN),true)
 absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<", header = T, sep = '\t')[,-1]
+	X <- read.table("$<", header = T, sep = '\t', as.is = T)[,-1]
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
+	X[,1] <- sub('X', '23', X[,1])
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 	
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE)
@@ -78,7 +79,7 @@ else
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<", header = T, sep = '\t')
+	X <- read.table("$<", header = T, sep = '\t', as.is = T)
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 
