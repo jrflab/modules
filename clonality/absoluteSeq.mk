@@ -11,13 +11,13 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: all results
+.PHONY: absolute absolute_rdata
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
-all : absolute/review/all.PP-calls_tab.txt results
-results : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
+absolute : absolute/review/all.PP-calls_tab.txt absolute_rdata
+absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 
 USE_TITAN ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w1000_p2
