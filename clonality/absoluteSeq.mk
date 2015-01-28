@@ -6,7 +6,7 @@ LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
 SHELL = $(HOME)/share/scripts/Rshell
-.SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
+.SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:
 .DELETE_ON_ERROR:
@@ -32,11 +32,19 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
 	snvs <- read.table("$<", header = T, sep = '\t', comment.char = '', as.is = T)
-	snvs.tref <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
-	snvs.talt <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
+	snvs.tref <- c()
+	snvs.talt <- c()
+	if (nrow(snvs) > 0) {
+		snvs.tref <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
+		snvs.talt <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
+	}
 	indels <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
-	indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TIR"]], ','), function (x) x[1]))
-	indels.tref <- indels[["TUMOR.DP"]] - indels.talt
+	indels.tref <- c()
+	indels.talt <- c()
+	if (nrow(indels) > 0) {
+		indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TIR"]], ','), function (x) x[1]))
+		indels.tref <- indels[["TUMOR.DP"]] - indels.talt
+	}
 	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]])
 	chr <- as.integer(sub('X', '23', chr))
 	Data <- data.frame(Tumor_Sample_Barcode = tn[1], Hugo_Symbol = c(snvs[['EFF....GENE']], indels[['EFF....GENE']]), t_ref_count = c(snvs.tref, indels.tref), t_alt_count = c(snvs.talt, indels.talt), dbSNP_Val_Status = "validated", Chromosome = chr, Start_position = c(snvs[["POS"]], indels[["POS"]]), stringsAsFactors = F)
