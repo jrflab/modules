@@ -6,7 +6,7 @@ include ~/share/modules/variant_callers/gatk.inc
 
 LOGDIR = log/scalpel.$(NOW)
 
-MIN_COV ?= 5
+SCALPEL_MIN_COV ?= 5
 
 SCALPEL_DIR = $(HOME)/share/usr/scalpel-0.3.2
 SCALPEL = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/; $(PERL) $(SCALPEL_DIR)/scalpel --covthr $(MIN_COV)
