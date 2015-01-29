@@ -9,7 +9,7 @@ LOGDIR = log/scalpel.$(NOW)
 SCALPEL_MIN_COV ?= 5
 
 SCALPEL_DIR = $(HOME)/share/usr/scalpel-0.3.2
-SCALPEL = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/; $(PERL) $(SCALPEL_DIR)/scalpel --covthr $(MIN_COV)
+SCALPEL = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/; $(PERL) $(SCALPEL_DIR)/scalpel --covthr $(SCALPEL_MIN_COV)
 SCALPEL_OPTS = --ref $(REF_FASTA) --validate --format annovar
 ifeq ($(EXOME),true)
 BED_DIR = $(HOME)/share/reference/splitExonBed/
