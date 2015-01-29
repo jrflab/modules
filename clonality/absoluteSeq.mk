@@ -20,7 +20,8 @@ absolute : absolute/review/all.PP-calls_tab.txt absolute_rdata
 absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 absolute_reviewed : absolute/reviewed/all.seq.ABSOLUTE.table.txt
 
-USE_TITAN ?= false
+USE_TITAN_COPYNUM ?= true
+USE_TITAN_ESTIMATES ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w1000_p2
 TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
 
@@ -52,7 +53,7 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 	Data <- subset(Data, Hugo_Symbol != ".")
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
-ifeq ($(USE_TITAN),true)
+ifeq ($(USE_TITAN_COPYNUM),true)
 absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	$(R_INIT)
 	$(LIB_INIT)
@@ -60,7 +61,16 @@ absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	X[,1] <- sub('X', '23', X[,1])
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
+else
+absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
+	$(R_INIT)
+	$(LIB_INIT)
+	X <- read.table("$<", header = T, sep = '\t', as.is = T)
+	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
+	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
+endif
 	
+ifeq ($(USE_TITAN_ESTIMATES),true)
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE)
 	$(R_INIT)
 	$(LIB_INIT)
@@ -83,15 +93,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	output.fn.base = "$*"
 	maf.fn = "$(<<)"
 	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = maf.fn, min.mut.af = min.mut.af, output.fn.base = output.fn.base, verbose = T)
-	
 else
-absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
-	$(R_INIT)
-	$(LIB_INIT)
-	X <- read.table("$<", header = T, sep = '\t', as.is = T)
-	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
-	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
-
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt
 	$(R_INIT)
 	$(LIB_INIT)
