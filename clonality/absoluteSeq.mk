@@ -6,7 +6,7 @@ LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
 SHELL = $(HOME)/share/scripts/Rshell
-.SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
+.SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:
 .DELETE_ON_ERROR:
