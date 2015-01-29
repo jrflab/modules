@@ -11,13 +11,14 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: absolute absolute_rdata
+.PHONY: absolute absolute_rdata absolute_reviewed
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
 
 absolute : absolute/review/all.PP-calls_tab.txt absolute_rdata
 absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
+absolute_reviewed : absolute/reviewed/all.seq.ABSOLUTE.table.txt
 
 USE_TITAN ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w1000_p2
@@ -121,7 +122,7 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(for
 	copynum.type <- "total"
 	CreateReviewObject(obj.name = "$*", absolute.files, indv.results.dir, copynum.type, plot.modes = T, verbose = T)
 
-absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.txt absolute/review/all.PP-modes.data.RData
+absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.reviewed.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
 	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
