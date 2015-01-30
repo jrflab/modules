@@ -7,7 +7,7 @@
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
 
-LOGDIR := log/bwa.$(NOW)
+LOGDIR := log/bwamem.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
 SEQ_PLATFORM = illumina
@@ -31,6 +31,7 @@ BWA_ALN_OPTS ?= -M
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
+.PHONY: bwamem
 
 BAM_SUFFIX := bwamem.sorted
 
@@ -55,7 +56,8 @@ endif
 BAM_SUFFIX := $(BAM_SUFFIX).bam
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-all : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
+
+bwamem : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 
 bam/%.bam.md5 : bwamem/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
