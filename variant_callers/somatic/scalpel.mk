@@ -39,7 +39,7 @@ tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
-scalpel/$2_$3/$1/somatic.$(SCALPEL_MIN_COV)x.indel.annovar : bam/$2.dcov.bam.md5 bam/$3.dcov.bam.md5
+scalpel/$2_$3/$1/somatic.$(SCALPEL_MIN_COV)x.indel.annovar : bam/$2.bam.md5 bam/$3.bam.md5
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
 endef
 $(foreach bed,$(BED_FILES),\
