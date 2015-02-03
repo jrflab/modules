@@ -177,7 +177,7 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
 #QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
 #TOPHAT = $(HOME)/share/usr/tophat-2.0.8.Linux_x86_64/tophat2
 #DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
-TMPDIR = $(HOME)/share/tmp
+export TMPDIR = $(HOME)/share/tmp
 
 #VARSCAN
 VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
