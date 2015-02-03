@@ -38,9 +38,9 @@ FILTER_SUFFIX := dp_ft.som_ad_ft
 ifdef TARGETS_FILE
 FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
-ANN_SUFFIX := pass.dbsnp.eff
+ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
 
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).nsfp.chasm.fathmm
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
 
 VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
 ifeq ($(HRUN),true)
