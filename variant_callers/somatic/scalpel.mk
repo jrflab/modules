@@ -56,7 +56,7 @@ else # dont split across exome bed files
 
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,2.5G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,4G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
