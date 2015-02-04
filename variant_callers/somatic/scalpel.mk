@@ -24,7 +24,8 @@ SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
 
 FILTER_SUFFIX := dbsnp.eff
 EFF_TYPES = silent missense nonsilent_cds nonsilent
-TABLE_SUFFIXES = $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.$(eff).pass.novel)
+TABLE_SUFFIXES := $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.pass.$(eff)) $(FILTER_SUFFIX).tab.pass
+TABLE_SUFFIXES := $(addsuffix .novel,$(TABLE_SUFFIXES))
 
 ..DUMMY := $(shell mkdir -p version; echo "$(SCALPEL) $(SCALPEL_OPTS) > version/scalpel.txt")
 
