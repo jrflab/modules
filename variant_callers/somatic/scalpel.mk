@@ -3,40 +3,20 @@
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/variant_callers/somatic/scalpel.inc
 
 LOGDIR = log/scalpel.$(NOW)
-
-SCALPEL_MIN_COV ?= 5
-
-SCALPEL_DIR = $(HOME)/share/usr/scalpel-0.3.2
-SCALPEL = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(SCALPEL_DIR)/bamtools-2.3.0/lib/; $(PERL) $(SCALPEL_DIR)/scalpel --mincov $(SCALPEL_MIN_COV)
-SCALPEL_OPTS = --ref $(REF_FASTA) --validate --format annovar
-ifeq ($(EXOME),true)
-BED_DIR = $(HOME)/share/reference/splitExonBed/
-BED_FILES = $(shell ls $(BED_DIR))
-endif
-ifdef TARGETS_FILE
-SCALPEL_OPTS += --bed $(TARGETS_FILE)
-endif
-
-
-SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
-
-FILTER_SUFFIX := dbsnp.eff
-EFF_TYPES = silent missense nonsilent_cds nonsilent
-TABLE_SUFFIXES := $(foreach eff,$(EFF_TYPES),$(FILTER_SUFFIX).tab.pass.$(eff)) $(FILTER_SUFFIX).tab.pass
-TABLE_SUFFIXES += $(addsuffix .novel,$(TABLE_SUFFIXES))
 
 ..DUMMY := $(shell mkdir -p version; echo "$(SCALPEL) $(SCALPEL_OPTS) > version/scalpel.txt")
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all vcfs tables
+.PHONY: all scalpel_vcfs scalpel_tables
 
-scalpel : vcfs tables
+scalpel : scalpel_vcfs scalpel_tables
 
-vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(FILTER_SUFFIX).vcf)
-tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt)) $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.scalpel.$(suff).txt)
+scalpel_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).scalpel.$(SCALPEL_FILTER_SUFFIX).vcf)
+scalpel_tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(SCALPEL_TABLE_SUFFIXES),tables/$(pair).scalpel.$(suff).txt)) $(foreach suff,$(SCALPEL_TABLE_SUFFIXES),alltables/allTN.scalpel.$(suff).txt)
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
