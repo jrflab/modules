@@ -15,8 +15,8 @@ PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuSignatures.R
 .SECONDARY: 
 .PHONY: all
 
-SUBCLONAL := emu_absolute/subclonal_mutations.txt emu_absolute/subclonal_emu_results_bic.txt emu_absolute/report/subclonal.html
-CLONAL += emu_absolute/clonal_mutations.txt emu_absolute/clonal_emu_results_bic.txt emu_absolute/report/clonal.html
+SUBCLONAL := emu_absolute/subclonal_mutations.txt emu_absolute/subclonal_emu_results_bic.txt emu_absolute/subclonal/index.html
+CLONAL += emu_absolute/clonal_mutations.txt emu_absolute/clonal_emu_results_bic.txt emu_absolute/clonal/index.html
 ifdef NUM_SPECTRA
 SUBCLONAL += emu_absolute/subclonal_emu_$(NUM_SPECTRA).timestamp
 CLONAL += emu_absolute/clonal_emu_$(NUM_SPECTRA).timestamp
