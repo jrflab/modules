@@ -54,8 +54,8 @@ absolute/tables/%.somatic.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt 
 	indels2.tref <- c()
 	indels2.talt <- c()
 	if (nrow(indels2) > 0) {
-		snvs.tref <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
-		snvs.talt <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
+		indels2.tref <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
+		indels2.talt <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
 	}
 	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]], indels2[["X.CHROM"]])
 	chr <- as.integer(sub('X', '23', chr))
