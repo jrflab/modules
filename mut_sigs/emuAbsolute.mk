@@ -25,10 +25,10 @@ endif
 all : $(SUBCLONAL) $(CLONAL) emu/cnv.txt 
 
 emu_absolute/subclonal_mutations.txt : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
-	$(INIT) rm -f $@ && for x in $^; do sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1,$$6,$$140}' >> $@; done
+	$(INIT) rm -f $@ && for x in $^; do sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1,$$6,$$7,$$140}' >> $@; done
 
 emu_absolute/clonal_mutations.txt : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
-	$(INIT) rm -f $@ && for x in $^; do sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1,$$6,$$140}' >> $@; done
+	$(INIT) rm -f $@ && for x in $^; do sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1,$$6,$$7,$$140}' >> $@; done
 
 emu_absolute/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
 	$(INIT) rm -f $@; for x in $^; do \
