@@ -53,5 +53,5 @@ endif
 emu_absolute/sample_pairs.txt : 
 	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
 
-emu_absolute/report/%.html : emu_absolute/%_emu_results_bic.txt emu_absolute/sample_pairs.txt emu_absolute/%_mutations.txt $(RESULT_TIMESTAMPS)
+emu_absolute/%_report/index.html : emu_absolute/%_emu_results_bic.txt emu_absolute/sample_pairs.txt emu_absolute/%_mutations.txt $(RESULT_TIMESTAMPS)
 	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/$*_emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
