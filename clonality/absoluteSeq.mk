@@ -1,6 +1,7 @@
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/somatic/mutect.inc
 include ~/share/modules/variant_callers/somatic/strelka.inc
+include ~/share/modules/variant_callers/somatic/scalpel.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
@@ -11,7 +12,7 @@ SHELL = $(HOME)/share/scripts/Rshell
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: absolute absolute_rdata absolute_reviewed
+.PHONY: absolute absolute_rdata absolute_reviewed absolute_tables
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
@@ -19,6 +20,7 @@ PLATFORM ?= Illumina_WES
 absolute : absolute/review/all.PP-calls_tab.txt absolute_rdata
 absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
 absolute_reviewed : absolute/reviewed/all.seq.ABSOLUTE.table.txt
+absolute_tables : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 
 USE_TITAN_COPYNUM ?= true
 USE_TITAN_ESTIMATES ?= false
@@ -29,7 +31,8 @@ define LIB_INIT
 library(ABSOLUTE)
 endef
 
-absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt
+
+absolute/tables/%.somatic.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt tables/%.$(SCALPEL_FILTER_SUFFIX).tab.pass.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
@@ -47,10 +50,34 @@ absolute/maf/%.maf.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/
 		indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TIR"]], ','), function (x) x[1]))
 		indels.tref <- indels[["TUMOR.DP"]] - indels.talt
 	}
-	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]])
+	indels2 <- read.table("$(<<<)", header = T, sep = '\t', comment.char = '', as.is = T)
+	indels2.tref <- c()
+	indels2.talt <- c()
+	if (nrow(indels2) > 0) {
+		snvs.tref <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
+		snvs.talt <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
+	}
+	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]], indels2[["X.CHROM"]])
 	chr <- as.integer(sub('X', '23', chr))
-	Data <- data.frame(Tumor_Sample_Barcode = tn[1], Hugo_Symbol = c(snvs[['EFF....GENE']], indels[['EFF....GENE']]), t_ref_count = c(snvs.tref, indels.tref), t_alt_count = c(snvs.talt, indels.talt), dbSNP_Val_Status = "validated", Chromosome = chr, Start_position = c(snvs[["POS"]], indels[["POS"]]), stringsAsFactors = F)
-	Data <- subset(Data, Hugo_Symbol != ".")
+	ref <- c(snvs[["REF"]], indels[["REF"]], indels2[["REF"]])
+	alt <- c(snvs[["ALT"]], indels[["ALT"]], indels2[["ALT"]])
+	genes <- c(snvs[['EFF....GENE']], indels[['EFF....GENE']], indels2[['EFF....GENE']])
+	pos <- c(snvs[["POS"]], indels[["POS"]], indels2[["POS"]])
+	tRefCount <- c(snvs.tref, indels.tref, indels2.tref)
+	tAltCount = c(snvs.talt, indels.talt, indels2.tref)
+	type = c(rep('snv', nrow(snvs)), rep('indel', nrow(indels)), rep('indel', nrow(indels2)))
+	Data <- data.frame(Sample = "$*", Gene = genes, Chromosome = chr, Position = pos, Ref = ref, Alt = alt, tRefCount = tRefCount, tAltCount = tAltCount, Type = type, stringsAsFactors = F)
+	Data <- subset(Data, Gene != ".")
+	x <- with(Data, paste(Chromosome, Position, sep = ":"))
+	Data <- subset(Data, !duplicated(x))
+	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
+
+
+absolute/maf/%.maf.txt : absolute/tables/%.somatic.txt
+	$(R_INIT)
+	$(LIB_INIT)
+	X <- read.table("$(<)", header = T, sep = '\t', comment.char = '', as.is = T)
+	Data <- with(X, data.frame(Tumor_Sample_Barcode = Sample, Hugo_Symbol = Gene, t_ref_count = tRefCount, t_alt_count = tAltCount, dbSNP_Val_Status = "validated", Chromosome = Chromosome, Start_position = Position, stringsAsFactors = F)
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
 ifeq ($(USE_TITAN_COPYNUM),true)
@@ -128,3 +155,18 @@ absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.
 	$(R_INIT)
 	$(LIB_INIT)
 	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
+
+absolute/tables/%.absolute.txt : absolute/reviewed/all.seq.ABSOLUTE.table.txt absolute/tables/%.somatic.txt
+	$(R_INIT)
+	$(LIB_INIT)
+	fn <- 'absolute/reviewed/SEG_MAF/$*_ABS_MAF.txt'
+	absData <- read.table(fn, sep = '\t', header = T, as.is = T)
+	tn <- absData[['sample']][1]
+	somatic <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
+	absData[, "refSeq"] <- somatic[, "Ref"]
+	absData[, "altSeq"] <- somatic[ ,"Alt"]
+	absData[, "type"] = somatic[, "Type"]
+	absData[, "mut"] <- paste(absData[, "refSeq"], absData[, "altSeq"], sep = ">")
+	absData <- transform(absData, somaticSubclonal = Pr_subclonal > 0.5 & Pr_somatic > 0.95, somaticClonal = Pr_somatic_clonal > 0.5)
+	absData <- subset(absData, somaticSubclonal | somaticClonal)
+	write.table(absData, file = "$@", quote = F, row.names = F, sep = '\t')
