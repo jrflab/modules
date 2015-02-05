@@ -32,7 +32,7 @@ library(ABSOLUTE)
 endef
 
 
-absolute/tables/%.somatic.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt tables/%.$(SCALPEL_FILTER_SUFFIX).tab.pass.txt
+absolute/tables/%.somatic.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt tables/%.scalpel.$(SCALPEL_FILTER_SUFFIX).tab.pass.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
