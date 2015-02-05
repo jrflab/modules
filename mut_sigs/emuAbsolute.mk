@@ -40,12 +40,12 @@ emu_absolute/%_mutations.txt.mut.matrix : emu_absolute/%_mutations.txt emu_absol
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
 
 emu_absolute/%_emu_results_bic.txt : emu_absolute/%_mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu_absolute/$*_emu_results")
 
 RESULT_TIMESTAMPS = 
 ifdef NUM_SPECTRA
 emu_absolute/%_emu_$(NUM_SPECTRA).timestamp : emu_absolute/%_mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results && touch $@")
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu_absolute/$*_emu_results && touch $@")
 
 RESULT_TIMESTAMPS += emu_absolute/%_emu_$(NUM_SPECTRA).timestamp
 endif
