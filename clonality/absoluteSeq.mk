@@ -77,7 +77,7 @@ absolute/maf/%.maf.txt : absolute/tables/%.somatic.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	X <- read.table("$(<)", header = T, sep = '\t', comment.char = '', as.is = T)
-	Data <- with(X, data.frame(Tumor_Sample_Barcode = Sample, Hugo_Symbol = Gene, t_ref_count = tRefCount, t_alt_count = tAltCount, dbSNP_Val_Status = "validated", Chromosome = Chromosome, Start_position = Position, stringsAsFactors = F)
+	Data <- with(X, data.frame(Tumor_Sample_Barcode = Sample, Hugo_Symbol = Gene, t_ref_count = tRefCount, t_alt_count = tAltCount, dbSNP_Val_Status = "validated", Chromosome = Chromosome, Start_position = Position, stringsAsFactors = F))
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
 ifeq ($(USE_TITAN_COPYNUM),true)
