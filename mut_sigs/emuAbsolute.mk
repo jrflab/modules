@@ -25,8 +25,8 @@ all : $(ALL)
 emu_absolute/mutations.txt : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 	$(INIT) rm -f $@ && \
 		for x in $^; do \
-		sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1_subclonal,$$6,$$7,$$140}' >> $@ && \
-		sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1_clonal,$$6,$$7,$$140}' >> $@; \
+		sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1 "_subclonal",$$6,$$7,$$140}' >> $@ && \
+		sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1 "_clonal",$$6,$$7,$$140}' >> $@; \
 		done
 
 emu_absolute/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
