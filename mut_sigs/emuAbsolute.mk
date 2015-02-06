@@ -51,8 +51,8 @@ RESULT_TIMESTAMPS += emu_absolute/emu_$(NUM_SPECTRA).timestamp
 endif
 
 emu_absolute/sample_pairs.txt : 
-	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /_subclonal\n/g' > $@ \
-		&& echo "$(SAMPLE_PAIRS)" | sed 's/ /_clonal\n/g' >> $@
+	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/_subclonal/' > $@ \
+		&& echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/_clonal/'  >> $@
 
 emu_absolute/report/index.html : emu_absolute/emu_results_bic.txt emu_absolute/sample_pairs.txt emu_absolute/mutations.txt $(RESULT_TIMESTAMPS)
 	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
