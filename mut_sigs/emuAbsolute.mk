@@ -25,15 +25,15 @@ all : $(ALL)
 emu_absolute/mutations.txt : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 	$(INIT) rm -f $@ && \
 		for x in $^; do \
-		sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1 "_subclonal",$$6,$$7,$$140}' >> $@ && \
-		sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1 "_clonal",$$6,$$7,$$140}' >> $@; \
+		sed 1d $$x | awk '$$139 == "snv" && $$141 == "TRUE" {print $$1 ".subclonal",$$6,$$7,$$140}' >> $@ && \
+		sed 1d $$x | awk '$$139 == "snv" && $$142 == "TRUE" {print $$1 ".clonal",$$6,$$7,$$140}' >> $@; \
 		done
 
 emu_absolute/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
 	$(INIT) rm -f $@; for x in $^; do \
 		sample=`echo $$x | sed 's:freec/::; s:/.*::'`; \
-		awk -v sample=$${sample}_clonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
-		awk -v sample=$${sample}_subclonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
+		awk -v sample=$${sample}.clonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
+		awk -v sample=$${sample}.subclonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
 	done >> $@
 
 emu_absolute/mutations.txt.mut.matrix : emu_absolute/mutations.txt emu_absolute/cnv.txt
@@ -51,8 +51,8 @@ RESULT_TIMESTAMPS += emu_absolute/emu_$(NUM_SPECTRA).timestamp
 endif
 
 emu_absolute/sample_pairs.txt : 
-	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/_subclonal/' > $@ \
-		&& echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/_clonal/'  >> $@
+	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/.subclonal/' > $@ \
+		&& echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' | sed 's/$$/.clonal/'  >> $@
 
 emu_absolute/report/index.html : emu_absolute/emu_results_bic.txt emu_absolute/sample_pairs.txt emu_absolute/mutations.txt $(RESULT_TIMESTAMPS)
 	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
