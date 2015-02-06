@@ -34,7 +34,7 @@ emu_absolute/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pa
 		sample=`echo $$x | sed 's:freec/::; s:/.*::'`; \
 		awk -v sample=$${sample}_clonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
 		awk -v sample=$${sample}_subclonal 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
-	done && cat $(EMU_REF_CNV) >> $@
+	done >> $@
 
 emu_absolute/mutations.txt.mut.matrix : emu_absolute/mutations.txt emu_absolute/cnv.txt
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
