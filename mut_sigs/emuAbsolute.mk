@@ -15,12 +15,12 @@ PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuSignatures.R
 .SECONDARY: 
 .PHONY: all
 
-ALL := emu_absolute/mutations.txt emu_absolute/emu_results_bic.txt emu_absolute/report/index.html
+ALL := emu_absolute/mutations.txt emu_absolute/emu_results_bic.txt emu_absolute/report/index.html emu_absolute/cnv.txt
 ifdef NUM_SPECTRA
 ALL += emu_absolute/emu_$(NUM_SPECTRA).timestamp
 endif
 
-all : $(SUBCLONAL) $(CLONAL) emu_absolute/cnv.txt 
+all : $(ALL)
 
 emu_absolute/mutations.txt : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 	$(INIT) rm -f $@ && \
