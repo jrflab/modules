@@ -53,4 +53,4 @@ emu/sample_pairs.txt :
 	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
 
 emu/report/index.html : emu/emu_results_bic.txt emu/sample_pairs.txt emu/mutations.txt $(RESULT_TIMESTAMPS)
-	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inDir $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
+	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
