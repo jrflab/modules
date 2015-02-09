@@ -87,7 +87,7 @@ fastq/%.fastq.gz.md5 : fastq/%.fastq
 
 bwamem/%.bwamem.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(CHECK_MD5) $(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 
 include ~/share/modules/bam_tools/processBam.mk
 include ~/share/modules/fastq_tools/fastq.mk
