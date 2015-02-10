@@ -33,9 +33,9 @@ endif
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY : titan results seg
+.PHONY : titan results summary seg
 
-titan : results seg
+titan : results summary seg
 RESULT_FILES := $(foreach i,$(NUM_CLUSTERS),\
 	$(foreach j,$(PLOIDY_PRIORS),\
 	$(foreach pair,$(SAMPLE_PAIRS),titan/results_w$(TITAN_WINDOW_SIZE)_p$j/$(pair).z$i.titan.txt)))
