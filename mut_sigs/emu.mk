@@ -11,6 +11,8 @@ EMU = $(HOME)/usr/bin/EMu
 
 PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuSignatures.R
 
+NO_CNV ?= false
+
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: all
@@ -35,8 +37,13 @@ emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_
 		awk -v sample=$$sample 'NR > 1 { sub("chr", "", $$1); sub("X", "23" , $$1); sub("Y", "24", $$1); sub("MT", "25", $$1); print sample, $$1, $$2, $$3, $$4; }' $$x >> $@; \
 	done && cat $(EMU_REF_CNV) >> $@
 
+ifeq($(NO_CNV),true)
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
+else
+emu/mutations.txt.mut.matrix : emu/mutations.txt
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
+endif
 
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
 	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
