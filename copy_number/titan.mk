@@ -7,6 +7,7 @@ LOGDIR = log/titan.$(NOW)
 EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
 TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
+SUMMARIZE_TITAN = $(RSCRIPT) $(HOME)/share/scripts/summarizeTitan.R
 NUM_CLUSTERS ?= $(shell seq 1 5)
 PLOIDY_PRIORS = 2 3 4
 
@@ -16,6 +17,7 @@ TITAN_WINDOW_SIZE ?= 10000
 
 TITAN_SELF_TRANSITION ?= 1e15
 TITAN_CLONAL_CLUSTER_TRANSITION ?= 5e5
+
 
 TITAN_OPTS ?= 
 ifdef TARGETS_FILE
@@ -75,7 +77,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 			$(eval $(call titan-tumor-normal-numcluster-ploidy-windowsize,$(tumor.$(pair)),$(normal.$(pair)),$i,$j,$(TITAN_WINDOW_SIZE))))))
 
 titan/optclust_results_%/titan_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(foreach i,$(NUM_CLUSTERS),titan/results_%/$(pair).z$i.titan.txt))
-	$(SUMMARIZE_TITAN) --outDir $(@D) $^ 
+	$(call LSCRIPT_MEM,2G,4G,"$(SUMMARIZE_TITAN) --outDir $(@D) $^")
 
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@:.seg=_seg.txt) -outIGV=$@")
