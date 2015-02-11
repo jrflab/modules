@@ -8,7 +8,7 @@ EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.
 TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
 NUM_CLUSTERS ?= $(shell seq 1 5)
-PLOIDY_PRIORS = 2 4 6 8
+PLOIDY_PRIORS = 2 3 4
 
 BQ_THRESHOLD ?= 20
 MQ_THRESHOLD ?= 20
