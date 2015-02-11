@@ -17,7 +17,7 @@ NO_CNV ?= false
 .SECONDARY: 
 .PHONY: all
 
-ALL := emu/mutations.txt emu/cnv.txt emu/emu_results_bic.txt emu/report/index.html
+ALL := emu/emu_results_bic.txt emu/report/index.html
 ifdef NUM_SPECTRA
 ALL += emu/emu_$(NUM_SPECTRA).timestamp
 endif
