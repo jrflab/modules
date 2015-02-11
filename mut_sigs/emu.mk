@@ -56,8 +56,8 @@ emu/emu_$(NUM_SPECTRA).timestamp : emu/mutations.txt.mut.matrix
 RESULT_TIMESTAMPS += emu/emu_$(NUM_SPECTRA).timestamp
 endif
 
-emu/sample_pairs.txt : 
+emu/samples.txt : 
 	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
 
-emu/report/index.html : emu/emu_results_bic.txt emu/sample_pairs.txt emu/mutations.txt $(RESULT_TIMESTAMPS)
+emu/report/index.html : emu/emu_results_bic.txt emu/samples.txt emu/mutations.txt $(RESULT_TIMESTAMPS)
 	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
