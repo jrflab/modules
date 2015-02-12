@@ -16,7 +16,7 @@ VPATH ?= unprocessed_bam
 
 # use fastq; otherwise use bams
 DUP_TYPE ?= markdup
-NO_FILTER ?= true
+NO_FILTER ?= false
 NO_RECAL ?= false
 NO_REALN ?= false
 SPLIT_CHR ?= true
