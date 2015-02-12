@@ -8,11 +8,10 @@ LOGDIR = log/nmf_mutsig.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 MATLAB = /usr/local/bin/matlab -nojvm -nodisplay -nosplash 
+export MATLABPATH := $(HOME)/share/scripts/nmf
 
 NMF_DIR = $(HOME)/usr/nmf_mut_sig
 NMF_TYPES_FILE = $(NMF_DIR)/types.mat
-CREATE_NMF_INPUT = $(HOME)/share/scripts/createNMFinput.m
-RUN_NMF = $(HOME)/share/scripts/runNMF.m
 
 NMF_MIN_SIG = 1
 NMF_MAX_SIG = 4
@@ -34,9 +33,9 @@ nmf_mutsig/mutations.txt.mut.matrix : nmf_mutsig/mutations.txt
 	$(INIT) $(EMU_PREPARE) --chr $(EMU_REF_DIR) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)
 
 nmf_mutsig/input.mat : nmf_mutsig/mutations.txt.mut.matrix
-	$(INIT) $(MATLAB) < $(CREATE_NMF_INPUT) -r "createNMFinput $< $(SAMPLE_FILE) $(NMF_TYPES_FILE) $(PROJECT_NAME) $@"
+	$(INIT) $(MATLAB) -r "createNMFinput $< $(SAMPLE_FILE) $(NMF_TYPES_FILE) $(PROJECT_NAME) $@"
 
 nmf_mutsig/results.mat : nmf_mutsig/input.mat
-	$(INIT) $(MATLAB) < $(RUN_NMF) -r "runNMF $< $(@:.mat=) $(NMF_DIR) $(NMF_MIN_SIG) $(NMF_MAX_SIG)"
+	$(INIT) $(MATLAB) -r "runNMF $< $(@:.mat=) $(NMF_DIR) $(NMF_MIN_SIG) $(NMF_MAX_SIG)"
 
 
