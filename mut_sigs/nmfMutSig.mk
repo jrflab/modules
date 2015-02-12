@@ -21,7 +21,7 @@ NMF_MAX_SIG = 4
 .SECONDARY: 
 .PHONY: all
 
-all := nmf_mutsig/mutations.txt.mut.matrix
+ALL := nmf_mutsig/mutations.txt.mut.matrix nmf_mutsig/results.mat
 
 all : $(ALL)
 
