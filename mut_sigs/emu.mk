@@ -7,6 +7,10 @@ include ~/share/modules/Makefile.inc
 LOGDIR = log/emu.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
+EMU_PREPARE_OPTS := --chr $(EMU_REF_DIR)
+ifdef EMU_TARGETS_FILE
+EMU_PREPARE_OPTS += --regions $(EMU_TARGETS_FILE)
+endif
 EMU = $(HOME)/usr/bin/EMu
 
 PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuSignatures.R
@@ -39,10 +43,10 @@ emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_
 
 ifeq ($(NO_CNV),false)
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
 else
 emu/mutations.txt.mut.matrix : emu/mutations.txt
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) --chr $(EMU_REF_DIR) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
+	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --chr $(EMU_REF_DIR) --mut $< --pre $(@D)")
 endif
 
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
