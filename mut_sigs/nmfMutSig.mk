@@ -8,7 +8,8 @@ LOGDIR = log/nmf_mutsig.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 MATLABPATH := $(HOME)/share/scripts/nmf
-MATLAB = export MATLABPATH=$(MATLABPATH); /usr/local/bin/matlab -nodisplay -nosplash 
+export MATLAB_BIN := /usr/local/bin/matlab
+MATLAB = export MATLABPATH=$(MATLABPATH); $(MATLAB_BIN) -nodisplay -nosplash 
 
 NMF_DIR = $(HOME)/usr/nmf_mut_sig
 NMF_TYPES_FILE = $(NMF_DIR)/types.mat
