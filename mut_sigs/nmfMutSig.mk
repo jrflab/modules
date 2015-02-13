@@ -8,7 +8,11 @@ LOGDIR = log/nmf_mutsig.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 MATLABPATH := $(HOME)/share/scripts/nmf
+ifeq ($(HOSTNAME),ika.cbio.mskcc.org)
+export MATLAB_BIN := /usr/local/MATLAB/R2013a/bin/matlab
+else
 export MATLAB_BIN := /usr/local/bin/matlab
+endif
 MATLAB = export MATLABPATH=$(MATLABPATH); $(MATLAB_BIN) -nodisplay -nosplash 
 
 NMF_DIR = $(HOME)/usr/nmf_mut_sig
