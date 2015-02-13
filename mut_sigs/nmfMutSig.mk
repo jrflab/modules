@@ -38,7 +38,7 @@ nmf_mutsig/mutations.txt.mut.matrix : nmf_mutsig/mutations.txt
 	$(INIT) $(EMU_PREPARE) --chr $(EMU_REF_DIR) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)
 
 nmf_mutsig/input.mat : nmf_mutsig/mutations.txt.mut.matrix
-	$(INIT) $(MATLAB) -r "createNMFinput $< $(SAMPLE_FILE) $(NMF_TYPES_FILE) $(PROJECT_NAME) $@"
+	$(INIT) $(MATLAB) -r "createNMFinput $< $(<:.mut.matrix=.samples) $(NMF_TYPES_FILE) $(PROJECT_NAME) $@"
 
 nmf_mutsig/results.mat : nmf_mutsig/input.mat
 	$(INIT) $(MATLAB) -r "runNMF $< $(@:.mat=) $(NMF_DIR) $(NMF_MIN_SIG) $(NMF_MAX_SIG)"
