@@ -25,7 +25,7 @@ NMF_MAX_SIG = 4
 .SECONDARY: 
 .PHONY: all
 
-ALL := nmf_mutsig/mutations.txt.mut.matrix nmf_mutsig/results.mat
+ALL := nmf_mutsig/mutations.txt.mut.matrix nmf_mutsig/results.mat nmf_mutsig/plot.timestamp
 
 all : $(ALL)
 
@@ -43,4 +43,5 @@ nmf_mutsig/input.mat : nmf_mutsig/mutations.txt.mut.matrix
 nmf_mutsig/results.mat : nmf_mutsig/input.mat
 	$(INIT) $(MATLAB) -r "runNMF $< $(@:.mat=) $(NMF_DIR) $(NMF_MIN_SIG) $(NMF_MAX_SIG)"
 
-
+nmf_mutsig/plot.timestamp : nmf_mutsig/results.mat
+	$(INIT) $(MATLAB) -r "plotNMF $(<:.mat=) $(NMF_DIR) $(NMF_MIN_SIG) $(NMF_MAX_SIG)" && touch $@
