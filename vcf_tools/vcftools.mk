@@ -155,7 +155,7 @@ vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' \
 		--filterName depthFilter && $$(RM) $$< $$<.idx")
 endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ffpe-som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
