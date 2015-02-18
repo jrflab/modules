@@ -142,6 +142,7 @@ vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
+# ffpe normal filter
 # filter if normal depth > 20 and normal variant depth > 1/3 * tumor variant depth
 # or normal variant depth greater than 1
 define ffpe-som-ad-ft-tumor-normal
