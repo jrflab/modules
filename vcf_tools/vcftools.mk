@@ -128,7 +128,11 @@ $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
 endif
 
 ifdef SAMPLE_PAIRS
+# ff normal filter :
 # filter if normal depth > 20 and normal variant depth > 1/5 * tumor variant depth
+# or normal variant depth greater than 1
+# ffpe normal filter :
+# filter if normal depth > 20 and normal variant depth > 1/3 * tumor variant depth
 # or normal variant depth greater than 1
 define som-ad-ft-tumor-normal
 vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
@@ -139,13 +143,7 @@ vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 		--filterName somaticAlleleDepth \
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' \
 		--filterName depthFilter && $$(RM) $$< $$<.idx")
-endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-# ffpe normal filter
-# filter if normal depth > 20 and normal variant depth > 1/3 * tumor variant depth
-# or normal variant depth greater than 1
-define ffpe-som-ad-ft-tumor-normal
 vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ \
 		--filterExpression 'vc.getGenotype(\"$1\").getAD().1 < $(DEPTH_FILTER)' \
@@ -155,7 +153,8 @@ vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' \
 		--filterName depthFilter && $$(RM) $$< $$<.idx")
 endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ffpe-som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
