@@ -12,7 +12,13 @@ MUTECT = $(JAVA) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS
 MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/plotSeqLogoFromMutect.R
 
 
+FFPE_NORMAL_FILTER ?= false
+ifeq ($(FFPE_NORMAL_FILTER),true)
+MUTECT_FILTER_SUFFIX := ffpe_som_ad_ft
+else 
 MUTECT_FILTER_SUFFIX := som_ad_ft
+endif
+
 ifdef TARGETS_FILE
 TARGET_FILTER ?= true
 ifeq ($(TARGET_FILTER),true)
