@@ -87,7 +87,7 @@ tophat_fusion :
 
 TARGETS += tophat
 tophat : 
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligner/tophatAligner.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/tophatAligner.mk $(FLAGS) $(TARGET)
 
 TARGETS += process_bam
 process_bam : 
