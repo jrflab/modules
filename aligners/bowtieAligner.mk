@@ -59,6 +59,8 @@ bam/%.bam : bowtie/bam/%.$(BAM_SUFFIX)
 
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
+
+..DUMMY := $(shell mkdir -p version; $(BOWTIE) --version $(BOWTIE_OPTS) > version/bowtie.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: bowtie_bams
