@@ -85,9 +85,9 @@ TARGETS += tophat_fusion
 tophat_fusion : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/sv_callers/tophatFusion.mk $(FLAGS) $(TARGET)
 
-TARGETS += novoalign_iadb
-novoalign_iadb : 
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/aligners/novoalignIADB.mk $(FLAGS) $(TARGET)
+TARGETS += tophat
+tophat : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligner/tophatAligner.mk $(FLAGS) $(TARGET)
 
 TARGETS += process_bam
 process_bam : 
