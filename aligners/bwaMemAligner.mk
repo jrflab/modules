@@ -29,6 +29,7 @@ FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 BWA_ALN_OPTS ?= -M
 #BWA_ALN_OPTS ?= -q 20
 
+..DUMMY := $(shell mkdir -p version; $(BWA)  > version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY: bwamem
