@@ -20,6 +20,7 @@ NUM_CORES ?= 4
 INNER_MATE_DIST ?= 200
 NO_NOVEL_SPLICING ?= false 
 
+TOPHAT = $(HOME)/usr/bin/tophat2
 TOPHAT_OPTS = --mate-inner-dist $(INNER_MATE_DIST) -G $(REFSEQ_GTF) -p ${NUM_CORES}
 
 ifeq ($(PHRED64),true)
@@ -51,6 +52,7 @@ endif
 
 BAM_SUFFIX := $(BAM_SUFFIX).bam
 
+..DUMMY := $(shell mkdir -p version; $(TOPHAT) --version > version/tophat.txt; echo "options: $(TOPHAT_OPTS)" >> version/tophat.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : tophat_bams
