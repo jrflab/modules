@@ -61,9 +61,8 @@ BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all
+.PHONY: bowtie_bams
 
-all : bowtie_bams
 bowtie_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 
 # memory for human genome: ~3.2G
