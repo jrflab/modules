@@ -70,7 +70,7 @@ tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 
 ifdef SPLIT_SAMPLES
 define bam-header
-tophat/bam/$1.header.sam : $$(foreach split,$2,tophat/bam/$$(split).tohat.sorted.bam.md5)
+tophat/bam/$1.header.sam : $$(foreach split,$2,tophat/bam/$$(split).tophat.sorted.bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
 	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
