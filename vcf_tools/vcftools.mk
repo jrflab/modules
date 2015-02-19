@@ -139,7 +139,7 @@ vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ \
 		--filterExpression 'vc.getGenotype(\"$1\").getAD().1 < $(DEPTH_FILTER)' \
 		--filterName tumorVarAlleleDepth \
-		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
+		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { (vc.getGenotype(\"$2\").getAD().1 / vc.getGenotype(\"$2\").getDP()) > (vc.getGenotype(\"$1\").getAD().1 / vc.getGenotype(\"$1\").getDP()) / 5 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
 		--filterName somaticAlleleDepth \
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' \
 		--filterName depthFilter && $$(RM) $$< $$<.idx")
@@ -148,7 +148,7 @@ vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ \
 		--filterExpression 'vc.getGenotype(\"$1\").getAD().1 < $(DEPTH_FILTER)' \
 		--filterName tumorVarAlleleDepth \
-		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { vc.getGenotype(\"$2\").getAD().1 > vc.getGenotype(\"$1\").getAD().1 / 3 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
+		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { (vc.getGenotype(\"$2\").getAD().1 / vc.getGenotype(\"$2\").getDP()) > (vc.getGenotype(\"$1\").getAD().1 / vc.getGenotype(\"$1\").getDP()) / 3 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
 		--filterName somaticAlleleDepth \
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $(DEPTH_FILTER)' \
 		--filterName depthFilter && $$(RM) $$< $$<.idx")
