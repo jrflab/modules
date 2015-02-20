@@ -21,7 +21,7 @@ INNER_MATE_DIST ?= 200
 NO_NOVEL_SPLICING ?= false 
 
 TOPHAT = $(HOME)/usr/bin/tophat2
-TOPHAT_OPTS = --mate-inner-dist $(INNER_MATE_DIST) -G $(REFSEQ_GTF) -p ${NUM_CORES}
+TOPHAT_OPTS = --mate-inner-dist $(INNER_MATE_DIST) -G $(GENES_GTF) -p ${NUM_CORES}
 
 ifeq ($(PHRED64),true)
 	TOPHAT_OPTS += --solexa1.3-quals
