@@ -2,8 +2,8 @@
 REF = hg19
 REF_DIR = $(HOME)/share/reference
 
-CUFFLINKS_REF = GRCh37
-CUFFLINKS_REF_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(CUFFLINKS_REF)/Annotation/Genes/genes.gtf
+TOPHAT_REF = GRCh37
+GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 
 #UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
