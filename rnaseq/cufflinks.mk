@@ -11,7 +11,8 @@ LOGDIR = log/cufflinks.$(NOW)
 NUM_CORES ?= 4
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
 CUFFCOMPARE = $(HOME)/share/usr/bin/cuffcompare
-CUFFLINKS_OPTS = -b $(REF_FASTA) -g $(REFSEQ_GTF) -p $(NUM_CORES) -u --no-update-check
+CUFFLINKS_OPTS = -b $(REF_FASTA) -g $(GENES_GTF) -p $(NUM_CORES) -u --no-update-check
+CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 
 
 ..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) > version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
@@ -30,4 +31,4 @@ cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking
 && ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
 
 cufflinks/cuffcmp/cc.stats : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
-	$(call LSCRIPT_MEM,10G,20G,"$(CUFFCMP) -s $(REF_FASTA) -r $(REFSEQ_GTF) -V $^ -o $(@:.stats=)")
+	$(call LSCRIPT_MEM,10G,20G,"$(CUFFCOMPARE) $(CUFFCOMPARE_OPTS) -o $(@:.stats=) $^")
