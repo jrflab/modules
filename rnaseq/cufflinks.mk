@@ -5,31 +5,29 @@
 #
 include ~/share/modules/Makefile.inc
 
+LOGDIR = log/cufflinks.$(NOW)
+
+
 NUM_CORES ?= 4
+CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
+CUFFCOMPARE = $(HOME)/share/usr/bin/cuffcompare
 CUFFLINKS_OPTS = -b $(REF_FASTA) -g $(REFSEQ_GTF) -p $(NUM_CORES) -u --no-update-check
 
-SAMPLE_FILE ?= samples.txt
 
-REF_GTF = $(HOME)/share/references/refseq.gtf
+..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) > version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
+.SECONDARY:
+.DELETE_ON_ERROR:
+.PHONY : all_cufflinks cufflinks cuffcmp
 
-NUM_CORES = 4
-CUFFLINKS_OPTS = -b $(REF_FA) -g $(REF_GTF) -p $(NUM_CORES) -u --no-update-check
-
-SAMPLES = $(shell cat $(SAMPLE_FILE))
-
-.PHONY : cufflinks cuffcmp
-
+all_cufflinks : cufflinks cuffcmp
 cufflinks : $(foreach sample,$(SAMPLES),cufflinks/$(sample).cufflinks.timestamp)
 cuffcmp : cufflinks/cuffcmp.timestamp
 
-cufflinks/%.cufflinks.timestamp : bam/%.bam
-	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,5G,6G) -pe $(PARALLEL_ENV) $(NUM_CORES) -q all.q" \
-	$(MKDIR) $(@D)/logs;\
-	${CUFFLINKS} ${CUFFLINKS_OPTS} -o $(@D)/$* $< &> $(@D)/logs/$*.log && touch $@
+cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
+	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,3G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $< \
+&& ln cufflinks/$*/transcripts.gtf cufflinks/gtf/$*.transcripts.gtf \
+&& ln cufflinks/$*/isoforms.fpkm_tracking cufflinks/fpkm_tracking/$*.isoforms.fpkm_tracking \
+&& ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
 
-cufflinks/cuffcmp.timestamp : $(foreach sample,$(SAMPLES),cufflinks/$(sample).cufflinks.timestamp)
-	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,10G,20G) -q all.q" \
-	$(MKDIR) $(@D)/logs;\
-	cd $(@D);\
-	echo -e "transFragID\tlocusID\trefGeneID\tclassCode" $(patsubst %,\\t%,$(SAMPLES)) > cuffcmp_header.txt;\
-	$(CUFFCMP) -s $(REF_FASTA) -r $(REFSEQ_GTF) -V $(patsubst $(@D)/%.cufflinks.timestamp,%/transcripts.gtf,$^) &> logs/cuffcmp.log && touch $(@F)
+cufflinks/cuffcmp/cc.stats : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
+	$(call LSCRIPT_MEM,10G,20G,"$(CUFFCMP) -s $(REF_FASTA) -r $(REFSEQ_GTF) -V $^ -o $(@:.stats=)")
