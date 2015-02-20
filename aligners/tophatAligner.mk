@@ -17,11 +17,10 @@ NO_FILTER ?= false
 SPLIT_FASTQ ?= false
 
 NUM_CORES ?= 4
-INNER_MATE_DIST ?= 200
 NO_NOVEL_SPLICING ?= false 
 
 TOPHAT = $(HOME)/usr/bin/tophat2
-TOPHAT_OPTS = --mate-inner-dist $(INNER_MATE_DIST) -G $(GENES_GTF) -p ${NUM_CORES}
+TOPHAT_OPTS = -G $(GENES_GTF) -p ${NUM_CORES} --tmp-dir $(TMPDIR)
 
 ifeq ($(PHRED64),true)
 	TOPHAT_OPTS += --solexa1.3-quals
@@ -66,7 +65,7 @@ bam/%.bam.md5 : tophat/bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) $(TOPHAT) $(TOPHAT_OPTS) -o $(@D)/$* $(BOWTIE_REF) $(word 1,$^) $(word 2,$^) && ln -f tophat/$*/accepted_hits.bam $(@M) && $(MD5)")
+	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) $(TOPHAT) $(TOPHAT_OPTS) -o $(@D)/$* $(BOWTIE_REF) $(<M) $(<<M) && ln -f tophat/$*/accepted_hits.bam $(@M) && $(MD5)")
 
 ifdef SPLIT_SAMPLES
 define merged-bam
