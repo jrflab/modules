@@ -78,11 +78,14 @@ endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
 
 define merged-bam
-tophat/bam/$1.tophat.sorted.bam.md5 : tophat/bam/$1.header.sam $$(foreach split,$2,tophat/bam/$$(split).tophat.sorted.bam.md5)
+tophat/bam/$1.tophat.merge_sorted.bam.md5 : tophat/bam/$1.header.sam $$(foreach split,$2,tophat/bam/$$(split).tophat.sorted.bam.md5)
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
+
+%.sorted.bam.md5 : %.merge_sorted.bam.md5
+	$(INIT) mv $< $@ && mv $(<M) $(@M) && sed -i 's/merge_sorted/sorted/' $(@M)
 
 
 include ~/share/modules/fastq_tools/fastq.mk
