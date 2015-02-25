@@ -73,6 +73,7 @@ ifeq ($(UCSC_REF),false)
    BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
    EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
    EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
+   MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
 else
    REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
    DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf
@@ -82,6 +83,7 @@ else
    HAPMAP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/hapmap_3.3.hg19.vcf
    EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions.bed
    EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions.bed
+   MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.bigWig
 endif
 
 REF_NAME := 1000GenomesPilot-NCBI37
@@ -96,4 +98,3 @@ EMU_REF_CNV ?= $(REF_DIR)/emu_ref/exome_ref/Breast_clean_somatic_mutations_for_s
 HMMCOPY_GC_WIG = $(REF_DIR)/GATK_bundle/2.3/gc_hg19.wig
 HMMCOPY_MAP_WIG = $(REF_DIR)/map_hg19.wig
 
-MAP_BIGWIG = $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
