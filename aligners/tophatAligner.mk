@@ -69,7 +69,7 @@ tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 
 ifdef SPLIT_SAMPLES
 define merged-bam
-ifneq ($2,"")
+ifeq ($(shell echo "$(words $2) > 1" | bc),"1")
 tophat/bam/$1.header.sam : $$(foreach split,$2,tophat/bam/$$(split).tophat.sorted.bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
