@@ -48,7 +48,7 @@ seg : $(RESULT_FILES:.txt=.seg)
 include ~/share/modules/variant_callers/gatk.mk
 include ~/share/modules/variant_callers/samtoolsHet.mk
 
-titan/wig/%.w$(TITAN_WINDOW_SIZE).wig : bam/%.bam
+titan/wig/%.w$(TITAN_WINDOW_SIZE).wig : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
 
 titan/wig/gc.w$(TITAN_WINDOW_SIZE).wig :
