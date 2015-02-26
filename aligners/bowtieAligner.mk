@@ -5,6 +5,7 @@
 # 		   LOCAL = true/false (preform local alignments)
 # 		   RMDUP = true/false
 include ~/share/modules/Makefile.inc
+include ~/share/modules/aligners/align.inc
 
 VPATH ?= unprocessed_bam
 
@@ -17,12 +18,6 @@ PHRED64 ?= false
 SEQ_PLATFORM ?= ILLUMINA
 NUM_CORES ?= 4
 
-DUP_TYPE ?= rmdup
-NO_RECAL ?= false
-NO_REALN ?= false
-NO_FILTER ?= false
-SPLIT_FASTQ ?= false
-
 ifeq ($(PHRED64),true)
   BOWTIE_OPTS += --phred64
 endif
@@ -30,31 +25,6 @@ endif
 ifeq ($(LOCAL),true)
   BOWTIE_OPTS += --local
 endif
-
-BAM_SUFFIX := bwt.sorted
-
-ifeq ($(NO_FILTER),false)
-BAM_SUFFIX := $(BAM_SUFFIX).filtered
-endif
-
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-
-BAM_SUFFIX := $(BAM_SUFFIX).bam
-
-bam/%.bam : bowtie/bam/%.$(BAM_SUFFIX)
-	$(INIT) ln -f $< $@
 
 
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
@@ -77,7 +47,7 @@ bowtie/bam/%.bwt.bam.md5 : fastq/%.fastq.gz.md5
 		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) -U $(<:.md5=) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 
 
-bam/%.bam.md5 : bowtie/bam/%.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : bowtie/bam/%.bwt.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 ifdef SPLIT_SAMPLES

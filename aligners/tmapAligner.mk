@@ -6,19 +6,14 @@
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/aligners/align.inc
 
+ALIGNER := tmap
 LOGDIR := log/tmap.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
 
 VPATH ?= unprocessed_bam
-
-# use fastq; otherwise use bams
-DUP_TYPE ?= rmdup
-NO_RECAL ?= false
-NO_REALN ?= false
-SPLIT_CHR ?= true
-SPLIT_FASTQ ?= false
 
 FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
@@ -30,29 +25,12 @@ TMAP_OPTS = -Q 2
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
-
-BAM_SUFFIX := $(TMAP_MODE).sorted.filtered
-
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-
-BAM_SUFFIX := $(BAM_SUFFIX).bam
+.PHONY: tmap
 
 TMAP_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-all : $(addsuffix .md5,$(TMAP_BAMS)) $(addsuffix .bai,$(TMAP_BAMS))
+tmap : $(addsuffix .md5,$(TMAP_BAMS)) $(addsuffix .bai,$(TMAP_BAMS))
 
-bam/%.bam.md5 : tmap/bam/%.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : tmap/bam/%.$(TMAP_MODE).$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 tmap/sam/%.header.sam : unprocessed_bam/%.bam

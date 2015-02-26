@@ -6,7 +6,9 @@
 
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/aligners/align.inc
 
+ALIGNER := bwa
 LOGDIR := log/bwa.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
@@ -15,13 +17,6 @@ SEQ_PLATFORM = illumina
 VPATH ?= unprocessed_bam
 
 # use fastq; otherwise use bams
-DUP_TYPE ?= markdup
-NO_FILTER ?= false
-NO_RECAL ?= false
-NO_REALN ?= false
-SPLIT_CHR ?= true
-SPLIT_FASTQ ?= false
-
 FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
 FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
@@ -31,35 +26,14 @@ BWA_ALN_OPTS ?=
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
-.PHONY: all splits
+.PHONY: bwa splits
 
-BAM_SUFFIX := bwa.sorted
-
-ifeq ($(NO_FILTER),false)
-BAM_SUFFIX := $(BAM_SUFFIX).filtered
-endif
-
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-
-BAM_SUFFIX := $(BAM_SUFFIX).bam
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-all : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
+bwa : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam.md5))
 
-bam/%.bam.md5 : bwa/bam/%.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : bwa/bam/%.bwa.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 ifdef SPLIT_SAMPLES

@@ -6,15 +6,9 @@
 # 	NUM_CORES = 4
 #	INNER_MATE_DIST = 200
 include ~/share/modules/Makefile.inc
+include ~/share/modules/aligners/align.inc
 
 LOGDIR = log/tophat.$(NOW)
-
-PHRED64 ?= false
-DUP_TYPE ?= rmdup
-NO_RECAL ?= false
-NO_REALN ?= false
-NO_FILTER ?= false
-SPLIT_FASTQ ?= false
 
 NUM_CORES ?= 4
 NO_NOVEL_SPLICING ?= false 
@@ -29,29 +23,7 @@ ifeq ($(NO_NOVEL_SPLICING),true)
 	TOPHAT_OPTS += --no-novel-juncs
 endif
 
-BAM_SUFFIX := tophat.sorted
-
-ifeq ($(NO_FILTER),false)
-BAM_SUFFIX := $(BAM_SUFFIX).filtered
-endif
-
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-
-BAM_SUFFIX := $(BAM_SUFFIX).bam
-
-..DUMMY := $(shell mkdir -p version; $(TOPHAT) --version > version/tophat.txt; echo "options: $(TOPHAT_OPTS)" >> version/tophat.txt)
+..DUMMY := $(shell mkdir -p version; $(TOPHAT) --version &> version/tophat.txt; echo "options: $(TOPHAT_OPTS)" >> version/tophat.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : tophat_bams
@@ -61,7 +33,7 @@ tophat_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 #tophat_unmapped_bams : $(foreach sample,$(SAMPLES),tophat/unmapped_bam/$(sample).unmapped.bam)
 #tophat_junctions: $(foreach sample,$(SAMPLES),tophat/junctions/$(sample)_junctions.bed)
 
-bam/%.bam.md5 : tophat/bam/%.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : tophat/bam/%.tophat.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
