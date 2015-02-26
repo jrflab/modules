@@ -19,19 +19,12 @@ TITAN_SELF_TRANSITION ?= 1e15
 TITAN_CLONAL_CLUSTER_TRANSITION ?= 5e5
 
 
-TITAN_OPTS ?= 
-ifdef TARGETS_FILE
-TITAN_OPTS += --targetBed $(TARGETS_FILE)
-endif
-
+override TITAN_OPTS := $(if $(UCSC_REF),--genomeStyle UCSC,--genomeStyle NCBI) $(if $(TARGETS_FILE),--targetBed $(TARGETS_FILE)) 
 READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
 GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 
-HET_FILTER_SUFFIX := dbsnp.dbsnp_ft
-ifdef TARGETS_FILE
-HET_FILTER_SUFFIX := $(HET_FILTER_SUFFIX).target_ft
-endif
+HET_FILTER_SUFFIX := dbsnp.dbsnp_ft$(if $(TARGETS_FILE),.target_ft)
 
 .SECONDARY:
 .DELETE_ON_ERROR:
