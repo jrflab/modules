@@ -1,19 +1,32 @@
-# merge sample fastqs
+# add in new fastq to existing bams
 include ~/share/modules/Makefile.inc
 
-LOGDIR = log/merge_fastq.$(NOW)
+LOGDIR ?= log/merge_fastq.$(NOW)
 
-.PHONY: all
+.PHONY: merge_fastq
 .DELETE_ON_ERROR:
 .SECONDARY:
 .SECONDEXPANSION: 
 
-all : $(foreach i,1 2,$(foreach sample,$(SAMPLES),fastq/$(sample).$i.fastq.gz.md5))
+ALIGNER ?= bwamem
 
-fastq/%.1.fastq.gz.md5 : fastq/$$*_*_R1_*.fastq.gz
-	$(call LSCRIPT,"zcat $(sort $^) | gzip -c > $(@:.md5=) && $(MD5) && $(RM) $^")
+merge_fastq : $(foreach sample,$(SAMPLES),merged_bam/$(sample).bam.md5)
 
-#$(INIT) echo "$^" | tr " " "\n" | sort | xargs zcat | gzip -c > $@ && $(RM) $^
+include ~/share/modules/aligners/$(ALIGNER)Aligner.mk
 
-fastq/%.2.fastq.gz.md5 : fastq/$$*_*_R2_*.fastq.gz
-	$(call LSCRIPT,"zcat $(sort $^) | gzip -c > $(@:.md5=) && $(MD5) && $(RM) $^")
+# link existing bam
+merged_bam/%.2.bam.md5 : bam/%.bam.md5 
+	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+
+merged_bam/%.1.bam.md5 : $(ALIGNER)/%.$(ALIGNER).$(BAM_SUFFIX).md5
+	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+
+merged_bam/%.header.sam : merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
+	$(INIT) $(SAMTOOLS) view -H $(<M) | grep -v '^@RG' > $@.tmp; \
+	for bam in $(^M); do $(SAMTOOLS) view -H $$bam | grep '^@RG' >> $@.tmp; done; \
+	uniq $@.tmp > $@ && $(RM) $@.tmp
+
+merged_bam/%.bam.md5 : merged_bam/%.header.sam merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
+	$(call LSCRIPT_MEM,12G,15G,"$(SAMTOOLS) merge -f -h $< $(@M) $(filter %.bam,$(^M)) && $(MD5)")
+
+
