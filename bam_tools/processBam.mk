@@ -2,15 +2,11 @@
 ##### MAKE INCLUDES #####
 include ~/share/modules/Makefile.inc
 include ~/share/modules/variant_callers/gatk.inc
+include ~/share/modules/aligners/align.inc
 
 
 LOGDIR ?= log/process_bam.$(NOW)
 
-DUP_TYPE ?= markdup
-NO_RECAL ?= false
-NO_REALN ?= false
-SPLIT_CHR ?= true
-SPLIT_FASTQ ?= false
 SPLIT_SORT ?= false
 MERGE_SPLIT_BAMS ?= false # merge processed split bams
 NUM_SORT_SPLITS ?= 50
@@ -25,35 +21,12 @@ endif
 # read fails platform/vendor quality checks
 BAM_FILTER_FLAGS ?= 768
 
-
 .DELETE_ON_ERROR:
 .SECONDARY: 
 
 REPROCESS ?= false
+
 ifeq ($(REPROCESS),true)
-BAM_SUFFIX := .sorted.filtered
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-endif
-
-FIX_RG ?= false
-ifeq ($(FIX_RG),true)
-BAM_SUFFIX := $(BAM_SUFFIX).rg
-endif
-
-ifdef BAM_SUFFIX
-BAM_SUFFIX := $(BAM_SUFFIX).bam
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 processed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
