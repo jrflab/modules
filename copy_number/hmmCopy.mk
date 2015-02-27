@@ -12,7 +12,7 @@ MAP_BW = $(HOME)/share/references/genomes/wgEncodeCrgMapabilityAlign100mer.bigWi
 .DELETE_ON_ERROR:
 .PHONY : all
 
-all : $(foreach sample,$(SAMPLES),hmmCopy/w$(WINDOW_SIZE)_wig/$(sample).wig)
+all : $(foreach sample,$(SAMPLES),hmmCopy/$(sample).w$(WINDOW_SIZE).wig)
 
 hmmCopy/%.w$(WINDOW_SIZE).wig : bam/%.bam
 	$(call LSCRIPT_MEM,4G,7G,"$(READ_COUNTER) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
