@@ -16,6 +16,8 @@ NO_NOVEL_SPLICING ?= false
 TOPHAT = $(HOME)/usr/bin/tophat2
 TOPHAT_OPTS = -G $(GENES_GTF) -p ${NUM_CORES} --tmp-dir $(TMPDIR)/$*
 
+SEQ_PLATFORM ?= illumina
+
 ifeq ($(PHRED64),true)
 	TOPHAT_OPTS += --solexa1.3-quals
 endif
