@@ -18,7 +18,7 @@ include ~/share/modules/aligners/$(ALIGNER)Aligner.mk
 merged_bam/%.2.bam.md5 : bam/%.bam.md5 
 	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
 
-merged_bam/%.1.bam.md5 : $(ALIGNER)/%.$(ALIGNER).$(BAM_SUFFIX).md5
+merged_bam/%.1.bam.md5 : $(ALIGNER)/bam/%.$(ALIGNER).$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
 
 merged_bam/%.header.sam : merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
