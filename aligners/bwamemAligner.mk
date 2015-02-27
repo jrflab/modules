@@ -35,12 +35,12 @@ BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
 bwamem : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 
-bam/%.bam.md5 : bwamem/%.bwamem.$(BAM_SUFFIX).md5
+bam/%.bam.md5 : bwamem/bam/%.bwamem.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 
 ifdef SPLIT_SAMPLES
 define bam-header
-bwamem/$1.header.sam : $$(foreach split,$2,bwamem/$$(split).bwamem.sorted.bam.md5)
+bwamem/sam/$1.header.sam : $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
 	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
@@ -48,7 +48,7 @@ endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
 
 define merged-bam
-bwamem/$1.bwamem.sorted.bam.md5 : bwamem/$1.header.sam $$(foreach split,$2,bwamem/$$(split).bwamem.sorted.bam.md5)
+bwamem/bam/$1.bwamem.sorted.bam.md5 : bwamem/sam/$1.header.sam $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam.md5)
 	if [ `echo "$$(filter %.bam,$$(^M))" | wc -w` -gt 1 ]; then \
 		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
 	else \
@@ -61,7 +61,7 @@ endif
 fastq/%.fastq.gz.md5 : fastq/%.fastq
 	$(call LSCRIPT,"gzip -c $< > $(@:.md5=) && $(RM) $< && $(MD5)")
 
-bwamem/%.bwamem.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
+bwamem/bam/%.bwamem.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(CHECK_MD5) $(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
 
