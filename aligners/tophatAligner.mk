@@ -39,7 +39,7 @@ bam/%.bam.md5 : tophat/bam/%.tophat.$(BAM_SUFFIX).md5
 tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[0-9]\+//'`; \
 		$(TOPHAT) $(TOPHAT_OPTS) \
-		--rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" \
+		--b2-rg-id $* --b2-rg \"LB:\$${LBID}\" --b2-rg \"PL:${SEQ_PLATFORM}\" --b2-rg \"SM:\$${LBID}\" \
 		-o tophat/$* $(BOWTIE_REF) $(<M) $(<<M) && \
 		ln -f tophat/$*/accepted_hits.bam $(@M) && $(MD5)")
 
