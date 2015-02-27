@@ -6,25 +6,13 @@ NO_RECAL ?= false
 NO_REALN ?= false
 SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
+NO_SORT ?= false
 
-BAM_SUFFIX := sorted
-
-ifeq ($(NO_FILTER),false)
-BAM_SUFFIX := $(BAM_SUFFIX).filtered
-endif
-
-ifeq ($(NO_REALN),false)
-BAM_SUFFIX := $(BAM_SUFFIX).realn
-endif
-
-ifeq ($(DUP_TYPE),rmdup)
-BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
-BAM_SUFFIX := $(BAM_SUFFIX).markdup
-endif
-
-ifeq ($(NO_RECAL),false)
-BAM_SUFFIX := $(BAM_SUFFIX).recal
-endif
-
-BAM_SUFFIX := $(BAM_SUFFIX).bam
+BAM_SUFFIX := $(subst $( ),.,$(strip \
+        $(if $(findstring false,$(NO_SORT)),sorted)\
+        $(if $(findstring false,$(NO_FILTER)),filtered)\
+        $(if $(findstring false,$(NO_REALN)),realn)\
+        $(if $(findstring rmdup,$(DUP_TYPE)),rmdup)\
+        $(if $(findstring markdup,$(DUP_TYPE)),markdup)\
+        $(if $(findstring false,$(NO_RECAL)),recal)\
+        bam))

@@ -193,8 +193,8 @@ TARGETS += qualimap
 qualimap :
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/qc/qualimap.mk $(FLAGS) $(TARGET)
 
-TARGETS += hmm_copy
-hmm_copy :
+TARGETS += hmmcopy
+hmmcopy :
 	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f ~/share/modules/copy_number/hmmCopy.mk $(FLAGS) $(TARGET)
 
 TARGETS += nfuse_wgss_wtss
