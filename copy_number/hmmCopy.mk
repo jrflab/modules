@@ -15,7 +15,7 @@ MAP_BW = $(HOME)/share/references/genomes/wgEncodeCrgMapabilityAlign100mer.bigWi
 .DELETE_ON_ERROR:
 .PHONY : hmmcopy
 
-hmmcopy : $(foreach pair,$(SAMPLE_PAIRS),hmmcopy/results.w$(WINDOW_SIZE)_wig/$(tumor.$(pair)).$(normal.$(pair)).hmmcopy_seg.txt)
+hmmcopy : $(foreach pair,$(SAMPLE_PAIRS),hmmcopy/results.w$(WINDOW_SIZE)_wig/$(tumor.$(pair))_$(normal.$(pair)).hmmcopy_seg.txt)
 
 hmmcopy/wig/%.w$(HMMCOPY_WINDOW_SIZE).wig : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(HMMCOPY_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")
