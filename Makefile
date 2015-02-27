@@ -47,7 +47,7 @@ merge_fastq :
 	$(MAKE) -e -f ~/share/modules/fastq_tools/mergeFastq.mk $(FLAGS) $(TARGET)
 
 TARGETS += merge_split_fastq
-merge_fastq : 
+merge_split_fastq : 
 	$(MAKE) -e -f ~/share/modules/fastq_tools/fastq.mk MERGE_SPLIT_FASTQ=true $(FLAGS) $(TARGET)
 
 TARGETS += gatk
