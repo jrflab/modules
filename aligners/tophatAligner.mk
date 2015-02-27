@@ -14,7 +14,7 @@ NUM_CORES ?= 4
 NO_NOVEL_SPLICING ?= false 
 
 TOPHAT = $(HOME)/usr/bin/tophat2
-TOPHAT_OPTS = -G $(GENES_GTF) -p ${NUM_CORES} --tmp-dir $(TMPDIR)/$*
+TOPHAT_OPTS = --keep-fasta-order --no-sort-bam -G $(GENES_GTF) -p ${NUM_CORES} --tmp-dir $(TMPDIR)/$*
 
 SEQ_PLATFORM ?= illumina
 
