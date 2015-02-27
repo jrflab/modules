@@ -7,8 +7,10 @@ NO_REALN ?= false
 SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
 NO_SORT ?= false
+FIX_RG ?= false
 
 BAM_SUFFIX := $(subst $( ),.,$(strip \
+        $(if $(findstring true,$(FIX_RG)),rg)\
         $(if $(findstring false,$(NO_SORT)),sorted)\
         $(if $(findstring false,$(NO_FILTER)),filtered)\
         $(if $(findstring false,$(NO_REALN)),realn)\
