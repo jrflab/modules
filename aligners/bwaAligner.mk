@@ -9,7 +9,7 @@ include ~/share/modules/variant_callers/gatk.inc
 include ~/share/modules/aligners/align.inc
 
 ALIGNER := bwa
-LOGDIR := log/bwa.$(NOW)
+LOGDIR ?= log/bwa.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
 SEQ_PLATFORM = illumina
