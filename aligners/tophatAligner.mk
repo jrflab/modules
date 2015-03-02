@@ -8,6 +8,7 @@
 include ~/share/modules/Makefile.inc
 
 NO_REALN = true
+NO_RECAL = true
 include ~/share/modules/aligners/align.inc
 
 LOGDIR = log/tophat.$(NOW)
