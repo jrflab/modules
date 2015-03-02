@@ -29,4 +29,3 @@ merged_bam/%.header.sam : merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
 merged_bam/%.bam.md5 : merged_bam/%.header.sam merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
 	$(call LSCRIPT_MEM,12G,15G,"$(SAMTOOLS) merge -f -h $< $(@M) $(filter %.bam,$(^M)) && $(MD5)")
 
-
