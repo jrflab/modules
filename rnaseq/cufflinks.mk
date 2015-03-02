@@ -22,7 +22,7 @@ CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 
 all_cufflinks : cufflinks cuffcmp
 cufflinks : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
-cuffcmp : cufflinks/cuffcmp.timestamp
+cuffcmp : cufflinks/cuffcmp/cc.stats
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
 	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,3G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $< \
