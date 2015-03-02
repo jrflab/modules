@@ -6,11 +6,16 @@ LOGDIR ?= log/merge_fastq.$(NOW)
 .PHONY: merge_fastq
 .DELETE_ON_ERROR:
 .SECONDARY:
-.SECONDEXPANSION: 
+
+MERGE_SAMPLE_FILE ?= merge_samples.txt
+ifneq ($(wildcard $(MERGE_SAMPLE_FILE)),)
+  MERGE_SAMPLES ?= $(shell sed '/^\#/d' $(MERGE_SAMPLE_FILE))
+endif
 
 ALIGNER ?= bwamem
 
-merge_fastq : $(foreach sample,$(SAMPLES),merged_bam/$(sample).bam.md5)
+merge_fastq : $(foreach sample,$(MERGE_SAMPLES),merged_bam/$(sample).bam.md5)
+#$(INIT) cp $< bam/$(@F) && ln -f $(<M) bam/$(@F:.md5=)
 
 include ~/share/modules/aligners/$(ALIGNER)Aligner.mk
 
