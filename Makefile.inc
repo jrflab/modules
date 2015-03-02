@@ -156,7 +156,7 @@ JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
 #BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
-BOWTIE = $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
+BOWTIE = $(PERL) $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
 #BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
 BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
