@@ -93,6 +93,10 @@ TARGETS += tophat
 tophat : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/tophatAligner.mk $(FLAGS) $(TARGET)
 
+TARGETS += cufflinks
+cufflinks : 
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/rnaseq/cufflinks.mk $(FLAGS) $(TARGET)
+
 TARGETS += process_bam
 process_bam : 
 	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/bam_tools/processBam.mk $(FLAGS) $(TARGET)
