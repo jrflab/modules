@@ -23,7 +23,7 @@ merge_fastq : $(foreach sample,$(MERGE_SAMPLES),$(if "$(wildcard bam/$(sample).b
 include ~/share/modules/aligners/$(ALIGNER)Aligner.mk
 
 merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5 : $(ALIGNER)/bam/%.$(ALIGNER).$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<M) $(@M) && \
+	$(INIT) cp $< merged_bam/$*.1.bam.md5 && ln -f $(<M) merged_bam/$*.1.bam && \
 	cp bam/$*.bam.md5 merged_bam/$*.2.bam.md5 && ln -f bam/$*.bam merged_bam/$*.2.bam
 
 merged_bam/%.header.sam : merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5
