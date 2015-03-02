@@ -72,7 +72,7 @@ bwa :
 
 TARGETS += bwamem
 bwamem :
-	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/bwaMemAligner.mk $(FLAGS) $(TARGET)
+	$(MAKE) $(MAKEFLAGS) -e -f ~/share/modules/aligners/bwamemAligner.mk $(FLAGS) $(TARGET)
 
 
 TARGETS += bowtie
