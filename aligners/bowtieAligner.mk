@@ -60,6 +60,11 @@ bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.b
 
 bowtie/bam/$1.bwt.sorted.bam.md5 : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
+else
+ifeq ($(shell echo "$(words $2) == 1" | bc),"1")
+bowtie/bam/$1.bwt.sorted.bam.md5 : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
+	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
+endif
 endif
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
