@@ -52,7 +52,7 @@ bam/%.bam.md5 : bowtie/bam/%.bwt.$(BAM_SUFFIX).md5
 
 ifdef SPLIT_SAMPLES
 define merged-bam
-ifeq ($(shell echo "$(words $2) > 1" | bc),"1")
+ifeq ($(shell echo "$(words $2) > 1" | bc),1)
 bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
@@ -60,11 +60,10 @@ bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.b
 
 bowtie/bam/$1.bwt.sorted.bam.md5 : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
-else
-ifeq ($(shell echo "$(words $2) == 1" | bc),"1")
+endif
+ifeq ($(shell echo "$(words $2) == 1" | bc),1)
 bowtie/bam/$1.bwt.bam.md5 : bowtie/bam/$2.bwt.bam.md5
 	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
-endif
 endif
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
