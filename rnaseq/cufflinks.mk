@@ -15,7 +15,7 @@ CUFFLINKS_OPTS = -b $(REF_FASTA) -g $(GENES_GTF) -p $(NUM_CORES) -u --no-update-
 CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 
 
-..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) > version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
+..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) &> version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : all_cufflinks cufflinks cuffcmp
