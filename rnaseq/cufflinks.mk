@@ -21,7 +21,7 @@ CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 .PHONY : all_cufflinks cufflinks cuffcmp
 
 all_cufflinks : cufflinks cuffcmp
-cufflinks : $(foreach sample,$(SAMPLES),cufflinks/$(sample).cufflinks.timestamp)
+cufflinks : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 cuffcmp : cufflinks/cuffcmp.timestamp
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
