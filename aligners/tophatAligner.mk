@@ -6,6 +6,8 @@
 # 	NUM_CORES = 4
 #	INNER_MATE_DIST = 200
 include ~/share/modules/Makefile.inc
+
+NO_REALN = true
 include ~/share/modules/aligners/align.inc
 
 LOGDIR = log/tophat.$(NOW)
