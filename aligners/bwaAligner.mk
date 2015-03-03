@@ -34,7 +34,7 @@ bwa : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam.md5))
 
 bam/%.bam.md5 : bwa/bam/%.bwa.$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(call LSCRIPT,"ln -f $(<M) $(@M) && $(MD5)")
 
 ifdef SPLIT_SAMPLES
 define bam-header
@@ -58,15 +58,15 @@ endif
 
 
 fastq/%.fastq.gz.md5 : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@:.md5=) && $(RM) $< && $(MD5)")
+	$(call LSCRIPT,"gzip -c $< > $(@M) && $(RM) $< && $(MD5)")
 
 bwa/sai/%.sai.md5 : fastq/%.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<M) > $(@M) 2> $(LOG) && $(MD5)")
 #echo "$(BWA) aln -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)" | $(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G)
 
 bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^:.md5=) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@M) && $(MD5)")
 
 include ~/share/modules/bam_tools/processBam.mk
 include ~/share/modules/fastq_tools/fastq.mk

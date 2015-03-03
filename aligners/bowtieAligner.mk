@@ -48,7 +48,7 @@ bowtie/bam/%.bwt.bam.md5 : fastq/%.fastq.gz.md5
 
 
 bam/%.bam.md5 : bowtie/bam/%.bwt.$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(call LSCRIPT,"ln -f $(<:.md5=) $(@:.md5=) && $(MD5)")
 
 ifdef SPLIT_SAMPLES
 define merged-bam
