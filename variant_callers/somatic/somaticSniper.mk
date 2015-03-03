@@ -9,7 +9,7 @@ include modules/variant_callers/gatk.inc
 SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsniper
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
 SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer
-FIX_AD = $(RSCRIPT) $(HOME)/share/scripts/somaticSniperFixAD.R
+FIX_AD = $(RSCRIPT) scripts/somaticSniperFixAD.R
 
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/somsniper_fpfilter.pl

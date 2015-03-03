@@ -16,7 +16,7 @@ ifeq ($(TRIM_READS),true)
    TRIM_OPTS ?= -l $(TRIM_LENGTH)
 endif
 
-FASTQ_TRIMMER = $(PERL) $(HOME)/share/scripts/trimFastq.pl
+FASTQ_TRIMMER = $(PERL) scripts/trimFastq.pl
 
 .SECONDARY:
 .DELETE_ON_ERROR: 

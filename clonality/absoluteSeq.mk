@@ -6,7 +6,7 @@ include modules/variant_callers/somatic/scalpel.inc
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
-SHELL = $(HOME)/share/scripts/Rshell
+SHELL = scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

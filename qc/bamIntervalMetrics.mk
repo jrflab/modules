@@ -12,7 +12,7 @@ LOGDIR = log/metrics.$(NOW)
 
 EXOME ?= false
 
-PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
+PLOT_HS_METRICS = $(RSCRIPT) scripts/plotHsMetrics.R
 
 .DELETE_ON_ERROR:
 
@@ -66,7 +66,7 @@ metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).
 metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
-NON_REF_FREQ = $(PERL) $(HOME)/share/scripts/nonRefFreqFromPileup.pl
+NON_REF_FREQ = $(PERL) scripts/nonRefFreqFromPileup.pl
 NON_REF_FREQ_BIN_SIZE = 0.01
 
 metrics/%.interval_nonref_freq.txt : %.bam

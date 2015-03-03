@@ -27,7 +27,7 @@ JSM_THRESHOLD = 0.8
 
 VCF_SORT = $(HOME)/share/usr/bin/vcfsorter.pl
 
-VARIANT_ANNOTATOR = $(PERL) $(HOME)/share/scripts/variantAnnotator.pl
+VARIANT_ANNOTATOR = $(PERL) scripts/variantAnnotator.pl
 
 NSAMPLES = $(words $(TUMOR_SAMPLES))
 

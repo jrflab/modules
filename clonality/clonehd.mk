@@ -9,7 +9,7 @@ CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
 PREFILTER = $(HOME)/share/usr/bin/pre-filter
 
-TABLE_TO_CLONEHD = $(PERL) $(HOME)/share/scripts/tableToCloneHDFormat.pl
+TABLE_TO_CLONEHD = $(PERL) scripts/tableToCloneHDFormat.pl
 
 MAX_TOTAL_COPY_NUM ?= 4
 MAX_SUBCLONE_NUM ?= 3

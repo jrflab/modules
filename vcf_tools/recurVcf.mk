@@ -11,7 +11,7 @@ SET_VCF_SUFFIXES = gatk_snps.dp_ft.som_ft
 PAIR_VCF_SUFFIXES = som_sniper.ss_dp_ft.ss_ft.pass mutect.som_ad_ft.pass
 SAMPLE_SET_PAIR_VCF = $(foreach suff,$(SET_VCF_SUFFIXES),vcf/$(get_set.$1).$(suff).vcf) $(foreach suff,$(PAIR_VCF_SUFFIXES),vcf/$(get_pair.$1).$(suff).vcf)
 
-RECUR_VCF = $(RSCRIPT) $(HOME)/share/scripts/recurVcf.R
+RECUR_VCF = $(RSCRIPT) scripts/recurVcf.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 

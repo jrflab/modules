@@ -5,14 +5,14 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR = log/sumReads.$(NOW)
 
-SUM_READS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReads.R
-SUM_EXONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByExon.R
-SUM_INTRONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntron.R
+SUM_READS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReads.R
+SUM_EXONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByExon.R
+SUM_INTRONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByIntron.R
 
 SUM_READS_OPTS =
 
 
-#SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntronByTranscript.R
+#SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByIntronByTranscript.R
 
 #INTRONS_NON_OVERLAPPING_WITH_EXONS_FILE = ~/share/references/introns.non.overlapping.with.exons.txt
 

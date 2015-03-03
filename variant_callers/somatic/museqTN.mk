@@ -16,7 +16,7 @@ MUSEQ_MODEL = $(HOME)/share/usr/museq-3.0.0/model.npz
 MUSEQ_CONFIG = $(HOME)/share/usr/museq-3.0.0/metadata.config
 TUMOR_PURITY = 70
 
-FIX_MUSEQ_VCF = $(PERL) $(HOME)/share/scripts/fixMuseqVCF.pl
+FIX_MUSEQ_VCF = $(PERL) scripts/fixMuseqVCF.pl
 
 # VCF overrides for tumor-normal
 VCF_SAMPLES = 0 1

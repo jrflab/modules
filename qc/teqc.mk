@@ -14,8 +14,8 @@ TARGETS_BED_FILE ?= intervals.bed
 teqc : teqc_report/index.html
 
 teqc/%.Rdata : bam/%.bam bam/%.bam.bai
-	$(call INIT_MEM,12G,14G) $(RSCRIPT) $(HOME)/share/scripts/TEQC.R --ref=$(REF) --outFile $@ $< $(TARGETS_BED_FILE) &> $(LOGDIR)/$(@F).log
+	$(call INIT_MEM,12G,14G) $(RSCRIPT) scripts/TEQC.R --ref=$(REF) --outFile $@ $< $(TARGETS_BED_FILE) &> $(LOGDIR)/$(@F).log
 
 teqc_report/index.html : $(foreach sample,$(SAMPLES),teqc/$(sample).Rdata)
-	$(call INIT_MEM,12G,14G) $(MKDIR) teqc_report; $(RSCRIPT) $(HOME)/share/scripts/TEQCreport.R --outDir=$(@D) $^
+	$(call INIT_MEM,12G,14G) $(MKDIR) teqc_report; $(RSCRIPT) scripts/TEQCreport.R --outDir=$(@D) $^
 

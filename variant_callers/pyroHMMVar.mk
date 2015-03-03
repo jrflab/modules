@@ -7,7 +7,7 @@ LOGDIR = log/pyrohmm.$(NOW)
 
 PYROHMMVAR = $(HOME)/share/usr/bin/pyrohmmvar
 PYROHMMVAR_MODEL = $(HOME)/share/reference/pyrohmm_parameter_config
-PYROHMM2VCF = $(PERL) $(HOME)/share/scripts/pyroHMMVcf.pl
+PYROHMM2VCF = $(PERL) scripts/pyroHMMVcf.pl
 
 .SECONDARY:
 .DELETE_ON_ERROR: 

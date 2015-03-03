@@ -8,9 +8,9 @@ LOGDIR = log/chimscan.$(NOW)
 CHIMSCAN_PYTHONPATH := /home/limr/share/usr/lib/python:/home/limr/share/usr/lib/python2.7
 CHIMSCAN_PYTHON := $(HOME)/share/usr/bin/python
 CHIMSCAN_INDEX := $(HOME)/share/reference/chimerascan_index
-CHIMSCAN_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterChimerascan.pl
+CHIMSCAN_NORMAL_FILTER = scripts/normalFilterChimerascan.pl
 
-RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
+RECURRENT_FUSIONS = $(RSCRIPT) scripts/recurrentFusions.R
 
 ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(ONCOFUSE_JAR)
 ONCOFUSE_TISSUE_TYPE ?= EPI

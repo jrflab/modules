@@ -10,7 +10,7 @@ FREEC_THREADS = 4
 FREEC_MEM = 4G
 FREEC_HMEM = 6G
 
-MAKE_GRAPH = $(HOME)/share/scripts/makeGraph.R
+MAKE_GRAPH = scripts/makeGraph.R
 
 FREEC_WINDOW_SIZE = 10000
 

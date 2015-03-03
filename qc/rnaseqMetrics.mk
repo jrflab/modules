@@ -6,7 +6,7 @@ LOGDIR = log/rnaseq_metrics.$(NOW)
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-PLOT_RNASEQ_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotRnaseqMetrics.R
+PLOT_RNASEQ_METRICS = $(RSCRIPT) scripts/plotRnaseqMetrics.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 

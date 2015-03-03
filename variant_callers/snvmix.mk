@@ -6,7 +6,7 @@ SAMPLES = $(shell cat $(SAMPLE_FILE))
 
 LOGDIR = log/snvmix.$(NOW)
 
-GET_PILEUP_RESULTS_BY_POS_SCRIPT = $(HOME)/share/scripts/getPileupResultsByPosns.pl
+GET_PILEUP_RESULTS_BY_POS_SCRIPT = scripts/getPileupResultsByPosns.pl
 #CODON_FILE=/share/data/rmorin/data/codon_lookup.sort
 
 THRESHOLD ?= 0.5
@@ -19,7 +19,7 @@ SNVMIX = $(HOME)/usr/bin/SNVMix2
 SNVMIX_OPTS= -t MB -q ${BASE_QUAL} -Q ${MAPPING_QUAL}
 SNVMIX_MODEL = $(HOME)/share/reference/shah_lobular_snvmix_model.txt
 
-SNVMIX_TO_VCF = $(HOME)/share/scripts/snvmixToVCF.pl
+SNVMIX_TO_VCF = scripts/snvmixToVCF.pl
 
 .PHONY: all
 .DELETE_ON_ERROR:

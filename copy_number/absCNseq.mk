@@ -3,7 +3,7 @@ include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
 LOGDIR = log/absCN.$(NOW)
-ABS_CN_SEQ = $(RSCRIPT) $(HOME)/share/scripts/absCNseq.R
+ABS_CN_SEQ = $(RSCRIPT) scripts/absCNseq.R
 
 # file containing positions: chr:start-stop
 SNV_POS_FILE = snv_posn.intervals

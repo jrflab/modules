@@ -18,7 +18,7 @@ else
 DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 endif
 
-CLUSTER_VCF = $(RSCRIPT) $(HOME)/share/scripts/clusterVcf.R
+CLUSTER_VCF = $(RSCRIPT) scripts/clusterVcf.R
 
 all : snp_vcf/snps_filtered.sdp_ft.clust.png
 
