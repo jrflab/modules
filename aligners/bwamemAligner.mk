@@ -36,7 +36,7 @@ BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 bwamem : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 
 bam/%.bam.md5 : bwamem/bam/%.bwamem.$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(call LSCRIPT,"ln -f $(<M) $(@M) && $(MD5)")
 
 ifdef SPLIT_SAMPLES
 define bam-header
