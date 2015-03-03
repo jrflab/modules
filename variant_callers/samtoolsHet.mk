@@ -1,7 +1,7 @@
 # Run samtools to detect heterozygous positions
 ##### DEFAULTS ######
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/samtools_het.$(NOW)
 
@@ -11,7 +11,7 @@ LOGDIR ?= log/samtools_het.$(NOW)
 
 het_snps : $(foreach s,$(SAMPLES),vcf/$s.het_snp.vcf vcf/$s.het_snp.vcf.idx)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk
 
 define hetsnp-chr
 chr_vcf/%.$1.het_snp.vcf : bam/%.bam

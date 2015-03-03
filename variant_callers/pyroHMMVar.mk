@@ -1,13 +1,13 @@
 # run pyrohmmvar: realignment-based variant calling method for 454 and ion torrent
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/pyrohmm.$(NOW)
 
 PYROHMMVAR = $(HOME)/share/usr/bin/pyrohmmvar
 PYROHMMVAR_MODEL = $(HOME)/share/reference/pyrohmm_parameter_config
-PYROHMM2VCF = $(PERL) $(HOME)/share/scripts/pyroHMMVcf.pl
+PYROHMM2VCF = $(PERL) scripts/pyroHMMVcf.pl
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
@@ -30,4 +30,4 @@ pyrohmm/tables/%.pyrohmm.txt : $(foreach chr,$(CHROMOSOMES),pyrohmm/chr_tables/%
 vcf/%.pyrohmm.vcf : pyrohmm/tables/%.pyrohmm.txt
 	$(INIT) $(PYROHMM2VCF) -f $(REF_FASTA) -n $* < $< | $(VCF_SORT) $(REF_DICT) - > $@ 2> $(LOG)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

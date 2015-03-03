@@ -1,4 +1,4 @@
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 NOVOALIGN = $(HOME)/share/usr/bin/novoalignMPI
 NOVOINDEX = $(HOME)/share/usr/bin/novoindex
@@ -28,4 +28,4 @@ iadb/bam/%.novoalign.bam : iadb/fastq/%.1.fastq.gz iadb/fastq/%.2.fastq.gz
 iadb/processed_bam/%.bam : iadb/bam/%.novoalign.sorted.filtered.fixmate.markdup.bam
 	$(MKDIR) $(@D); ln -v $< $@
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

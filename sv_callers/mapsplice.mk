@@ -5,7 +5,7 @@ REF ?= hg19
 LOGDIR = log/mapsplice.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 MAPSPLICE = $(PYTHON) $(HOME)/share/usr/MapSplice-v2.1.7/mapsplice.py
 MAPSPLICE_OPTS = -c $(MAPSPLICE_REF_DIR) -x $(MAPSPLICE_REF_BASENAME) --bam

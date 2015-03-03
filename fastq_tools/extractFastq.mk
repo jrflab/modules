@@ -2,7 +2,7 @@
 # input: $(SAMPLES)
 # Author: Fong Chun Chan <fongchunchan@gmail.com>
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx4G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
 BAM_TO_FASTQ = $(HOME)/share/usr/bin/bamToFastq

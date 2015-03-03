@@ -4,7 +4,7 @@
 # java -jar ~/share/usr/snpEff/SnpSift.jar filter 'exists GMAF & GMAF < 0.5' < dbsnp_137.b37.vcf | awk '{OFS="\t"; if (!/^#/){print $1,$2-1,$2,$3}}' > dbsnp_gmafLT50p.bed
 # perl -ne 'print if (rand() < .01)' dbsnp_gmafLT50p.bed > dbsnp_gmafLT50p.rand.bed
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/oncoseq.$(NOW)
 

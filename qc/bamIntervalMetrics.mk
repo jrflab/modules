@@ -2,8 +2,8 @@
 
 #NO_RM := true
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 # picard format intervals file, needs requires sam format header
 
 VPATH ?= bam
@@ -12,7 +12,7 @@ LOGDIR = log/metrics.$(NOW)
 
 EXOME ?= false
 
-PLOT_HS_METRICS = $(RSCRIPT) $(HOME)/share/scripts/plotHsMetrics.R
+PLOT_HS_METRICS = $(RSCRIPT) scripts/plotHsMetrics.R
 
 .DELETE_ON_ERROR:
 
@@ -66,11 +66,11 @@ metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).
 metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
-NON_REF_FREQ = $(PERL) $(HOME)/share/scripts/nonRefFreqFromPileup.pl
+NON_REF_FREQ = $(PERL) scripts/nonRefFreqFromPileup.pl
 NON_REF_FREQ_BIN_SIZE = 0.01
 
 metrics/%.interval_nonref_freq.txt : %.bam
 	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

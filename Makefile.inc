@@ -1,23 +1,15 @@
 # vim: set ft=make:
+include modules/config.inc
 
 # default reference: 
 REF ?= hg19
-include $(HOME)/share/modules/$(REF).inc
+include modules/$(REF).inc
 
-#SAMPLE_PAIR_FILE ?= sample_pairs.txt
 SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
 SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
 
 PROJECT_NAME = $(shell pwd | sed 's:.*/projects/::; s:.*/data/::; s:.*kinglab/::; s:/:_:')
-
-#ifneq ($(wildcard $(SAMPLE_PAIR_FILE)),)
-#TUMOR_SAMPLES ?= $(shell cut -f 1 $(SAMPLE_PAIR_FILE))
-#NORMAL_SAMPLES ?= $(shell cut -f 2 $(SAMPLE_PAIR_FILE))
-#$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval normal_lookup.$(word $i,$(TUMOR_SAMPLES)) := $(word $i,$(NORMAL_SAMPLES))))
-#$(foreach i,$(shell seq 1 $(words $(TUMOR_SAMPLES))),$(eval tumor_lookup.$(word $i,$(NORMAL_SAMPLES)) := $(word $i,$(TUMOR_SAMPLES))))
-#SAMPLE_PAIRS ?= $(foreach tumor,$(TUMOR_SAMPLES),$(tumor)_$(normal_lookup.$(tumor)) )
-#endif
 
 ifneq ($(wildcard $(SAMPLE_FILE)),)
   SAMPLES ?= $(shell sed '/^\#/d' $(SAMPLE_FILE))
@@ -76,22 +68,6 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 	$(eval samples.$(set) := $(shell echo "$(set)" | sed 's/_/ /g')))
 endif
 
-#ifeq ($(NORMAL_MATCHED),true)
-#ifndef SAMPLE_PAIRS
-#TUMOR_SAMPLES ?= $(shell sed 's/\w*$$//; s/ /\n/' $(SAMPLE_SET_FILE) | sort | uniq)
-#NORMAL_SAMPLES ?= $(shell sed 's/.* //' $(SAMPLE_SET_FILE) | sort | uniq)
-#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(foreach tumor,$(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i)),$(eval normal_lookup.$(tumor) = $(lastword $(set.$i)))))
-#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval tumor_lookup.$(lastword $(set.$i)) += $(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i))))
-#$(foreach tumor,$(TUMOR_SAMPLES),$(foreach normal,$(normal_lookup.$(tumor)),$(eval SAMPLE_PAIRS += $(tumor)_$(normal))))
-#endif
-
-
-
-
-
-#$(foreach i,$(shell seq 1 $(NUM_SETS)),$(info $(wordlist 1,$(shell expr $(words $(set.$i)) - 1),$(set.$i))))
-
-
 ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
   A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
   B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
@@ -100,17 +76,10 @@ ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
   SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
 endif
 
-#$(foreach i,$(shell seq 1 $(words $(LANES))),$(eval lane_lookup.$(word $i,$(LANES)) := $(word $i,$(LANE_SAMPLES))))
-#$(foreach i,$(shell seq 1 $(words $(LANE_SAMPLES))),$(eval sample_lookup.$(word $i,$(LANE_SAMPLES)) += $(word $i,$(LANES))))
-
 
 ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
-#SHELL = /bin/bash --noprofile -c 'umask 002; eval "$$1"'
 SHELL = /bin/bash
-
-#SHELL = umask $(UMASK); exec /bin/bash
-#SHELL = export SGE_RREQ="-q all.q -now no" && umask $(UMASK) && exec /bin/bash
 
 PATH := $(HOME)/share/usr/bin:$(PATH)
 PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
@@ -124,12 +93,6 @@ export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-l
 
 LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
-
-#PERL5LIB := $(HOME)/share/usr/lib/perl5/:${PERL5LIB}
-#PERL5LIB += :$(HOME)/share/usr/lib/ensembl/modules/
-#PERL5LIB += :$(HOME)/share/usr/lib/ensembl-variation/modules/
-#PERL5LIB += :$(HOME)/share/usr/lib/ensembl-functgenomics/modules/
-#PERL5LIB += :$(HOME)/share/usr/lib/ensembl-compara/modules/
 
 PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
 PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
@@ -154,42 +117,16 @@ RSCRIPT = $(MY_RSCRIPT)
 
 JARDIR := $(HOME)/share/usr/lib/java
 
-### Applications
-#BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
-BOWTIE = $(PERL) $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
-#BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
-override BWA = $(HOME)/share/usr/bin/bwa-0.7.10
-#PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
-#GSNAP = $(HOME)/share/usr/bin/gsnap
-#GSNAP_REF = $(HOME)/share/references/gmapdb/
-#GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
-SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
-SAMTOOLS2 = $(HOME)/share/usr/bin/samtools
-VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
-BCFTOOLS = /opt/bin/bcftools
-BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools
-IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
-VCFTOOLS = $(HOME)/share/usr/bin/vcftools
-VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
-SNP_EFF = $(JAVA) -Xmx4G -jar $(JARDIR)/snpEff.jar
-CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
-CUFFCMP = $(HOME)/share/usr/bin/cuffcompare
-#SNVMIX = $(HOME)/share/usr/bin/SNVMix2
-#BAM2FASTQ = $(HOME)/share/usr/bin/bam2fastq
-#QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
-#TOPHAT = $(HOME)/share/usr/tophat-2.0.8.Linux_x86_64/tophat2
-#DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 export TMPDIR := $(HOME)/share/tmp
 
 #VARSCAN
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
 
 # PICARD tools
 PICARD_MEM = 10G
 PICARD_OPTS = VALIDATION_STRINGENCY=LENIENT MAX_RECORDS_IN_RAM=4000000
-PICARD_DIR = $(HOME)/share/usr/lib/java
+PICARD_DIR ?= $(HOME)/share/usr/lib/java
 
 ANALYZE_COV = $(JAVA) -Xmx$(PICARD_MEM) -jar $(PICARD_DIR)/AnalyzeCovariates.jar $(PICARD_OPTS)
 SORT_SAM = $(call SORT_SAM_MEM,$(PICARD_MEM))
@@ -226,15 +163,17 @@ NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
-JAVA := /usr/lib/jvm/jre-1.6.0/bin/java $(JAVA_ARGS)
-JAVA7 := /usr/bin/java $(JAVA_ARGS)
+JAVA := $(JAVA_BIN) $(JAVA_ARGS)
+JAVA7 := $(JAVA7_BIN) $(JAVA_ARGS)
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 NO_RM ?= false
 ifeq ($(NO_RM),true)
     RM := touch
+    RMR = touch
 else
     RM := rm -f
+    RMR := rm -r
 endif
 
 # define $(,) and $( ) for escaping commas and spaces

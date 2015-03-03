@@ -1,6 +1,6 @@
 #### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 
 # run mutect on each chromosome
@@ -41,5 +41,5 @@ $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
 		$(eval $(call mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk
 

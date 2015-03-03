@@ -1,8 +1,8 @@
 # various bam processing steps
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/aligners/align.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/aligners/align.inc
 
 
 LOGDIR ?= log/process_bam.$(NOW)

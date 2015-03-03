@@ -1,15 +1,15 @@
 # vim: set ft=make :
 # amplicon qc using bams and gatk vcf results
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 INTERVAL_FILE ?= intervals.bed
 
 VPATH ?= bam
 
-TEQC = $(HOME)/share/scripts/TEQC.R
-INTERVAL_BAM_QC = $(HOME)/share/scripts/intervalBamQC.R
-VARIANT_EVAL_REPORT = $(HOME)/share/scripts/variantEvalGatkReport.R
+TEQC = scripts/TEQC.R
+INTERVAL_BAM_QC = scripts/intervalBamQC.R
+VARIANT_EVAL_REPORT = scripts/variantEvalGatkReport.R
 
 LOGDIR ?= log/amplicon_qc.$(NOW)
 

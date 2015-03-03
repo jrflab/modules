@@ -1,13 +1,13 @@
 # titan module
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/titan.$(NOW)
 
-#EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) $(HOME)/share/scripts/extractTitanAlleleReadCounts.R
+#EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) scripts/extractTitanAlleleReadCounts.R
 EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
-TITAN = $(RSCRIPT) $(HOME)/share/scripts/runTitan.R
+TITAN = $(RSCRIPT) scripts/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
-SUMMARIZE_TITAN = $(RSCRIPT) $(HOME)/share/scripts/summarizeTitan.R
+SUMMARIZE_TITAN = $(RSCRIPT) scripts/summarizeTitan.R
 NUM_CLUSTERS ?= $(shell seq 1 5)
 PLOIDY_PRIORS = 2 3 4
 
@@ -38,8 +38,8 @@ results : $(RESULT_FILES)
 summary : $(foreach j,$(PLOIDY_PRIORS),titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$j/titan_summary.txt)
 seg : $(RESULT_FILES:.txt=.seg)
 
-include ~/share/modules/variant_callers/gatk.mk
-include ~/share/modules/variant_callers/samtoolsHet.mk
+include modules/variant_callers/gatk.mk
+include modules/variant_callers/samtoolsHet.mk
 
 titan/wig/%.w$(TITAN_WINDOW_SIZE).wig : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")

@@ -17,8 +17,8 @@ VCF_GEN_IDS = GT AD GQ PL
 # 	not advised for amplicon libraries which have low/no coverage in some chromosomes
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 VPATH ?= bam
 
@@ -90,4 +90,4 @@ reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 filtered_snps : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.filtered.vcf)
 
 
-include ~/share/modules/variant_callers/gatk.mk
+include modules/variant_callers/gatk.mk

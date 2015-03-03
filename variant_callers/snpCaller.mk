@@ -4,8 +4,8 @@ REF ?= hg19
 LOGDIR = log/snpCaller.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
@@ -18,7 +18,7 @@ else
 DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 endif
 
-CLUSTER_VCF = $(RSCRIPT) $(HOME)/share/scripts/clusterVcf.R
+CLUSTER_VCF = $(RSCRIPT) scripts/clusterVcf.R
 
 all : snp_vcf/snps_filtered.sdp_ft.clust.png
 
@@ -37,4 +37,4 @@ snp_vcf/%.snps.vcf : bam/%.bam
 snp_vcf/%.clust.png : snp_vcf/%.vcf
 	$(INIT) $(CLUSTER_VCF) --outPrefix snp_vcf/$* $<
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

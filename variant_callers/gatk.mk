@@ -9,8 +9,8 @@
 # 		   SPLIT_CHR = true/false (default: true)
 #
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 HARD_FILTER_SNPS ?= true
 POOL_SNP_RECAL ?= false
@@ -170,12 +170,12 @@ vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
 vcf/%.gatk_indels.vcf : gatk/vcf/%.variants.indels.filtered.vcf
 	$(INIT) ln -f $< $@
 
-VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) $(HOME)/share/scripts/variantEvalGatkReport.R
+VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) scripts/variantEvalGatkReport.R
 
 reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(VARIANT_EVAL_GATK_REPORT) --metrics $(word 2,$^) --outDir $(@D) $<")
 
 
 # merge variants 
-include ~/share/modules/bam_tools/processBam.mk
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/bam_tools/processBam.mk
+include modules/vcf_tools/vcftools.mk

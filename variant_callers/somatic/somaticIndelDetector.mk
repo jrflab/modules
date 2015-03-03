@@ -1,8 +1,8 @@
 # GATK Somatic indel detector for tumour-normal matched samples
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 REF ?= hg19
 LOGDIR = log/gatk_som_indel.$(NOW)
@@ -76,4 +76,4 @@ tables/%.mutect_som_indels.txt : tables/%.mutect.dp_ft.annotated.nsfp.pass.novel
 	$(call LSCRIPT,"$(RSCRIPT) $(RBIND) $^ > $@")
 
 
-include ~/share/modules/variant_callers/gatk.mk
+include modules/variant_callers/gatk.mk

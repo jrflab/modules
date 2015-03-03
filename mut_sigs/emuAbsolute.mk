@@ -2,14 +2,14 @@
 # Detect mutation signatures using absolute results and control free-c results
 ##### DEFAULTS ######
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/emu_absolute.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 EMU = $(HOME)/usr/bin/EMu
 
-PLOT_EMU = $(RSCRIPT) $(HOME)/share/scripts/plotEmuAbsoluteSignatures.R
+PLOT_EMU = $(RSCRIPT) scripts/plotEmuAbsoluteSignatures.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 

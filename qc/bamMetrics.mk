@@ -6,9 +6,9 @@ VPATH ?= bam
 LOGDIR = metrics/log
 
 ## includes
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/hg19.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/hg19.inc
 
 
 .DELETE_ON_ERROR:

@@ -1,10 +1,10 @@
 # run expands for determining tumor ploidy
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/expands.$(NOW)
 
-SHELL = $(HOME)/share/scripts/Rshell
+SHELL = scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

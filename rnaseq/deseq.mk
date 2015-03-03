@@ -1,10 +1,10 @@
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/deseq.$(NOW)
 
-DESEQ_RNW = $(HOME)/share/scripts/deSeq.Rnw
-SWEAVE = $(RSCRIPT) $(HOME)/share/scripts/Sweave.R
+DESEQ_RNW = scripts/deSeq.Rnw
+SWEAVE = $(RSCRIPT) scripts/Sweave.R
 
 CONDITION ?= condition
 REF_CONDITION ?= ref

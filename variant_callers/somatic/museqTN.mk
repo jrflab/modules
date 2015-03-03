@@ -1,8 +1,8 @@
 # vim: set ft=make :
 # museq module for use by jsm.mk
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/museq.$(NOW)
 
@@ -16,7 +16,7 @@ MUSEQ_MODEL = $(HOME)/share/usr/museq-3.0.0/model.npz
 MUSEQ_CONFIG = $(HOME)/share/usr/museq-3.0.0/metadata.config
 TUMOR_PURITY = 70
 
-FIX_MUSEQ_VCF = $(PERL) $(HOME)/share/scripts/fixMuseqVCF.pl
+FIX_MUSEQ_VCF = $(PERL) scripts/fixMuseqVCF.pl
 
 # VCF overrides for tumor-normal
 VCF_SAMPLES = 0 1
@@ -64,4 +64,4 @@ $(foreach i,$(SETS_SEQ), \
 vcf/%.museq.vcf : museq/vcf/%.museq.vcf
 	$(INIT) $(FIX_MUSEQ_VCF) -R $(REF_FASTA) $< > $@ 2> $(LOG)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

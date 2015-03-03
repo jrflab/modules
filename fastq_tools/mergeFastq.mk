@@ -1,5 +1,5 @@
 # add in new fastq to existing bams
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR ?= log/merge_fastq.$(NOW)
 
@@ -20,7 +20,7 @@ merge_fastq : $(foreach sample,$(MERGE_SAMPLES),$(if "$(wildcard bam/$(sample).b
 		ln -f $${bamMd5%%.md5} bam/$$(basename $${bamMd5%%.md5}); \
 		done
 
-include ~/share/modules/aligners/$(ALIGNER)Aligner.mk
+include modules/aligners/$(ALIGNER)Aligner.mk
 
 merged_bam/%.1.bam.md5 merged_bam/%.2.bam.md5 : $(ALIGNER)/bam/%.$(ALIGNER).$(BAM_SUFFIX).md5
 	$(INIT) cp $< merged_bam/$*.1.bam.md5 && ln -f $(<M) merged_bam/$*.1.bam && \

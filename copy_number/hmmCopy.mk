@@ -1,9 +1,9 @@
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/hmmcopy.$(NOW)
 
 HMMCOPY_WINDOW_SIZE ?= 1000
-HMMCOPY = $(RSCRIPT) $(HOME)/share/scripts/hmmCopy.R
+HMMCOPY = $(RSCRIPT) scripts/hmmCopy.R
 
 READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter

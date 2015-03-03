@@ -1,5 +1,5 @@
 # Merge lane samples using a LANE_SAMPLE_FILE
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx8G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
 MERGE_BAM = $(JAVA) -Xmx8G -jar $(JARDIR)/MergeSamFiles.jar VALIDATION_STRINGENCY=LENIENT
@@ -26,4 +26,4 @@ bam/$1.bam.md5 : merged_bam/$1.header.sam $$(foreach split,$2,bam/$$(split).bam)
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

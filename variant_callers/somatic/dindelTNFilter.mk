@@ -1,5 +1,5 @@
 # Create tumour-normal dindel vcf files
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_PAIR_FILE ?= sample_pairs.txt
 
@@ -19,5 +19,5 @@ VCFS = $(foreach sample,$(TUMOR_SAMPLES),dindel/vcf/$(sample).dindel.sorted.anno
 
 all : $(VCFS) $(addsuffix .idx,$(VCFS)))
 
-include ~/share/modules/tnFilter.mk
-include ~/share/modules/dindel.mk
+include modules/tnFilter.mk
+include modules/dindel.mk

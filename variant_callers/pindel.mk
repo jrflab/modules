@@ -5,8 +5,8 @@ REF ?= hg19
 LOGDIR = log/pindel.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 PINDEL = $(HOME)/share/usr/bin/pindel
 PINDEL2VCF = $(HOME)/share/usr/bin/pindel2vcf
@@ -67,4 +67,4 @@ vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(c
 endef
 $(foreach set,$(SAMPLE_SETS),$(eval $(call merge-pindel-chr,$(set))))
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

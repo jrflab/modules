@@ -1,18 +1,18 @@
 # Chimerascan
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/chimscan.$(NOW)
 
 CHIMSCAN_PYTHONPATH := /home/limr/share/usr/lib/python:/home/limr/share/usr/lib/python2.7
 CHIMSCAN_PYTHON := $(HOME)/share/usr/bin/python
 CHIMSCAN_INDEX := $(HOME)/share/reference/chimerascan_index
-CHIMSCAN_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterChimerascan.pl
+CHIMSCAN_NORMAL_FILTER = scripts/normalFilterChimerascan.pl
 
-RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
+RECURRENT_FUSIONS = $(RSCRIPT) scripts/recurrentFusions.R
 
-ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar
+ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(ONCOFUSE_JAR)
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 
@@ -65,4 +65,4 @@ chimscan/recur_tables/recurFusions.%.gene.txt : chimscan/alltables/all.%.txt
 chimscan/alltables/all.chimscan%coord.txt : chimscan/alltables/all.chimscan%txt
 	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = (($$F[9] eq "+")? $$F[3] + 1 : $$F[2] - 1) + 1; $$coord3 = (($$F[10] eq "+")? $$F[5] - 1 : $$F[6] + 1) + 1; print "$$F[1]\t$$coord5\t$$F[4]\t$$coord3\tEPI"; }' $< > $@
 
-include ~/share/modules/sv_callers/oncofuse.mk
+include modules/sv_callers/oncofuse.mk

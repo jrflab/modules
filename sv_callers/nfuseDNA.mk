@@ -7,7 +7,7 @@
 
 SHELL := /bin/bash
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = nfuse/log
 ANALYZE_DNA_BAM = $(HOME)/share/usr/nfuse-0.1.2/scripts/analyze_dna_bam.pl -c $(HOME)/usr/nfuse-0.1.2/scripts/config.txt

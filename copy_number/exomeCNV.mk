@@ -1,15 +1,15 @@
 # Use ExomeCNV to detect copy number variants and LOH
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 READ_LENGTH ?= 75
 
 
 LOGDIR = log/exomeCNV.$(NOW)
 OUTDIR ?= exomecnv
-EXOMECNV = $(HOME)/share/scripts/exomeCNV.R
-EXOMECNVLOH = $(HOME)/share/scripts/exomeCNVLOH.R
+EXOMECNV = scripts/exomeCNV.R
+EXOMECNVLOH = scripts/exomeCNVLOH.R
 CREATE_BAF = $(PERL) $(HOME)/share/usr/bin/for.loh.files.pl
 
 CBS_SENS_SPEC ?= 0.99
@@ -49,4 +49,4 @@ $(OUTDIR)/loh/$1_$2.loh.txt : $(OUTDIR)/baf/$1.baf.txt $(OUTDIR)/baf/$2.baf.txt
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-loh-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-include ~/share/modules/qc/readDepth.mk
+include modules/qc/readDepth.mk

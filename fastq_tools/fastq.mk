@@ -1,6 +1,6 @@
 # This module is used to extract fastq files from bam files
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 VPATH ?= unprocessed_bam
 
@@ -16,13 +16,13 @@ ifeq ($(TRIM_READS),true)
    TRIM_OPTS ?= -l $(TRIM_LENGTH)
 endif
 
-FASTQ_TRIMMER = $(PERL) $(HOME)/share/scripts/trimFastq.pl
+FASTQ_TRIMMER = $(PERL) scripts/trimFastq.pl
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY : fastq
 
-ifeq ($(MERGE_FASTQ),true)
+ifeq ($(MERGE_SPLIT_FASTQ),true)
 fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5)
 else
 fastq: $(foreach split,$(UNSPLIT_SAMPLES),fastq/$(split).1.fastq.gz.md5)

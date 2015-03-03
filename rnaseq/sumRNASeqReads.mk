@@ -1,18 +1,18 @@
 # This module deals with summarizing RNA-Seq reads over ensembl models and generating RPKM.  It requires that pre-processing of the bam files are done by GATK as input.
 # Authors: Fong Chun Chan <fongchunchan@gmail.com> & Raymond Lim <raylim@mm.st>
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/sumReads.$(NOW)
 
-SUM_READS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReads.R
-SUM_EXONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByExon.R
-SUM_INTRONS_RSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntron.R
+SUM_READS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReads.R
+SUM_EXONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByExon.R
+SUM_INTRONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByIntron.R
 
 SUM_READS_OPTS =
 
 
-#SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} ~/share/scripts/summarizeRNASeqReadsByIntronByTranscript.R
+#SUM_INTRONS_BY_TRANSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByIntronByTranscript.R
 
 #INTRONS_NON_OVERLAPPING_WITH_EXONS_FILE = ~/share/references/introns.non.overlapping.with.exons.txt
 
@@ -50,4 +50,4 @@ sumreads/exonCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumread
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/exonCount/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

@@ -1,6 +1,6 @@
 # Run JointSNVMix and then Museq on Tumour-Normal paired samples
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 #export PYTHONPATH = ~/share/usr/lib/python
 #export PYTHONHOME = ~/share/usr/lib/python2.7
@@ -27,7 +27,7 @@ JSM_THRESHOLD = 0.8
 
 VCF_SORT = $(HOME)/share/usr/bin/vcfsorter.pl
 
-VARIANT_ANNOTATOR = $(PERL) $(HOME)/share/scripts/variantAnnotator.pl
+VARIANT_ANNOTATOR = $(PERL) scripts/variantAnnotator.pl
 
 NSAMPLES = $(words $(TUMOR_SAMPLES))
 
@@ -75,4 +75,4 @@ jsm/tables/%.jsm.filtered.txt : jsm/tables/%.jsm.txt
 	$(INIT) head -1 $< > $@ && \
 	awk '$$18 > $(JSM_THRESHOLD) { print }' $< >> $@
 
-include ~/share/modules/museqTN.mk
+include modules/museqTN.mk

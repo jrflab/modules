@@ -1,12 +1,12 @@
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/somatic/mutect.inc
-include ~/share/modules/variant_callers/somatic/strelka.inc
-include ~/share/modules/variant_callers/somatic/scalpel.inc
+include modules/Makefile.inc
+include modules/variant_callers/somatic/mutect.inc
+include modules/variant_callers/somatic/strelka.inc
+include modules/variant_callers/somatic/scalpel.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
-SHELL = $(HOME)/share/scripts/Rshell
+SHELL = scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

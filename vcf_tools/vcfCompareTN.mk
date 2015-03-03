@@ -4,7 +4,7 @@ REF ?= hg19
 LOGDIR = log/vcfCompTN.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -47,4 +47,4 @@ cmp_vcf/grp/%.gt_concord.grp : $(foreach type,$(VCF_TYPES),cmp_vcf/vcf/%.$(VCF_S
 cmp_vcf/grp/%.variant_eval.grp : $(foreach type,$(VCF_TYPES),cmp_vcf/vcf/%.$(VCF_SUFFIX.$(type)).vcf)
 	$(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantEval --dbsnp $(DBSNP) -R $(REF_FASTA) $(foreach i,$^,--eval:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) $(foreach i,$^,--comp:$(notdir $(i:.$(FILTER_SUFFIX).vcf=)) $i ) -o $@")
 
-include ~/share/modules/variant_callers/gatk.inc
+include modules/variant_callers/gatk.inc

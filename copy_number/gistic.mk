@@ -1,8 +1,8 @@
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/gistic.$(NOW)
 
-SHELL = $(HOME)/share/scripts/Rshell
+SHELL = scripts/Rshell
 .SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:
@@ -21,7 +21,7 @@ GISTIC_THRESHOLD ?= 0.3
 GISTIC_JS ?= 15
 GISTIC_OPTS = -genegistic 0 -smallmem 1 -maxseg 5000 -savegene 1 -saveseg 1 -savedata 0 -v 30 -ta $(GISTIC_THRESHOLD) -td $(GISTIC_THRESHOLD) -js $(GISTIC_JS) -qvt 0.25 -conf 0.99 -broad 1 -brlen 0.5 -rx 0
 DGV_FILE = $(HOME)/share/reference/GRCh37_hg19_variants_2013-07-23.txt
-PLOT_GISTIC_HEATMAP = $(RSCRIPT) $(HOME)/share/scripts/plotGisticHeatmap.R
+PLOT_GISTIC_HEATMAP = $(RSCRIPT) scripts/plotGisticHeatmap.R
 
 CNV_SIZES = 100000 300000
 

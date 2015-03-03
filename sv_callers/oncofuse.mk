@@ -1,8 +1,7 @@
 # run oncofuse
 # hg19 only
 
-ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar
-#ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(HOME)/share/usr/lib/java/oncofuse-1.0.8.jar
+ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(ONCOFUSE_JAR)
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 %.oncofuse.txt : %.coord.txt

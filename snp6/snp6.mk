@@ -1,7 +1,7 @@
 # SNP6 analysis module
 # runs APT -> hapseg -> absolute
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/snp6.$(NOW)
 
@@ -30,11 +30,11 @@ APT_GENOTYPE_OPTS = -c $(SNP6_CDF) \
 					--chrY-probes $(SNP6_CHRY) \
 					--set-gender-method cn-probe-chrXY-ratio --write-models
 
-HAPSEG = $(RSCRIPT) $(HOME)/share/scripts/hapseg.R
+HAPSEG = $(RSCRIPT) scripts/hapseg.R
 HAPSEG_PHASED_BGL_DIR = $(HOME)/share/reference/phasedBGL
 DISEASE = breastcancer
 HAPSEG_OPTS = --disease $(DISEASE) --phasedBGLDir $(HAPSEG_PHASED_BGL_DIR) --ref $(REF)
-ABSOLUTE = $(RSCRIPT) $(HOME)/share/scripts/absolute.R
+ABSOLUTE = $(RSCRIPT) scripts/absolute.R
 ABSOLUTE_OPTS = --disease $(DISEASE)
 
 PENNCNV_AFFY = $(HOME)/share/usr/penncnv_gw6/bin/normalize_affy_geno_cluster.pl

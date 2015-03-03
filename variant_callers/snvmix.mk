@@ -1,12 +1,12 @@
 # call variants using SNVmix
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_FILE ?= samples.txt
 SAMPLES = $(shell cat $(SAMPLE_FILE))
 
 LOGDIR = log/snvmix.$(NOW)
 
-GET_PILEUP_RESULTS_BY_POS_SCRIPT = $(HOME)/share/scripts/getPileupResultsByPosns.pl
+GET_PILEUP_RESULTS_BY_POS_SCRIPT = scripts/getPileupResultsByPosns.pl
 #CODON_FILE=/share/data/rmorin/data/codon_lookup.sort
 
 THRESHOLD ?= 0.5
@@ -19,7 +19,7 @@ SNVMIX = $(HOME)/usr/bin/SNVMix2
 SNVMIX_OPTS= -t MB -q ${BASE_QUAL} -Q ${MAPPING_QUAL}
 SNVMIX_MODEL = $(HOME)/share/reference/shah_lobular_snvmix_model.txt
 
-SNVMIX_TO_VCF = $(HOME)/share/scripts/snvmixToVCF.pl
+SNVMIX_TO_VCF = scripts/snvmixToVCF.pl
 
 .PHONY: all
 .DELETE_ON_ERROR:
@@ -50,4 +50,4 @@ endif
 vcf/%.snvmix2.vcf : snvmix/tables/%.snvmix2.txt
 	$(INIT) $(PERL) $(SNVMIX_TO_VCF) -R $(REF_FASTA) -d $(DEPTH_FILTER) $< > $@ 2> $(LOG)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

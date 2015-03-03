@@ -6,7 +6,7 @@
 
 SHELL := /bin/bash
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = destruct/log
 

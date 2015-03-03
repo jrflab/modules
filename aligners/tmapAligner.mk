@@ -4,9 +4,9 @@
 # 		   EXTRACT_FASTQ = true/false (default: false)
 # 		   NO_RECAL = true/false (default: false)
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/aligners/align.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/aligners/align.inc
 
 ALIGNER := tmap
 LOGDIR := log/tmap.$(NOW)
@@ -59,5 +59,5 @@ endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
 
-include ~/share/modules/bam_tools/processBam.mk
-include ~/share/modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk

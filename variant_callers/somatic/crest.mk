@@ -3,7 +3,7 @@
 ##### DEFAULTS ######
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/crest.$(NOW)
 CREST_DIR = $(HOME)/share/usr/crest

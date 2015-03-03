@@ -3,7 +3,7 @@
 # Options: PHRED64 = true/false
 # Authors: Fong Chun Chan <fongchunchan@gmail.com>
 #
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/cufflinks.$(NOW)
 

@@ -1,6 +1,6 @@
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 WGSS_WTSS_PAIR_FILE ?= wgss_wtss_pairs.txt
 
@@ -33,4 +33,4 @@ endef
 $(foreach i,$(shell seq 1 $(NSAMPLES)),$(eval $(call nfuse-wgss-wtss,$(word $i,$(WGSS_SAMPLES)),$(word $i,$(WTSS_SAMPLES)))))
 
 
-#include ~/share/modules/fastq_tools/fastq.mk
+#include modules/fastq_tools/fastq.mk
