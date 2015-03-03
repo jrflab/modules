@@ -1,5 +1,5 @@
 # vim: set ft=make:
-include modules/confic.inc
+include modules/config.inc
 
 # default reference: 
 REF ?= hg19
