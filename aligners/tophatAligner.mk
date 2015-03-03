@@ -39,7 +39,7 @@ tophat_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 #tophat_junctions: $(foreach sample,$(SAMPLES),tophat/junctions/$(sample)_junctions.bed)
 
 bam/%.bam.md5 : tophat/bam/%.tophat.$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(INIT) ln -f $(<:.md5=) $(@:.md5=) && $(MD5)
 
 tophat/bam/%.tophat.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
 	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[0-9]\+//'`; \
