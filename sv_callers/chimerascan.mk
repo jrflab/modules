@@ -12,7 +12,7 @@ CHIMSCAN_NORMAL_FILTER = $(HOME)/share/scripts/normalFilterChimerascan.pl
 
 RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
 
-ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar
+ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(ONCOFUSE_JAR)
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
 

@@ -5,13 +5,13 @@
 #
 include ~/share/modules/Makefile.inc
 
-DEFUSE = $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 #DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
 DEFUSE_FILTER = $(PERL) $(HOME)/share/scripts/filterDefuse.pl
 DEFUSE_NORMAL_FILTER = $(PERL) $(HOME)/share/scripts/normalFilterDefuse.pl
 
 RECURRENT_FUSIONS = $(RSCRIPT) $(HOME)/share/scripts/recurrentFusions.R
+EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
 
 LOGDIR = log/defuse.$(NOW)
 
@@ -20,11 +20,6 @@ LOCAL ?= FALSE
 
 # Only applies if LOCAL is set to TRUE
 NUM_CORES ?= 2
-
-RMR ?= rm -r
-ifeq ($(NO_RM),true)
-RMR = touch
-endif
 
 ifeq ($(LOCAL),true)
 	DEFUSE_OPTS = -p $(NUM_CORES)
@@ -69,7 +64,6 @@ defuse/alltables/%.defuse.nft.txt : defuse/alltables/%.defuse.txt
 defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outPrefix $(@D)/recurFusions.$* $< 
 
-EXTRACT_COORDS = $(PERL) $(HOME)/share/scripts/extractCoordsFromDefuse.pl
 
 defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
