@@ -5,7 +5,7 @@ REF ?= hg19
 LOGDIR = log/fusionfinder.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 FUSIONFINDER = 
 FUSIONCATCHER_OPTS = --phred33 --cref  --ncref

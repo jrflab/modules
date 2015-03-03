@@ -1,6 +1,6 @@
 # parallelized BWA
 # Doesn't seem to work
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx2G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
 SAMPLE_FILE = samples.txt
@@ -43,4 +43,4 @@ bwa/bam/%.bwa.sam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2
 bam/%.bam : bwa/bam/%.bwa.sorted.filtered.fixmate.markdup.bam
 	$(MKDIR) $(@D); ln -f $< $@
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

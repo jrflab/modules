@@ -1,8 +1,8 @@
 # Use ExomeCNV to detect copy number variants and LOH
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 
 LOGDIR = log/control_freec.$(NOW)

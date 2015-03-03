@@ -1,7 +1,7 @@
 # SNP6 analysis module
 # runs APT -> hapseg -> absolute
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/snp6.$(NOW)
 

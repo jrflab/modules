@@ -1,8 +1,8 @@
 # Merge vcf files
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -57,4 +57,4 @@ merged_tables/%.ft.txt : merged_tables/%.txt
 merged_tables/all.%.txt : $(foreach tumor,$(TUMOR_SAMPLES),merged_tables/$(tumor).%.txt)
 	$(INIT) $(RBIND) --sampleName $< $^ > $@
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

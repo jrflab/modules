@@ -1,6 +1,6 @@
 # Run TEQC R library on bams
 # vim: set ft=make :
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))

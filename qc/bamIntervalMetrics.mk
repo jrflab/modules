@@ -2,8 +2,8 @@
 
 #NO_RM := true
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 # picard format intervals file, needs requires sam format header
 
 VPATH ?= bam
@@ -73,4 +73,4 @@ metrics/%.interval_nonref_freq.txt : %.bam
 	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

@@ -1,8 +1,8 @@
 # vim: set ft=make :
 # sub module containing vcf related tools
 
-#include ~/share/modules/Makefile.inc
-#include ~/share/modules/variant_callers/gatk.inc
+#include modules/Makefile.inc
+#include modules/variant_callers/gatk.inc
 
 # flags for non-gatk snp eff
 SNP_EFF_FLAGS ?= -canon -ud 0 -no-intron -no-intergenic -no-utr

@@ -2,8 +2,8 @@
 
 LOGDIR = log/lumpy.$(NOW)
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LUMPY_SCRIPTS_DIR = $(HOME)/share/usr/lumpy-sv/scripts
 LUMPY = $(HOME)/share/usr/lumpy-sv/bin/lumpy

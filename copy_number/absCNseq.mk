@@ -1,6 +1,6 @@
 # run absCNseq on varscan segmentation data
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/absCN.$(NOW)
 ABS_CN_SEQ = $(RSCRIPT) $(HOME)/share/scripts/absCNseq.R

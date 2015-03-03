@@ -1,5 +1,5 @@
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/deseq.$(NOW)
 

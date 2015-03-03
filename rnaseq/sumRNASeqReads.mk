@@ -1,7 +1,7 @@
 # This module deals with summarizing RNA-Seq reads over ensembl models and generating RPKM.  It requires that pre-processing of the bam files are done by GATK as input.
 # Authors: Fong Chun Chan <fongchunchan@gmail.com> & Raymond Lim <raylim@mm.st>
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/sumReads.$(NOW)
 
@@ -50,4 +50,4 @@ sumreads/exonCounts.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumread
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/exonCount/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

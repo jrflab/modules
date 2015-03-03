@@ -4,9 +4,9 @@
 # 		   EXTRACT_FASTQ = true/false (default: false)
 # 		   NO_RECAL = true/false (default: false)
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/aligners/align.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/aligners/align.inc
 
 ALIGNER := bwa
 LOGDIR ?= log/bwa.$(NOW)
@@ -68,5 +68,5 @@ bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
 	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@M) && $(MD5)")
 
-include ~/share/modules/bam_tools/processBam.mk
-include ~/share/modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk

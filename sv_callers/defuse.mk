@@ -3,7 +3,7 @@
 # Options: PHRED64 = true/false
 # Authors: Fong Chun Chan <fongchunchan@gmail.com>
 #
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 #DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
@@ -68,5 +68,5 @@ defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
 defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
 
-include ~/share/modules/fastq_tools/fastq.mk
-include ~/share/modules/sv_callers/oncofuse.mk
+include modules/fastq_tools/fastq.mk
+include modules/sv_callers/oncofuse.mk

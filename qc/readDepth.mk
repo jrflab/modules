@@ -1,7 +1,7 @@
 # Run gatk depth of coverage on bam files
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))

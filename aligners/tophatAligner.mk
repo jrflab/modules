@@ -5,11 +5,11 @@
 # 	NO_NOVEL_SPLICING = true/false
 # 	NUM_CORES = 4
 #	INNER_MATE_DIST = 200
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 NO_REALN = true
 NO_RECAL = true
-include ~/share/modules/aligners/align.inc
+include modules/aligners/align.inc
 
 LOGDIR = log/tophat.$(NOW)
 
@@ -65,5 +65,5 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(
 endif
 
 
-include ~/share/modules/fastq_tools/fastq.mk
-include ~/share/modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk

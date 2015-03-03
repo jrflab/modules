@@ -1,5 +1,5 @@
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 DINDEL = LD_LIBRARY_PATH=/ifs/opt/common/boost/boost_1_45_0/lib/ /opt/common/dindel/dindel-1.01-src/dindel
 MAKE_WINDOWS = LD_LIBRARY_PATH=/ifs/opt/common/boost/boost_1_45_0/lib/ /opt/common/dindel/dindel-1.01-python
@@ -38,4 +38,4 @@ $(foreach sample,$(SAMPLES),$(eval $(call file-list,$(sample))))
 dindel/vcf/%.dindel.vcf : dindel/%.variants_filelist.txt
 	$(call LSCRIPT_MEM,5G,10G,"$(MERGE_OUTPUT) --inputFiles $< --outputFile $@ --ref $(REF_FASTA)")
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

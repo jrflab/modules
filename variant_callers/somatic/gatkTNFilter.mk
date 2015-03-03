@@ -1,6 +1,6 @@
 # naive tumour-normal filter for gatk indels
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_PAIR_FILE = sample_pairs.txt
 
@@ -19,5 +19,5 @@ TABLES = $(foreach sample,$(TUMOR_SAMPLES),gatk/tables/$(sample).indels.annotate
 
 all : $(VCFS) $(addsuffix .idx,$(VCFS)) $(TABLES)
 	
-include ~/share/modules/tnFilter.mk
-include ~/share/modules/gatkVariantCaller.mk
+include modules/tnFilter.mk
+include modules/gatkVariantCaller.mk

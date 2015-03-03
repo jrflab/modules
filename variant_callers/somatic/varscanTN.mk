@@ -9,7 +9,7 @@ LOGDIR = log/varscan.$(NOW)
 SPLIT_CHR ?= true
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
@@ -133,4 +133,4 @@ bamrc/%.$1.chr_bamrc : bam/%.bam
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
-include ~/share/modules/variant_callers/gatk.mk
+include modules/variant_callers/gatk.mk

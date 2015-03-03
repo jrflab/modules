@@ -1,9 +1,9 @@
 # Run cloneHD on tumour-normal samples
 # reconstruct clonal composition
 ##### DEFAULTS ######
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/variant_callers/somatic/mutect.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/variant_callers/somatic/mutect.inc
 
 CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
@@ -24,8 +24,8 @@ LOGDIR = log/clonehd.$(NOW)
 
 all : $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.summary.txt) $(foreach s,$(SAMPLE_SETS),clonehd/results/$s.snv.summary.txt)
 
-include ~/share/modules/variant_callers/gatk.mk
-include ~/share/modules/variant_callers/samtoolsHet.mk
+include modules/variant_callers/gatk.mk
+include modules/variant_callers/samtoolsHet.mk
 
 clonehd/cov/%.cov.txt : bam/%.bam
 	$(call LSCRIPT_MEM,4G,7G,"$(SAMTOOLS) bedcov $(TARGETS_FILE) $< > $@")

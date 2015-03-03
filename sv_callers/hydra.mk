@@ -9,8 +9,8 @@ BAM_TO_BED = /opt/common/bedtools/bedtools-2.17.0/bin/bamToBed
 DEDUP_DISCORDANTS = $(HOME)/share/usr/bin/dedupDiscordants.py
 PAIR_DISCORDANTS = $(HOME)/share/usr/bin/pairDiscordants.py
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 .SECONDARY:
 .DELETE_ON_ERROR:

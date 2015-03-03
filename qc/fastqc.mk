@@ -1,7 +1,7 @@
 # vim: set ft=make :
 # Run Fastqc on bam files
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 FASTQC = $(PERL) /opt/common/FastQC/fastqc 
 FASTQC_SUMMARY_PLOT = $(RSCRIPT) $(HOME)/share/scripts/fastqcSummaryPlot.R

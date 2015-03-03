@@ -3,8 +3,8 @@
 ##### DEFAULTS ######
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 SOMATIC_SNIPER = /opt/common/somaticsniper/somaticsniper-1.0.2.2/bam-somaticsniper
 SOMATIC_SNIPER_OPTS ?= -q 1 -p
@@ -77,4 +77,4 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 som_sniper/vcf/%.som_sniper.fp.vcf : $(foreach chr,$(CHROMOSOMES),som_sniper/chr_vcf/%.$(chr).som_sniper.fp.vcf)
 	$(INIT) grep '^#' $< > $@ && sed '/^#/d' $^ >> $@
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

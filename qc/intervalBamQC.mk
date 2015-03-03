@@ -1,7 +1,7 @@
 # vim: set ft=make :
 # amplicon qc using bams and gatk vcf results
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 INTERVAL_FILE ?= intervals.bed
 

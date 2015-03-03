@@ -1,6 +1,6 @@
 # OncoSNP module
-include ~/share/modules/Makefile.inc
-include ~/share/modules/hg19.inc
+include modules/Makefile.inc
+include modules/hg19.inc
 
 SAMPLE_FILE = samples.txt
 SAMPLE_SEX_FILE = samples.sex.txt

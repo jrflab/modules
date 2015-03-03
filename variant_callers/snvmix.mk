@@ -1,5 +1,5 @@
 # call variants using SNVmix
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_FILE ?= samples.txt
 SAMPLES = $(shell cat $(SAMPLE_FILE))
@@ -50,4 +50,4 @@ endif
 vcf/%.snvmix2.vcf : snvmix/tables/%.snvmix2.txt
 	$(INIT) $(PERL) $(SNVMIX_TO_VCF) -R $(REF_FASTA) -d $(DEPTH_FILTER) $< > $@ 2> $(LOG)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

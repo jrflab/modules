@@ -1,7 +1,7 @@
 # Use ExomeCNV to detect copy number variants and LOH
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/exomeCNVLOH.$(NOW)
 EXOMECNV = $(HOME)/share/scripts/exomeCNV.R
@@ -44,5 +44,5 @@ endif
 
 loh : $(LOH) 
 
-include ~/share/modules/vcf_tools/vcftools.mk
-include ~/share/modules/variant_callers/gatk.mk
+include modules/vcf_tools/vcftools.mk
+include modules/variant_callers/gatk.mk

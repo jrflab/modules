@@ -2,7 +2,7 @@
 # Detect mutation signatures using absolute results and control free-c results
 ##### DEFAULTS ######
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/emu_absolute.$(NOW)
 

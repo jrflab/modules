@@ -1,8 +1,8 @@
 # Merge vcf files
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -41,5 +41,5 @@ alltables/%.ft.txt : alltables/%.txt
 #$(call LSCRIPT_MEM,2G,5G,"S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \
 #$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields $< $(ALL_VCF_EFF_FIELDS) set | sed \"1s/GEN\[0\]/\$$S1/g; 1s/GEN\[1\]/\$$S2/g\" | $(PERL) $(VCF_JOIN_EFF) > $@")
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk
 

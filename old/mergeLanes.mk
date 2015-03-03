@@ -1,5 +1,5 @@
 # Merge lane samples using a LANE_SAMPLE_FILE
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 #SAMPLE_FILE = samples.txt
 #SAMPLES = $(shell cat $(SAMPLE_FILE))
@@ -50,5 +50,5 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-fastq,$(sample),$(sample_lookup
 bam/%.bam : merge_bam/%.rg.rmdup.bam
 	$(MKDIR) $(@D); ln -f $< $@
 
-include ~/share/modules/bam_tools/processBam.mk
-include ~/share/modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk

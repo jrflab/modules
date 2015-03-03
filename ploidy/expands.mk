@@ -1,6 +1,6 @@
 # run expands for determining tumor ploidy
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/expands.$(NOW)
 

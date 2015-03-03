@@ -1,4 +1,4 @@
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/exome_cnv_loh_heatmap.$(NOW)
 

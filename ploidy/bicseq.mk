@@ -1,6 +1,6 @@
 # run bicseq for cnvs
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/bicseq.$(NOW)
 

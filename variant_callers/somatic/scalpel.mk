@@ -1,9 +1,9 @@
 # scalpel variant detection
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/variant_callers/somatic/scalpel.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/variant_callers/somatic/scalpel.inc
 
 LOGDIR = log/scalpel.$(NOW)
 
@@ -48,5 +48,5 @@ vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel2vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-include ~/share/modules/vcf_tools/vcftools.mk
-include ~/share/modules/bam_tools/processBam.mk
+include modules/vcf_tools/vcftools.mk
+include modules/bam_tools/processBam.mk

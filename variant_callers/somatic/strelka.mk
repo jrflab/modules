@@ -1,8 +1,8 @@
 # Run strelka on tumour-normal matched pairs
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
-include ~/share/modules/variant_callers/somatic/strelka.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
+include modules/variant_callers/somatic/strelka.inc
 ##### DEFAULTS ######
 
 
@@ -33,4 +33,4 @@ vcf/$1_$2.strelka_indels.vcf : strelka/$1_$2/task.complete
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call strelka-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

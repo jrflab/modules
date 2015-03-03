@@ -1,5 +1,5 @@
 # align unaligned (to human) sequences to the IADB database using gmap
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 OPTS = -d IADB -D ${GSNAP_REF} -B 4 -t 4 -A sam --novelsplicing=1 --pairexpect=200 -n 1 --quiet-if-excessive --nofails
 ifeq ($(PHRED64),true)
@@ -42,4 +42,4 @@ iadb/bam/%.gsnap.bam : iadb/fastq/%.1.fastq iadb/fastq/%.2.fastq
 iadb/bam/%.bam : iadb/bam/%.gsnap.sorted.filtered.markdup.bam
 	$(MKDIR) $(@D); ln -v $< $@
 
-include ~/share/modules/bam_tools/processBam.mk
+include modules/bam_tools/processBam.mk

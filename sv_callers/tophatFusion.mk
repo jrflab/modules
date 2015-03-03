@@ -1,5 +1,5 @@
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 TOPHAT := $(HOME)/share/usr/bin/tophat2
 TOPHAT_OPTS := --no-coverage-search --fusion-ignore-chromosomes MT --fusion-search --keep-fasta-order

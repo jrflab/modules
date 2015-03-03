@@ -2,8 +2,8 @@
 # input: $(SAMPLES)
 # Options: PHRED64 = true/false
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/hg19.inc
+include modules/Makefile.inc
+include modules/hg19.inc
 
 SNP = snp135
 NPARTS = 5 
@@ -105,5 +105,5 @@ bam/%.bam : gsnap/bam/%.$(BAM_SUFFIX)
 #	rm -f gsnap/bam/*.bam
 #	rm -fr gsnap/log/*
 
-include ~/share/modules/bam_tools/processBam.mk
-include ~/share/modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk

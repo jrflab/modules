@@ -10,8 +10,8 @@ LOGDIR = log/mutect.$(NOW)
 
 all : mutect_vcfs mutect_tables ext_output mut_report
 
-include ~/share/modules/variant_callers/somatic/mutect.mk
-include ~/share/modules/variant_callers/somatic/mutect.inc
+include modules/variant_callers/somatic/mutect.mk
+include modules/variant_callers/somatic/mutect.inc
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
 VCFS = $(foreach suff,$(MUTECT_VCF_SUFFIXES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(suff).vcf))

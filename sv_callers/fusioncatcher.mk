@@ -5,7 +5,7 @@ REF ?= hg19
 LOGDIR = log/fusioncatcher.$(NOW)
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 FUSIONCATCHER = $(HOME)/share/usr/fusioncatcher/bin/fusioncatcher
 FUSIONCATCHER_OPTS = -d $(HOME)/share/usr/fusioncatcher/data/current --extract-buffer-size=35000000000

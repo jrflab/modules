@@ -4,8 +4,8 @@
 # OPTIONS: PHRED64 = true/false
 # 		   LOCAL = true/false (preform local alignments)
 # 		   RMDUP = true/false
-include ~/share/modules/Makefile.inc
-include ~/share/modules/aligners/align.inc
+include modules/Makefile.inc
+include modules/aligners/align.inc
 
 VPATH ?= unprocessed_bam
 
@@ -70,5 +70,5 @@ $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(
 endif
 
 
-include ~/share/modules/fastq_tools/fastq.mk
-include ~/share/modules/bam_tools/processBam.mk
+include modules/fastq_tools/fastq.mk
+include modules/bam_tools/processBam.mk

@@ -1,7 +1,7 @@
 # Chimerascan
 
 ##### MAKE INCLUDES #####
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/chimscan.$(NOW)
 
@@ -65,4 +65,4 @@ chimscan/recur_tables/recurFusions.%.gene.txt : chimscan/alltables/all.%.txt
 chimscan/alltables/all.chimscan%coord.txt : chimscan/alltables/all.chimscan%txt
 	$(INIT) perl -lane 'if ($$. > 1) { $$coord5 = (($$F[9] eq "+")? $$F[3] + 1 : $$F[2] - 1) + 1; $$coord3 = (($$F[10] eq "+")? $$F[5] - 1 : $$F[6] + 1) + 1; print "$$F[1]\t$$coord5\t$$F[4]\t$$coord3\tEPI"; }' $< > $@
 
-include ~/share/modules/sv_callers/oncofuse.mk
+include modules/sv_callers/oncofuse.mk

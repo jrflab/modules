@@ -1,5 +1,5 @@
 # titan module
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/titan.$(NOW)
 
@@ -38,8 +38,8 @@ results : $(RESULT_FILES)
 summary : $(foreach j,$(PLOIDY_PRIORS),titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$j/titan_summary.txt)
 seg : $(RESULT_FILES:.txt=.seg)
 
-include ~/share/modules/variant_callers/gatk.mk
-include ~/share/modules/variant_callers/samtoolsHet.mk
+include modules/variant_callers/gatk.mk
+include modules/variant_callers/samtoolsHet.mk
 
 titan/wig/%.w$(TITAN_WINDOW_SIZE).wig : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,6G,8G,"$(READ_COUNTER) -w $(TITAN_WINDOW_SIZE) -c $(subst $( ),$(,),$(strip $(CHROMOSOMES))) $< > $@")

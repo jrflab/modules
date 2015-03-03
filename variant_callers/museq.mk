@@ -1,7 +1,7 @@
 # vim: set ft=make :
 # apply mutation seq to GATK SNP call results (single sample)
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 SAMPLE_FILE ?= samples.txt
 SAMPLES ?= $(shell cat $(SAMPLE_FILE))

@@ -2,8 +2,8 @@
 # input: $(SAMPLES)
 # Author: Fong Chun Chan <fongchunchan@gmail.com>
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/hg19.inc
+include modules/Makefile.inc
+include modules/hg19.inc
 
 FIX_FASTQ_READ_NAMES = $(PYTHON) ~/share/scripts/fixFastqReadNames.py
 

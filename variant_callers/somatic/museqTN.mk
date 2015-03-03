@@ -1,8 +1,8 @@
 # vim: set ft=make :
 # museq module for use by jsm.mk
 
-include ~/share/modules/Makefile.inc
-include ~/share/modules/variant_callers/gatk.inc
+include modules/Makefile.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/museq.$(NOW)
 
@@ -64,4 +64,4 @@ $(foreach i,$(SETS_SEQ), \
 vcf/%.museq.vcf : museq/vcf/%.museq.vcf
 	$(INIT) $(FIX_MUSEQ_VCF) -R $(REF_FASTA) $< > $@ 2> $(LOG)
 
-include ~/share/modules/vcf_tools/vcftools.mk
+include modules/vcf_tools/vcftools.mk

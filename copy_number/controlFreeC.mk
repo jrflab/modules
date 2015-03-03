@@ -1,7 +1,7 @@
 # Use controlFreeC to detect copy number variants and LOH
 # vim: set ft=make :
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/control_freec.$(NOW)
 FREEC = $(HOME)/share/usr/bin/freec

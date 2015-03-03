@@ -2,7 +2,7 @@
 # Detect mutation signatures using mutect calls and control FreeC
 ##### DEFAULTS ######
 
-include ~/share/modules/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR = log/emu.$(NOW)
 
@@ -28,7 +28,7 @@ endif
 
 all : $(ALL)
 
-include ~/share/modules/variant_callers/somatic/mutect.inc
+include modules/variant_callers/somatic/mutect.inc
 
 ALL_TABLE ?= alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
 
