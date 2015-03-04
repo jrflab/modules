@@ -8,10 +8,10 @@ include modules/Makefile.inc
 LOGDIR = log/cufflinks.$(NOW)
 
 
-NUM_CORES ?= 4
+NUM_CORES ?= 8
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
 CUFFCOMPARE = $(HOME)/share/usr/bin/cuffcompare
-CUFFLINKS_OPTS = -b $(REF_FASTA) -g $(GENES_GTF) -p $(NUM_CORES) -u --no-update-check
+CUFFLINKS_OPTS = -b $(REF_FASTA) -u -g $(GENES_GTF) -p $(NUM_CORES) -u --no-update-check -v
 CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 
 
@@ -25,7 +25,7 @@ cufflinks : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 cuffcmp : cufflinks/cuffcmp/cc.stats
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,3G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $< \
+	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $< \
 && ln cufflinks/$*/transcripts.gtf cufflinks/gtf/$*.transcripts.gtf \
 && ln cufflinks/$*/isoforms.fpkm_tracking cufflinks/fpkm_tracking/$*.isoforms.fpkm_tracking \
 && ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
