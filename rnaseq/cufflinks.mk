@@ -25,10 +25,11 @@ cufflinks : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 cuffcmp : cufflinks/cuffcmp/cc.stats
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $< \
-&& ln cufflinks/$*/transcripts.gtf cufflinks/gtf/$*.transcripts.gtf \
-&& ln cufflinks/$*/isoforms.fpkm_tracking cufflinks/fpkm_tracking/$*.isoforms.fpkm_tracking \
-&& ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
+	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $<  && \
+		mkdir -p cufflinks/gtf cufflinks/fpkm_tracking && \
+		ln cufflinks/$*/transcripts.gtf cufflinks/gtf/$*.transcripts.gtf && \
+		ln cufflinks/$*/isoforms.fpkm_tracking cufflinks/fpkm_tracking/$*.isoforms.fpkm_tracking && \
+		ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
 
 cufflinks/cuffcmp/cc.stats : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 	$(call LSCRIPT_MEM,10G,20G,"$(CUFFCOMPARE) $(CUFFCOMPARE_OPTS) -o $(@:.stats=) $^")
