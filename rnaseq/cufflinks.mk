@@ -40,4 +40,4 @@ cufflinks/assembly_list.txt : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample
 	$(INIT) echo "$^" | tr ' ' '\n' > $@
 
 cufflinks/gtf/merged.gtf : cufflinks/assembly_list.txt
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) -o $(@D) -g $(GENES_GTF) -p 8
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) -o $(@D) -g $(GENES_GTF) -p 8")
