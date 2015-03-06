@@ -27,12 +27,13 @@ endif
 ..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) &> version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY : all_cufflinks cufflinks cuffcmp cuffmerge
+.PHONY : all_cufflinks cufflinks cuffcmp cuffmerge cuffdiff
 
-all_cufflinks : cufflinks cuffcmp cuffmerge
+all_cufflinks : cufflinks cuffcmp cuffmerge cuffdiff
 cufflinks : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 cuffcmp : cufflinks/cuffcmp/cc.stats
 cuffmerge : cufflinks/gtf/merged.gtf
+cuffdiff : cufflinks/cuffdiff/gene_exp.diff
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
 	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $<  && \
