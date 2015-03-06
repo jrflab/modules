@@ -52,4 +52,4 @@ cufflinks/gtf/merged.gtf : cufflinks/assembly_list.txt
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) -o $(@D) -g $(GENES_GTF) -p 8 $<")
 
 cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) -o $(@D) -b $(REF_FASTA) -p 8 $< $(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),bam/$s.bam)))")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) -o $(@D) -p 8 $< $(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),bam/$s.bam)))")
