@@ -55,7 +55,9 @@ cufflinks/gtf/merged.gtf : cufflinks/assembly_list.txt
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) -o $(@D) -g $(GENES_GTF) -p 8 $<")
 
 cufflinks/cxb/%.cxb : cufflinks/gtf/merged.gtf bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,2.5G,"$(CUFFQUANT) -o $(@D) -g $(GENES_GTF) -b $(REF_FASTA) -p 4 $^")
+	$(call LSCRIPT_PARALLEL_MEM,4,1G,2.5G,"mkdir -p cufflinks/$* && \
+	   	$(CUFFQUANT) -o cufflinks/$* -b $(REF_FASTA) -p 4 $^ && \
+		ln cufflinks/$*/abundances.cxb $@")
 
 cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) -o $(@D) -p 8 $< \
