@@ -12,9 +12,17 @@ NUM_CORES ?= 8
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks
 CUFFCOMPARE = $(HOME)/share/usr/bin/cuffcompare
 CUFFMERGE = $(HOME)/share/usr/bin/cuffmerge
+CUFFDIFF = $(HOME)/share/usr/bin/cuffdiff
 CUFFLINKS_OPTS = -b $(REF_FASTA) -u -g $(GENES_GTF) -p $(NUM_CORES) -u --no-update-check -v
 CUFFCOMPARE_OPTS = -s $(REF_FASTA) -r $(GENES_GTF) -V
 
+PHENO_FILE ?= pheno.txt
+ifneq ($(wildcard $(PHENO_FILE)),)
+  A = $(shell sed '1d' $(PHENO_FILE) | cut -f1)
+  B = $(shell sed '1d' $(PHENO_FILE) | cut -f2)
+  $(foreach i,$(shell seq 1 $(words $(A))),$(eval pheno.$(word $i,$(B)) += $(word $i,$(A))))
+  PHENOTYPES = $(shell sed '1d' $(PHENO_FILE) | cut -f2 | sort | uniq)
+endif
 
 ..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) &> version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
 .SECONDARY:
@@ -41,3 +49,6 @@ cufflinks/assembly_list.txt : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample
 
 cufflinks/gtf/merged.gtf : cufflinks/assembly_list.txt
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) -o $(@D) -g $(GENES_GTF) -p 8 $<")
+
+cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),bam/$(sample).bam)
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) -o $(@D) -b $(REF_FASTA) -p 8 $< $(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),bam/$s.bam)))")
