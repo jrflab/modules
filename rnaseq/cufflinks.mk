@@ -28,7 +28,7 @@ ifneq ($(wildcard $(PHENO_FILE)),)
   A = $(shell sed '1d' $(PHENO_FILE) | cut -f1)
   B = $(shell sed '1d' $(PHENO_FILE) | cut -f2)
   $(foreach i,$(shell seq 1 $(words $(A))),$(eval pheno.$(word $i,$(B)) += $(word $i,$(A))))
-  PHENOTYPES = $(strip $(shell sed '1d' $(PHENO_FILE) | cut -f2 | sort | uniq))
+  PHENOTYPES = $(shell sed '1d' $(PHENO_FILE) | cut -f2 | sort | uniq)
 endif
 
 ..DUMMY := $(shell mkdir -p version; $(CUFFLINKS) &> version/tophat.txt; echo "options: $(CUFFLINKS_OPTS)" >> version/cufflinks.txt)
@@ -66,8 +66,8 @@ cufflinks/cxb/%.cxb : cufflinks/gtf/merged.gtf bam/%.bam
 
 cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) $(CUFFDIFF_OPTS) -o $(@D) -p 8 $< \
-		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),\
-			$(foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb))) \
+		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(strip \
+			$(foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb)))) \
 		-L $(subst $( ),$(,),$(PHENOTYPES))")
 
 cufflinks/cuffnorm/gene_exp.txt : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
