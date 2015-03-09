@@ -66,7 +66,7 @@ cufflinks/cxb/%.cxb : cufflinks/gtf/merged.gtf bam/%.bam
 
 cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFDIFF) $(CUFFDIFF_OPTS) -o $(@D) -p 8 $< \
-		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb ))) \
+		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(strip foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb )))) \
 		-L $(subst $( ),$(,),$(PHENOTYPES))")
 
 cufflinks/cuffnorm/gene_exp.txt : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
