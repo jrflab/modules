@@ -233,7 +233,7 @@ endif
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
 	$(call LSCRIPT_MEM,2G,5G,"NS=$(call COUNT_SAMPLES,$*); \
-	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(call SNP_VCF_EFF_FIELDS,$(call COUNT_SAMPLES,$*)) > $@; \
+	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(call VCF_FIELDS,$(call COUNT_SAMPLES,$*)) > $@; \
 	for i in \`seq 0 \$$((\$$NS - 1))\`; do \
 	S=\`grep '^#CHROM' $< | cut -f \$$((\$$i + 10))\`; \
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \
@@ -242,9 +242,6 @@ tables/%.opl_tab.txt : vcf/%.vcf
 %.tab.txt : %.opl_tab.txt
 	$(INIT) $(PERL) $(VCF_JOIN_EFF) < $< > $@ 2> $(LOG)
 	
-tables/%.nsfp.annotated.txt : vcf/%.nsfp.annotated.vcf
-	$(call LSCRIPT_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) extractFields $< $(ALL_VCF_GATK_FIELDS) > $@")
-
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
@@ -271,4 +268,10 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 
 %.dbsnp_ft.vcf : %.vcf
 	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' $< > $@
+
+ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) scripts/addGeneListAnnotationToVcf.R
+HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
+# haplotype insufficiency annotation
+%.hap_insuf.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED) --name hap_insuf --outFile $@ $< && $(RM) $< $<.idx")
 

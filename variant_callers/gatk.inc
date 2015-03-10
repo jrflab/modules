@@ -45,18 +45,26 @@ COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc 
 
 #VCF_SAMPLES ?= 0
 VCF_GEN_IDS ?= GT AD DP
-VCF_FIELDS := CHROM POS ID REF ALT FILTER GMAF
-VCF_GEN_FIELDS = $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
-VCF_EFF_FIELDS = 'EFF[*].EFFECT' 'EFF[*].IMPACT' 'EFF[*].FUNCLASS' 'EFF[*].CODON' 'EFF[*].AA' 'EFF[*].GENE' 'EFF[*].BIOTYPE' 'EFF[*].CODING' 'EFF[*].TRID' 'EFF[*].RANK'
+VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
+# vcf genotype fields
+VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
+# vcf eff fields
+VCF_FIELDS += 'EFF[*].EFFECT' 'EFF[*].IMPACT' 'EFF[*].FUNCLASS' 'EFF[*].CODON' 'EFF[*].AA' 'EFF[*].GENE' 'EFF[*].BIOTYPE' 'EFF[*].CODING' 'EFF[*].TRID' 'EFF[*].RANK'
+NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
+VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
+VCF_FIELDS += HRun
+# chasm
+VCF_FIELDS += chasm_mut chasm_pval chasm_score chasm_fdr
+# fathmm
+VCF_FIELDS += fathmm_query fathmm_pred fathmm_score
+# haplotype insufficiency
+VCF_FIELDS += hap_insuf
+# transfic
+#VCF_FIELDS += transficSIFT_score transficSIFT_pred transficPolyphen2_HVAR_score transficPolyphen2_HVAR_pred transficMutationAssessor_score transficMutationAssessor_pred
+
 #VCF_ANNOTATIONS = RMSMappingQuality QualByDepth MappingQualityZero MappingQualityRankSumTest HaplotypeScore FisherStrand Coverage BaseQualityRankSumTest HomopolymerRun
 VCF_ANNOTATIONS = QualByDepth HaplotypeScore FisherStrand Coverage BaseQualityRankSumTest DepthPerAlleleBySample
-NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
-VCF_NSFP_FIELDS = $(addprefix dbNSFP_,$(NSFP_FIELDS))
-VCF_ANN_FIELDS = HRun
-CHASM_FIELDS = chasm_mut chasm_pval chasm_score chasm_fdr
-FATHMM_FIELDS = fathmm_query fathmm_pred fathmm_score
-TRANSFIC_FIELDS = transficSIFT_score transficSIFT_pred transficPolyphen2_HVAR_score transficPolyphen2_HVAR_pred transficMutationAssessor_score transficMutationAssessor_pred
-VCF_GATK_FIELDS = SNPEFF_EFFECT SNPEFF_FUNCTIONAL_CLASS SNPEFF_IMPACT SNPEFF_GENE_BIOTYPE SNPEFF_GENE_NAME SNPEFF_TRANSCRIPT_ID SNPEFF_AMINO_ACID_CHANGE SNPEFF_CODON_CHANGE
+
 #$(call ALL_VCF_EFF_FIELDS,NUM_SAMPLES)
 SNP_VCF_EFF_FIELDS = $(VCF_FIELDS) $(call VCF_GEN_FIELDS,$1) $(VCF_ANN_FIELDS) $(VCF_EFF_FIELDS) $(VCF_NSFP_FIELDS) $(CHASM_FIELDS) $(FATHMM_FIELDS) $(TRANSFIC_FIELDS)
 INDEL_VCF_EFF_FIELDS = $(VCF_FIELDS) $(call VCF_GEN_FIELDS,$1) $(VCF_ANN_FIELDS) $(VCF_EFF_FIELDS) 
