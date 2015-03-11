@@ -9,7 +9,7 @@ FILTERS = $(if $(DEPTH_FILTER),dp_ft \
             $(if $(findstring true,$(HRUN),hrun hrun_ft))) \
     pass
     $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS)) \
-    $(if $(findstring snv,$1),$(SNV_ANN_FILTERS))
+    $(if $(findstring snp,$1),$(SNV_ANN_FILTERS))
 
 FILTER_SUFFIX = $(subst $( ),.,$(strip $(FILTERS)))
 

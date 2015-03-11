@@ -31,6 +31,7 @@ VPATH ?= bam
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
+VARIANT_TYPES = varscan_indels varscan_snps
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
 		   $(foreach suff,$(call VCF_SUFFIXES,$(VARIANT_TYPES)), \
 			   vcf/$(pair).$(suff).vcf))
