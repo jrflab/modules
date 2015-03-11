@@ -1,4 +1,5 @@
 DEPTH_FILTER ?= 5
+HRUN ?= false
 
 INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm hap_insuf
@@ -6,7 +7,7 @@ FILTERS = $(if $(DEPTH_FILTER),dp_ft \
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft)) \
     $(if $(TARGETS_FILE),target_ft)\
     $(if $(findstring indel,$1),\
-            $(if $(findstring true,$(HRUN),hrun hrun_ft))) \
+            $(if $(findstring true,$(HRUN)),hrun hrun_ft)) \
     pass \
     $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS)) \
     $(if $(findstring snp,$1),$(SNV_ANN_FILTERS))
