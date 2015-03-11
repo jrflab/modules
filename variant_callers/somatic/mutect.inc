@@ -10,22 +10,3 @@ MUTECT_OPTS = --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --ma
 MUTECT = $(JAVA) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
 MUT_FREQ_REPORT = $(RSCRIPT) $(HOME)/share/scripts/plotSeqLogoFromMutect.R
-
-
-FFPE_NORMAL_FILTER ?= false
-ifeq ($(FFPE_NORMAL_FILTER),true)
-MUTECT_FILTER_SUFFIX := ffpe_som_ad_ft
-else 
-MUTECT_FILTER_SUFFIX := som_ad_ft
-endif
-
-ifdef TARGETS_FILE
-TARGET_FILTER ?= true
-ifeq ($(TARGET_FILTER),true)
-MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).target_ft
-endif
-endif
-MUTECT_FILTER_SUFFIX := $(MUTECT_FILTER_SUFFIX).pass.dbsnp.cosmic.nsfp.eff.chasm.fathmm.hap_insuf
-EFF_TYPES = silent missense nonsilent_cds nonsilent
-MUTECT_VCF_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX)
-MUTECT_TABLE_SUFFIXES = mutect.$(MUTECT_FILTER_SUFFIX).tab $(foreach eff,$(EFF_TYPES),mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff).novel mutect.$(MUTECT_FILTER_SUFFIX).tab.$(eff))

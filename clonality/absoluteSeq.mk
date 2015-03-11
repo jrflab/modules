@@ -1,7 +1,5 @@
 include modules/Makefile.inc
-include modules/variant_callers/somatic/mutect.inc
-include modules/variant_callers/somatic/strelka.inc
-include modules/variant_callers/somatic/scalpel.inc
+include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
@@ -32,7 +30,7 @@ library(ABSOLUTE)
 endef
 
 
-absolute/tables/%.somatic.txt : tables/%.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt tables/%.strelka_indels.$(STRELKA_FILTER_SUFFIX.strelka_indels).tab.txt tables/%.scalpel.$(SCALPEL_FILTER_SUFFIX).tab.pass.txt
+absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.pass.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))

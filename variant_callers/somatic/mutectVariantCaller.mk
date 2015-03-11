@@ -15,9 +15,8 @@ include modules/variant_callers/somatic/mutect.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 #VCFS = $(foreach suff,$(VCF_SUFFIXES),$(foreach tumor,$(TUMOR_SAMPLES),vcf/$(tumor)_$(normal_lookup.$(tumor)).$(suff).vcf))
-VARIANT_TYPES = mutect
-mutect_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
-mutect_tables : $(TABLES)
+mutect_vcfs : $(call VCFS,mutect) $(addsuffix .idx,$(call VCFS,mutect))
+mutect_tables : $(call TABLES,mutect)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 mut_report : mutect/report/report.timestamp mutect/lowAFreport/report.timestamp mutect/highAFreport/report.timestamp
 

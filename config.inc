@@ -39,6 +39,7 @@ RSCRIPT = $(MY_RSCRIPT)
 JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
+MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
 #BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
 BOWTIE = $(PERL) $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
 #BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa

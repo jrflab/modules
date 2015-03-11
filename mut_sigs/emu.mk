@@ -28,9 +28,9 @@ endif
 
 all : $(ALL)
 
-include modules/variant_callers/somatic/mutect.inc
+include modules/variant_callers/somatic/somaticVariantCaller.inc
 
-ALL_TABLE ?= alltables/allTN.mutect.$(MUTECT_FILTER_SUFFIX).tab.txt
+ALL_TABLE ?= alltables/allTN.$(call FILTER_SUFFIX,mutect).tab.txt
 
 emu/mutations.txt : $(ALL_TABLE)
 	$(INIT) awk 'NR > 1 { sub("X", "23", $$3); sub("Y", "24", $$3); sub("MT", "25", $$3); print $$1 "_" $$2, $$3, $$4, $$6 ">" $$7 }' $< | cat - $(EMU_REF_MUTATIONS) > $@

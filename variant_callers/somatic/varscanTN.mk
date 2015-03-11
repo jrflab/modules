@@ -34,8 +34,8 @@ INDEL_VCF_EFF_FIELDS += VAF
 VARIANT_TYPES = varscan_indels varscan_snps
 
 varscan : varscan_vcfs varscan_tables
-varscan_vcfs : $(VCFS)
-varscan_tables : $(TABLES)
+varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)))
+varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
 
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
