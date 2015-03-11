@@ -1,8 +1,8 @@
-REF = hg19
-SEQ_PLATFORM = illumina
-SAMPLE_SET_FILE = sample_sets.txt
-SAMPLE_FILE = samples.txt
-SAMPLE_SPLIT_FILE = samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
+REF ?= hg19
+SEQ_PLATFORM ?= illumina
+SAMPLE_SET_FILE ?= sample_sets.txt
+SAMPLE_FILE ?= samples.txt
+SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
 
 ##Set environment variables
 export TMPDIR := $(HOME)/share/tmp
@@ -42,7 +42,7 @@ JARDIR := $(HOME)/share/usr/lib/java
 #BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
 BOWTIE = $(PERL) $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
 #BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
-override BWA = $(HOME)/share/usr/bin/bwa-0.7.10
+BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
 #GSNAP = $(HOME)/share/usr/bin/gsnap
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
