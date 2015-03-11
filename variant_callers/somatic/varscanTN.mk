@@ -10,6 +10,7 @@ SPLIT_CHR ?= true
 
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
+include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
@@ -30,31 +31,11 @@ VPATH ?= bam
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
-ANN_TYPES = eff # annotated
-EFF_TYPES = silent missense nonsilent_cds nonsilent
-VARIANT_TYPES = varscan_snps varscan_indels
-
-FILTER_SUFFIX := dp_ft.som_ad_ft
-ifdef TARGETS_FILE
-FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
-endif
-ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
-
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
-
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
-ifeq ($(HRUN),true)
-HRUN_FILTER ?= 1
-VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
-endif
-VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
-
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab \
-				 $(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel $(suff).tab.$(eff)))
-
-VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair).$(suff).vcf))
-TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
+VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
+		   $(foreach suff,$(call VCF_SUFFIXES,$(VARIANT_TYPES)), \
+			   vcf/$(pair).$(suff).vcf))
+TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
+			 $(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
 varscan : varscan_vcfs varscan_tables
