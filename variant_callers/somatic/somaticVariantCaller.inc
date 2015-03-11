@@ -17,6 +17,5 @@ EFF_TYPES := silent missense nonsilent_cds nonsilent
 
 VCF_SUFFIXES = $(foreach type,$1,$(type).$(call FILTER_SUFFIX,$(type)))
 
-TABLE_SUFFIXES = $(addsuffix .tab,$(VCF_SUFFIXES))
-TABLE_SUFFIXES += $(foreach eff,$(EFF_TYPES),$(addsuffix .$(eff),$(TABLE_SUFFIXES)))
-TABLE_SUFFIXES += $(addsuffix .novel,$(TABLE_SUFFIXES))
+TABLE_SUFFIXES += $(foreach suff,$(VCF_SUFFIXES),$(suff).tab $(suff).tab.novel \
+    $(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff) $(suff).tab.$(eff).novel))
