@@ -9,8 +9,7 @@ FILTERS = $(if $(DEPTH_FILTER),dp_ft \
     $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun hrun_ft)) \
     pass \
-    $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS)) \
-    $(if $(findstring snp,$1),$(SNV_ANN_FILTERS))
+    $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS))
 
 FILTER_SUFFIX = $(subst $( ),.,$(strip $(FILTERS)))
 
@@ -20,3 +19,11 @@ VCF_SUFFIXES = $(foreach type,$1,$(type).$(call FILTER_SUFFIX,$(type)))
 
 TABLE_SUFFIXES = $(foreach suff,$(call VCF_SUFFIXES,$1),$(suff).tab $(suff).tab.novel \
     $(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff) $(suff).tab.$(eff).novel))
+
+VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
+    $(foreach suff,$(call VCF_SUFFIXES,$(VARIANT_TYPES)), \
+        vcf/$(pair).$(suff).vcf))
+
+TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
+    $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),tables/$(pair).$(suff).txt))
+TABLES += $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),alltables/allTN.$(suff).txt)

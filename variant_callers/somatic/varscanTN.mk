@@ -32,12 +32,6 @@ SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
 VARIANT_TYPES = varscan_indels varscan_snps
-VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
-		   $(foreach suff,$(call VCF_SUFFIXES,$(VARIANT_TYPES)), \
-			   vcf/$(pair).$(suff).vcf))
-TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
-			 $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),tables/$(pair).$(suff).txt))
-TABLES += $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),alltables/allTN.$(suff).txt)
 
 varscan : varscan_vcfs varscan_tables
 varscan_vcfs : $(VCFS)
