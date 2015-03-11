@@ -1,8 +1,8 @@
-REF = hg19
-SEQ_PLATFORM = illumina
-SAMPLE_SET_FILE = sample_sets.txt
-SAMPLE_FILE = samples.txt
-SAMPLE_SPLIT_FILE = samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
+REF ?= hg19
+SEQ_PLATFORM ?= illumina
+SAMPLE_SET_FILE ?= sample_sets.txt
+SAMPLE_FILE ?= samples.txt
+SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
 
 ##Set environment variables
 export TMPDIR := $(HOME)/share/tmp
