@@ -36,7 +36,7 @@ VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
 		   $(foreach suff,$(call VCF_SUFFIXES,$(VARIANT_TYPES)), \
 			   vcf/$(pair).$(suff).vcf))
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
-			 $(foreach suff,$($(call TABLE_SUFFIXES,$(VARIANT_TYPES)),tables/$(pair).$(suff).txt))
+			 $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),tables/$(pair).$(suff).txt))
 TABLES += $(foreach suff,$(call TABLE_SUFFIXES,$(VARIANT_TYPES)),alltables/allTN.$(suff).txt)
 
 varscan : varscan_vcfs varscan_tables
