@@ -7,7 +7,7 @@ FILTERS = $(if $(DEPTH_FILTER),dp_ft \
     $(if $(TARGETS_FILE),target_ft)\
     $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN),hrun hrun_ft))) \
-    pass
+    pass \
     $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS)) \
     $(if $(findstring snp,$1),$(SNV_ANN_FILTERS))
 
