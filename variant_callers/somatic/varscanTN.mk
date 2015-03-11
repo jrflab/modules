@@ -25,7 +25,7 @@ VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
-.PHONY: all vcfs tables copycalls segments 
+.PHONY: varscan varscan_vcfs varscan_tables
 
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
@@ -57,10 +57,9 @@ VCFS = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(VCF_SUFFIXES),vcf/$(pair)
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),$(foreach suff,$(TABLE_SUFFIXES),tables/$(pair).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(suff).txt)
 
-all : vcfs tables
-variants : vcfs tables
-vcfs : $(VCFS)
-tables : $(TABLES)
+varscan : varscan_vcfs varscan_tables
+varscan_vcfs : $(VCFS)
+varscan_tables : $(TABLES)
 
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")

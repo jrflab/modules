@@ -129,7 +129,7 @@ varscan_fpfilter :
 
 TARGETS += varscanTN
 varscanTN :
-	$(MAKE) $(MAKEFLAGS) -f modules/variant_callers/somatic/varscanTN.mk $(FLAGS) vcfs tables
+	$(MAKE) $(MAKEFLAGS) -f modules/variant_callers/somatic/varscanTN.mk $(FLAGS) $(TARGET)
 
 TARGETS += varscan
 varscan :
