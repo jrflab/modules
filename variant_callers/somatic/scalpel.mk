@@ -44,7 +44,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair
 endif
 
 define scalpel2vcf-tumor-normal
-vcf/$1_$2.scalpel.vcf : scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar
+vcf/$1_$2.scalpel_indels.vcf : scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar
 	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel2vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
