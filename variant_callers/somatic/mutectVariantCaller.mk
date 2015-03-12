@@ -14,6 +14,8 @@ include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/mutect.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
+..DUMMY := $(shell mkdir -p version; echo "$(MUTECT) &> version/mutect.txt")
+
 mutect_vcfs : $(call VCFS,mutect) $(addsuffix .idx,$(call VCFS,mutect))
 mutect_tables : $(call TABLES,mutect)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
