@@ -27,6 +27,7 @@ BWA_ALN_OPTS ?=
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY: bwa splits
+..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwa.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwa.txt )
 
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
