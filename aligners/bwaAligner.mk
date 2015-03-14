@@ -54,6 +54,10 @@ bwa/bam/$1.bwa.sorted.bam.md5 : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/ba
 		ln -f $$(word 2,$$(^M)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
 	fi
 endif
+ifeq ($(shell echo "$(words $2) == 1" | bc),1)
+bwa/bam/$1.bwa.bam.md5 : bwa/bam/$2.bwa.bam.md5
+	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
+endif
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
