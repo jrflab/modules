@@ -40,8 +40,6 @@ bam/%.bam.md5 : bwa/bam/%.bwa.$(BAM_SUFFIX).md5
 ifdef SPLIT_SAMPLES
 define merged-bam
 ifeq ($(shell echo "$(words $2) > 1" | bc),1)
-
-define merged-bam
 bwa/bam/$1.header.sam : $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
