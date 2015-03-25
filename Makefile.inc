@@ -9,7 +9,7 @@ SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
 SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
 
-PROJECT_NAME = $(shell pwd | sed 's:.*/projects/::; s:.*/data/::; s:.*kinglab/::; s:/:_:')
+PROJECT_NAME = $(shell pwd | sed 's:.*/projects/::; s:.*/data/::; s:.*kinglab/::; s:/:_:g')
 
 ifneq ($(wildcard $(SAMPLE_FILE)),)
   SAMPLES ?= $(shell sed '/^\#/d' $(SAMPLE_FILE))

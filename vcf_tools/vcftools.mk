@@ -11,7 +11,7 @@ DEPTH_FILTER ?= 5
 CHASM = $(RSCRIPT) scripts/chasmVcf.R 
 #CHASM_DIR = /ifs/opt/common/CHASM/CHASMDL.1.0.7
 CHASM_DIR = $(HOME)/share/usr/CHASM
-CHASM_PYTHON = $(HOME)/share/usr/bin/python
+CHASM_PYTHON_ENV = $(HOME)/share/usr/anaconda-envs/pyenv27-chasm
 CHASM_CLASSIFIER ?= Breast
 
 FATHMM = $(MY_RSCRIPT) scripts/fathmmVcf.R 
@@ -107,7 +107,7 @@ endif
 	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(IGVTOOLS) index $< && sleep 10")
 
 %.chasm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"$(CHASM) --genome $(REF) --classifier $(CHASM_CLASSIFIER) --chasmDir $(CHASM_DIR) --python $(CHASM_PYTHON) --outFile $@ $< && $(RM) $< $<.idx"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"source $(CHASM_PYTHON_ENV)/bin/activate $(CHASM_PYTHON_ENV) && $(CHASM) --genome $(REF) --classifier $(CHASM_CLASSIFIER) --chasmDir $(CHASM_DIR) --python $(shell which python) --outFile $@ $< && $(RM) $< $<.idx"))
 
 %.fathmm.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,1G,4G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $< $<.idx"))
