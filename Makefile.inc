@@ -81,42 +81,6 @@ ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
 SHELL = /bin/bash
 
-PATH := $(HOME)/share/usr/bin:$(PATH)
-PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
-export PATH
-#PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
-#export PYTHONPATH
-#export PYTHONHOME := /opt/common/python/python-2.7.3/
-#Set environment variables
-#export R_LIBS_USER := $(HOME)/share/usr/lib64/R/library:${R_LIBS_USER}
-export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
-
-LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
-export LD_LIBRARY_PATH
-
-PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
-PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-compara/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-variation/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-funcgen/modules
-
-export PERL5LIB
-
-#Interpreters
-PYTHON = /opt/common/python/python-2.7.5/bin/python
-ANACONDA_PYTHON = $(HOME)/share/usr/anaconda/bin/python
-PERL = $(HOME)/share/usr/ActivePerl-5.18/bin/perl
-#RSCRIPT = /usr/bin/Rscript
-#R = /opt/common/R/R-3.0.0/bin/R
-R = $(HOME)/share/usr/bin/R
-#RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
-MY_RSCRIPT = $(HOME)/share/usr/bin/Rscript
-RSCRIPT = $(MY_RSCRIPT)
-#RSCRIPT = $(HOME)/usr/bin/Rscript
-
-JARDIR := $(HOME)/share/usr/lib/java
-
 export TMPDIR := $(HOME)/share/tmp
 
 #VARSCAN
