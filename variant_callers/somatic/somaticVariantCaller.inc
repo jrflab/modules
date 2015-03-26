@@ -23,8 +23,10 @@ EFF_TYPES := silent missense nonsilent_cds nonsilent
 
 VCF_SUFFIXES = $(foreach type,$1,$(call FILTER_SUFFIX,$(type)))
 
-TABLE_SUFFIXES = $(foreach suff,$(call VCF_SUFFIXES,$1),$(suff).tab $(suff).tab.novel \
-    $(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff) $(suff).tab.$(eff).novel))
+TABLE_EXTENSIONS = tab tab.novel $(foreach eff,$(EFF_TYPES),tab.$(eff) tab.$(eff).novel)
+
+TABLE_SUFFIXES = $(foreach suff,$(call VCF_SUFFIXES,$1),\
+				 $(foreach ext,$(TABLE_EXTENSIONS),$(suff).$(ext)))
 
 VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
     $(foreach suff,$(call VCF_SUFFIXES,$1), \
