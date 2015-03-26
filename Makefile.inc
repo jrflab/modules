@@ -84,8 +84,8 @@ SHELL = /bin/bash
 PATH := $(HOME)/share/usr/bin:$(PATH)
 PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
 export PATH
-PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
-export PYTHONPATH
+#PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
+#export PYTHONPATH
 #export PYTHONHOME := /opt/common/python/python-2.7.3/
 #Set environment variables
 #export R_LIBS_USER := $(HOME)/share/usr/lib64/R/library:${R_LIBS_USER}
