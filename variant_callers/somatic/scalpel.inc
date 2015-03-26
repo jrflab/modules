@@ -12,5 +12,5 @@ SCALPEL_OPTS += --bed $(TARGETS_FILE)
 endif
 
 
-SCALPEL2VCF = $(PERL) $(HOME)/share/scripts/scalpelToVcf.pl
+SCALPEL2VCF = $(PERL) scripts/scalpelToVcf.pl
 
