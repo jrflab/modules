@@ -30,6 +30,7 @@ library(ABSOLUTE)
 endef
 
 
+$(info absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.pass.txt)
 absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.pass.txt
 	$(R_INIT)
 	$(LIB_INIT)
@@ -97,6 +98,7 @@ absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 endif
 	
 ifeq ($(USE_TITAN_ESTIMATES),true)
+$(info absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE))
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE)
 	$(R_INIT)
 	$(LIB_INIT)
@@ -120,6 +122,7 @@ absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.ma
 	maf.fn = "$(<<)"
 	RunAbsolute(seg.dat.fn, sigma.p, max.sigma.h, min.ploidy, max.ploidy, primary.disease, platform,sample.name, results.dir, max.as.seg.count, max.non.clonal, max.neg.genome, copynum.type, maf.fn = maf.fn, min.mut.af = min.mut.af, output.fn.base = output.fn.base, verbose = T)
 else
+$(info absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt)
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt
 	$(R_INIT)
 	$(LIB_INIT)
