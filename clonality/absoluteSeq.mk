@@ -1,3 +1,4 @@
+# run absolute using strelka,mutect,scalpel,titan OR varscan_cnv
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
