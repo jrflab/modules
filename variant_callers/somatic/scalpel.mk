@@ -45,7 +45,10 @@ endif
 
 define scalpel2vcf-tumor-normal
 vcf/$1_$2.scalpel_indels.vcf : scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar
-	$$(INIT) $$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$@ 2> $$(LOG)
+	$$(INIT) tempf=`mktemp` && \
+		$$(SCALPEL2VCF) -f $$(REF_FASTA) -t $1 -n $2 < $$< > $$$$tempf 2> $$(LOG) \
+		&& (grep '^#' $$$$tempf; grep -v '^#' $$$$tempf | sort -V)  > $$@ 2>> $$(LOG) \
+		&& rm $$$$tempf 2>> $$(LOG)
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel2vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
