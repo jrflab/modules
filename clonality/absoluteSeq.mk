@@ -21,7 +21,7 @@ absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUT
 absolute_reviewed : absolute/reviewed/all.seq.ABSOLUTE.table.txt
 absolute_tables : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 
-USE_TITAN_COPYNUM ?= true
+USE_TITAN_COPYNUM ?= false
 USE_TITAN_ESTIMATES ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w1000_p2
 TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
