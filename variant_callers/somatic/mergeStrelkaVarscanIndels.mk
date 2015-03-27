@@ -3,6 +3,7 @@ LOGDIR = log/merge_strelka_varscan_indels.$(NOW)
 
 include modules/Makefile.inc
 include modules/config.inc
+include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 .DELETE_ON_ERROR:
@@ -17,3 +18,4 @@ strelka_varscan_merge_tables : $(foreach pair,$(SAMPLE_PAIRS),\
 vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf
 	$(call LSCRIPT_MEM,8G,10G,"$(call GATK_MEM,8G) -T CombineVariants --variant $< --variant $(<<) -o $@ -genotypeMergeOptions UNIQUIFY -R $(REF_FASTA)")
 
+include modules/vcf_tools/vcftools.mk
