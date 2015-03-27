@@ -1,6 +1,8 @@
 # Merge strelka and varscan indel results
 LOGDIR = log/merge_strelka_varscan_indels.$(NOW)
 
+include modules/Makefile.inc
+include modules/config.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 .DELETE_ON_ERROR:
