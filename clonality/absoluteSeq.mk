@@ -23,7 +23,7 @@ absolute_tables : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolut
 
 USE_TITAN_COPYNUM ?= false
 USE_TITAN_ESTIMATES ?= false
-TITAN_RESULTS_DIR ?= titan/optclust_results_w1000_p2
+TITAN_RESULTS_DIR ?= titan/optclust_results_w10000_p2
 TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
 
 define LIB_INIT
