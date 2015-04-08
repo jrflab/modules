@@ -1,6 +1,7 @@
 DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
+VALIDATION ?= false
 
 INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm hap_insuf
@@ -15,7 +16,7 @@ FILTERS += $(if $(findstring indel,$1),\
 # pass filter for faster annotations
 FILTERS += pass
 # indel/snv annotations
-FILTERS += $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS))
+FILTERS += $(if $(findstring VALIDATION,false),$(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
