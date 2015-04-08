@@ -311,6 +311,11 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(MAKE) -e -f modules/clonality/absoluteSeq.mk $(FLAGS) $(TARGET)
 
+TARGETS += rseqc
+rseqc :
+	$(MAKE) -e -f modules/qc/rseqc.mk $(FLAGS) $(TARGET)
+
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
