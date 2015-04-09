@@ -311,6 +311,10 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(MAKE) -e -f modules/clonality/absoluteSeq.mk $(FLAGS) $(TARGET)
 
+TARGETS += merge_strelka_varscan
+merge_strelka_varscan :
+	$(MAKE) -e -f modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
