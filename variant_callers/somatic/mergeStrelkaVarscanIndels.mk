@@ -15,7 +15,13 @@ strelka_varscan_merge_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).strelka_
 strelka_varscan_merge_tables : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach ext,$(TABLE_EXTENSIONS),tables/$(pair).strelka_varscan_indels.$(ext).txt))
 
-vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf
-	$(call LSCRIPT_MEM,8G,10G,"$(call GATK_MEM,8G) -T CombineVariants --variant $< --variant $(<<) -o $@ -genotypeMergeOptions UNIQUIFY -R $(REF_FASTA)")
+%.vcf.gz : %.vcf
+	$(call LSCRIPT,"$(BGZIP) $<")
+
+%.vcf.gz.csi : %.vcf.gz
+	$(call LSCRIPT,"$(BCFTOOLS2) index $<")
+
+vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz.csi vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz.csi
+	$(call LSCRIPT_MEM,9G,12G,"dir=`mktemp`; $(BCFTOOLS2) isec -p $$dir $(filter %.vcf.gz,$^) && cp $$dir/0002.vcf $@")
 
 include modules/vcf_tools/vcftools.mk

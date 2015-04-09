@@ -53,6 +53,7 @@ SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.1
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS = /opt/bin/bcftools
 BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.1
+BGZIP = $(HOME)/share/usr/bin/bgzip
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools-0.1.10
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
