@@ -6,6 +6,9 @@ include modules/config.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
+VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU TAR TIR TOR
+VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
+
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY : strelka_varscan_merge strelka_varscan_merge_vcfs strelka_varscan_merge_tables
@@ -22,6 +25,6 @@ strelka_varscan_merge_tables : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(call LSCRIPT,"$(BCFTOOLS2) index $<")
 
 vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz.csi vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz.csi
-	$(call LSCRIPT_MEM,9G,12G,"dir=`mktemp`; $(BCFTOOLS2) isec -p $$dir $(filter %.vcf.gz,$^) && cp $$dir/0002.vcf $@")
+	$(call LSCRIPT_MEM,9G,12G,"mkdir -p strelka_varscan/$*; $(BCFTOOLS2) isec $(filter %.vcf.gz,$^) -p strelka_varscan/$* && cp strelka_varscan/$*/0002.vcf $@ && rm -r strelka_varscan/$*")
 
 include modules/vcf_tools/vcftools.mk
