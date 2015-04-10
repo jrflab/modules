@@ -6,8 +6,9 @@ include modules/config.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
-VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU TAR TIR TOR
-VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
+#VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU TAR TIR TOR
+#VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
+INDEL_VCF_EFF_FIELDS += VAF
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -18,13 +19,7 @@ strelka_varscan_merge_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).strelka_
 strelka_varscan_merge_tables : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach ext,$(TABLE_EXTENSIONS),tables/$(pair).strelka_varscan_indels.$(ext).txt))
 
-%.vcf.gz : %.vcf
-	$(call LSCRIPT,"$(BGZIP) $<")
-
-%.vcf.gz.csi : %.vcf.gz
-	$(call LSCRIPT,"$(BCFTOOLS2) index $<")
-
-vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf.gz.csi vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf.gz.csi
-	$(call LSCRIPT_MEM,9G,12G,"mkdir -p strelka_varscan/$*; $(BCFTOOLS2) isec $(filter %.vcf.gz,$^) -p strelka_varscan/$* && cp strelka_varscan/$*/0002.vcf $@ && rm -r strelka_varscan/$*")
+vcf/%.strelka_varscan_indels.vcf : vcf/%.$(call VCF_SUFFIXES,varscan_indels).vcf vcf/%.$(call VCF_SUFFIXES,strelka_indels).vcf
+	$(call LSCRIPT_MEM,9G,12G,"grep -P '^#' $< > $@ && $(BEDTOOLS) intersect -a $< -b $(<<) >> $@")
 
 include modules/vcf_tools/vcftools.mk

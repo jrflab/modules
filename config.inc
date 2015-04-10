@@ -41,7 +41,7 @@ JARDIR := $(HOME)/share/usr/lib/java
 ### Applications
 MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
 #BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
-BOWTIE = $(PERL) $(HOME)/share//usr/bowtie2-2.2.4/bowtie2
+BOWTIE = $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
 #BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
 BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
@@ -53,6 +53,7 @@ SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.1
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS = /opt/bin/bcftools
 BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.1
+BEDTOOLS = /opt/common/bedtools/bedtools-2.17.0/bin/bedtools
 BGZIP = $(HOME)/share/usr/bin/bgzip
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools-0.1.10
