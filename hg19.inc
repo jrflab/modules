@@ -1,4 +1,6 @@
 # vim: set ft=make:
+
+ifndef HG19_INC
 REF = hg19
 REF_DIR = $(HOME)/share/reference
 
@@ -100,3 +102,5 @@ HMMCOPY_MAP_WIG = $(REF_DIR)/map_hg19.wig
 
 REF_HOUSEKEEPING_GENE_BED = $(HOME)/share/reference/hg19.HouseKeepingGenes.bed
 
+endif
+HG19_INC = true
