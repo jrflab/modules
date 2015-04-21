@@ -2,6 +2,7 @@
 include modules/Makefile.inc
 include modules/copy_number/titan.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
+include modules/variant_callers/gatk.inc
 
 LOGDIR = log/ann_titan.$(NOW)
 
