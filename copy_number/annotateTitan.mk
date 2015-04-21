@@ -5,7 +5,6 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/ann_titan.$(NOW)
 
-
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : ann_all ann_varscan ann_mutect ann_strelka
