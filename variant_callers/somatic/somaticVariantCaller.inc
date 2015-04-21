@@ -18,7 +18,8 @@ FILTERS += $(if $(findstring indel,$1),\
 # pass filter for faster annotations
 FILTERS += pass
 # indel/snv annotations
-FILTERS += $(if $(findstring VALIDATION,false),$(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
+FILTERS += $(if $(findstring false,$(VALIDATION)),\
+		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
 
 # titan annotations
 FILTERS += $(if $(findstring TITAN_ANN,true),titan)

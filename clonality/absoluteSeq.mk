@@ -31,8 +31,8 @@ library(ABSOLUTE)
 endef
 
 
-$(info absolute/tables/%.somatic.txt : tables/%.$(call TABLE_SUFFIXES,mutect).txt tables/%.$(call TABLE_SUFFIXES,strelka_indels).txt tables/%.$(call TABLE_SUFFIXES,scalpel_indels).txt)
-absolute/tables/%.somatic.txt : tables/%.$(call TABLE_SUFFIXES,mutect).tab.txt tables/%.$(call TABLE_SUFFIXES,strelka_indels).txt tables/%.$(call TABLE_SUFFIXES,scalpel_indels).txt
+$(info absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.txt)
+absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
