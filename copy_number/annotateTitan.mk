@@ -22,5 +22,6 @@ ann_strelka : $(foreach pair,$(SAMPLE_PAIRS),\
 ann_mutect : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach suff,$(call VCF_SUFFIXES,mutect),vcf/$(pair).$(suff).titan.vcf))
 
+$(info vcf/%.titan.vcf : vcf/%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/%.titan_seg.txt)
 vcf/%.titan.vcf : vcf/%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/%.titan_seg.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $(<<) --outFile $@ $<")
