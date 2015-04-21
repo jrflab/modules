@@ -1,7 +1,7 @@
 # vim:set ft=make:
+#
 
-GATK_INCLUDE = true
-
+ifndef GATK_INC
 DEFAULT_JAVA_MEM = 18G
 GATK_JAR = $(HOME)/share/usr/lib/java/GenomeAnalysisTK.jar
 GATK_JAR2 = $(HOME)/share/usr/lib/java/GenomeAnalysisTK-3.3-0.jar
@@ -104,3 +104,5 @@ TABLE_FIELDS = CHROM POS ID REF ALT AD DP PL AC AF AN BaseQRankSum DB Dels FS Ha
 GT_TABLE_FIELDS = GT AD DP PL
 
 REPORT_STRATIFICATION := Filter
+endif
+GATK_INC = true
