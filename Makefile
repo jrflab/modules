@@ -315,6 +315,10 @@ TARGETS += merge_strelka_varscan
 merge_strelka_varscan :
 	$(MAKE) -e -f modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk $(FLAGS) $(TARGET)
 
+TARGETS += rseqc
+rseqc :
+	$(MAKE) -e -f modules/qc/rseqc.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \

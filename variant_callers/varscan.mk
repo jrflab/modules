@@ -23,6 +23,8 @@ VPATH ?= bam
 
 .PHONY: all vcfs copycalls segments cnv reports tables
 
+VALIDATION ?= false
+
 SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
@@ -36,8 +38,13 @@ VARSCAN_MIN_READS2 ?= 2
 VARSCAN_MIN_AVG_QUAL ?= 15
 VARSCAN_MIN_VAR_FREQ ?= 0.03
 VARSCAN_MIN_FREQ_FOR_HOM ?= 0.75
+ifeq ($(VALIDATION),true)
 VARSCAN_P_VALUE ?= 99e-02
 VARSCAN_STRAND_FILTER ?= 1
+else
+VARSCAN_P_VALUE ?= 0.9
+VARSCAN_STRAND_FILTER ?= 0
+endif
 
 override VARSCAN_OPTS = --min-coverage $(VARSCAN_MIN_COVERAGE) \
 	--min-reads2 $(VARSCAN_MIN_READS2) \
@@ -53,9 +60,14 @@ FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
 endif
 ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
 
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
-
+ifeq ($(VALIDATION),true)
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX)
 VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+else
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+endif
+
 ifeq ($(HRUN),true)
 HRUN_FILTER ?= 1
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
@@ -82,7 +94,7 @@ define varscan-chr-type
 varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam bam/%.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	--output-vcf $$(VARSCAN_OPTS) --vcf-sample-list $$* | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
+	--output-vcf $$(VARSCAN_OPTS)  --vcf-sample-list $$* | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-type,$(chr),$(type)))))
 

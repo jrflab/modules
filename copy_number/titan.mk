@@ -1,28 +1,9 @@
 # titan module
 include modules/Makefile.inc
+include modules/copy_number/titan.inc
 
 LOGDIR = log/titan.$(NOW)
 
-#EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) scripts/extractTitanAlleleReadCounts.R
-EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
-TITAN = $(RSCRIPT) scripts/runTitan.R
-TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
-SUMMARIZE_TITAN = $(RSCRIPT) scripts/summarizeTitan.R
-NUM_CLUSTERS ?= $(shell seq 1 5)
-PLOIDY_PRIORS = 2 3 4
-
-BQ_THRESHOLD ?= 20
-MQ_THRESHOLD ?= 20
-TITAN_WINDOW_SIZE ?= 10000
-
-TITAN_SELF_TRANSITION ?= 1e15
-TITAN_CLONAL_CLUSTER_TRANSITION ?= 5e5
-
-
-override TITAN_OPTS := $(if $(UCSC_REF),--genomeStyle UCSC,--genomeStyle NCBI) $(if $(TARGETS_FILE),--targetBed $(TARGETS_FILE)) 
-READ_COUNTER = $(HOME)/share/usr/bin/readCounter
-MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
-GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 
 HET_FILTER_SUFFIX := dbsnp.dbsnp_ft$(if $(TARGETS_FILE),.target_ft)
 

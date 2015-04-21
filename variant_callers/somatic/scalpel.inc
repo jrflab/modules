@@ -1,3 +1,4 @@
+ifndef SCALPEL_INC
 SCALPEL_MIN_COV ?= 5
 
 SCALPEL_DIR = $(HOME)/share/usr/scalpel-0.3.2
@@ -13,4 +14,5 @@ endif
 
 
 SCALPEL2VCF = $(PERL) scripts/scalpelToVcf.pl
-
+endif
+SCALPEL_INC = true

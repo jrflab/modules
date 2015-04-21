@@ -1,4 +1,5 @@
 # vim: set ft=make:
+ifndef MM10_INC
 REF = mm10
 
 REF_FASTA := $(HOME)/share/reference/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.fa
@@ -37,3 +38,6 @@ else
    endif
 endif
 INCLUDE_CHR_Y ?= true
+
+endif
+MM10_INC = true

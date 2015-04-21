@@ -5,6 +5,8 @@ include modules/config.inc
 REF ?= hg19
 include modules/$(REF).inc
 
+ifndef MAKEFILE_INC
+
 SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
 SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh [remove underscores from sample names]
@@ -281,3 +283,5 @@ define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
+endif
+MAKEFILE_INC = true

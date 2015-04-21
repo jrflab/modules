@@ -1,6 +1,9 @@
+ifndef SOMATIC_VARIANT_CALLER_INC
 DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
+VALIDATION ?= false
+TITAN_ANN ?= false
 
 INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm hap_insuf
@@ -15,7 +18,11 @@ FILTERS += $(if $(findstring indel,$1),\
 # pass filter for faster annotations
 FILTERS += pass
 # indel/snv annotations
-FILTERS += $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS))
+FILTERS += $(if $(findstring false,$(VALIDATION)),\
+		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
+
+# titan annotations
+FILTERS += $(if $(findstring TITAN_ANN,true),titan)
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
@@ -35,3 +42,5 @@ VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
 TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
     $(foreach suff,$(call TABLE_SUFFIXES,$1),tables/$(pair).$(suff).txt))
 TABLES += $(foreach suff,$(call TABLE_SUFFIXES,$1),alltables/allTN.$(suff).txt)
+endif
+SOMATIC_VARIANT_CALLER_INC = true

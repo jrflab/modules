@@ -1,3 +1,4 @@
+ifndef CONFIG_INC
 REF ?= hg19
 SEQ_PLATFORM ?= illumina
 SAMPLE_SET_FILE ?= sample_sets.txt
@@ -90,4 +91,5 @@ JAVA7_BIN = /usr/bin/java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
-
+endif
+CONFIG_INC = true
