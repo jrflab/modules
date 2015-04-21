@@ -99,10 +99,10 @@ $(foreach i,$(SETS_SEQ),\
 endif
 
 vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
-	$(INIT) ln $< $@
+	$(INIT) ln -f $< $@
 
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
-	$(INIT) ln $< $@
+	$(INIT) ln -f $< $@
 
 define bamrc-chr
 bamrc/%.$1.chr_bamrc : bam/%.bam
