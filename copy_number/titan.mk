@@ -56,5 +56,3 @@ titan/optclust_results_%/titan_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(fo
 %.titan.seg %.titan_seg.txt : %.titan.txt
 	$(call LSCRIPT_MEM,4G,6G,"$(TITAN_SEG) -id=$(notdir $*) -infile=$< -outfile=$(@:.seg=_seg.txt) -outIGV=$@")
 
-titan/vcf/%.titan.vcf : vcf/%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/titan_summary.txt
-	$(call LSCRIPT_MEM,4G,6G,"$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $(<<D)/$*.titan_seg.txt --outFile $@ $< ")
