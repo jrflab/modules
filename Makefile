@@ -303,6 +303,10 @@ TARGETS += titan
 titan :
 	$(MAKE) -e -f modules/copy_number/titan.mk $(FLAGS) $(TARGET)
 
+TARGETS += ann_titan
+ann_titan :
+	$(MAKE) -e -f modules/copy_number/annotateTitan.mk $(FLAGS) $(TARGET)
+
 TARGETS += samtools_het
 samtools_het :
 	$(MAKE) -e -f modules/variant_callers/samtoolsHet.mk $(FLAGS) $(TARGET)
