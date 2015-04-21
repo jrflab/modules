@@ -13,14 +13,25 @@ ann_all : ann_varscan ann_mutect ann_strelka
 
 ann_varscan : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach type,varscan_indels varscan_snps,\
-	$(foreach suff,$(call VCF_SUFFIXES,$(type)),vcf/$(pair).$(suff).titan.vcf)))
+	$(foreach suff,$(call VCF_SUFFIXES,$(type)),vcf/$(pair).$(suff).titan.vcf))) \
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach type,varscan_indels varscan_snps,\
+	$(foreach suff,$(call TABLE_SUFFIXES,$(type)),\
+	tables/$(pair).titan.$(suff).txt)))
 
 ann_strelka : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach type,strelka_indels strelka_snps,\
-	$(foreach suff,$(call VCF_SUFFIXES,$(type)),vcf/$(pair).$(suff).titan.vcf)))
+	$(foreach suff,$(call VCF_SUFFIXES,$(type)),vcf/$(pair).$(suff).titan.vcf))) \
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach type,strelka_indels strelka_snps,\
+	$(foreach suff,$(call TABLE_SUFFIXES,$(type)),\
+	tables/$(pair).titan.$(suff).txt)))
 
 ann_mutect : $(foreach pair,$(SAMPLE_PAIRS),\
-	$(foreach suff,$(call VCF_SUFFIXES,mutect),vcf/$(pair).$(suff).titan.vcf))
+	$(foreach suff,$(call VCF_SUFFIXES,mutect),vcf/$(pair).$(suff).titan.vcf)) \
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach suff,$(call TABLE_SUFFIXES,mutect),\
+	tables/$(pair).titan.$(suff).txt))
 
 $(info vcf/$1.%.titan.vcf : vcf/$1.%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/$1.titan_seg.txt)
 define titan-pair
@@ -28,3 +39,5 @@ vcf/$1.%.titan.vcf : vcf/$1.%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p
 	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $$(<<) --outFile $$@ $$<")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call titan-pair,$(pair))))
+
+include modules/vcf_tools/vcftools.mk
