@@ -5,6 +5,8 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/ann_titan.$(NOW)
 
+VCF_FIELDS += titanCN titanMinorCN titanMajorCN titanCall titanMedianRatio titanMedianLogR
+
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : ann_all ann_varscan ann_mutect ann_strelka
