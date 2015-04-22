@@ -24,7 +24,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 	tables/$(pair).$(suff).titan.$(ext).txt)))) \
 $(foreach type,varscan_indels varscan_snps,\
 	$(foreach suff,$(call VCF_SUFFIXES,$(type)),\
-	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext.txt))))
+	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext).txt)))
 
 ann_strelka : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach type,strelka_indels strelka_snps,\
@@ -36,7 +36,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 	tables/$(pair).$(suff).titan.$(ext).txt)))) \
 $(foreach type,strelka_indels strelka_snps,\
 	$(foreach suff,$(call VCF_SUFFIXES,$(type)),\
-	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext.txt))))
+	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext).txt)))
 
 ann_mutect : $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach suff,$(call VCF_SUFFIXES,mutect),vcf/$(pair).$(suff).titan.vcf)) \
@@ -45,7 +45,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach ext,$(TABLE_EXTENSIONS),\
 	tables/$(pair).$(suff).titan.$(ext).txt))) \
 $(foreach suff,$(call VCF_SUFFIXES,mutect),\
-	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext.txt)))
+	$(foreach ext,$(TABLE_EXTENSIONS),alltables/allTN.$(suff).titan.$(ext).txt))
 
 $(info vcf/$1.%.titan.vcf : vcf/$1.%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/$1.titan_seg.txt)
 define titan-pair
