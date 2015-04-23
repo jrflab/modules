@@ -104,3 +104,6 @@ REF_HOUSEKEEPING_GENE_BED = $(HOME)/share/reference/hg19.HouseKeepingGenes.bed
 
 endif
 HG19_INC = true
+
+INTEGRATE_ANN = $(REF_DIR)/annot.ucsc.txt
+INTEGRATE_BWTS = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37/bwts
