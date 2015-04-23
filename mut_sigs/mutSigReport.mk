@@ -17,13 +17,13 @@ ALEXANDROV_DATA = $(HOME)/share/reference/Alexandrov_NMF_signatures.txt
 
 mutsig_report : mutect_mutsig_report varscan_mutsig_report strelka_mutsig_report
 
-mutect_mutsig_report : mutsig_report/mutect_report/index.html
-varscan_mutsig_report : mutsig_report/varscan_snps_report/index.html
-strelka_mutsig_report : mutsig_report/strelka_snps_report/index.html
+mutect_mutsig_report : mutsig_report/mutect/index.html
+varscan_mutsig_report : mutsig_report/varscan_snps/index.html
+strelka_mutsig_report : mutsig_report/strelka_snps/index.html
 
 define mutsig-report
 mutsig_report/$1/index.html : $$(call VCFS,$1)
-	$$(call LSCRIPT_MEM,8G,"$$(KNIT) $$(MUTSIG_REPORT) $$@ --name $1 --alexandrovData $$(ALEXANDROV_DATA) $$(if $$(TARGETS_FILE),--targetBed $$(TARGETS_FILE)) $$^")
+	$$(call LSCRIPT_MEM,8G,8G,"$$(KNIT) $$(MUTSIG_REPORT) $$@ --name $1 --alexandrovData $$(ALEXANDROV_DATA) $$(if $$(TARGETS_FILE),--targetBed $$(TARGETS_FILE)) $$^")
 endef
 $(foreach type,varscan_snps strelka_snps mutect,$(eval $(call mutsig-report,$(type))))
 
