@@ -17,9 +17,9 @@ ALEXANDROV_DATA = $(HOME)/share/reference/Alexandrov_NMF_signatures.txt
 
 mutsig_report : mutect_mutsig_report varscan_mutsig_report strelka_mutsig_report
 
-mutect_mutsig_report : mutsig_report/mutect_report/index.html
-varscan_mutsig_report : mutsig_report/varscan_snps_report/index.html
-strelka_mutsig_report : mutsig_report/strelka_snps_report/index.html
+mutect_mutsig_report : mutsig_report/mutect/index.html
+varscan_mutsig_report : mutsig_report/varscan_snps/index.html
+strelka_mutsig_report : mutsig_report/strelka_snps/index.html
 
 define mutsig-report
 mutsig_report/$1/index.html : $$(call VCFS,$1)
