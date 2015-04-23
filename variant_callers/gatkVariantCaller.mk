@@ -63,8 +63,8 @@ FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
 endif
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab \
-				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab $(type).$(FILTER_SUFFIX.$(type)).tab.novel \
+				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel $(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
