@@ -323,6 +323,10 @@ TARGETS += rseqc
 rseqc :
 	$(MAKE) -e -f modules/qc/rseqc.mk $(FLAGS) $(TARGET)
 
+TARGETS += mutsig_report
+mutsig_report :
+	$(MAKE) -e -f modules/mut_sigs/mutSigReport.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
