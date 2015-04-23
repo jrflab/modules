@@ -75,7 +75,7 @@ endif
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
 
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab.novel \
+TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab.novel $(suff).tab \
 				 $(foreach eff,$(EFF_TYPES),\
 				 $(suff).tab.$(eff).novel $(suff).tab.$(eff)))
 
