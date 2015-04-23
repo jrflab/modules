@@ -55,8 +55,13 @@ endif
 ifdef TARGETS_FILE
 FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.transfic
+ifeq ($(VALIDATION),false)
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
+else
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff
+FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
+endif
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab \
 				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel))
