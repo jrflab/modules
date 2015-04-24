@@ -61,11 +61,11 @@ endif
 ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
 
 ifeq ($(VALIDATION),true)
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX)
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX)
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
 else
 VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
 endif
 
 ifeq ($(HRUN),true)
