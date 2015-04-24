@@ -16,9 +16,7 @@ INTEGRATE = $(HOME)/share/usr/bin/Integrate
 
 integrate_rnaseq : $(foreach sample,$(SAMPLES),integrate/breakpoints/$(sample).breakpoints.tsv)
 
-integrate/reads/%.reads.txt integrate/sum/%.sum.tsv integrate/exons/%.exons.tsv integrate/breakpoints/%.breakpoints.tsv : tophat/%/accepted_hits.bam tophat/%/unmapped.bam tophat/%/accepted_hits.bam.bai tophat/%/unmapped.bam.bai
-	$(call LSCRIPT_MEM,8G,32G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $(INTEGRATE) fusion -reads integrate/reads/$*.reads.txt -sum integrate/reads/$*.sum.tsv -ex integrate/exons/$*.exons.tsv -bk integrate/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $< $(<<)")
+integrate/reads/%.reads.txt integrate/sum/%.sum.tsv integrate/exons/%.exons.tsv integrate/breakpoints/%.breakpoints.tsv : tophat/%/accepted_hits.sorted.bam.md5 tophat/%/unmapped.sorted.bam.md5 tophat/%/accepted_hits.sorted.bam.bai tophat/%/unmapped.sorted.bam.bai
+	$(call LSCRIPT_MEM,8G,32G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $(INTEGRATE) fusion -reads integrate/reads/$*.reads.txt -sum integrate/reads/$*.sum.tsv -ex integrate/exons/$*.exons.tsv -bk integrate/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $(<M) $(<<M)")
 
-%.bam.bai : %.bam
-	$(call LSCRIPT,"$(SAMTOOLS) index $<")
-
+include modules/bam_tools/processBam.mk
