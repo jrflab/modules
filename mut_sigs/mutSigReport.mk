@@ -23,7 +23,7 @@ strelka_mutsig_report : mutsig_report/strelka_snps/index.html
 
 define mutsig-report
 mutsig_report/$1/index.html : $$(call VCFS,$1)
-	$$(call LSCRIPT_MEM,8G,8G,"$$(KNIT) $$(MUTSIG_REPORT) $$@ --name $1 --alexandrovData $$(ALEXANDROV_DATA) $$(if $$(TARGETS_FILE),--targetBed $$(TARGETS_FILE)) $$^")
+	$$(call LSCRIPT_MEM,8G,8G,"$$(KNIT) $$(MUTSIG_REPORT) mutsig_report/$1 --name $1 --alexandrovData $$(ALEXANDROV_DATA) $$(if $$(TARGETS_FILE),--targetBed $$(TARGETS_FILE)) $$^")
 endef
 $(foreach type,varscan_snps strelka_snps mutect,$(eval $(call mutsig-report,$(type))))
 
