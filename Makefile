@@ -327,6 +327,10 @@ TARGETS += mutsig_report
 mutsig_report :
 	$(MAKE) -e -f modules/mut_sigs/mutSigReport.mk $(FLAGS) $(TARGET)
 
+TARGETS += integrate_rnaseq
+integrate_rnaseq :
+	$(MAKE) -e -f modules/sv_callers/integrateRnaseq.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \

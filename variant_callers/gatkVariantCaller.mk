@@ -46,6 +46,8 @@ VPATH ?= bam
 EFF_TYPES = silent missense nonsilent_cds nonsilent
 VARIANT_TYPES = gatk_snps gatk_indels
 
+VALIDATION ?= false
+
 FILTER_SUFFIX := dp_ft.pass.dbsnp.cosmic
 ifdef NORMAL_VCF
 FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
@@ -53,11 +55,16 @@ endif
 ifdef TARGETS_FILE
 FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
 endif
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.transfic
+ifeq ($(VALIDATION),false)
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm
 FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
+else
+FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff
+FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
+endif
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab \
-				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab $(type).$(FILTER_SUFFIX.$(type)).tab.novel \
+				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel $(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
@@ -68,8 +75,15 @@ SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
 ifdef TARGETS_FILE
 SS_FILTER_SUFFIX := target_ft.$(SS_FILTER_SUFFIX)
 endif
-SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff.chasm.transfic
+
+ifeq ($(VALIDATION),false)
+SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff.chasm.fathmm
 SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
+else
+SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff
+SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
+endif
+
 SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)))
 SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES), $(type).$(SS_FILTER_SUFFIX.$(type)).tab \
 					$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).tab.$(eff).novel))

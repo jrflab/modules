@@ -61,11 +61,11 @@ endif
 ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
 
 ifeq ($(VALIDATION),true)
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX)
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX)
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
 else
 VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX)
+VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
 endif
 
 ifeq ($(HRUN),true)
@@ -75,11 +75,13 @@ endif
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
 
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(foreach eff,$(EFF_TYPES),$(suff).tab.$(eff).novel))
+TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab.novel $(suff).tab \
+				 $(foreach eff,$(EFF_TYPES),\
+				 $(suff).tab.$(eff).novel $(suff).tab.$(eff)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt) alltables/all.varscan_snps.$(VCF_SUFFIX.varscan_snps).tab.novel.txt alltables/all.varscan_indels.$(VCF_SUFFIX.varscan_indels).tab.novel.txt
+ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
 all : vcfs tables cnv
 variants : vcfs tables
