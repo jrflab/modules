@@ -17,4 +17,4 @@ INTEGRATE = $(HOME)/share/usr/bin/Integrate
 integrate_rnaseq : $(foreach sample,$(SAMPLES),integrate/breakpoints/$(sample).breakpoints.tsv)
 
 integrate/reads/%.reads.txt integrate/sum/%.sum.tsv integrate/exons/%.exons.tsv integrate/breakpoints/%.breakpoints.tsv : tophat/%/accepted_hits.bam tophat/%/unmapped.bam
-	$(call LSCRIPT_MEM,8G,8G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $(INTEGRATE) fusion $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) -reads integrate/reads/$*.reads.txt -sum integrate/reads/$*.sum.tsv -ex integrate/exons/$*.exons.tsv -bk integrate/breakpoints/$*.breakpoints.tsv $^")
+	$(call LSCRIPT_MEM,8G,8G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $(INTEGRATE) fusion -reads integrate/reads/$*.reads.txt -sum integrate/reads/$*.sum.tsv -ex integrate/exons/$*.exons.tsv -bk integrate/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $^")
