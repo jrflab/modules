@@ -7,7 +7,7 @@
 ..DUMMY := $(shell mkdir -p version; echo "$(SNP_EFF) &> version/snp_eff.txt")
 
 # flags for non-gatk snp eff
-SNP_EFF_FLAGS ?= -canon -ud 0 # -no-intron -no-intergenic -no-utr
+SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 DEPTH_FILTER ?= 5
 
 CHASM = $(RSCRIPT) scripts/chasmVcf.R 
