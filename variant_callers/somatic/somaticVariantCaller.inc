@@ -18,8 +18,8 @@ FILTERS += $(if $(findstring indel,$1),\
 # pass filter for faster annotations
 FILTERS += pass
 # indel/snv annotations
-FILTERS += $(if $(findstring true,$(VALIDATION),$(VALIDATION_FILTERS),\
-		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS))))
+FILTERS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_FILTERS),\
+		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
