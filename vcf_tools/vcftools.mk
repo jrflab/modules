@@ -275,8 +275,3 @@ HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 %.hap_insuf.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED) --name hap_insuf --outFile $@ $< && $(RM) $< $<.idx")
 
-ifeq ($(TITAN_ANN),true)
-include modules/copy_number/titan.inc
-titan/vcf/%.titan.vcf : vcf/%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/titan_summary.txt
-	$(call LSCRIPT_MEM,4G,6G,"$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $(<<D)/$*.titan_seg.txt --outFile $@ $< ")
-endif
