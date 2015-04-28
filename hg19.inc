@@ -63,7 +63,7 @@ endif
 
 KNOWN_CNVS = $(REF_DIR)/GRCh37_hg19_variants_2013-07-23.txt
 
-ifndef UCSC_REF
+ifndef UCSC_REF # regular gatk bundle
    REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
    REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
    DBSNP ?= $(REF_DIR)/GATK_bundle/2.3/dbsnp_137.b37.vcf
@@ -76,7 +76,7 @@ ifndef UCSC_REF
    EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
    EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
    MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
-else
+else # ucsc reference
    REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
    DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf
    DBSNP1PC ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf
@@ -102,8 +102,10 @@ HMMCOPY_MAP_WIG = $(REF_DIR)/map_hg19.wig
 
 REF_HOUSEKEEPING_GENE_BED = $(HOME)/share/reference/hg19.HouseKeepingGenes.bed
 
+INTEGRATE_ANN = $(REF_DIR)/annot.ucsc.txt
+INTEGRATE_BWTS = $(REF_DIR)/GATK_bundle/2.3/bwts
+ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
+
 endif
 HG19_INC = true
 
-INTEGRATE_ANN = $(REF_DIR)/annot.ucsc.txt
-INTEGRATE_BWTS = $(REF_DIR)/GATK_bundle/2.3/bwts
