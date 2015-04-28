@@ -4,8 +4,10 @@
 #include modules/Makefile.inc
 #include modules/variant_callers/gatk.inc
 
+..DUMMY := $(shell mkdir -p version; echo "$(SNP_EFF) &> version/snp_eff.txt")
+
 # flags for non-gatk snp eff
-SNP_EFF_FLAGS ?= -canon -ud 0 -no-intron -no-intergenic -no-utr
+SNP_EFF_FLAGS ?= -canon -ud 0 # -no-intron -no-intergenic -no-utr
 DEPTH_FILTER ?= 5
 
 CHASM = $(RSCRIPT) scripts/chasmVcf.R 
@@ -33,7 +35,7 @@ endif
 
 # run snp eff
 %.eff.vcf : %.vcf %.vcf.idx
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -q -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) -i vcf -o vcf $(SNP_EFF_FLAGS) $(SNP_EFF_GENOME) $< > $@ && $(RM) $^"))
 
 # run snp sift to annotated with dbnsfp
 %.nsfp.vcf : %.vcf %.vcf.idx

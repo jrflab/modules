@@ -30,14 +30,14 @@ VALIDATE_SAM = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/ValidateSamFil
 
 # SNP EFF
 SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
-SNP_EFF_JAR = $(HOME)/share/usr/snpEff/snpEff.jar
-SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff/snpEff.config
+SNP_EFF_JAR = $(JARDIR)/snpEff-4.1.jar
+SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff-4.1/snpEff.config
 SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR) eff -c $(SNP_EFF_CONFIG)
-SNP_SIFT_JAR = $(HOME)/share/usr/snpEff/SnpSift.jar
+SNP_SIFT_JAR = $(JARDIR)/snpSift-4.1.jar
 SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR)
 SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
 DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
-VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff/scripts/vcfEffOnePerLine.pl
+VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
 VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
 
 
@@ -49,7 +49,7 @@ VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
 # vcf genotype fields
 VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
 # vcf eff fields
-VCF_FIELDS += 'EFF[*].EFFECT' 'EFF[*].IMPACT' 'EFF[*].FUNCLASS' 'EFF[*].CODON' 'EFF[*].AA' 'EFF[*].GENE' 'EFF[*].BIOTYPE' 'EFF[*].CODING' 'EFF[*].TRID' 'EFF[*].RANK'
+VCF_FIELDS += 'ANN[*].ALLELE' 'ANN[*].EFFECT' 'ANN[*].IMPACT' 'ANN[*].GENE' 'ANN[*].GENEID' 'ANN[*].FEATURE' 'ANN[*].FEATUREID' 'ANN[*].BIOTYPE' 'ANN[*].RANK' 'ANN[*].HGVS_C' 'ANN[*].HGVS_P' 'ANN[*].CDNA_POS' 'ANN[*].CDNA_LEN' 'ANN[*].CDS_POS' 'ANN[*].CDS_LEN' 'ANN[*].AA_POS' 'ANN[*].AA_LEN' 'ANN[*].DISTANCE'
 NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
 VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
 VCF_FIELDS += HRun
