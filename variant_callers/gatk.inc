@@ -11,38 +11,6 @@ GATK2 = $(call GATK_MEM2,$(DEFAULT_JAVA_MEM))
 GATK_MEM2 = $(JAVA7) -Xmx$(1) -jar $(GATK_JAR2) -S LENIENT
 INDEL_REALIGN = $(JAVA7) -Xmx$(DEFAULT_JAVA_MEM) -jar $(GATK_JAR) -S LENIENT -T IndelRealigner
 
-
-# picard tools
-
-PICARD_OPTS = VALIDATION_STRINGENCY=LENIENT # MAX_RECORDS_IN_RAM=4000000
-ANALYZE_COV = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/AnalyzeCovariates.jar $(PICARD_OPTS)
-SORT_SAM = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/SortSam.jar $(PICARD_OPTS)
-
-SORT_SAM_MEM = $(JAVA) -Xmx$1 -jar $(PICARD_DIR)/SortSam.jar $(PICARD_OPTS) MAX_RECORDS_IN_RAM=$2
-REORDER_SAM = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/ReorderSam.jar $(PICARD_OPTS)
-REORDER_SAM_MEM = $(JAVA) -Xmx$(1) -jar $(PICARD_DIR)/ReorderSam.jar $(PICARD_OPTS)
-MARK_DUP = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/MarkDuplicates.jar $(PICARD_OPTS)
-MERGE_SAMS = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/MergeSamFiles.jar $(PICARD_OPTS)
-INTERVAL_LIST_TOOL = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/IntervalListTools.jar $(PICARD_OPTS)
-CREATE_SEQ_DICT = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/CreateSequenceDictionary.jar
-ADD_RG = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/AddOrReplaceReadGroups.jar $(PICARD_OPTS)
-VALIDATE_SAM = $(JAVA) -Xmx$(DEFAULT_JAVA_MEM) -jar $(PICARD_DIR)/ValidateSamFile.jar
-
-# SNP EFF
-SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
-SNP_EFF_JAR = $(JARDIR)/snpEff-4.1.jar
-SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff-4.1/snpEff.config
-SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR) eff -c $(SNP_EFF_CONFIG)
-SNP_SIFT_JAR = $(JARDIR)/snpSift-4.1.jar
-SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR) -c $(SNP_EFF_CONFIG)
-SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
-DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
-VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
-VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
-
-
-COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc -l` + 1)
-
 #VCF_SAMPLES ?= 0
 VCF_GEN_IDS ?= GT AD DP
 VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
