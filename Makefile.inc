@@ -213,7 +213,7 @@ override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p 
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl $1 --
+QSUB_BIN = $(PERL) scripts/qsub.pl $1 --
 QSUB_QUEUE = $(call QSUB_BIN,$2) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
 # check output file
