@@ -13,7 +13,7 @@ INDEL_REALIGN = $(JAVA7) -Xmx$(DEFAULT_JAVA_MEM) -jar $(GATK_JAR) -S LENIENT -T 
 
 #VCF_SAMPLES ?= 0
 VCF_GEN_IDS ?= GT AD DP
-VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
+VCF_FIELDS = CHROM POS ID REF ALT FILTER
 # vcf genotype fields
 #VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
 # vcf eff fields
