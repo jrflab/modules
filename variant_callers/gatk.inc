@@ -15,18 +15,18 @@ INDEL_REALIGN = $(JAVA7) -Xmx$(DEFAULT_JAVA_MEM) -jar $(GATK_JAR) -S LENIENT -T 
 VCF_GEN_IDS ?= GT AD DP
 VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
 # vcf genotype fields
-VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
+#VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
 # vcf eff fields
-VCF_FIELDS += 'ANN[*].ALLELE' 'ANN[*].EFFECT' 'ANN[*].IMPACT' 'ANN[*].GENE' 'ANN[*].GENEID' 'ANN[*].FEATURE' 'ANN[*].FEATUREID' 'ANN[*].BIOTYPE' 'ANN[*].RANK' 'ANN[*].HGVS_C' 'ANN[*].HGVS_P' 'ANN[*].CDNA_POS' 'ANN[*].CDNA_LEN' 'ANN[*].CDS_POS' 'ANN[*].CDS_LEN' 'ANN[*].AA_POS' 'ANN[*].AA_LEN' 'ANN[*].DISTANCE'
+ANN_FIELDS = 'ANN[*].ALLELE' 'ANN[*].EFFECT' 'ANN[*].IMPACT' 'ANN[*].GENE' 'ANN[*].GENEID' 'ANN[*].FEATURE' 'ANN[*].FEATUREID' 'ANN[*].BIOTYPE' 'ANN[*].RANK' 'ANN[*].HGVS_C' 'ANN[*].HGVS_P' 'ANN[*].CDNA_POS' 'ANN[*].CDNA_LEN' 'ANN[*].CDS_POS' 'ANN[*].CDS_LEN' 'ANN[*].AA_POS' 'ANN[*].AA_LEN' 'ANN[*].DISTANCE'
 NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
-VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
-VCF_FIELDS += HRun
+#VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
+#VCF_FIELDS += HRun
 # chasm
-VCF_FIELDS += chasm_mut chasm_pval chasm_score chasm_fdr
+#VCF_FIELDS += chasm_mut chasm_pval chasm_score chasm_fdr
 # fathmm
-VCF_FIELDS += fathmm_query fathmm_pred fathmm_score
+#VCF_FIELDS += fathmm_query fathmm_pred fathmm_score
 # haplotype insufficiency
-VCF_FIELDS += hap_insuf
+#VCF_FIELDS += hap_insuf
 # transfic
 #VCF_FIELDS += transficSIFT_score transficSIFT_pred transficPolyphen2_HVAR_score transficPolyphen2_HVAR_pred transficMutationAssessor_score transficMutationAssessor_pred
 

@@ -231,8 +231,17 @@ endif
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
+	format_fields=`grep '^##FORMAT=<ID=' $< | sed 's/.*ID=//; s/,.*//;' | tr '\n' ' '`; \
+	N=$$(expr $$(grep '^#CHROM' $< | wc -w) - 10); \
+	fields="$(VCF_FIELDS)"
+	for f in $$format_fields; do \
+		for i in $$(seq 0 $$N); do \
+			fields+="GEN[$$i].$$f "; \
+		done; \
+	done; \
+	fields+=`grep '^##INFO=<ID=' $< | sed 's/.*ID=//; s/,.*//; s/ANN/$(ANN_FIELDS)/; ' | tr '\n' ' '`; \
 	$(call LSCRIPT_MEM,2G,5G,"NS=$(call COUNT_SAMPLES,$*); \
-	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $(call VCF_FIELDS,$(call COUNT_SAMPLES,$*)) > $@; \
+	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $$fields > $@; \
 	for i in \`seq 0 \$$((\$$NS - 1))\`; do \
 	S=\`grep '^#CHROM' $< | cut -f \$$((\$$i + 10))\`; \
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \
