@@ -45,7 +45,7 @@ endif
 
 # run gatk snp eff
 %.gatk_eff.vcf : %.vcf %.vcf.idx
-	$(call LSCRIPT_MEM,5G,8G,"$(call SNP_EFF_MEM,4G) -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@")
+	$(call LSCRIPT_MEM,5G,8G,"$(call SNP_EFF_MEM,4G) eff -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@")
 
 # process snp eff output with gatk %=sample.indels/snps
 %.annotated.vcf : %.vcf %.gatk_eff.vcf %.gatk_eff.vcf.idx %.vcf.idx 
