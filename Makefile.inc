@@ -119,6 +119,18 @@ ADD_RG = $(call ADD_RG_MEM,$(PICARD_MEM))
 ADD_RG_MEM = $(JAVA) -Xmx$(1) -jar $(PICARD_DIR)/AddOrReplaceReadGroups.jar $(PICARD_OPTS)
 VALIDATE_SAM = $(JAVA) -Xmx$(PICARD_MEM) -jar $(PICARD_DIR)/ValidateSamFile.jar $(PICARD_OPTS)
 
+# SNP EFF
+SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
+SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR) eff -c $(SNP_EFF_CONFIG)
+SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR) -c $(SNP_EFF_CONFIG)
+SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
+DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
+VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
+VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
+
+COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc -l` + 1)
+
+
 # scripts
 SCRIPTS_DIR = $(HOME)/share/scripts
 MERGE = $(SCRIPTS_DIR)/merge.R
