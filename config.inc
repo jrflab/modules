@@ -65,7 +65,7 @@ SNP_SIFT_JAR = $(JARDIR)/snpSift-4.1.jar
 SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff-4.1/snpEff.config
 #DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
 DB_NSFP = $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.txt.gz
-NSFP_FIELDS = Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score Interpro_domain 
+NSFP_FIELDS = Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain 
 
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks-2.2.1
 CUFFCMP = $(HOME)/share/usr/bin/cuffcompare-2.2.1
