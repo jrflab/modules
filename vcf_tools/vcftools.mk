@@ -217,6 +217,14 @@ alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
 	$(call LSCRIPT_MEM,5G,12G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
 endif
 
+%.high_moderate.txt : %.txt
+	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col '$$col == "MODERATE" || $$col == "HIGH"' $< >> $@
+
+%.low_modifier.txt : %.txt
+	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col '$$col == "LOW" || $$col == "MODIFIER"' $< >> $@
+
 %.nonsilent.txt : %.txt
 	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
 
@@ -231,19 +239,18 @@ endif
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
-	format_fields=`grep '^##FORMAT=<ID=' $< | sed 's/.*ID=//; s/,.*//;' | tr '\n' ' '`; \
-	N=$$(expr $$(grep '^#CHROM' $< | wc -w) - 10); \
-	fields="$(VCF_FIELDS)"
-	for f in $$format_fields; do \
-		for i in $$(seq 0 $$N); do \
-			fields+=" GEN[$$i].$$f"; \
+	$(call LSCRIPT_MEM,2G,5G,"format_fields=\$$(grep '^##FORMAT=<ID=' $< | sed 's/.*ID=//; s/,.*//;' | tr '\n' ' '); \
+	N=\$$(expr \$$(grep '^#CHROM' $< | wc -w) - 10); \
+	fields='$(VCF_FIELDS)'; \
+	for f in \$$format_fields; do \
+		for i in \$$(seq 0 \$$N); do \
+			fields+=' 'GEN[\$$i].\$$f; \
 		done; \
 	done; \
-	fields+=" $$(grep '^##INFO=<ID=' $< | sed 's/.*ID=//; s/,.*//; s/ANN/$(ANN_FIELDS)/; ' | tr '\n' ' ')"; \
-	$(call LSCRIPT_MEM,2G,5G,"NS=$(call COUNT_SAMPLES,$*); \
-	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - $$fields > $@; \
-	for i in \`seq 0 \$$((\$$NS - 1))\`; do \
-	S=\`grep '^#CHROM' $< | cut -f \$$((\$$i + 10))\`; \
+	fields+=' '\$$(grep '^##INFO=<ID=' $< | sed 's/.*ID=//; s/,.*//; s/ANN/$(ANN_FIELDS)/; ' | tr '\n' ' '); \
+	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - \$$fields > $@; \
+	for i in \`seq 0 \$$N\`; do \
+	S=\$$(grep '^#CHROM' $< | cut -f \$$((\$$i + 10))); \
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \
 	done")
 
