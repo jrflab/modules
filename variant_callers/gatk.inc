@@ -18,7 +18,6 @@ VCF_FIELDS = CHROM POS ID REF ALT FILTER
 #VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
 # vcf eff fields
 ANN_FIELDS = 'ANN[*].ALLELE' 'ANN[*].EFFECT' 'ANN[*].IMPACT' 'ANN[*].GENE' 'ANN[*].GENEID' 'ANN[*].FEATURE' 'ANN[*].FEATUREID' 'ANN[*].BIOTYPE' 'ANN[*].RANK' 'ANN[*].HGVS_C' 'ANN[*].HGVS_P' 'ANN[*].CDNA_POS' 'ANN[*].CDNA_LEN' 'ANN[*].CDS_POS' 'ANN[*].CDS_LEN' 'ANN[*].AA_POS' 'ANN[*].AA_LEN' 'ANN[*].DISTANCE'
-NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
 #VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
 #VCF_FIELDS += HRun
 # chasm
