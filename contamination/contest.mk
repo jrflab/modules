@@ -23,8 +23,8 @@ contest/snp_vcf/%_contamination.txt : bam/%.bam snp_vcf/%.snps.vcf
 
 contest/snp_vcf/all_contamination.txt : $(foreach sample,$(SAMPLES),contest/snp_vcf/$(sample)_contamination.txt)
 	( \
-		head -1 $< | paste <(echo sample) -; \
+		head -1 $< | sed "s/^/sample\t/"; \
 		for s in $(^); do \
-			grep "META	" $$s | paste <(echo `basename $$s _contamination.txt`) -; \
+			grep -P "META\t" $$s | sed "s/^/`basename $$s _contamination.txt`/"; \
 		done | sort -rnk5,5; \
 	) > $@
