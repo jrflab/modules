@@ -2,6 +2,8 @@
 
 include modules/Makefile.inc
 
+LOGDIR ?= log/merge_split_fastq.$(NOW)
+
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY : fastq
