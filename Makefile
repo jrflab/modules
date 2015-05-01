@@ -331,6 +331,10 @@ TARGETS += integrate_rnaseq
 integrate_rnaseq :
 	$(MAKE) -e -f modules/sv_callers/integrateRnaseq.mk $(FLAGS) $(TARGET)
 
+TARGETS += merge_split_fastq
+merge_split_fastq :
+	$(MAKE) -e -f modules/fastq_tools/mergeSplitFastq.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
