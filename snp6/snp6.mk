@@ -1,6 +1,8 @@
 # SNP6 analysis module
 # runs APT -> hapseg -> absolute
 
+SNP6_USE_MAF ?= false
+
 include modules/Makefile.inc
 
 LOGDIR = log/snp6.$(NOW)
@@ -32,7 +34,7 @@ APT_GENOTYPE_OPTS = -c $(SNP6_CDF) \
 
 HAPSEG = $(RSCRIPT) scripts/hapseg.R
 HAPSEG_PHASED_BGL_DIR = $(HOME)/share/reference/phasedBGL
-DISEASE = breastcancer
+DISEASE ?= breastcancer
 HAPSEG_OPTS = --disease $(DISEASE) --phasedBGLDir $(HAPSEG_PHASED_BGL_DIR) --ref $(REF)
 ABSOLUTE = $(RSCRIPT) scripts/absolute.R
 ABSOLUTE_OPTS = --disease $(DISEASE)
@@ -79,6 +81,10 @@ apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
 	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersFile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
 
+ifeq ($(SNP6_USE_MAF),true)
+absolute/%.timestamp : hapseg/%/segdat.Rdata absolute/maf/%.maf.txt
+	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --mafFile $(<<) --minMutAF 0 --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
+else
 absolute/%.timestamp : hapseg/%/segdat.Rdata
 	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
-
+endif
