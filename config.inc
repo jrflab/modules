@@ -59,7 +59,14 @@ BGZIP = $(HOME)/share/usr/bin/bgzip
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools-0.1.10
 VCF_SORT = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
-SNP_EFF = $(JAVA) -Xmx4G -jar $(JARDIR)/snpEff.jar
+
+SNP_EFF_JAR = $(JARDIR)/snpEff-4.1.jar
+SNP_SIFT_JAR = $(JARDIR)/snpSift-4.1.jar
+SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff-4.1/snpEff.config
+#DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
+DB_NSFP = $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.txt.gz
+NSFP_FIELDS = Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain
+
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks-2.2.1
 CUFFCMP = $(HOME)/share/usr/bin/cuffcompare-2.2.1
 #SNVMIX = $(HOME)/share/usr/bin/SNVMix2

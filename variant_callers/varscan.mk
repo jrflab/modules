@@ -29,7 +29,7 @@ SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
 ANN_TYPES = eff # annotated
-EFF_TYPES = silent missense nonsilent_cds nonsilent
+EFF_TYPES = high_moderate low_modifier
 VARIANT_TYPES = varscan_snps varscan_indels
 
 MIN_MAP_QUAL ?= 1
