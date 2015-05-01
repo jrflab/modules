@@ -294,4 +294,4 @@ HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann -cancer -cancerSamples $(<<) $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) $< > $@ && $(RM) $^"))
 
 sample_pairs.txt :
-	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g; s/_/\t/' > $@
+	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g; s/_/\t/g' > $@
