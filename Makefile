@@ -335,6 +335,10 @@ TARGETS += merge_split_fastq
 merge_split_fastq :
 	$(MAKE) -e -f modules/fastq_tools/mergeSplitFastq.mk $(FLAGS) $(TARGET)
 
+TARGETS += contest
+contest :
+	$(MAKE) -e -f modules/contamination/contest.mk $(FLAGS) $(TARGET)
+
 TARGETS += clean
 clean :
 	$(RM) tmp; \
