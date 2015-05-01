@@ -290,3 +290,8 @@ HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 %.hap_insuf.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED) --name hap_insuf --outFile $@ $< && $(RM) $< $<.idx")
 
+%.som_eff.vcf : %.vcf sample_pairs.txt
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann -cancer -cancerSamples $(<<) $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) $< > $@ && $(RM) $^"))
+
+sample_pairs.txt :
+	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
