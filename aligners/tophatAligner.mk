@@ -9,6 +9,8 @@ include modules/Makefile.inc
 
 NO_REALN = true
 NO_RECAL = true
+NO_FILTER = true
+DUP_TYPE = none
 include modules/aligners/align.inc
 
 LOGDIR = log/tophat.$(NOW)
