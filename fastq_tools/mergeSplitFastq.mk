@@ -8,7 +8,7 @@ LOGDIR ?= log/merge_split_fastq.$(NOW)
 .DELETE_ON_ERROR: 
 .PHONY : fastq
 
-fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5)
+fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5 fastq/$(sample).2.fastq.gz.md5)
 
 define merged-fastq
 fastq/$1.%.fastq.gz.md5 : $$(foreach split,$2,fastq/$$(split).%.fastq.gz.md5)
