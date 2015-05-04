@@ -43,7 +43,7 @@ tophat_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 bam/%.bam.md5 : tophat/bam/%.tophat.$(BAM_SUFFIX).md5
 	$(INIT) ln -f $(<:.md5=) $(@:.md5=) && $(MD5)
 
-tophat/bam/%.sorted.tophat.bam.md5 : tophat/%/accepted_hits.sorted.bam.md5 tophat/%/unmapped.sorted.bam.md5 tophat/%/accepted_hits.sorted.bam.bai tophat/%/unmapped.sorted.bam.bai
+tophat/bam/%.tophat.sorted.bam.md5 : tophat/%/accepted_hits.sorted.bam.md5 tophat/%/unmapped.sorted.bam.md5 tophat/%/accepted_hits.sorted.bam.bai tophat/%/unmapped.sorted.bam.bai
 	$(call LSCRIPT_MEM,7G,7G,"$(SAMTOOLS) merge -f $(@M) $(<M) $(<<M) && $(MD5)")
 
 tophat/%/accepted_hits.bam.md5 tophat/%/unmapped.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
@@ -67,7 +67,7 @@ tophat/bam/$1.tophat.sorted.bam.md5 : tophat/bam/$1.header.sam $$(foreach split,
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
 endif
 ifeq ($(shell echo "$(words $2) == 1" | bc),1)
-tophat/bam/$1.tophat.bam.md5 : tophat/bam/$2.tophat.bam.md5
+tophat/bam/$1.tophat.sorted.bam.md5 : tophat/bam/$2.tophat.sorted.bam.md5
 	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
 endif
 endef
