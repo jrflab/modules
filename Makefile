@@ -13,6 +13,7 @@ MAKELOG = log/$(@).$(NOW).log
 QMAKE = scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
 MAKE = scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 FLAGS ?= -j 100
+NUM_JOBS = 100
 
 #SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
 #FIND_LANES = ssh xhost08 sh $(HOME)/share/scripts/findLanes.sh $(SAMPLE_DIRS)
@@ -20,332 +21,307 @@ FLAGS ?= -j 100
 PHRED64 ?= false
 HARD_FILTER_SNPS ?= true
 
+define RUN_MAKE_J
+$(MAKE) -e -f $1 -j $2 $(TARGET) && \
+	mkdir -p completed_tasks && \
+	touch completed_tasks/$@ && \
+	{ git add completed_tasks/$@ && \
+	git commit -m 'completed task: $@.$(NOW)' && \
+	git push } || echo "Unable to update repo"
+endef
 
-TARGETS = get_bams 
-get_bams :
-	$(MAKE) -f modules/getBams.mk -j 50 >> $@.log
-
-# create sample.lanes.txt [sample-id lane-id lane-bam-path]
-%.lane.txt : %.txt
-	$(FIND_LANES) $(SAMPLE_DIRS) < $< > $@
-
-# retrieve lane bams
-TARGETS += get_lanes
-get_lanes :
-	$(MAKE) -f modules/getLaneBams.mk -j 50 >> $@.log 2>&1
+RUN_MAKE = $(call RUN_MAKE_J,$1,$(NUM_JOBS))
 
 
 TARGETS += merge_fastq
 merge_fastq : 
-	$(MAKE) -e -f modules/fastq_tools/mergeFastq.mk $(FLAGS) $(TARGET)
-
-TARGETS += merge_split_fastq
-merge_split_fastq : 
-	$(MAKE) -e -f modules/fastq_tools/fastq.mk MERGE_SPLIT_FASTQ=true $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
 
 TARGETS += gatk
 gatk : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/gatkVariantCaller.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/gatkVariantCaller.mk)
 
 TARGETS += bwa
 bwa : NUM_ATTEMPTS = 50
 bwa :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/aligners/bwaAligner.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/aligners/bwaAligner.mk)
 
 TARGETS += bwamem
 bwamem :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/aligners/bwamemAligner.mk $(FLAGS) $(TARGET)
-
+	$(call RUN_MAKE,modules/aligners/bwamemAligner.mk)
 
 TARGETS += bowtie
 bowtie : NUM_ATTEMPTS = 50
 bowtie :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/aligners/bowtieAligner.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/aligners/bowtieAligner.mk)
 
 TARGETS += tmap
 tmap : NUM_ATTEMPTS = 50
 tmap :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/aligners/tmapAligner.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/aligners/tmapAligner.mk)
 
 TARGETS += tophat_fusion
 tophat_fusion : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/sv_callers/tophatFusion.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/sv_callers/tophatFusion.mk)
 
 TARGETS += tophat
 tophat : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/aligners/tophatAligner.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/aligners/tophatAligner.mk)
 
 TARGETS += cufflinks
 cufflinks : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/rnaseq/cufflinks.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
 
 TARGETS += process_bam
 process_bam : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/bam_tools/processBam.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
 
 TARGETS += bam_metrics
 bam_metrics :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/qc/bamMetrics.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/bamMetrics.mk)
 
 TARGETS += bam_interval_metrics
 bam_interval_metrics :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/qc/bamIntervalMetrics.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/bamIntervalMetrics.mk)
 
 TARGETS += rnaseq_metrics
 rnaseq_metrics :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/qc/rnaseqMetrics.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/rnaseqMetrics.mk)
 
 TARGETS += fastqc
 fastqc :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/qc/fastqc.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/fastqc.mk)
 
 # not tested on the cluster
 # requires x11 for graphics
 TARGETS += interval_qc
 interval_qc :
-	$(MAKE) -e -f modules/qc/intervalBamQC.mk -j 50 >> $@.log
-
-TARGETS += miso
-miso :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/isoforms/miso.mk $(FLAGS) metrics && \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/isoforms/miso.mk $(FLAGS) summaries && \
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/isoforms/miso.mk $(FLAGS) tar
+	$(call RUN_MAKE,modules/qc/intervalBamQC.mk)
 
 TARGETS += jsm
 jsm :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/variant_callers/somatic/jsm.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
 
 TARGETS += mutect
 mutect :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/somatic/mutectVariantCaller.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/mutectVariantCaller.mk)
 
 TARGETS += varscan_cnv
 varscan_cnv :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/varscanCNV.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/copy_number/varscanCNV.mk)
 
 TARGETS += varscan_fpfilter
 varscan_fpfilter :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/varscanFpfilter.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/varscanFpfilter.mk)
 
 TARGETS += varscanTN
 varscanTN :
-	$(MAKE) $(MAKEFLAGS) -f modules/variant_callers/somatic/varscanTN.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/varscanTN.mk)
 
 TARGETS += varscan
 varscan :
-	$(MAKE) $(MAKEFLAGS) -f modules/variant_callers/varscan.mk $(FLAGS)
+	$(call RUN_MAKE,modules/variant_callers/varscan.mk)
 
 
 # single sample mutation seq
 TARGETS += museqTN
 museqTN :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/somatic/museqTN.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/museqTN.mk)
 
 TARGETS += merge_vcfTN
 merge_vcfTN :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/vcf_tools/vcfMergeTN.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/vcf_tools/vcfMergeTN.mk)
 
 TARGETS += somatic_sniper
 somatic_sniper :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/somatic/somaticSniper.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticSniper.mk)
 
 
 TARGETS += som_indels
 som_indels :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/somatic/somaticIndelDetector.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndelDetector.mk)
 
 TARGETS += snvmix
 snvmix :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/snvmix.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/snvmix.mk)
 
 TARGETS += pyrohmm
 pyrohmm :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/pyroHMMVar.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
 
 
 TARGETS += compare_vcf
 compare_vcf :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/vcf_tools/vcfCompare.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/vcf_tools/vcfCompare.mk)
 
 TARGETS += merge_vcf_platform
 merge_vcf_platform :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/vcf_tools/vcfMergePlatform.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/vcf_tools/vcfMergePlatform.mk)
 
 TARGETS += compare_vcfTN
 compare_vcfTN :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/vcf_tools/vcfCompareTN.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/vcf_tools/vcfCompareTN.mk)
 
 TARGETS += read_depth
 read_depth :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/qc/readDepth.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/readDepth.mk)
 
 TARGETS += qualimap
 qualimap :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/qc/qualimap.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/qualimap.mk)
 
 TARGETS += hmmcopy
 hmmcopy :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/hmmCopy.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/copy_number/hmmCopy.mk)
 
 TARGETS += nfuse_wgss_wtss
 nfuse_wgss_wtss :
-	$(QMAKE) $(QMAKEFLAGS) -N qmake.$@ -- -e -f modules/copy_number/nfuseWGSSWTSS.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/copy_number/nfuseWGSSWTSS.mk)
 
 TARGETS += sum_reads
 sum_reads :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/rnaseq/sumRNASeqReads.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
 
-TARGETS += dindel
-dindel :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/dindel.mk $(FLAGS) windows && \
-	$(MAKE) $(MAKEFLAGS) -e -f modules/variant_callers/dindel.mk $(FLAGS) vcf 2>&1
 
 TARGETS += exomecnv
 exomecnv : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/exomeCNV.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/exomeCNV.mk)
 
 TARGETS += exomecnvloh
 exomecnvloh : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/exomeCNVLOH.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/exomeCNVLOH.mk)
 
 TARGETS += gistic
 gistic :
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/gistic.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/gistic.mk)
 
 TARGETS += freec
 freec : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/controlFreeC.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/controlFreeC.mk)
 
 TARGETS += freecTN
 freecTN : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/controlFreeCTN.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/controlFreeCTN.mk)
 
 TARGETS += freec_lohTN
 freec_lohTN : 
-	$(MAKE) $(MAKEFLAGS) -e -f modules/copy_number/controlFreeCLOHTN.mk $(FLAGS) $(TARGET) 
+	$(call RUN_MAKE,modules/copy_number/controlFreeCLOHTN.mk)
 
 NUM_DEFUSE_JOBS ?= 5
 TARGETS += defuse
 defuse :
-	$(MAKE) -e -f modules/sv_callers/defuse.mk -j$(NUM_DEFUSE_JOBS) -k $(TARGET)
-
-TARGETS += oncofuse
-oncofuse :
-	$(MAKE) -e -f modules/sv_callers/oncofuse.mk $(FLAGS) $(TARGET)
-
-TARGETS += lumpy
-lumpy :
-	$(MAKE) -e -f modules/sv_callers/lumpy.mk -j5 -k $(TARGET)
-
-TARGETS += hydra
-hydra :
-	$(MAKE) -e -f modules/sv_callers/hydra.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE_J,modules/sv_callers/defuse.mk,$(NUM_DEFUSE_JOBS))
 
 NUM_CHIMSCAN_JOBS ?= 5
 TARGETS += chimscan
 chimscan :
-	$(MAKE) -e -f modules/sv_callers/chimerascan.mk -j$(NUM_CHIMSCAN_JOBS) $(TARGET)
+	$(call RUN_MAKE_J,modules/sv_callers/chimerascan.mk,$(NUM_CHIMSCAN_JOBS))
+
+TARGETS += oncofuse
+oncofuse :
+	$(call RUN_MAKE,modules/sv_callers/oncofuse.mk)
+
+TARGETS += lumpy
+lumpy :
+	$(call RUN_MAKE,modules/sv_callers/lumpy.mk)
+
+TARGETS += hydra
+hydra :
+	$(call RUN_MAKE,modules/sv_callers/hydra.mk)
 
 TARGETS += pindel
 pindel :
-	$(MAKE) -e -f modules/variant_callers/pindel.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
 
 TARGETS += scalpel
 scalpel :
-	$(MAKE) -e -f modules/variant_callers/somatic/scalpel.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/scalpel.mk)
 
 TARGETS += snp6
 snp6 :
-	$(MAKE) -e -f modules/snp6/snp6.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
 TARGETS += snpcaller
 snpcaller :
-	$(MAKE) -e -f modules/variant_callers/snpCaller.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/snpCaller.mk)
 
 TARGETS += soapfuse
 soapfuse :
-	$(MAKE) -e -f modules/sv_callers/soapFuse.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/sv_callers/soapFuse.mk)
 
 TARGETS += mapsplice
 mapsplice :
-	$(MAKE) -e -f modules/sv_callers/mapsplice.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/sv_callers/mapsplice.mk)
 
 TARGETS += fusioncatcher
 fusioncatcher :
-	$(MAKE) -e -f modules/sv_callers/fusioncatcher.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/sv_callers/fusioncatcher.mk)
 
 TARGETS += strelka
 strelka :
-	$(MAKE) -e -f modules/variant_callers/somatic/strelka.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelka.mk)
 
 TARGETS += crest
 crest :
-	$(MAKE) -e -f modules/variant_callers/somatic/crest.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/crest.mk)
 
 TARGETS += pyloh
 pyloh :
-	$(MAKE) -e -f modules/ploidy/pyloh.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
 
 TARGETS += clonehd
 clonehd :
-	$(MAKE) -e -f modules/clonality/clonehd.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/clonality/clonehd.mk)
 
 TARGETS += emu
 emu :
-	$(MAKE) -e -f modules/mut_sigs/emu.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
 
 
 TARGETS += extract_fastq
 extract_fastq :
-	$(MAKE) -e -f modules/fastq_tools/extractFastq.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/fastq_tools/extractFastq.mk)
 
 TARGETS += titan
 titan :
-	$(MAKE) -e -f modules/copy_number/titan.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/copy_number/titan.mk)
 
 TARGETS += ann_titan
 ann_titan :
-	$(MAKE) -e -f modules/copy_number/annotateTitan.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/copy_number/annotateTitan.mk)
 
 TARGETS += samtools_het
 samtools_het :
-	$(MAKE) -e -f modules/variant_callers/samtoolsHet.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
 TARGETS += absolute_seq
 absolute_seq :
-	$(MAKE) -e -f modules/clonality/absoluteSeq.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 
 TARGETS += merge_strelka_varscan
 merge_strelka_varscan :
-	$(MAKE) -e -f modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk)
 
 TARGETS += rseqc
 rseqc :
-	$(MAKE) -e -f modules/qc/rseqc.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/qc/rseqc.mk)
 
 TARGETS += mutsig_report
 mutsig_report :
-	$(MAKE) -e -f modules/mut_sigs/mutSigReport.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 
 TARGETS += integrate_rnaseq
 integrate_rnaseq :
-	$(MAKE) -e -f modules/sv_callers/integrateRnaseq.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
 
 TARGETS += merge_split_fastq
 merge_split_fastq :
-	$(MAKE) -e -f modules/fastq_tools/mergeSplitFastq.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/fastq_tools/mergeSplitFastq.mk)
 
 TARGETS += contest
 contest :
-	$(MAKE) -e -f modules/contamination/contest.mk $(FLAGS) $(TARGET)
+	$(call RUN_MAKE,modules/contamination/contest.mk)
 
-TARGETS += clean
-clean :
-	$(RM) tmp; \
-	$(RM) gsc_bam; \
-	$(RM) fastq; \
-	$(RM) bwa/sai; \
-	$(RM) gatk/chr_bam gatk/chr_vcf
 
 .PHONY : $(TARGETS)
 
