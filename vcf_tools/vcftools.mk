@@ -7,6 +7,8 @@
 ..DUMMY := $(shell mkdir -p version; echo "$(SNP_EFF) &> version/snp_eff.txt")
 
 # flags for non-gatk snp eff
+VCF_FIELDS = CHROM POS ID REF ALT FILTER
+ANN_FEILDS = GENOTYPE ANNOTATION "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" CODON AA POS_CDNA LEN_CDNA POS_CDS LEN_CDS POS_AA LEN_AA "ANN[*].DISTANCE" WARNING
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 DEPTH_FILTER ?= 5
@@ -17,8 +19,6 @@ CHASM = $(RSCRIPT) scripts/chasmVcf.R
 CHASM_DIR = $(HOME)/share/usr/CHASM
 CHASM_PYTHON_ENV = $(HOME)/share/usr/anaconda-envs/pyenv27-chasm
 CHASM_CLASSIFIER ?= Breast
-
-VCF_FIELDS = CHROM POS ID REF ALT FILTER
 
 FATHMM = $(MY_RSCRIPT) scripts/fathmmVcf.R 
 FATHMM_DIR = $(HOME)/share/usr/fathmm
