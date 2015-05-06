@@ -24,10 +24,7 @@ HARD_FILTER_SNPS ?= true
 define RUN_MAKE_J
 $(MAKE) -e -f $1 -j $2 $(TARGET) && \
 	mkdir -p completed_tasks && \
-	touch completed_tasks/$@ && \
-	git add completed_tasks/$@ && \
-	git commit -m 'completed task: $@.$(NOW)' && \
-	git push;
+	touch completed_tasks/$@
 endef
 
 RUN_MAKE = $(call RUN_MAKE_J,$1,$(NUM_JOBS))
