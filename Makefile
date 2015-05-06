@@ -25,9 +25,9 @@ define RUN_MAKE_J
 $(MAKE) -e -f $1 -j $2 $(TARGET) && \
 	mkdir -p completed_tasks && \
 	touch completed_tasks/$@ && \
-	{ git add completed_tasks/$@ && \
+	git add completed_tasks/$@ && \
 	git commit -m 'completed task: $@.$(NOW)' && \
-	git push } || echo "Unable to update repo"
+	git push;
 endef
 
 RUN_MAKE = $(call RUN_MAKE_J,$1,$(NUM_JOBS))
