@@ -18,6 +18,8 @@ CHASM_DIR = $(HOME)/share/usr/CHASM
 CHASM_PYTHON_ENV = $(HOME)/share/usr/anaconda-envs/pyenv27-chasm
 CHASM_CLASSIFIER ?= Breast
 
+VCF_FIELDS = CHROM POS ID REF ALT FILTER
+
 FATHMM = $(MY_RSCRIPT) scripts/fathmmVcf.R 
 FATHMM_DIR = $(HOME)/share/usr/fathmm
 FATHMM_PYTHON = $(HOME)/share/usr/bin/python
@@ -236,6 +238,7 @@ endif
 
 %.silent.txt : %.txt
 	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
+
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
