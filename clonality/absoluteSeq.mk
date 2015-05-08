@@ -31,8 +31,8 @@ library(ABSOLUTE)
 endef
 
 
-$(info absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.txt)
-absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.$(call FILTER_SUFFIX,strelka_indels).tab.txt tables/%.$(call FILTER_SUFFIX,scalpel_indels).tab.txt
+$(info absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.strelka_varscan_indels.tab.txt)
+absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt tables/%.strelka_varscan_indels.tab.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
@@ -47,25 +47,18 @@ absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt ta
 	indels.tref <- c()
 	indels.talt <- c()
 	if (nrow(indels) > 0) {
-		indels.talt <- as.integer(sapply(strsplit(indels[["TUMOR.TIR"]], ','), function (x) x[1]))
-		indels.tref <- indels[["TUMOR.DP"]] - indels.talt
+		indels.tref <- sapply(strsplit(indels[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
+		indels.talt <- sapply(strsplit(indels[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
 	}
-	indels2 <- read.table("$(<<<)", header = T, sep = '\t', comment.char = '', as.is = T)
-	indels2.tref <- c()
-	indels2.talt <- c()
-	if (nrow(indels2) > 0) {
-		indels2.tref <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[1])
-		indels2.talt <- sapply(strsplit(indels2[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
-	}
-	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]], indels2[["X.CHROM"]])
+	chr <- c(snvs[["X.CHROM"]], indels[["X.CHROM"]])
 	chr <- as.integer(sub('X', '23', chr))
-	ref <- c(snvs[["REF"]], indels[["REF"]], indels2[["REF"]])
-	alt <- c(snvs[["ALT"]], indels[["ALT"]], indels2[["ALT"]])
-	genes <- c(snvs[['EFF....GENE']], indels[['EFF....GENE']], indels2[['EFF....GENE']])
-	pos <- c(snvs[["POS"]], indels[["POS"]], indels2[["POS"]])
-	tRefCount <- c(snvs.tref, indels.tref, indels2.tref)
-	tAltCount = c(snvs.talt, indels.talt, indels2.talt)
-	type = c(rep('snv', nrow(snvs)), rep('indel', nrow(indels)), rep('indel', nrow(indels2)))
+	ref <- c(snvs[["REF"]], indels[["REF"]])
+	alt <- c(snvs[["ALT"]], indels[["ALT"]])
+	genes <- c(snvs[['EFF....GENE']], indels[['EFF....GENE']])
+	pos <- c(snvs[["POS"]], indels[["POS"]])
+	tRefCount <- c(snvs.tref, indels.tref)
+	tAltCount = c(snvs.talt, indels.talt)
+	type = c(rep('snv', nrow(snvs)), rep('indel', nrow(indels)))
 	Data <- data.frame(Sample = "$*", Gene = genes, Chromosome = chr, Position = pos, Ref = ref, Alt = alt, tRefCount = tRefCount, tAltCount = tAltCount, Type = type, stringsAsFactors = F)
 	Data[["Gene"]] <- sub('\\|.*', '', Data[["Gene"]])
 	Data <- subset(Data, Gene != ".")

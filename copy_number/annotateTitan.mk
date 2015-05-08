@@ -6,7 +6,7 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR = log/ann_titan.$(NOW)
 
-VCF_FIELDS += titanCN titanMinorCN titanMajorCN titanCall titanMedianRatio titanMedianLogR
+#VCF_FIELDS += titanCN titanMinorCN titanMajorCN titanCall titanMedianRatio titanMedianLogR
 
 .SECONDARY:
 .DELETE_ON_ERROR:
