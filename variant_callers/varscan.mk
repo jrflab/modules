@@ -29,7 +29,7 @@ SNP_VCF_EFF_FIELDS += VAF
 INDEL_VCF_EFF_FIELDS += VAF
 
 ANN_TYPES = eff # annotated
-EFF_TYPES = silent missense nonsilent_cds nonsilent
+EFF_TYPES = high_moderate low_modifier
 VARIANT_TYPES = varscan_snps varscan_indels
 
 MIN_MAP_QUAL ?= 1
@@ -72,7 +72,6 @@ ifeq ($(HRUN),true)
 HRUN_FILTER ?= 1
 VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
 endif
-VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).$(ANN_SUFFIX)
 
 VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
 TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab.novel $(suff).tab \

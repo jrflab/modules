@@ -3,8 +3,8 @@ DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
-TITAN_ANN ?= false
 
+VALIDATION_FILTERS := dbsnp cosmic nsfp eff
 INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm hap_insuf
 # apply depth filter to varscan and mutect
@@ -18,15 +18,12 @@ FILTERS += $(if $(findstring indel,$1),\
 # pass filter for faster annotations
 FILTERS += pass
 # indel/snv annotations
-FILTERS += $(if $(findstring false,$(VALIDATION)),\
+FILTERS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_FILTERS),\
 		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
-
-# titan annotations
-FILTERS += $(if $(findstring TITAN_ANN,true),titan)
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
-EFF_TYPES := silent missense nonsilent_cds nonsilent
+EFF_TYPES := high_moderate low_modifier
 
 VCF_SUFFIXES = $(foreach type,$1,$(call FILTER_SUFFIX,$(type)))
 

@@ -119,6 +119,17 @@ ADD_RG = $(call ADD_RG_MEM,$(PICARD_MEM))
 ADD_RG_MEM = $(JAVA) -Xmx$(1) -jar $(PICARD_DIR)/AddOrReplaceReadGroups.jar $(PICARD_OPTS)
 VALIDATE_SAM = $(JAVA) -Xmx$(PICARD_MEM) -jar $(PICARD_DIR)/ValidateSamFile.jar $(PICARD_OPTS)
 
+# SNP EFF
+SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
+SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR)
+SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR)
+SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
+VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
+VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
+
+COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc -l` + 1)
+
+
 # scripts
 SCRIPTS_DIR = $(HOME)/share/scripts
 MERGE = $(SCRIPTS_DIR)/merge.R
@@ -201,7 +212,7 @@ override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p 
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) $(HOME)/share/scripts/qsub.pl $1 --
+QSUB_BIN = $(PERL) scripts/qsub.pl $1 --
 QSUB_QUEUE = $(call QSUB_BIN,$2) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
 # check output file
@@ -221,7 +232,8 @@ LSCRIPT_MEM_NET = $(LSCRIPT_MEM)
 LSCRIPT_NAMED = $(LSCRIPT)
 LSCRIPT_NAMED_PARALLEL_MEM = $(LSCRIPT_PARALLEL_MEM)
 LSCRIPT_NAMED_MEM = $(LSCRIPT_MEM)
-else
+
+else ## use cluster
 LSCRIPT = $(call LSCRIPT_NAMED,$(@F),$1)
 LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
@@ -245,9 +257,9 @@ LSCRIPT_CHECK_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_CHECK_QUEUE,
 LSCRIPT_CHECK_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
 LSCRIPT_CHECK_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
 
-LSCRIPT_CHECK_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS)
-LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
-LSCRIPT_CHECK_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB_CHECK) -N X$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+LSCRIPT_CHECK_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
+LSCRIPT_CHECK_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1

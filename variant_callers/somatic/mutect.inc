@@ -1,8 +1,4 @@
 ifndef MUTECT_INC
-VCF_SAMPLES = 0 1
-VCF_GEN_IDS = GT AD DP FA
-
-SNP_EFF_FLAGS = -ud 0 -no-intron -no-intergenic -cancer -canon
 
 MUTECT_MAX_ALT_IN_NORMAL ?= 500
 MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05

@@ -22,6 +22,6 @@ READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter
 GC_COUNTER = $(HOME)/share/usr/bin/gcCounter
 
-VCF_FIELDS += titanCN titanMinorCN titanMajorCN titanCall titanMedianRatio titanMedianLogR
+#VCF_FIELDS += titanCN titanMinorCN titanMajorCN titanCall titanMedianRatio titanMedianLogR
 endif
 TITAN_INC = true
