@@ -10,13 +10,10 @@ NUM_ATTEMPTS ?= 20
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
-QMAKE = scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
-MAKE = scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
+QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
+MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
 FLAGS ?= -j 100
 NUM_JOBS = 100
-
-#SAMPLE_DIRS = $(HOME)/share/references/sample_dirs.txt
-#FIND_LANES = ssh xhost08 sh $(HOME)/share/scripts/findLanes.sh $(SAMPLE_DIRS)
 
 PHRED64 ?= false
 HARD_FILTER_SNPS ?= true

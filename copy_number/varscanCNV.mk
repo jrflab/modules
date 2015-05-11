@@ -8,8 +8,8 @@ LOGDIR = log/varscan.$(NOW)
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 
-SEGMENTCNV = scripts/segmentCNV2.R
-CGHCALL = scripts/cghCall.R
+SEGMENTCNV = modules/copy_number/segmentVarscanCNV.R
+CGHCALL = modules/copy_number/cghCall.R
 
 SEG_SD ?= 2
 SEG_SMOOTH ?= 10

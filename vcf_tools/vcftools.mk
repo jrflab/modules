@@ -14,19 +14,23 @@ SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 DEPTH_FILTER ?= 5
 SNP_SIFT_OPTS = -c $(SNP_EFF_CONFIG)
 
-CHASM = $(RSCRIPT) scripts/chasmVcf.R 
+CHASM = $(RSCRIPT) modules/vcf_tools/chasmVcf.R 
 #CHASM_DIR = /ifs/opt/common/CHASM/CHASMDL.1.0.7
 CHASM_DIR = $(HOME)/share/usr/CHASM
 CHASM_PYTHON_ENV = $(HOME)/share/usr/anaconda-envs/pyenv27-chasm
 CHASM_CLASSIFIER ?= Breast
 
-FATHMM = $(MY_RSCRIPT) scripts/fathmmVcf.R 
+FATHMM = $(MY_RSCRIPT) modules/vcf_tools/fathmmVcf.R 
 FATHMM_DIR = $(HOME)/share/usr/fathmm
 FATHMM_PYTHON = $(HOME)/share/usr/bin/python
 FATHMM_PYTHONPATH = $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7
 
-TRANSFIC = $(RSCRIPT) scripts/transficVcf.R
+TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
+
+MUT_ASS = $(RSCRIPT) modules/vcf_tools/mutAssVcf.R
+
+ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) modules/vcf_tools/addGeneListAnnotationToVcf.R
 
 NON_SILENT_EFF = START_GAINED SPLICE_SITE_ACCEPTOR SPLICE_SITE_DONOR START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
 NON_SILENT_CODING_EFF = START_GAINED START_LOST NON_SYNONYMOUS_CODING FRAME_SHIFT CODON_CHANGE CODON_INSERTION CODON_CHANGE_PLUS_CODON_INSERTION CODON_DELETION CODON_CHANGE_PLUS_CODON_DELETION STOP_GAINED STOP_LOST NON_SYNONYMOUS_START
@@ -113,7 +117,6 @@ endif
 %.fathmm.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,1G,4G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $< $<.idx"))
 
-MUT_ASS = $(RSCRIPT) scripts/mutAssVcf.R
 %.mutass.vcf : %.vcf
 	$(call LSCRIPT_MEM,12G,15G,$(MUT_ASS) --outFile $@ --maData $(MUT_ASS_RDATA) $<)
 
@@ -287,7 +290,6 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 %.dbsnp_ft.vcf : %.vcf
 	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' $< > $@
 
-ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) scripts/addGeneListAnnotationToVcf.R
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 # haplotype insufficiency annotation
 %.hap_insuf.vcf : %.vcf

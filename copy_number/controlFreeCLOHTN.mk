@@ -12,7 +12,7 @@ FREEC_THREADS = 4
 FREEC_MEM = 4G
 FREEC_HMEM = 6G
 
-MAKE_GRAPH = scripts/makeGraph.R
+MAKE_GRAPH = modules/copy_number/makeFreeCGraph.R
 
 FREEC_WINDOW_SIZE = 10000
 
@@ -69,8 +69,8 @@ ifdef TARGETS_FILE
 PILEUP_OPTS += -l $(TARGETS_FILE)
 endif
 
-PLOT_FREEC_COPY_NUM = $(RSCRIPT) scripts/plotFreeCCopyNum.R
-CBIND_CNV = $(RSCRIPT) scripts/cbindCNVs.R
+PLOT_FREEC_COPY_NUM = $(RSCRIPT) modules/copy_number/plotFreeCCopyNum.R
+CBIND_CNV = $(RSCRIPT) modules/copy_number/cbindCNVs.R
 
 .SECONDARY:
 .DELETE_ON_ERROR:

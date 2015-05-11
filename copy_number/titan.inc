@@ -1,10 +1,9 @@
 ifndef TITAN_INC
-#EXTRACT_ALLELE_READ_COUNTS = $(RSCRIPT) scripts/extractTitanAlleleReadCounts.R
 EXTRACT_ALLELE_READ_COUNTS = $(ANACONDA_PYTHON) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/count.py
-TITAN = $(RSCRIPT) scripts/runTitan.R
+TITAN = $(RSCRIPT) modules/copy_number/runTitan.R
 TITAN_SEG = $(PERL) $(HOME)/share/usr/TITANRunner-0.0.3/scripts/createTITANsegmentfiles.pl
-SUMMARIZE_TITAN = $(RSCRIPT) scripts/summarizeTitan.R
-ANNOTATE_TITAN_LOH_VCF = $(RSCRIPT) scripts/annotateTitanLOHVcf.R
+SUMMARIZE_TITAN = $(RSCRIPT) modules/copy_number/summarizeTitan.R
+ANNOTATE_TITAN_LOH_VCF = $(RSCRIPT) modules/copy_number/annotateTitanLOHVcf.R
 NUM_CLUSTERS ?= $(shell seq 1 5)
 PLOIDY_PRIORS = 2 3 4
 DEFAULT_PLOIDY_PRIOR ?= 2

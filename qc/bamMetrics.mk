@@ -1,8 +1,4 @@
 ## defaults
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
-VPATH ?= bam
 LOGDIR = metrics/log
 
 ## includes

@@ -65,10 +65,10 @@ SNPfile=$(SNP_TXT)\n\
 $(FREEC_TARGET_CONFIG)
 endef
 
-PLOT_FREEC_LOG_RATIO = $(RSCRIPT) scripts/plotFreeCLogRatio.R
-PLOT_FREEC_COPY_NUM = $(RSCRIPT) scripts/plotFreeCCopyNum.R
-ANNOTATE_FREEC = $(RSCRIPT) scripts/annotateFreeC.R
-CBIND_CNV = $(RSCRIPT) scripts/cbindCNVs.R
+PLOT_FREEC_LOG_RATIO = $(RSCRIPT) modules/copy_number/plotFreeCLogRatio.R
+PLOT_FREEC_COPY_NUM = $(RSCRIPT) modules/copy_number/plotFreeCCopyNum.R
+ANNOTATE_FREEC = $(RSCRIPT) modules/copy_number/annotateFreeC.R
+CBIND_CNV = $(RSCRIPT) modules/copy_number/cbindCNVs.R
 
 .SECONDARY:
 .DELETE_ON_ERROR:

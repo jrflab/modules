@@ -2,7 +2,7 @@ include modules/Makefile.inc
 
 LOGDIR = log/exome_cnv_loh_heatmap.$(NOW)
 
-SHELL = scripts/Rshell
+SHELL = modules/scripts/Rshell
 .SHELLFLAGS = -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

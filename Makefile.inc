@@ -125,18 +125,10 @@ SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR)
 SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR)
 SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
 VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
-VCF_JOIN_EFF = $(HOME)/share/scripts/joinEff.pl
+VCF_JOIN_EFF = modules/scripts/joinEff.pl
 
 COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc -l` + 1)
 
-
-# scripts
-SCRIPTS_DIR = $(HOME)/share/scripts
-MERGE = $(SCRIPTS_DIR)/merge.R
-VCF_TO_TABLE = $(SCRIPTS_DIR)/vcfToTable.R
-INTRON_POSN_LOOKUP = $(SCRIPTS_DIR)/posnGeneLookup.pl
-RBIND = $(SCRIPTS_DIR)/rbind.R
-NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
@@ -212,7 +204,7 @@ override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p 
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) scripts/qsubClient.pl $1 --
+QSUB_BIN = $(PERL) modules/scripts/qsubClient.pl $1 --
 QSUB_QUEUE = $(call QSUB_BIN,$2) -q $1
 QSUB = $(call QSUB_QUEUE,$(QUEUE))
 # check output file
@@ -275,10 +267,6 @@ CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi
 # $(call CHECK_VCF,vcf.file,target,command)
 # check for valid header, ie non-empty vcf file
 CHECK_VCF = if [ `grep -v '^\#' $1 | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $1 | wc -l` -eq 1 ]; then cp $1 $2; else $3; fi
-
-SOMATIC_FILTER_VCF = $(PERL) $(HOME)/share/scripts/somaticFilterVCF.pl
-
-GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
 << = $(word 2,$^)
 <<< = $(word 3,$^)

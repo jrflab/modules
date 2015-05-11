@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR = log/hmmcopy.$(NOW)
 
 HMMCOPY_WINDOW_SIZE ?= 1000
-HMMCOPY = $(RSCRIPT) scripts/hmmCopy.R
+HMMCOPY = $(RSCRIPT) modules/copy_number/hmmCopy.R
 
 READ_COUNTER = $(HOME)/share/usr/bin/readCounter
 MAP_COUNTER = $(HOME)/share/usr/bin/mapCounter

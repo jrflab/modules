@@ -5,10 +5,7 @@
 include modules/Makefile.inc
 include modules/hg19.inc
 
-FIX_FASTQ_READ_NAMES = $(PYTHON) scripts/fixFastqReadNames.py
-
-SAMPLE_FILE = samples.txt
-SAMPLES = $(shell cat $(SAMPLE_FILE))
+FIX_FASTQ_READ_NAMES = $(PYTHON) modules/fastq_tools/fixFastqReadNames.py
 
 LOGDIR = fastq/logs
 

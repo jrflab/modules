@@ -15,7 +15,7 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 
-VARSCAN_TO_VCF = $(PERL) scripts/varscanTNtoVcf.pl
+VARSCAN_TO_VCF = $(PERL) modules/variant_callers/somatic/varscanTNtoVcf.pl
 
 
 MIN_MAP_QUAL ?= 1

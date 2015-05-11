@@ -7,11 +7,12 @@ include modules/Makefile.inc
 
 DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
 #DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
-DEFUSE_FILTER = $(PERL) scripts/filterDefuse.pl
-DEFUSE_NORMAL_FILTER = $(PERL) scripts/normalFilterDefuse.pl
 
-RECURRENT_FUSIONS = $(RSCRIPT) scripts/recurrentFusions.R
-EXTRACT_COORDS = $(PERL) scripts/extractCoordsFromDefuse.pl
+DEFUSE_FILTER = $(PERL) modules/sv_callers/filterDefuse.pl
+DEFUSE_NORMAL_FILTER = $(PERL) modules/sv_callers/normalFilterDefuse.pl
+
+RECURRENT_FUSIONS = $(RSCRIPT) modules/sv_callers/recurrentFusions.R
+EXTRACT_COORDS = $(PERL) modules/sv_callers/extractCoordsFromDefuse.pl
 
 LOGDIR = log/defuse.$(NOW)
 

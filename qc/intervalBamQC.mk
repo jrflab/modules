@@ -7,11 +7,11 @@ INTERVAL_FILE ?= intervals.bed
 
 VPATH ?= bam
 
-TEQC = scripts/TEQC.R
-INTERVAL_BAM_QC = scripts/intervalBamQC.R
-VARIANT_EVAL_REPORT = scripts/variantEvalGatkReport.R
+TEQC = modules/qc/TEQC.R
+INTERVAL_BAM_QC = modules/qc/intervalBamQC.R
+VARIANT_EVAL_REPORT = modules/qc/variantEvalGatkReport.R
 
-LOGDIR ?= log/amplicon_qc.$(NOW)
+LOGDIR ?= log/interval_qc.$(NOW)
 
 .SECONDARY:
 .DELETE_ON_ERROR:

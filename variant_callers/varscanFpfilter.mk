@@ -10,8 +10,8 @@ SPLIT_CHR ?= true
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 
-FIX_VARSCAN_VCF = $(PERL) scripts/fixVarscanVcf.pl
-VARSCAN_TO_VCF = $(PERL) scripts/varscanToVcf.pl
+FIX_VARSCAN_VCF = $(PERL) modules/variant_callers/fixVarscanVcf.pl
+VARSCAN_TO_VCF = $(PERL) modules/variant_callers/varscanToVcf.pl
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 

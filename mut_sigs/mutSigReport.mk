@@ -6,8 +6,8 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR = log/mutsig_report.$(NOW)
 
-MUTSIG_REPORT = scripts/mutSigReport.Rmd
-KNIT = $(RSCRIPT) scripts/knit.R
+MUTSIG_REPORT = modules/mut_sigs/mutSigReport.Rmd
+KNIT = $(RSCRIPT) modules/scripts/knit.R
 ALEXANDROV_DATA = $(HOME)/share/reference/Alexandrov_NMF_signatures.txt
 
 .SECONDARY:

@@ -3,12 +3,8 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-SAMPLE_FILE ?= samples.txt
-SAMPLES ?= $(shell cat $(SAMPLE_FILE))
-
 LOGDIR = log/read_depth.$(NOW)
 
-VPATH ?= bam
 EXOME ?= false
 
 ifeq ($(EXOME),true)

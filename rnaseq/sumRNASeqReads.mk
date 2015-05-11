@@ -5,9 +5,9 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR = log/sumReads.$(NOW)
 
-SUM_READS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReads.R
-SUM_EXONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByExon.R
-SUM_INTRONS_RSCRIPT = ${RSCRIPT} scripts/summarizeRNASeqReadsByIntron.R
+SUM_READS_RSCRIPT = ${RSCRIPT} modules/rnaseq/summarizeRNASeqReads.R
+SUM_EXONS_RSCRIPT = ${RSCRIPT} modules/rnaseq/summarizeRNASeqReadsByExon.R
+SUM_INTRONS_RSCRIPT = ${RSCRIPT} modules/rnaseq/summarizeRNASeqReadsByIntron.R
 
 SUM_READS_OPTS =
 

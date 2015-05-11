@@ -11,38 +11,6 @@ GATK2 = $(call GATK_MEM2,$(DEFAULT_JAVA_MEM))
 GATK_MEM2 = $(JAVA7) -Xmx$(1) -jar $(GATK_JAR2) -S LENIENT
 INDEL_REALIGN = $(JAVA7) -Xmx$(DEFAULT_JAVA_MEM) -jar $(GATK_JAR) -S LENIENT -T IndelRealigner
 
-#VCF_SAMPLES ?= 0
-#VCF_GEN_IDS ?= GT AD DP
-#VCF_FIELDS = CHROM POS ID REF ALT FILTER GMAF
-# vcf genotype fields
-#VCF_FIELDS += $(foreach gen,$(VCF_GEN_IDS),$(foreach i,$(shell seq 0 $$(($1-1))),'GEN[$i].$(gen)'))
-# vcf eff fields
-#VCF_FIELDS += 'EFF[*].EFFECT' 'EFF[*].IMPACT' 'EFF[*].FUNCLASS' 'EFF[*].CODON' 'EFF[*].AA' 'EFF[*].GENE' 'EFF[*].BIOTYPE' 'EFF[*].CODING' 'EFF[*].TRID' 'EFF[*].RANK'
-#NSFP_FIELDS = Ensembl_geneid Ensembl_transcriptid Uniprot_acc Uniprot_id Interpro_domain SIFT_score Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp1_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score FATHMM_score MutationTaster_pred MutationTaster_score
-#VCF_FIELDS += $(addprefix dbNSFP_,$(NSFP_FIELDS))
-#VCF_FIELDS += HRun
-# chasm
-#VCF_FIELDS += chasm_mut chasm_pval chasm_score chasm_fdr
-# fathmm
-#VCF_FIELDS += fathmm_query fathmm_pred fathmm_score
-# haplotype insufficiency
-#VCF_FIELDS += hap_insuf
-# transfic
-#VCF_FIELDS += transficSIFT_score transficSIFT_pred transficPolyphen2_HVAR_score transficPolyphen2_HVAR_pred transficMutationAssessor_score transficMutationAssessor_pred
-
-#VCF_ANNOTATIONS = RMSMappingQuality QualByDepth MappingQualityZero MappingQualityRankSumTest HaplotypeScore FisherStrand Coverage BaseQualityRankSumTest HomopolymerRun
-VCF_ANNOTATIONS = QualByDepth HaplotypeScore FisherStrand Coverage BaseQualityRankSumTest DepthPerAlleleBySample
-
-#$(call ALL_VCF_EFF_FIELDS,NUM_SAMPLES)
-SNP_VCF_EFF_FIELDS = $(VCF_FIELDS) $(call VCF_GEN_FIELDS,$1) $(VCF_ANN_FIELDS) $(VCF_EFF_FIELDS) $(VCF_NSFP_FIELDS) $(CHASM_FIELDS) $(FATHMM_FIELDS) $(TRANSFIC_FIELDS)
-INDEL_VCF_EFF_FIELDS = $(VCF_FIELDS) $(call VCF_GEN_FIELDS,$1) $(VCF_ANN_FIELDS) $(VCF_EFF_FIELDS) 
-#ALL_VCF_GATK_FIELDS = $(VCF_FIELDS) $(call VCF_GEN_FIELDS,$1) $(VCF_GATK_FIELDS) $(VCF_NSFP_FIELDS) $(VCF_ANN_FIELDS)
-
-# my scripts
-VCF_TO_TABLE = ~/share/scripts/vcfToTable.R
-INTRON_POSN_LOOKUP = ~/share/scripts/posnGeneLookup.pl
-RBIND = ~/share/scripts/rbind.R
-
 # covariates for recalibration step
 COVARIATES = -cov ReadGroupCovariate -cov QualityScoreCovariate -cov DinucCovariate -cov CycleCovariate
 
@@ -66,10 +34,6 @@ SNP_FILTER_INTRON = false
 ifeq ($(SNP_FILTER_INTRON),true)
 SNP_FILTERS += --filterName 'SnpEff' --filterExpression \"SNPEFF_EFFECT == 'UPSTREAM' || SNPEFF_EFFECT == 'DOWNSTREAM' || SNPEFF_EFFECT == 'INTERGENIC' || SNPEFF_EFFECT == 'INTRAGENIC' || SNPEFF_EFFECT == 'INTRON'\"
 endif
-
-TABLE_FIELDS = CHROM POS ID REF ALT AD DP PL AC AF AN BaseQRankSum DB Dels FS HaplotypeScore MLEAC MLEAF MQ MQ0 MQRankSum QD SNPEFF_EFFECT SNPEFF_FUNCTIONAL_CLASS SNPEFF_IMPACT SNPEFF_GENE_BIOTYPE SNPEFF_GENE_NAME SNPEFF_TRANSCRIPT_ID
-
-GT_TABLE_FIELDS = GT AD DP PL
 
 REPORT_STRATIFICATION := Filter
 endif

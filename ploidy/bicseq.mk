@@ -4,7 +4,7 @@ include modules/Makefile.inc
 
 LOGDIR = log/bicseq.$(NOW)
 
-SHELL = scripts/Rshell
+SHELL = modules/scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

@@ -79,7 +79,7 @@ VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 PICARD_DIR = $(JARDIR)/picard-1.92
 
 # scripts
-SCRIPTS_DIR = scripts
+SCRIPTS_DIR = modules/scripts
 MERGE = $(SCRIPTS_DIR)/merge.R
 VCF_TO_TABLE = $(SCRIPTS_DIR)/vcfToTable.R
 INTRON_POSN_LOOKUP = $(SCRIPTS_DIR)/posnGeneLookup.pl

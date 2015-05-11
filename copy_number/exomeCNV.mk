@@ -8,8 +8,8 @@ READ_LENGTH ?= 75
 
 LOGDIR = log/exomeCNV.$(NOW)
 OUTDIR ?= exomecnv
-EXOMECNV = scripts/exomeCNV.R
-EXOMECNVLOH = scripts/exomeCNVLOH.R
+EXOMECNV = modules/copy_number/exomeCNV.R
+EXOMECNVLOH = modules/copy_number/exomeCNVLOH.R
 CREATE_BAF = $(PERL) $(HOME)/share/usr/bin/for.loh.files.pl
 
 CBS_SENS_SPEC ?= 0.99

@@ -13,6 +13,6 @@ SCALPEL_OPTS += --bed $(TARGETS_FILE)
 endif
 
 
-SCALPEL2VCF = $(PERL) scripts/scalpelToVcf.pl
+SCALPEL2VCF = $(PERL) modules/variant_callers/somatic/scalpelToVcf.pl
 endif
 SCALPEL_INC = true

@@ -5,7 +5,7 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
-SHELL = scripts/Rshell
+SHELL = modules/scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:

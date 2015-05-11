@@ -8,9 +8,9 @@ LOGDIR = log/soapfuse.$(NOW)
 
 SOAPFUSE = $(HOME)/usr/SOAPfuse-v1.26/SOAPfuse-RUN.pl 
 SOAPFUSE_CONFIG = $(HOME)/share/usr/SOAPfuse-v1.26/config/config.txt
-PREPARE_SOAPFUSE = scripts/prepareSoapFuse.pl
+PREPARE_SOAPFUSE = modules/sv_callers/prepareSoapFuse.pl
 
-SOAPFUSE_NORMAL_FILTER = $(PERL) scripts/normalFilterSoapFuse.pl
+SOAPFUSE_NORMAL_FILTER = $(PERL) modules/sv_callers/normalFilterSoapFuse.pl
 SOAPFUSE_NORMAL_FILTER_OPTS = -w 1000
 
 ONCOFUSE_MEM = $(JAVA) -Xmx$1 -jar $(HOME)/share/usr/oncofuse-v1.0.6/Oncofuse.jar

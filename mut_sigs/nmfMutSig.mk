@@ -7,7 +7,7 @@ include modules/Makefile.inc
 LOGDIR = log/nmf_mutsig.$(NOW)
 
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
-MATLABPATH := scripts/nmf
+MATLABPATH := modules/mut_sigs
 ifeq ($(HOSTNAME),ika.cbio.mskcc.org)
 export MATLAB_BIN := /usr/local/MATLAB/R2013a/bin/matlab
 else

@@ -4,8 +4,8 @@
 include modules/Makefile.inc
 
 LOGDIR = log/exomeCNVLOH.$(NOW)
-EXOMECNV = scripts/exomeCNV.R
-EXOMECNVLOH = scripts/exomeCNVLOH.R
+EXOMECNV = modules/copy_number/exomeCNV.R
+EXOMECNVLOH = modules/copy_number/exomeCNVLOH.R
 CREATE_BAF = $(PERL) $(HOME)/share/usr/bin/for.loh.files.pl
 
 .SECONDARY:

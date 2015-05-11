@@ -16,6 +16,8 @@ HARD_FILTER_SNPS ?= true
 POOL_SNP_RECAL ?= false
 SPLIT_CHR ?= true
 
+VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) modules/variant_callers/variantEvalGatkReport.R
+
 ###### RECIPES #######
 
 %.intervals : %.vcf
@@ -170,7 +172,6 @@ vcf/%.gatk_snps.vcf : gatk/vcf/%.variants.snps.filtered.vcf
 vcf/%.gatk_indels.vcf : gatk/vcf/%.variants.indels.filtered.vcf
 	$(INIT) ln -f $< $@
 
-VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) scripts/variantEvalGatkReport.R
 
 reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
 	$(call LSCRIPT,"$(VARIANT_EVAL_GATK_REPORT) --metrics $(word 2,$^) --outDir $(@D) $<")

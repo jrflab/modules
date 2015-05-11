@@ -9,7 +9,7 @@ LOGDIR = log/emu_absolute.$(NOW)
 EMU_PREPARE = $(HOME)/usr/bin/EMu-prepare
 EMU = $(HOME)/usr/bin/EMu
 
-PLOT_EMU = $(RSCRIPT) scripts/plotEmuAbsoluteSignatures.R
+PLOT_EMU = $(RSCRIPT) modules/mut_sigs/plotEmuAbsoluteSignatures.R
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
