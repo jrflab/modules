@@ -15,10 +15,11 @@ endif
 ALIGNER ?= bwamem
 
 merge_fastq : $(foreach sample,$(MERGE_SAMPLES),$(if $(wildcard bam/$(sample).bam),merged_bam/$(sample).bam.md5,bam/$(sample).bam.md5))
-	$(INIT) for bamMd5 in $(filter merged_bam/%.bam.md5,$^); do \
-		cp $$bamMd5 bam/$$(basename $$bamMd5) && \
-		ln -f $${bamMd5%%.md5} bam/$$(basename $${bamMd5%%.md5}); \
-		done
+	$(call LSCRIPT_MEM,7G,8G,"for bamMd5 in $(filter merged_bam/%.bam.md5,$^); do \
+		cp \$$bamMd5 bam/\$$(basename \$$bamMd5) && \
+		ln -f \$${bamMd5%%.md5} bam/\$$(basename \$${bamMd5%%.md5}) && \
+		$(SAMTOOLS) index \$${bamMd5%%.md5}; \
+		done")
 
 include modules/aligners/$(ALIGNER)Aligner.mk
 
