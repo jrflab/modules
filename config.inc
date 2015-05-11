@@ -36,6 +36,7 @@ RSCRIPT = $(MY_RSCRIPT)
 JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
+UNZIP = /usr/bin/unzip
 FASTQC = $(PERL) $(HOME)/share/usr/FastQC/fastqc
 MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
 BOWTIE = $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
