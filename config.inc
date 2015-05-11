@@ -10,14 +10,12 @@ export TMPDIR := $(HOME)/share/tmp
 PATH := $(HOME)/share/usr/bin:$(PATH)
 PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
 export PATH
-#PYTHONPATH := $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7:/opt/common/python/python-2.7.5/lib:/opt/common/python/python-2.7.5/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python2.7/site-packages:$(HOME)/share/usr/anaconda/lib/python2.7:$(HOME)/share/usr/anaconda/lib/python
-#export PYTHONPATH
 export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
 
 LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
 export LD_LIBRARY_PATH
 
-PERL5LIB := /opt/common/Perl/lib/perl5/:$(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
+PERL5LIB := $(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
 PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
 PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl/modules
 PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-compara/modules
@@ -26,13 +24,11 @@ PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-funcgen/modules
 export PERL5LIB
 
 ##Interpreters
-PYTHON = /opt/common/python/python-2.7.5/bin/python
 ANACONDA_PYTHON = $(HOME)/share/usr/anaconda/bin/python
+PYTHON = $(ANACONDA_PYTHON)
 PERL = $(HOME)/share/usr/ActivePerl-5.18/bin/perl
 #RSCRIPT = /usr/bin/Rscript
-#R = /opt/common/R/R-3.0.0/bin/R
 R = $(HOME)/share/usr/bin/R-3.1.2
-#RSCRIPT = /opt/common/R/R-3.0.0/bin/Rscript
 MY_RSCRIPT = $(HOME)/share/usr/bin/Rscript-3.1.2
 RSCRIPT = $(MY_RSCRIPT)
 #RSCRIPT = $(HOME)/usr/bin/Rscript
@@ -40,10 +36,9 @@ RSCRIPT = $(MY_RSCRIPT)
 JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
+FASTQC = $(PERL) $(HOME)/share/usr/FastQC/fastqc
 MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
-#BOWTIE = /opt/common/bowtie2/bowtie2-2.1.0/bowtie2
 BOWTIE = $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
-#BWA = /opt/common/bwa/bwa-0.6.2-r126/bwa
 BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
 #GSNAP = $(HOME)/share/usr/bin/gsnap
@@ -52,9 +47,9 @@ BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
 SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.1
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
-BCFTOOLS = /opt/bin/bcftools
 BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.1
-BEDTOOLS = /opt/common/bedtools/bedtools-2.17.0/bin/bedtools
+BCFTOOLS = $(HOME)/share/usr/bin/bcftools-0.1.19
+BEDTOOLS = $(HOME)/share/usr/bin/bedtools
 BGZIP = $(HOME)/share/usr/bin/bgzip
 IGVTOOLS = $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS = $(HOME)/share/usr/bin/vcftools-0.1.10
@@ -64,7 +59,7 @@ SNP_EFF_JAR = $(JARDIR)/snpEff-4.1.jar
 SNP_SIFT_JAR = $(JARDIR)/snpSift-4.1.jar
 SNP_EFF_CONFIG = $(HOME)/share/usr/snpEff-4.1/snpEff.config
 #DB_NSFP = $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
-DB_NSFP = $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.txt.gz
+DB_NSFP = $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
 NSFP_FIELDS = Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain
 
 CUFFLINKS = $(HOME)/share/usr/bin/cufflinks-2.2.1
@@ -73,7 +68,6 @@ CUFFCMP = $(HOME)/share/usr/bin/cuffcompare-2.2.1
 #BAM2FASTQ = $(HOME)/share/usr/bin/bam2fastq
 #QUALIMAP = $(HOME)/share/usr/qualimap/qualimap
 TOPHAT = $(HOME)/share/usr/bin/tophat2-2.0.13
-#DEFUSE = /opt/common/defuse/defuse-0.6.1/scripts/defuse.pl
 DEFUSE = $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 
 #VARSCAN

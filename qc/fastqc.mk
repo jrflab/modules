@@ -3,7 +3,6 @@
 
 include modules/Makefile.inc
 
-FASTQC = $(PERL) /opt/common/FastQC/fastqc 
 FASTQC_SUMMARY_PLOT = $(RSCRIPT) scripts/fastqcSummaryPlot.R
 
 LOGDIR = log/fastqc.$(NOW)
