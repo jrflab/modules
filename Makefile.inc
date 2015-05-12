@@ -279,6 +279,8 @@ CHECK_VCF = if [ `grep -v '^\#' $1 | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $1 | w
 #makepp_no_builtin = 1
 #makepp_percent_subdirs := 1
 
+
+
 define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
