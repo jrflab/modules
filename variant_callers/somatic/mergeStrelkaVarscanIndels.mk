@@ -6,10 +6,6 @@ include modules/config.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
-#VCF_GEN_IDS = DP FDP SDP SUBDP AU CU GU TU TAR TIR TOR
-#VCF_FIELDS += QSS TQSS NT QSS_NT TQSS_NT SGT SOMATIC
-INDEL_VCF_EFF_FIELDS += VAF
-
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY : strelka_varscan_merge strelka_varscan_merge_vcfs strelka_varscan_merge_tables
