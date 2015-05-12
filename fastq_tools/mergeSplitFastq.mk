@@ -12,7 +12,7 @@ fastq: $(foreach sample,$(SAMPLES),fastq/$(sample).1.fastq.gz.md5 fastq/$(sample
 
 define merged-fastq
 fastq/$1.%.fastq.gz.md5 : $$(foreach split,$2,fastq/$$(split).%.fastq.gz.md5)
-	$$(INIT) $$(CHECK_MD5) zcat $$(^M) | gzip > $$(@M) 2> $$(LOG) && $$(MD5)
+	$$(call LSCRIPT,"$$(CHECK_MD5) zcat $$(^M) | gzip > $$(@M) && $$(MD5)")
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-fastq,$(sample),$(split_lookup.$(sample)))))
 
