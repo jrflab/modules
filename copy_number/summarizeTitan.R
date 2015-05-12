@@ -80,12 +80,15 @@ plot(sc, ratio, type="o", pch=19, xaxt="n", las=2, ylab="Clonal:Subclonal Ratio"
             xlab="Scale", main="S_Dbw = scale * dens + scat")
 axis(1)
 
-## find and plot inflection plot using EDE (R package inflection)
-if (sum(ratio) != Inf) {
-    inflectPt <- findiplist(x=as.matrix(sc), y=ratio, index=1)
-    abline(v=inflectPt[2,1], col="red")
-    mtext(text=sc[inflectPt[2,1]],side=3,at=inflectPt[2,1])
+if (sum(ratio) == Inf) {
+    cat("Error: Can't find inflection point\n")
+    q(save = 'no')
 }
+
+## find and plot inflection plot using EDE (R package inflection)
+inflectPt <- findiplist(x=as.matrix(sc), y=ratio, index=1)
+abline(v=inflectPt[2,1], col="red")
+mtext(text=sc[inflectPt[2,1]],side=3,at=inflectPt[2,1])
 null <- dev.off()
 
 SDbw <- sc[inflectPt[2,1]] * densBwM + scatM
