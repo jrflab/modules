@@ -22,7 +22,8 @@ scalpel_tables : $(call TABLES,scalpel_indels)
 ifdef BED_FILES
 define scalpel-bed-tumor-normal
 scalpel/$2_$3/$1/somatic.$(SCALPEL_MIN_COV)x.indel.annovar : bam/$2.bam.md5 bam/$3.bam.md5
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_$3_$1_scalpel,2,4G,7G,"$$(SCALPEL) --somatic --numprocs 2 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --bed $$(BED_DIR)/$1 --dir $$(@D) && \
+		if [! -e $$@ ]; then cp $$(@D)/main/$$(@F) $$@; fi")
 endef
 $(foreach bed,$(BED_FILES),\
 	$(foreach pair,$(SAMPLE_PAIRS),\
@@ -38,7 +39,8 @@ else # dont split across exome bed files
 
 define scalpel-tumor-normal
 scalpel/$1_$2/somatic.$(SCALPEL_MIN_COV)x.indel.annovar : bam/$1.dcov.bam.md5 bam/$2.dcov.bam.md5
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,4G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2_scalpel,8,1G,4G,"$$(SCALPEL) --somatic --numprocs 8 --tumor $$(<M) --normal $$(<<M) $$(SCALPEL_OPTS) --dir $$(@D) && \
+		if [! -e $$@ ]; then cp $$(@D)/main/$$(@F) $$@; fi")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
