@@ -319,6 +319,10 @@ TARGETS += contest
 contest :
 	$(call RUN_MAKE,modules/contamination/contest.mk)
 
+TARGETS += virus_detection_bowtie2
+virus_detection_bowtie2 :
+	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
+
 
 .PHONY : $(TARGETS)
 
