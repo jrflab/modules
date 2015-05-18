@@ -187,6 +187,3 @@ absolute/tables/%.absolute.txt : absolute/reviewed/all.seq.ABSOLUTE.table.txt ab
 	absData <- transform(absData, somaticSubclonal = Pr_subclonal > 0.5 & Pr_somatic > 0.95, somaticClonal = Pr_somatic_clonal > 0.5)
 	absData <- subset(absData, somaticSubclonal | somaticClonal)
 	write.table(absData, file = "$@", quote = F, row.names = F, sep = '\t')
-
-ola.txt:
-	print("ola", file="$@")
