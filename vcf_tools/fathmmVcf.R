@@ -160,8 +160,9 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
             #ids <- getBM(filters = 'ensembl_transcript_id', attributes = c('ensembl_transcript_id', 'ensembl_peptide_id'), values = enstIds, mart = ensembl)
             if (nrow(ids) > 0 && ncol(ids) > 0) {
                 rownames(ids) <- names(enstIds)[match(ids$transcript_id, enstIds)]
-                xx <- intersect(rownames(aa), rownames(ids))
-                ids <- cbind(aa[rownames(aa) == xx, , drop = F], ids[xx, , drop = F])
+                m <- match(rownames(aa), rownames(ids))
+                ids <- cbind(aa[!is.na(m), , drop = F], ids[m[!is.na(m)], , drop = F])
+                
                 cat("done\n")
 
                 fathmmInput <- subset(ids, peptide_id != "", select = c('peptide_id', 'aa'))
