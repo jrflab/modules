@@ -320,6 +320,9 @@ TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 
+TARGETS += fix_rg
+fix_rg :
+	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
 
 .PHONY : $(TARGETS)
 

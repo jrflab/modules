@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
 suppressPackageStartupMessages(library(org.Hs.eg.db))
 suppressPackageStartupMessages(library(RMySQL))
 
-options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+#options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 options(useFancyQuotes = F)
 
 optList <- list(
@@ -162,7 +162,6 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                 rownames(ids) <- names(enstIds)[match(ids$transcript_id, enstIds)]
                 m <- match(rownames(aa), rownames(ids))
                 ids <- cbind(aa[!is.na(m), , drop = F], ids[m[!is.na(m)], , drop = F])
-                
                 cat("done\n")
 
                 fathmmInput <- subset(ids, peptide_id != "", select = c('peptide_id', 'aa'))
