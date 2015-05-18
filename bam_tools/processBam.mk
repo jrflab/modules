@@ -10,7 +10,7 @@ LOGDIR ?= log/process_bam.$(NOW)
 SPLIT_SORT ?= false
 MERGE_SPLIT_BAMS ?= false # merge processed split bams
 NUM_SORT_SPLITS ?= 50
-SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
+houlORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
 
 ifneq ($(KNOWN_INDELS),)
 REALN_OPTS = --knownAlleles $(KNOWN_INDELS)
@@ -29,7 +29,7 @@ REPROCESS ?= false
 ifeq ($(REPROCESS),true)
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 processed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
-bam/%.bam.md5 : unprocessed_bam/%$(BAM_SUFFIX).md5
+bam/%.bam.md5 : unprocessed_bam/%.$(BAM_SUFFIX).md5
 	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
 else
 ifeq ($(MERGE_SPLIT_BAMS),true)
@@ -134,7 +134,7 @@ endif
 
 # add rg
 %.rg.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=illumina RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) && $(RM) $< $(<:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) && $(RM) $< $(<:.md5=) && $(MD5)")
 
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome
