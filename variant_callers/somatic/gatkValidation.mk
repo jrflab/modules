@@ -11,8 +11,8 @@ SOMATIC_BED ?= somatic.bed
 .SECONDARY: 
 .PHONY : val_vcfs
 
-val_vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).gatkval_snp.vcf)
+val_vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).gatkval_snps.vcf)
 
-vcf/%.gatkval_snp.vcf : bam/%.bam
+vcf/%.gatkval_snps.vcf : bam/%.bam
 	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $(REF_FASTA) --dbsnp $(DBSNP) -I $< -L $(SOMATIC_BED) -o $@ --output_mode EMIT_ALL_SITES")
 
