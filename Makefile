@@ -324,5 +324,9 @@ TARGETS += fix_rg
 fix_rg :
 	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
 
+TARGETS += gatk_validation
+gatk_validation :
+	$(call RUN_MAKE,modules/variant_callers/gatkValidation.mk)
+
 .PHONY : $(TARGETS)
 
