@@ -11,8 +11,11 @@ SOMATIC_BED ?= somatic.bed
 .SECONDARY: 
 .PHONY : val_vcfs
 
-val_vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).gatkval.vcf)
+val_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).gatkval.vcf)
 
-vcf/%.gatkval.vcf : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $(REF_FASTA) --dbsnp $(DBSNP) -I $< -L $(SOMATIC_BED) -o $@ --output_mode EMIT_ALL_SITES")
+define gatkval-tumor-normal
+vcf/$1_$2.gatkval.vcf : bam/$1.bam bam/$2.bam
+	$$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$$(call GATK_MEM,8G) -T UnifiedGenotyper -nt 4 -R $(REF_FASTA) --dbsnp $(DBSNP) -I $$< -I $$(<<) -L $(SOMATIC_BED) -o $$@ --output_mode EMIT_ALL_SITES")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call gatkval-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
