@@ -39,7 +39,7 @@ sigs <- alexandrov[, grepl('Signature', colnames(alexandrov))]
 ```
 
 
-```{r trinucleotideFreqs, cache=T}
+```{r trinucleotideFreqs, cache=F}
 genSeq <- getSeq(genome)
 trintFq <- trinucleotideFrequency(genSeq)
 trintFq <- colSums(trintFq) / sum(as.numeric(trintFq))

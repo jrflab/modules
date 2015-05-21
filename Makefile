@@ -328,5 +328,9 @@ TARGETS += gatk_validation
 gatk_validation :
 	$(call RUN_MAKE,modules/variant_callers/somatic/gatkValidation.mk)
 
+TARGETS += samtools_validation
+samtools_validation :
+	$(call RUN_MAKE,modules/variant_callers/somatic/samtoolsValidation.mk)
+
 .PHONY : $(TARGETS)
 
