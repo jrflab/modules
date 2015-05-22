@@ -316,6 +316,21 @@ TARGETS += contest
 contest :
 	$(call RUN_MAKE,modules/contamination/contest.mk)
 
+TARGETS += virus_detection_bowtie2
+virus_detection_bowtie2 :
+	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
+
+TARGETS += fix_rg
+fix_rg :
+	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
+
+TARGETS += gatk_validation
+gatk_validation :
+	$(call RUN_MAKE,modules/variant_callers/somatic/gatkValidation.mk)
+
+TARGETS += samtools_validation
+samtools_validation :
+	$(call RUN_MAKE,modules/variant_callers/somatic/samtoolsValidation.mk)
 
 .PHONY : $(TARGETS)
 

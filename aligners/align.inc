@@ -8,6 +8,7 @@ SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
 NO_SORT ?= false
 FIX_RG ?= false
+SEQ_PLATFORM ?= illumina
 
 BAM_SUFFIX := $(subst $( ),.,$(strip \
         $(if $(findstring true,$(FIX_RG)),rg)\
