@@ -39,15 +39,18 @@ sigs <- alexandrov[, grepl('Signature', colnames(alexandrov))]
 ```
 
 
-```{r trinucleotideFreqs, cache=T}
-if (!is.null(opt$targetBed)) {
-    bed <- import(opt$targetBed)
-    genSeq <- getSeq(genome, bed)
-} else {
-    genSeq <- getSeq(genome)
-}
+```{r trinucleotideFreqs, cache=F}
+genSeq <- getSeq(genome)
 trintFq <- trinucleotideFrequency(genSeq)
 trintFq <- colSums(trintFq) / sum(as.numeric(trintFq))
+ratio <- 1.0
+if (!is.null(opt$targetBed)) {
+    bed <- import(opt$targetBed)
+    targetSeq <- getSeq(genome, bed)
+    targetTrintFq <- trinucleotideFrequency(targetSeq)
+    targetTrintFq <- colSums(targetTrintFq) / sum(as.numeric(targetTrintFq))
+    ratio <- trintFq / targetTrintFq
+}
 ```
 
 ```{r loadvcf, include=F, cache=T}
@@ -115,7 +118,7 @@ for (s in names(vcfs)) {
     tabs <- mutTabs[[s]]
     plotMutBarplot(tabs, s)
 
-    normTabs <- lapply(tabs, function(x) x * trintFq[names(x)])
+    normTabs <- lapply(tabs, function(x) x * ratio[names(x)])
     normTabs <- lapply(normTabs, function(x) x / sum(unlist(normTabs)))
     plotMutBarplot(normTabs, paste('normalized', s))
 
@@ -124,7 +127,7 @@ for (s in names(vcfs)) {
 
 ```{r bootPlot, fig.width=12}
 bootFun <- function(x) {
-    nval <- x$value * trintFq[x$Trinucleotide]
+    nval <- x$value * ratio[x$Trinucleotide]
     nval <- nval / sum(nval)
     sigs <- x[, grepl("Signature", colnames(x))]
     apply(sigs, 2, function(x) cor(nval, x))

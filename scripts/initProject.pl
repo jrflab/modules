@@ -30,7 +30,7 @@ include modules/Makefile
 ENDL
 
 unless (-d "modules") {
-    system "git clone git@github.com:raylim/modules.git -b stable";
+    system "git clone git\@github.com:raylim/modules.git -b stable";
 }
 
 unless (-e "Makefile") {

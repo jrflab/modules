@@ -17,19 +17,17 @@ BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 
 VARSCAN_TO_VCF = $(PERL) modules/variant_callers/somatic/varscanTNtoVcf.pl
 
-
 MIN_MAP_QUAL ?= 1
 VALIDATION ?= false
 MIN_VAR_FREQ ?= $(if $(findstring false,$(VALIDATION)),0.05,0.000001)
+
+VARSCAN_OPTS = $(if $(findstring true,$(VALIDATION)),--validation 1 --strand-filter 0) --min-var-freq $(MIN_VAR_FREQ)
 
 VPATH ?= bam
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: varscan varscan_vcfs varscan_tables
-
-SNP_VCF_EFF_FIELDS += VAF
-INDEL_VCF_EFF_FIELDS += VAF
 
 VARIANT_TYPES = varscan_indels varscan_snps
 
@@ -46,7 +44,7 @@ varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
 	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	$$(if $$(findstring true,$$(VALIDATION)),--validation 0 --strand-filter 0) --min-var-freq $$(MIN_VAR_FREQ) \
+	$$(VARSCAN_OPTS) \
 	--output-indel varscan/chr_tables/$1_$2.$3.indel.txt --output-snp varscan/chr_tables/$1_$2.$3.snp.txt && touch $$@")
 
 varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
@@ -83,7 +81,7 @@ varscan/tables/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai ba
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	$$(if $$(findstring true,$$(VALIDATION)),--validation 0 --strand-filter 0) --min-var-freq $$(MIN_VAR_FREQ) \
+	$$(VARSCAN_OPTS) \
 	--output-indel varscan/chr_tables/$1_$2.indel.txt --output-snp varscan/chr_tables/$1_$2.snp.txt && touch $$@")
 
 varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
