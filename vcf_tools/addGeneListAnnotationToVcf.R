@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-# parse gene list
-# usage: ./addGeneListAnnotationToVcf.pl 
+# add gene list annotation column to vcf file
+# usage: Rscript addGeneListAnnotationToVcf.R --geneBed [gene lists] --name [gene list names] [vcf file]
 suppressPackageStartupMessages(library("optparse"));
 suppressPackageStartupMessages(library("GenomicRanges"));
 suppressPackageStartupMessages(library("rtracklayer"));
@@ -10,8 +10,8 @@ options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 
 optList <- list(
         make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
-        make_option("--geneBed", default = NULL, type = "character", action = "store", help ="input gene bed (required)"),
-        make_option("--name", default = 'genelist', type = "character", action = "store", help ="annotation name (default %default)"),
+        make_option("--geneBed", default = NULL, type = "character", action = "store", help ="input gene beds, comma separated (required)"),
+        make_option("--name", default = 'genelist', type = "character", action = "store", help ="annotation names, comma separated (default %default)"),
         make_option("--outFile", default = NULL, type = "character", action = "store", help ="output file (required)"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file]", option_list = optList);
@@ -32,13 +32,25 @@ if (length(arguments$args) < 1) {
     stop();
 }
 
+Names <- strsplit(opt$name, ',')
+beds <- strsplit(opt$geneBed, ',')
+names(beds) <- Names
+if (length(Names) != length(beds)) {
+    cat("Number of names != number of bed files")
+    print_help(parser)
+    stop()
+}
+
 fn <- arguments$args[1];
 outfn <- opt$outFile
 null <- suppressWarnings(file.remove(outfn))
 out <- file(outfn, open = 'a')
 
-cat('Reading target bed ... ')
-genes <- import(opt$geneBed)
+cat('Reading target bed(s) ... ')
+geneLists <- list()
+for (n in names(beds)) {
+    geneLists[[n]] <- import(beds[[n]])
+}
 cat('done\n')
 
 cat('Indexing vcf ... ')
@@ -54,10 +66,12 @@ cat('Processing vcf by chunk\n')
 i <- 1
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     # replace header
-    newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(opt$name, ": variant is in gene list", sep = ''), row.names = opt$name)
-    info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
-    ol <- findOverlaps(rowData(vcf), genes, select = 'first')
-    info(vcf)[,opt$name] <- !is.na(ol)
+    for (n in names(beds)) {
+        newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
+        info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
+        ol <- findOverlaps(rowData(vcf), geneLists[[n]], select = 'first')
+        info(vcf)[,n] <- !is.na(ol)
+    }
 
     cat(paste('Chunk', i, "\n"))
     cat("Appending vcf chunk to", opt$outFile, "... ")
@@ -65,11 +79,11 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     cat("done\n")
     i <- i + 1
 }
-close(tab)
 
 if (i == 1) {
     cat("No entries, creating empty vcf file\n")
     vcf <- readVcf(fn, genome = opt$genome)
     writeVcf(vcf, out)
 }
+close(tab)
 close(out)
