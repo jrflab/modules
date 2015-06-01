@@ -72,7 +72,7 @@ TOPHAT = $(HOME)/share/usr/bin/tophat2-2.0.13
 DEFUSE = $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 
 #VARSCAN
-ONCOFUSE_JAR = $(JARDIR)/oncofuse-1.0.8.jar
+ONCOFUSE_JAR = $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
 VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
 
 # PICARD tools
