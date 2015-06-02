@@ -32,8 +32,8 @@ if (length(arguments$args) < 1) {
     stop();
 }
 
-Names <- strsplit(opt$name, ',')
-beds <- strsplit(opt$geneBed, ',')
+Names <- unlist(strsplit(opt$name, ','))
+beds <- unlist(strsplit(opt$geneBed, ','))
 names(beds) <- Names
 if (length(Names) != length(beds)) {
     cat("Number of names != number of bed files")
