@@ -1,4 +1,4 @@
-# run absolute using strelka,mutect,scalpel,titan OR varscan_cnv
+# run absolute using strelka,mutect,scalpel,titan,oncoscan OR varscan_cnv
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
@@ -15,6 +15,7 @@ SHELL = modules/scripts/Rshell
 
 PRIMARY_DISEASE ?= breast
 PLATFORM ?= Illumina_WES
+PYTHON_ENV ?= /ifs/e63data/reis-filho/usr/anaconda-envs/pyenv27-chasm
 
 absolute : absolute/review/all.PP-calls_tab.txt absolute_rdata
 absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUTE.RData)
@@ -25,6 +26,8 @@ USE_TITAN_COPYNUM ?= false
 USE_TITAN_ESTIMATES ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w10000_p2
 TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
+
+USE_ONCOSCAN_COPYNUM ?= false
 
 define LIB_INIT
 library(ABSOLUTE)
@@ -82,6 +85,24 @@ absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	X[,1] <- sub('X', '23', X[,1])
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
+else ifeq ($(USE_ONCOSCAN_COPYNUM),true)
+absolute/segment/%.seg.txt : oncoscan/%.probes.txt oncoscan/%.segments.txt
+	$(R_INIT)
+	r <- system('source $(PYTHON_ENV)/bin/activate $(PYTHON_ENV) && python <<EOF
+	import pandas as pd
+	import math
+	p = pd.read_csv("$<", sep="\t")
+	s = pd.read_csv("$(<<)", sep="\t")
+	s["Num_Probes"] = s.apply(lambda x: len(p[(p.Start >= x.Start) & (p.End <= x.End)]), axis=1)
+	s["Segment_Mean"] = s.Value
+	del s["Value"]
+	# Center segment mean around zero
+	s.Segment_Mean = (2 - (s.Segment_Mean.apply(lambda x: 2**x * 2).mean() - s.Segment_Mean.apply(lambda x: 2**x * 2))).apply(lambda x: max(0.1, x)).apply(lambda x: math.log(x/2, 2))
+	# Rename chromosomes
+	s.Chromosome = s.Chromosome.str.replace("chrX","23").str.replace("chrY", "24").str.replace("chr","")
+	s.to_csv("$@", index=False, sep="\t")
+	EOF')
+	q(status=r, save="no")
 else
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
