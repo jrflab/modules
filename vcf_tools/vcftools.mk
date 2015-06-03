@@ -291,9 +291,11 @@ ENCODE_BED = $(HOME)/share/reference/wgEncodeDacMapabilityConsensusExcludable.in
 	$(INIT) awk '/^#/ || $$3 ~ /^rs/ {print}' $< > $@
 
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
-# haplotype insufficiency annotation
-%.hap_insuf.vcf : %.vcf
-	$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED) --name hap_insuf --outFile $@ $< && $(RM) $< $<.idx")
+CANCER_GENE_CENSUS_BED = $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
+KANDOTH_BED = $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.bed
+LAWRENCE_BED = $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.bed
+%.gene_ann.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED)$(,)$(CANCER_GENE_CENSUS_BED)$(,)$(KANDOTH_BED)$(,)$(LAWRENCE_BED) --name hap_insuf$(,)cancer_gene_census$(,)kandoth$(,)lawrence --outFile $@ $< && $(RM) $< $<.idx")
 
 #-cancer does nothing
 #%.som_eff.vcf : %.vcf %.vcf.pair
