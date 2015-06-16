@@ -5,6 +5,8 @@ library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
 library("reshape")
 library("boot")
+library("ggplot2")
+library("gridExtra")
 
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
@@ -82,17 +84,11 @@ for (n in names(vcfs)) {
 ```
 
 ```{r mutCounts}
-plotMutBarplot <- function(tabs, tit) {
+plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    names(cols) <- names(tabs)
-    yl <- c(0, max(unlist(tabs)))
-    par(mfrow = c(1, length(tabs)), mar = c(5,0,5,0), oma = c(2,2,2,2))
-    mut <- names(tabs)[1]
-    for (mut in names(tabs)) {
-        barplot(tabs[[mut]],  ylim = yl, las = 2, yaxt = 'n', col = cols[[mut]])
-    }
-    axis(2, outer = T)
-    mtext(tit, outer = T, side = 3, line = -1)
+    plot1 <- ggplot(subset(X, grepl('^C', Substitution.Type)), aes(x=factor(Trinucleotide), y = value, fill = Substitution.Type)) + geom_bar(stat = 'identity') + facet_wrap(~ Substitution.Type) + ylim(0, max(X$value)) + xlab("") + ylab("") + theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') + scale_fill_manual(values = cols)
+    plot2 <- ggplot(subset(X, grepl('^T', Substitution.Type)), aes(x=factor(Trinucleotide), y = value, fill = Substitution.Type)) + geom_bar(stat = 'identity') + facet_wrap(~ Substitution.Type) + ylim(0, max(X$value)) + xlab("") + ylab("") + theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') + scale_fill_manual(values = cols)
+    grid.arrange(plot1, plot2, nrow = 2, main = tit)
 }
 
 mutTabs <- list()
@@ -116,12 +112,17 @@ for (s in names(vcfs)) {
 ```{r mutCountPlots, fig.width=12}
 for (s in names(vcfs)) {
     tabs <- mutTabs[[s]]
-    plotMutBarplot(tabs, s)
+    tab <- melt(tabs)
+    X <- cbind(alexandrov[, 1:2], value = 0)
+    m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
+    X$value[m] <- tab$value
 
-    normTabs <- lapply(tabs, function(x) x * ratio[names(x)])
-    normTabs <- lapply(normTabs, function(x) x / sum(unlist(normTabs)))
-    plotMutBarplot(normTabs, paste('normalized', s))
+    plotMutBarplot(X, s)
 
+    Y <- transform(X, value = value * ratio[as.character(Trinucleotide)])
+    Y <- transform(Y, value = value / sum(value))
+
+    plotMutBarplot(Y, paste('normalized', s))
 }
 ```
 
