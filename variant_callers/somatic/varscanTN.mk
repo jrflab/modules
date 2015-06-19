@@ -6,8 +6,6 @@
 REF ?= hg19
 LOGDIR = log/varscan.$(NOW)
 
-SPLIT_CHR ?= true
-
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
@@ -38,7 +36,6 @@ varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
 
-ifeq ($(SPLIT_CHR),true)
 define varscan-somatic-tumor-normal-chr
 varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
@@ -46,66 +43,37 @@ varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam
 	<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 	$$(VARSCAN_OPTS) \
 	--output-indel varscan/chr_tables/$1_$2.$3.indel.txt --output-snp varscan/chr_tables/$1_$2.$3.snp.txt && touch $$@")
-
 varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
 varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$< <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(word 2,$$^) $3) && head -1 $$< > $$@ && cat varscan/chr_tables/$1_$2.$3.$$*.pass >> varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt")
-
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename varscan/chr_tables/$1_$2.$3.$$* $$< \
+		<($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(word 2,$$^) $3) && \
+		head -1 $$< > $$@ && \
+		cat varscan/chr_tables/$1_$2.$3.$$*.pass >> varscan/chr_tables/$1_$2.$3.$$*.fp_pass.txt")
 endef
 $(foreach chr,$(CHROMOSOMES), \
-	$(foreach i,$(SETS_SEQ), \
-		$(foreach tumor,$(call get_tumors,$(set.$i)), \
-			$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
+	$(foreach pair,$(SAMPLE_PAIRS), \
+	$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
 
-define merge-varscan-tables
-varscan/tables/$1.%.txt : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_tables/$1.$$(chr).%.txt)
+define merge-varscan-pair-type
+varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_tables/$1.$$(chr).$2.fp_pass.txt)
 	$$(INIT) head -1 $$< > $$@ && for x in $$^; do sed 1d $$$$x >> $$@; done
 endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-varscan-tables,$(pair))))
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(foreach type,snp indel,$(eval $(call merge-varscan-pair-type,$(pair),$(type)))))
 
-define convert-varscan-tumor-normal
-varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
+define convert-varscan-tumor-normal-type
+varscan/vcf/$1_$2.$3.vcf : varscan/tables/$1_$2.$3.txt
 	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@
-
 endef
-$(foreach i,$(SETS_SEQ), \
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call convert-varscan-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-
-else # no splitting by chr
-
-define varscan-somatic-tumor-normal
-varscan/tables/$1_$2.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
-	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
-	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
-	$$(VARSCAN_OPTS) \
-	--output-indel varscan/chr_tables/$1_$2.indel.txt --output-snp varscan/chr_tables/$1_$2.snp.txt && touch $$@")
-
-varscan/tables/$1_$2.indel.txt : varscan/tables/$1_$2.varscan_timestamp
-varscan/tables/$1_$2.snp.txt : varscan/tables/$1_$2.varscan_timestamp
-
-varscan/tables/$1_$2.%.fp_pass.txt : varscan/tables/$1_$2.%.txt bamrc/$1.bamrc
-	$$(call LSCRIPT_MEM,8G,45G,"$$(FP_FILTER) --output-basename varscan/tables/$1_$2.$$* $$^ && mv varscan/tables/$1_$2.$$*.pass varscan/tables/$1_$2.$$*.fp_pass.txt")
-
-endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call varscan-somatic-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
-endif
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(foreach type,snp indel,$(eval $(call convert-varscan-tumor-normal-type,$(tumor.$(pair)),$(normal.$(pair)),$(type)))))
 
 vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 	$(INIT) ln -f $< $@
 
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
 	$(INIT) ln -f $< $@
-
-define bamrc-chr
-bamrc/%.$1.chr_bamrc : bam/%.bam
-	$$(call LSCRIPT_MEM,2G,3G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 > $$@")
-endef
-$(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 include modules/variant_callers/gatk.mk
