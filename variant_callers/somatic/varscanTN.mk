@@ -2,8 +2,6 @@
 # Detect point mutations
 ##### DEFAULTS ######
 
-
-REF ?= hg19
 LOGDIR = log/varscan.$(NOW)
 
 ##### MAKE INCLUDES #####
@@ -46,17 +44,18 @@ varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam
 varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
-varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-file $$@ \
-		--var-file <($$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$<) \
-		--readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(word 2,$$^) $3 2> /dev/null))
+varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bamrc/$1.$3.bamrc.gz
+	$$(call LSCRIPT_MEM,8G,35G,"$$(VARSCAN) fpfilter $$< <(zcat $$(<<)) --output-file $$@")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
 
 define merge-varscan-pair-type
-varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_tables/$1.$$(chr).$2.fp_pass.txt)
+varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),\
+	$$(if $$(findstring true,$$(VALIDATION)),\
+	varscan/chr_tables/$1.$$(chr).$2.txt,\
+	varscan/chr_tables/$1.$$(chr).$2.fp_pass.txt))
 	$$(INIT) head -1 $$< > $$@ && for x in $$^; do sed 1d $$$$x >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
@@ -74,5 +73,11 @@ vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
 	$(INIT) ln -f $< $@
+
+define bamrc-chr
+bamrc/%.$1.bamrc.gz : bam/%.bam
+	$$(call LSCRIPT_MEM,8G,12G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 | gzip > $$@ 2> /dev/null")
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 include modules/variant_callers/gatk.mk
