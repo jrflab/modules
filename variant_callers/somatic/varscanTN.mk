@@ -47,7 +47,8 @@ varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_time
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
 varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-file $$@ --var-file $$< \
+	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-file $$@ \
+		--var-file <($$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$<) \
 		--readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(word 2,$$^) $3 2> /dev/null))
 endef
 $(foreach chr,$(CHROMOSOMES), \
