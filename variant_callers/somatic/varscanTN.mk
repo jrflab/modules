@@ -61,12 +61,12 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(foreach type,snp indel,$(eval $(call merge-varscan-pair-type,$(pair),$(type)))))
 
-define convert-varscan-tumor-normal-type
-varscan/vcf/$1_$2.$3.vcf : varscan/tables/$1_$2.$3.txt
+define convert-varscan-tumor-normal
+varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
 	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
-	$(foreach type,snp indel,$(eval $(call convert-varscan-tumor-normal-type,$(tumor.$(pair)),$(normal.$(pair)),$(type)))))
+	$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 	$(INIT) ln -f $< $@
