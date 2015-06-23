@@ -4,7 +4,6 @@ LOGDIR = metrics/log
 ## includes
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/hg19.inc
 
 
 .DELETE_ON_ERROR:
@@ -26,16 +25,16 @@ dup : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metrics)
 
 gc : $(foreach sample,$(SAMPLES),metrics/$(sample).gc_bias_metrics)
 
-metrics/%.alignment_summary_metrics : %.bam
+metrics/%.alignment_summary_metrics : bam/%.bam
 	$(call LSCRIPT_MEM,12G,13G,"$(COLLECT_METRICS) I=$< O=metrics/$* REFERENCE_SEQUENCE=$(REF_FASTA) &> $(LOGDIR)/$(@F).log")
 
-metrics/%.gc_bias_metrics : %.bam
+metrics/%.gc_bias_metrics : bam/%.bam
 	$(call LSCRIPT_MEM,12G,13G,"$(COLLECT_GC_METRICS) I=$< O=$@ CHART_OUTPUT=$(addsuffix .pdf,$@) REFERENCE_SEQUENCE=$(REF_FASTA) &> $(LOGDIR)/$(@F).log")
 
-metrics/%.flagstats : %.bam
+metrics/%.flagstats : bam/%.bam
 	$(call LSCRIPT_MEM,2G,3G,"$(SAMTOOLS) flagstat $< > $@ 2> $(LOGDIR)/$(@F).log")
 	
-bam/%.markdup.bam metrics/%.dup_metrics : %.bam
+bam/%.markdup.bam metrics/%.dup_metrics : bam/%.bam
 	$(call LSCRIPT_MEM,18G,19G,"$(MARK_DUP) I=$< O=bam/$*.markdup.bam METRICS_FILE=metrics/$*.dup_metrics &> $(LOGDIR)/$(@F).log")
 
 metrics/dup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metrics.txt)
