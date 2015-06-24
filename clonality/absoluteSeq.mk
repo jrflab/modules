@@ -57,7 +57,7 @@ absolute/tables/%.somatic.txt : tables/%.$(call FILTER_SUFFIX,mutect).tab.txt ta
 	chr <- as.integer(sub('X', '23', chr))
 	ref <- c(snvs[["REF"]], indels[["REF"]])
 	alt <- c(snvs[["ALT"]], indels[["ALT"]])
-	genes <- c(snvs[['EFF....GENE']], indels[['EFF....GENE']])
+	genes <- c(snvs[['ANN....GENE']], indels[['ANN....GENE']])
 	pos <- c(snvs[["POS"]], indels[["POS"]])
 	tRefCount <- c(snvs.tref, indels.tref)
 	tAltCount = c(snvs.talt, indels.talt)
