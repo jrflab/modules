@@ -224,11 +224,11 @@ endif
 
 %.high_moderate.txt : %.txt
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
-	$(INIT) head -1 $< > $@ && awk -v col=$$col '$$col == "MODERATE" || $$col == "HIGH"' $< >> $@
+	$(INIT) head -1 $< > $@ && awk -v col=$$col 'match($$col, /MODERATE/) || match($$col, /HIGH/)' $< >> $@
 
 %.low_modifier.txt : %.txt
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
-	$(INIT) head -1 $< > $@ && awk -v col=$$col '$$col == "LOW" || $$col == "MODIFIER"' $< >> $@
+	$(INIT) head -1 $< > $@ && awk -v col=$$col '! (match($$col, /MODERATE/) || match($$col, /HIGH/)) && (match($$col, /LOW/) || match($$col,/MODIFIER/))' $< >> $@
 
 %.nonsilent.txt : %.txt
 	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
