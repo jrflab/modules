@@ -93,5 +93,7 @@ JAVA7_BIN = /usr/bin/java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
+
+ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 endif
 CONFIG_INC = true
