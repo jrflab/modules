@@ -12,7 +12,7 @@ optList <- list(
                 make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
                 make_option("--chasmDir", default = NULL, help = "CHASM dir"),
                 make_option("--python", default = NULL, help = "python binary"),
-                make_option("--classifier", default = 'Breast', help = "CHASM classifier [default %default]"),
+                make_option("--classifier", default = 'Breast', help = "CHASM classifier(s), comma-delimited [default %default]"),
                 make_option("--outFile", default = NULL, help = "vcf output file [default %default]"))
 
 parser <- OptionParser(usage = "%prog vcf.file", option_list = optList);
@@ -38,14 +38,20 @@ outfn <- opt$outFile
 null <- suppressWarnings(file.remove(outfn))
 out <- file(outfn, open = 'a')
 
+classifiers <- unlist(strsplit(',', opt$classifier))
+
 # create new header
 vcfHeader <- scanVcfHeader(fn)
 hinfoprime <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
 rownames(hinfoprime) <- rownames(info(vcfHeader))
-hinfoprime <- rbind(hinfoprime, chasm_mut = c("A", "String", "CHASM mutation"))
-hinfoprime <- rbind(hinfoprime, chasm_pval = c("A", "Float", "CHASM p-value"))
-hinfoprime <- rbind(hinfoprime, chasm_score = c("A", "Float", "CHASM score"))
-hinfoprime <- rbind(hinfoprime, chasm_fdr = c("A", "Float", "CHASM B-H FDR"))
+for (cl in classifiers) {
+    X <- rbind(chasm_mut = c("A", "String", "CHASM mutation"),
+               chasm_pval = c("A", "Float", "CHASM p-value"),
+               chasm_score = c("A", "Float", "CHASM score"),
+               chasm_fdr = c("A", "Float", "CHASM B-H FDR"))
+    rownames(X) <- paste(cl, rownames(X), sep = "_")
+    hinfoprime <- rbind(hinfoprime, X)
+}
 hinfoprime <- DataFrame(hinfoprime, row.names = rownames(hinfoprime))
 hlist <- header(vcfHeader)
 hlist$INFO <- hinfoprime
@@ -76,19 +82,21 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
         setwd(opt$chasmDir)
         tmp <- tempfile()
         write.table(X, file = tmp, quote = F, sep = '\t', row.names = F, col.names = F)
-        cmd <- paste("CHASMDIR=", opt$chasmDir, " ", opt$python, ' ./RunChasm ', opt$classifier, ' ', tmp, ' -g' ,sep = '')
-        #cat(cmd)
-        system(cmd, ignore.stdout = T)
-        results <- read.table(file = paste(tmp, opt$classifier, '.output', sep = ''), sep = '\t', header = T, as.is = T)
-        if (nrow(results) > 1) {
-            infoprime <- info(vcf)
-            infoprime[as.integer(as.character(results$MutationID)),"chasm_mut"] <- as.character(results$Mutation)
-            infoprime[as.integer(as.character(results$MutationID)),"chasm_score"] <- results$CHASM
-            infoprime[as.integer(as.character(results$MutationID)),"chasm_pval"] <- results$PValue
-            if (nrow(results) > 10) {
-                infoprime[as.integer(as.character(results$MutationID)),"chasm_fdr"] <- results$BHFDR
+        for (cl in classifiers) {
+            cmd <- paste("CHASMDIR=", opt$chasmDir, " ", opt$python, ' ./RunChasm ', cl, ' ', tmp, ' -g' ,sep = '')
+            #cat(cmd)
+            system(cmd, ignore.stdout = T)
+            results <- read.table(file = paste(tmp, cl, '.output', sep = ''), sep = '\t', header = T, as.is = T)
+            if (nrow(results) > 1) {
+                infoprime <- info(vcf)
+                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_mut", sep = "_")] <- as.character(results$Mutation)
+                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_score", sep = "_")] <- results$CHASM
+                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_pval", sep = "_")] <- results$PValue
+                if (nrow(results) > 10) {
+                    infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_fdr", sep = "_")] <- results$BHFDR
+                }
+                info(vcf) <- infoprime
             }
-            info(vcf) <- infoprime
         }
     }
 
