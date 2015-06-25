@@ -38,17 +38,17 @@ outfn <- opt$outFile
 null <- suppressWarnings(file.remove(outfn))
 out <- file(outfn, open = 'a')
 
-classifiers <- unlist(strsplit(',', opt$classifier))
+classifiers <- unlist(strsplit(opt$classifier, ','))
 
 # create new header
 vcfHeader <- scanVcfHeader(fn)
 hinfoprime <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
 rownames(hinfoprime) <- rownames(info(vcfHeader))
 for (cl in classifiers) {
-    X <- rbind(chasm_mut = c("A", "String", "CHASM mutation"),
-               chasm_pval = c("A", "Float", "CHASM p-value"),
-               chasm_score = c("A", "Float", "CHASM score"),
-               chasm_fdr = c("A", "Float", "CHASM B-H FDR"))
+    X <- rbind(chasm_mut = c("A", "String", paste(cl, "CHASM mutation")),
+               chasm_pval = c("A", "Float", paste(cl, "CHASM p-value")),
+               chasm_score = c("A", "Float", paste(cl, "CHASM score")),
+               chasm_fdr = c("A", "Float", paste(cl, "CHASM B-H FDR")))
     rownames(X) <- paste(cl, rownames(X), sep = "_")
     hinfoprime <- rbind(hinfoprime, X)
 }
