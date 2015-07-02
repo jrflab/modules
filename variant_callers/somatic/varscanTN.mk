@@ -45,7 +45,7 @@ varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_time
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
 varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bamrc/$1.$3.bamrc.gz
-	$$(call LSCRIPT_MEM,8G,35G,"$$(VARSCAN) fpfilter $$< <(zcat $$(<<)) --output-file $$@")
+	$$(call LSCRIPT_MEM,8G,15G,"$$(VARSCAN) fpfilter $$< <(zcat $$(<<)) --output-file $$@")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
