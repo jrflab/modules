@@ -92,6 +92,9 @@ while (<>) {
     my $pos = $F{position};
     my $ref = $F{ref};
 
+    # skip non-somatic/germline
+    next unless $F{somatic_status} eq "Somatic" | $F{somatic_status} eq "Germline";
+
     my $normalGT;
     my $tumorGT;
     my $numDel = 0;

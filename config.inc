@@ -73,7 +73,7 @@ DEFUSE = $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 
 #VARSCAN
 ONCOFUSE_JAR = $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
+VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.9.jar
 
 # PICARD tools
 PICARD_DIR = $(JARDIR)/picard-1.92
@@ -93,5 +93,7 @@ JAVA7_BIN = /usr/bin/java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
+
+ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 endif
 CONFIG_INC = true

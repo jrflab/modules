@@ -47,7 +47,7 @@ tophat/bam/%.tophat.sorted.bam.md5 : tophat/%/accepted_hits.sorted.bam.md5 topha
 	$(call LSCRIPT_MEM,7G,7G,"$(CHECK_MD5) $(SAMTOOLS) merge -f $(@M) $(<M) $(<<M) && $(MD5)")
 
 tophat/%/accepted_hits.bam.md5 tophat/%/unmapped.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_tophat,4,6G,10G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[0-9]\+//'`; \
+	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_tophat,4,6G,10G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_.\+//'`; \
 		$(TOPHAT) $(TOPHAT_OPTS) \
 		--rg-id $* --rg-library \"\$${LBID}\" \
 		--rg-platform \"${SEQ_PLATFORM}\" --rg-sample \"\$${LBID}\" \
