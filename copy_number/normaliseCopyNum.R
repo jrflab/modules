@@ -1,0 +1,141 @@
+#!/usr/bin/env Rscript
+# MSK-IMPACT copy number procedure
+
+suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("RColorBrewer"));
+suppressPackageStartupMessages(library("plyr"));
+suppressPackageStartupMessages(library("dplyr"));
+suppressPackageStartupMessages(library("tidyr"));
+suppressPackageStartupMessages(library("stringr"));
+suppressPackageStartupMessages(library("magrittr"));
+suppressPackageStartupMessages(library("limma"));
+suppressPackageStartupMessages(library("DNAcopy"));
+suppressPackageStartupMessages(library("foreach"));
+
+options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+
+optList <- list(
+                make_option("--sampleSetsFile", default = NULL, help = "sample sets file"),
+                make_option("--outDir", default = NULL, help = "output file directory for plots"),
+                make_option("--nucFile", default = NULL, help = "bedtools nuc output for 100bp window modified target bed file"),
+                make_option("--alpha", default = 0.000001, type = "double", action = "store", help ="alpha"),
+                make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help ="outlier SD scale"),
+                make_option("--undoSD", default = 2, type = "double", action = "store", help ="undo SD"),
+                make_option("--centromereFile", help = "Centromere position table"));
+
+parser <- OptionParser(usage = "%prog [options] [gatk DoC interval summary files]", option_list = optList);
+
+arguments <- parse_args(parser, positional_arguments = T);
+opt <- arguments$options;
+
+if (opt$targetsFile == NULL) {
+    cat("Need targets file\n")
+    print_help(parser);
+    stop();
+} else if (opt$centromereFile == NULL) {
+    cat("Need centromere file\n")
+    print_help(parser);
+    stop();
+} else {
+    files <- arguments$args;
+}
+
+sampleSets <- scan(opt$sampleSetsFile, what = 'character', sep = '\n') %>% str_split(' ')
+samplePairs <- sampleSets %>%
+    ldply(function(x) data.frame(x[1:(length(x)-1)], last(x))) %>%
+    setNames(c("Tumor", "Normal"))
+
+nuc <- read.table(opt$nucFile, sep = '\t', header = T, comment.char = '', as.is = T)
+colnames(nuc)[1:3] <- c("chr", "start", "end")
+nuc <- select(nuc, -ends_with("usercol"))
+colnames(nuc) <- str_replace(colnames(nuc), "X\\d+_", "")
+nuc %<>% mutate(start = start + 1)
+
+doc <- files %>%
+    llply(read.delim, as.is = T, row.names = 1) %>%
+    bind_cols %>%
+    select(contains("total_cvg"))
+
+pos <- str_match(rownames(doc), "(.*):(.*)-(.*)") %>%
+    data.frame(stringsAsFactors = F, row.names = 1) %>% 
+    setNames(c("chr", "start", "end")) %>%
+    mutate_each(funs(as.integer), start:end)
+
+doc <- cbind(pos, doc)
+doc <- inner_join(nuc, doc, by = c("chr", "start", "end"))
+
+# step 1: square-root transformed
+doc %<>% mutate_each(funs(sqrt), ends_with("total_cvg"))
+
+# step 2: Loess normalization of depth based on GC content
+loessNorm <- function(x, y) x + loessFit(x, y)$residual
+doc_norm <- doc %>% select(ends_with('total_cvg')) %>%
+    apply(2, loessNorm, doc$pct_gc)
+#bugged: doc_norm <- doc %>% mutate_each(funs(loessNorm(., pct_gc)), ends_with('total_cvg'))
+colnames(doc_norm) <- gsub("_total_cvg", "_norm_cvg", colnames(doc_norm))
+doc <- bind_cols(doc, as.data.frame(doc_norm))
+
+# step 3: filter out regions with normalised depth in the top or bottom 5% in >=20% of normal samples
+low <- select(doc, one_of(str_c(samplePairs[["Normal"]], '_norm_cvg'))) %>%
+    (colwise(function(x) { x < quantile(x, 0.05) })) %>% 
+    apply(1, function(x) sum(x) >= length(x) * 0.2)
+
+high <- select(doc, one_of(str_c(samplePairs[["Normal"]], '_norm_cvg'))) %>%
+    (colwise(function(x) { x > quantile(x, 0.95) })) %>% 
+    apply(1, function(x) sum(x) >= length(x) * 0.2)
+
+doc_ft <- doc %>% filter(!(low | high))
+doc_ft %<>% mutate(chr = str_replace(chr, 'X', 23))
+doc_ft %<>% mutate(chr = str_replace(chr, 'Y', 24))
+doc_ft %<>% mutate(chr = as.integer(chr))
+
+# step 4: compute log ratios
+genomedat <- foreach (i = 1:nrow(samplePairs), .combine = cbind) %do% {
+    tumor <- str_c(samplePairs[i, "Tumor"], "_norm_cvg")
+    normal <- str_c(samplePairs[i, "Normal"], "_norm_cvg")
+    log(doc_ft[, tumor] / doc_ft[, normal], base = 2) %>% scale(scale = F)
+}
+colnames(genomedat) <- with(samplePairs, paste(Tumor, Normal, sep = '_'))
+
+######################### THE REST SHOULD BE THE SAME (ALMOST THE SAME) AS VARSCAN COPYNUMBER #############
+# step 5: segmentation
+cna <- doc_ft %$% CNA(genomedat, chr, round(start + seq_len / 2),
+           sampleid = colnames(genomedat))
+smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = opt$outlierSDscale, trim = 0.01)
+seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.splits = "sdundo")
+
+
+# step 6: plot (copied from existing script)
+for (i in colnames(genomedat)) {
+    fn <- str_c(opt$outDir, '/', i, '.seg_plot.png')
+    png(fn, type = 'cairo-png', height=400, width=2000)
+    obj <- subset(seg, sample=i)
+
+    objdat <- obj$data[which(!is.na(obj$data[,3])),]
+
+    plot(objdat[,3], pch=20, xlab='Position', ylab="Copy number", xaxt='n', ylim=c(min(objdat[,3]), max(objdat[,3])+0.5))
+    points(unlist(apply(obj$output, 1, function(x) {rep(x[6], x[5])})), pch = 20, col = 'blue')
+    abline(v=cumsum(rle(as.vector(objdat$chrom))$lengths), col="red", lty=3)
+
+        cen <- read.table("centromere2.txt", sep = '\t')
+        for (j in unique(cen[,1])) {
+            pos <- cen[which(cen[,1]==j)[1],3]
+            index <- which(objdat$chrom==j & objdat$maploc > pos)[1]
+            if (!is.na(index)) {
+                abline(v=index, col="darkgrey", lty=3)
+            }
+            text(cumsum(rle(as.vector(objdat$chrom))$lengths)-((rle(as.vector(objdat$chrom))$lengths)/2), max(objdat[,3])+0.5-0.25)
+        }
+
+    dev.off()
+}
+
+# step 7: write data
+write.table(seg$output, file = paste(opt$outDir, "/seg.txt", sep=""), row.names = F, quote = F, sep = "\t")
+
+segSplit <- split(seg$output, seg$output$ID)
+for (i in colnames(genomedat)) {
+    fn <- str_c(opt$outDir, '/', i, '.seg.txt')
+    write.table(segSplit[[i]][, -1], file = fn, row.names = F, quote = F, sep = "\t")
+}
+
