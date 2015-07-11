@@ -28,17 +28,27 @@ parser <- OptionParser(usage = "%prog [options] [gatk DoC interval summary files
 arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;
 
-if (opt$targetsFile == NULL) {
-    cat("Need targets file\n")
+if (is.null(opt$nucFile)) {
+    cat("Need nuc file\n")
     print_help(parser);
     stop();
-} else if (opt$centromereFile == NULL) {
+} else if (is.null(opt$outDir)) {
+    cat("Need output dir\n")
+    print_help(parser);
+    stop();
+} else if (is.null(opt$sampleSetsFile)) {
+    cat("Need sample sets file\n")
+    print_help(parser);
+    stop();
+} else if (is.null(opt$centromereFile)) {
     cat("Need centromere file\n")
     print_help(parser);
     stop();
 } else {
     files <- arguments$args;
 }
+
+dir.create(opt$outDir, showWarnings = F, recursive = T)
 
 sampleSets <- scan(opt$sampleSetsFile, what = 'character', sep = '\n') %>% str_split(' ')
 samplePairs <- sampleSets %>%
@@ -47,21 +57,21 @@ samplePairs <- sampleSets %>%
 
 nuc <- read.table(opt$nucFile, sep = '\t', header = T, comment.char = '', as.is = T)
 colnames(nuc)[1:3] <- c("chr", "start", "end")
-nuc <- select(nuc, -ends_with("usercol"))
 colnames(nuc) <- str_replace(colnames(nuc), "X\\d+_", "")
 nuc %<>% mutate(start = start + 1)
 
 doc <- files %>%
-    llply(read.delim, as.is = T, row.names = 1) %>%
-    bind_cols %>%
-    select(contains("total_cvg"))
+    llply(read.delim, as.is = T) %>%
+    llply(select, -one_of('total_coverage', 'average_coverage')) %>%
+    join_all(type = 'inner') %>%
+    select(Target, contains("total_cvg"))
 
-pos <- str_match(rownames(doc), "(.*):(.*)-(.*)") %>%
-    data.frame(stringsAsFactors = F, row.names = 1) %>% 
-    setNames(c("chr", "start", "end")) %>%
+pos <- str_match(doc[["Target"]], "(.*):(.*)-(.*)") %>%
+    data.frame(stringsAsFactors = F) %>% 
+    setNames(c("Target", "chr", "start", "end")) %>%
     mutate_each(funs(as.integer), start:end)
 
-doc <- cbind(pos, doc)
+doc <- inner_join(pos, doc)
 doc <- inner_join(nuc, doc, by = c("chr", "start", "end"))
 
 # step 1: square-root transformed
@@ -106,6 +116,7 @@ seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.split
 
 
 # step 6: plot (copied from existing script)
+cen <- read.table(opt$centromereFile, sep = '\t')
 for (i in colnames(genomedat)) {
     fn <- str_c(opt$outDir, '/', i, '.seg_plot.png')
     png(fn, type = 'cairo-png', height=400, width=2000)
@@ -117,7 +128,6 @@ for (i in colnames(genomedat)) {
     points(unlist(apply(obj$output, 1, function(x) {rep(x[6], x[5])})), pch = 20, col = 'blue')
     abline(v=cumsum(rle(as.vector(objdat$chrom))$lengths), col="red", lty=3)
 
-        cen <- read.table("centromere2.txt", sep = '\t')
         for (j in unique(cen[,1])) {
             pos <- cen[which(cen[,1]==j)[1],3]
             index <- which(objdat$chrom==j & objdat$maploc > pos)[1]
