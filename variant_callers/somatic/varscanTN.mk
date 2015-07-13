@@ -8,6 +8,8 @@ LOGDIR = log/varscan.$(NOW)
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
+USE_FP_FILTER ?= false
+
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
 BAM_READCOUNT = $(HOME)/share/usr/bin/bam-readcount
 
@@ -53,7 +55,7 @@ $(foreach chr,$(CHROMOSOMES), \
 
 define merge-varscan-pair-type
 varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),\
-	$$(if $$(findstring true,$$(VALIDATION)),\
+	$$(if $$(findstring true,$$(VALIDATION) $$(USE_FP_FILTER)),\
 	varscan/chr_tables/$1.$$(chr).$2.txt,\
 	varscan/chr_tables/$1.$$(chr).$2.fp_pass.txt))
 	$$(INIT) head -1 $$< > $$@ && for x in $$^; do sed 1d $$$$x >> $$@; done
