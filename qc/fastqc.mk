@@ -7,10 +7,10 @@ FASTQC_SUMMARY_PLOT = $(RSCRIPT) modules/qc/fastqcSummaryPlot.R
 
 LOGDIR = log/fastqc.$(NOW)
 
-.PHONY: all
+.PHONY: fastqc
 .SECONDARY: 
 
-all : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt) fastqc/all_summary.png
+fastqc : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt) fastqc/all_summary.txt
 
 fastqc/%_fastqc.zip : bam/%.bam
 	$(call LSCRIPT_NAMED_MEM,$*_fastqc,4G,12G,"$(FASTQC) -o fastqc $^")
@@ -19,13 +19,4 @@ fastqc/%_fastqc/summary.txt : fastqc/%_fastqc.zip
 	$(INIT) $(UNZIP) -o -d fastqc $< &> $(LOG)
 
 fastqc/all_summary.txt : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt)
-	$(INIT) { \
-		cut -f2 $< | tr '\n' '\t' | sed 's/^/Sample\t/; s/\t$$/\n/'; \
-	for sum in $^; do \
-		sample=`head -1 $$sum | cut -f 3 | sed 's/\..*//'`; \
-		cut -f1 $$sum | tr '\n' '\t' | sed "s/^/$$sample\t/; s/\t$$/\n/"; \
-	done \
-	} > $@
-
-fastqc/all_summary.png : fastqc/all_summary.txt
-	$(FASTQC_SUMMARY_PLOT) --outFile $@ $<
+	$(INIT) $(FASTQC_SUMMARY_PLOT) --outPrefix fastqc/all_summary $^ &> $(LOG)
