@@ -299,7 +299,7 @@ LAWRENCE_BED = $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000
 
 # Copy number regulated genes annotated per subtype
 # FYI Endometrioid_MSI-L has no copy number regulated genes
-CN_ENDOMETRIAL_SUBTYPES = CN_high CN_low Endometrioid_MSI-H Endometrioid_MSS Endometrioid MSI POLE Serous
+CN_ENDOMETRIAL_SUBTYPES = CN_high CN_low Endometrioid_MSI_H Endometrioid_MSS Endometrioid MSI POLE Serous
 CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_Her2 Pam50_LumA Pam50_LumB Pam50_Normal Triple_negative
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
