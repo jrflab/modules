@@ -10,8 +10,7 @@ mutation_summary: excel/mutation_summary.xlsx
 
 
 excel/mutation_summary.xlsx : $(ALLTABLES_HIGH_MODERATE_MUTECT) $(ALLTABLES_LOW_MODIFIER_MUTECT) $(ALLTABLES_HIGH_MODERATE_STRELKA_VARSCAN) $(ALLTABLES_LOW_MODIFIER_STRELKA_VARSCAN)
-	mkdir -p $(@D); \
-	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV); \
+	$(INIT) source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV); \
 	python modules/scripts/tsvToExcel.py $< $@ 'mutect_high_moderate' && \
 	python modules/scripts/tsvToExcel.py $(<<) $@ 'mutect_low_modifier' && \
 	python modules/scripts/tsvToExcel.py $(<<<) $@ 'strelka_varscan_high_moderate' && \
