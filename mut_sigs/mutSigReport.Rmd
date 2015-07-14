@@ -5,6 +5,8 @@ library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
 library("reshape")
 library("boot")
+library("ggplot2")
+library("gridExtra")
 
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
@@ -39,15 +41,18 @@ sigs <- alexandrov[, grepl('Signature', colnames(alexandrov))]
 ```
 
 
-```{r trinucleotideFreqs, cache=T}
-if (!is.null(opt$targetBed)) {
-    bed <- import(opt$targetBed)
-    genSeq <- getSeq(genome, bed)
-} else {
-    genSeq <- getSeq(genome)
-}
+```{r trinucleotideFreqs, cache=F}
+genSeq <- getSeq(genome)
 trintFq <- trinucleotideFrequency(genSeq)
 trintFq <- colSums(trintFq) / sum(as.numeric(trintFq))
+ratio <- 1.0
+if (!is.null(opt$targetBed)) {
+    bed <- import(opt$targetBed)
+    targetSeq <- getSeq(genome, bed)
+    targetTrintFq <- trinucleotideFrequency(targetSeq)
+    targetTrintFq <- colSums(targetTrintFq) / sum(as.numeric(targetTrintFq))
+    ratio <- trintFq / targetTrintFq
+}
 ```
 
 ```{r loadvcf, include=F, cache=T}
@@ -79,17 +84,14 @@ for (n in names(vcfs)) {
 ```
 
 ```{r mutCounts}
-plotMutBarplot <- function(tabs, tit) {
+plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    names(cols) <- names(tabs)
-    yl <- c(0, max(unlist(tabs)))
-    par(mfrow = c(1, length(tabs)), mar = c(5,0,5,0), oma = c(2,2,2,2))
-    mut <- names(tabs)[1]
-    for (mut in names(tabs)) {
-        barplot(tabs[[mut]],  ylim = yl, las = 2, yaxt = 'n', col = cols[[mut]])
-    }
-    axis(2, outer = T)
-    mtext(tit, outer = T, side = 3, line = -1)
+    p <- ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
+        geom_bar(stat = 'identity') + facet_wrap(~ Substitution.Type, scales = 'free_x') +
+        xlab("") + ylab("") + ggtitle(tit) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
+        scale_fill_manual(values = cols)
+    p
 }
 
 mutTabs <- list()
@@ -113,18 +115,23 @@ for (s in names(vcfs)) {
 ```{r mutCountPlots, fig.width=12}
 for (s in names(vcfs)) {
     tabs <- mutTabs[[s]]
-    plotMutBarplot(tabs, s)
+    tab <- melt(tabs)
+    X <- cbind(alexandrov[, 1:2], value = 0)
+    m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
+    X$value[m] <- tab$value
 
-    normTabs <- lapply(tabs, function(x) x * trintFq[names(x)])
-    normTabs <- lapply(normTabs, function(x) x / sum(unlist(normTabs)))
-    plotMutBarplot(normTabs, paste('normalized', s))
+    plotMutBarplot(X, s)
 
+    Y <- transform(X, value = value * ratio[as.character(Trinucleotide)])
+    Y <- transform(Y, value = value / sum(value))
+
+    plotMutBarplot(Y, paste('normalized', s))
 }
 ```
 
 ```{r bootPlot, fig.width=12}
 bootFun <- function(x) {
-    nval <- x$value * trintFq[x$Trinucleotide]
+    nval <- x$value * ratio[x$Trinucleotide]
     nval <- nval / sum(nval)
     sigs <- x[, grepl("Signature", colnames(x))]
     apply(sigs, 2, function(x) cor(nval, x))

@@ -46,9 +46,9 @@ BWA = $(HOME)/share/usr/bin/bwa-0.7.10
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
 SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
-SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.1
+SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.2
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
-BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.1
+BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.2
 BCFTOOLS = $(HOME)/share/usr/bin/bcftools-0.1.19
 BEDTOOLS = $(HOME)/share/usr/bin/bedtools
 BGZIP = $(HOME)/share/usr/bin/bgzip
@@ -72,8 +72,8 @@ TOPHAT = $(HOME)/share/usr/bin/tophat2-2.0.13
 DEFUSE = $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 
 #VARSCAN
-ONCOFUSE_JAR = $(JARDIR)/oncofuse-1.0.8.jar
-VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.7.jar
+ONCOFUSE_JAR = $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
+VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.9.jar
 
 # PICARD tools
 PICARD_DIR = $(JARDIR)/picard-1.92
@@ -93,5 +93,7 @@ JAVA7_BIN = /usr/bin/java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
+
+ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 endif
 CONFIG_INC = true

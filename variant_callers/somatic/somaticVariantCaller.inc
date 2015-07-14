@@ -5,8 +5,8 @@ FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
 
 VALIDATION_FILTERS := dbsnp cosmic nsfp eff
-INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff
-SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm hap_insuf
+INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff gene_ann
+SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm
 # apply depth filter to varscan and mutect
 FILTERS = $(if $(findstring varscan,$1) $(findstring mutect,$1),dp_ft \
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))

@@ -8,7 +8,7 @@ my $line = <>;
 print $line;
 chomp $line;
 my @header = split /\t/, $line;
-my @effIndexes = indexes { /^EFF\[/ } @header;
+my @effIndexes = indexes { /^ANN\[/ } @header;
 
 my %lines;
 while (<>) {

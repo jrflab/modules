@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
 suppressPackageStartupMessages(library(org.Hs.eg.db))
 suppressPackageStartupMessages(library(RMySQL))
 
-options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+#options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 options(useFancyQuotes = F)
 
 optList <- list(
@@ -145,14 +145,23 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                            where T.stable_id in (", paste(sQuote(enstIds), collapse = ','), ");")
             cat(paste(query, "\n", sep = ""));
             cat("Looking up ensembl peptide IDs ...\n")
-            rs <- dbSendQuery(mydb, query)
+            repeat {
+                rs <- try(dbSendQuery(mydb, query), silent = T)
+                if (is(rs, "try-error")) {
+                    cat("Lost connection to mysql db ... ")
+                    mydb <- dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_78_38')
+                    cat("reconnected\n")
+                } else {
+                    break
+                }
+            }
             ids <- fetch(rs, -1)
             cat(paste("Found", nrow(ids), "records\n"))
             #ids <- getBM(filters = 'ensembl_transcript_id', attributes = c('ensembl_transcript_id', 'ensembl_peptide_id'), values = enstIds, mart = ensembl)
             if (nrow(ids) > 0 && ncol(ids) > 0) {
                 rownames(ids) <- names(enstIds)[match(ids$transcript_id, enstIds)]
-                xx <- intersect(rownames(aa), rownames(ids))
-                ids <- cbind(aa[xx, , drop = F], ids[xx, , drop = F])
+                m <- match(rownames(aa), rownames(ids))
+                ids <- cbind(aa[!is.na(m), , drop = F], ids[m[!is.na(m)], , drop = F])
                 cat("done\n")
 
                 fathmmInput <- subset(ids, peptide_id != "", select = c('peptide_id', 'aa'))
