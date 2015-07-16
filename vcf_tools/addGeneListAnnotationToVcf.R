@@ -62,6 +62,7 @@ cat('done\n')
 tab <- TabixFile(zipped, idx, yieldSize = 2000)
 open(tab)
 
+browser()
 cat('Processing vcf by chunk\n')
 i <- 1
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
@@ -84,6 +85,9 @@ if (i == 1) {
     cat("No entries, creating empty vcf file\n")
     vcf <- readVcf(fn, genome = opt$genome)
     writeVcf(vcf, out)
+    # fix the empty contig lines
+    cmd <- paste("sed -i '/^##contig/d'", outfn)
+    system(cmd)
 }
 close(tab)
 close(out)
