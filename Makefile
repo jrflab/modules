@@ -332,5 +332,13 @@ TARGETS += samtools_validation
 samtools_validation :
 	$(call RUN_MAKE,modules/variant_callers/somatic/samtoolsValidation.mk)
 
+TARGETS += norm_copynum
+norm_copynum :
+	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)
+
+TARGETS += mutation_summary
+mutation_summary :
+	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
+
 .PHONY : $(TARGETS)
 

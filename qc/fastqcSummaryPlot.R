@@ -1,28 +1,39 @@
 #!/usr/bin/env Rscript
 
-options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+}
 
 suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("plyr"));
+suppressPackageStartupMessages(library("dplyr"));
+suppressPackageStartupMessages(library("tidyr"));
+suppressPackageStartupMessages(library("magrittr"));
+suppressPackageStartupMessages(library("stringr"));
+suppressPackageStartupMessages(library("ggplot2"));
 
 optList <- list(
-                make_option("--outFile", default = 'summary.png', type = "character", action = "store", help ="Output file (default %default)"),
+                make_option("--outPrefix", default = 'summary', type = "character", action = "store", help ="Output file prefix (default %default)"),
                 make_option("--width", default = 1000, action = "store", help ="width of heatmap image (default %default)"),
                 make_option("--height", default = 1000, action = "store", help ="height of heatmap image (default %default)"))
-parser <- OptionParser(usage = "%prog [options] summaryFIle", option_list = optList);
+parser <- OptionParser(usage = "%prog [options] summary file(s)", option_list = optList);
 arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;
 
-summFile <- arguments$args[1];
-summ <- as.matrix(read.table(summFile, row.names = 1, sep = '\t', header = T, as.is = T));
-summ[summ == "PASS"] <- 1;
-summ[summ == "FAIL"] <- 2;
-summ[summ == "WARN"] <- 3;
-class(summ) <- 'numeric';
+summ <- arguments$args %>%
+    llply(read.table, sep = '\t', stringsAsFactors = F) %>%
+    bind_rows %>%
+    setNames(c("Status", "Metric", "Sample")) %>%
+    mutate(Sample = str_replace(Sample, '\\.bam', '')) %>%
+    mutate_each(funs(as.factor))
 
-png(opt$outFile, width = opt$width, height = opt$height, type = 'cairo-png');
-heatmap(t(summ), col = c("black", "red", "yellow"), margins = c(10, 20), scale = 'none');
-legend('topleft', legend = c("pass", "fail", "warn"), fill = c('black', 'red', 'yellow'));
-null <- dev.off();
+fn <- str_c(opt$outPrefix, '.png')
+png(fn, width = opt$width + 10 * nlevels(summ$Sample), height = opt$height, type = 'cairo-png');
+p <- summ %>% ggplot(aes(x = Sample, y = Metric)) +
+    geom_tile(aes(fill = Status)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p
+dev.off();
 
-
-
+fn <- str_c(opt$outPrefix, '.txt')
+summ %>% spread(Metric, Status) %>% write.table(file = fn, sep = '\t', quote = F, row.names = F)

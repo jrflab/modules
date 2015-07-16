@@ -14,6 +14,12 @@ use IO::Socket::INET;
 use Path::Class qw/ file /;
 use Cwd;
 
+use Fcntl qw(:flock);
+unless (flock(DATA, LOCK_EX|LOCK_NB)) {
+    print "$0 is already running. Exiting.\n";
+    exit(0);
+}
+
 Proc::Daemon::Init;
 
 sub done { exit(0); }
@@ -52,22 +58,13 @@ sub job_thread {
     print $client "Code: " . ($exitStatus + $aborted + $signaled + $coreDumped);
 };
 
-#my $socketPath = file($ARGV[0]);
-#my $server = new IO::Socket->new (
-#Domain => AF_UNIX,
-#Type => SOCK_STREAM,
-#Local => $socketPath,
-#Listen => 3000,
-#) or die "Unable to create server socket: $!\n";
-#eval 'END { unlink $socketPath } 1' or die $@;
-
 my $server = IO::Socket::INET->new(
     LocalHost => 'localhost',
     LocalPort => '34383',
     Proto => 'tcp',
     Listen => 1000,
     Reuse => 1,
-);
+) or die "Unable to listen on port 34383$!\n";
 
 my ($error, $diagnosis) = drmaa_init(undef);
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
@@ -114,3 +111,8 @@ while (my $client = $server->accept()) {
 
 ($error, $diagnosis) = drmaa_exit();
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
+
+1;
+__DATA__
+This exists so flock() code above works.
+DO NOT REMOVE THIS DATA SECTION.
