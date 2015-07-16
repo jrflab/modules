@@ -18,6 +18,7 @@ optList <- list(
                 make_option("--sampleSetsFile", default = NULL, help = "sample sets file"),
                 make_option("--outDir", default = NULL, help = "output file directory for plots"),
                 make_option("--nucFile", default = NULL, help = "bedtools nuc output for 100bp window modified target bed file"),
+                make_option("--minCov", default = 5, type = 'integer', help = "minimum coverage required in a window"),
                 make_option("--alpha", default = 0.000001, type = "double", action = "store", help ="alpha"),
                 make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help ="outlier SD scale"),
                 make_option("--undoSD", default = 2, type = "double", action = "store", help ="undo SD"),
@@ -63,6 +64,8 @@ pos <- str_match(rownames(doc), "(.*):(.*)-(.*)") %>%
 
 doc <- cbind(pos, doc)
 doc <- inner_join(nuc, doc, by = c("chr", "start", "end"))
+
+doc %<>% filter(rowSums(select(., contains('total_cvg')) < opt$minCov) == 0)
 
 # step 1: square-root transformed
 doc %<>% mutate_each(funs(sqrt), ends_with("total_cvg"))
