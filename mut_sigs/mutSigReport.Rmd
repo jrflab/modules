@@ -45,7 +45,8 @@ sigs <- alexandrov[, grepl('Signature', colnames(alexandrov))]
 genSeq <- getSeq(genome)
 trintFq <- trinucleotideFrequency(genSeq)
 trintFq <- colSums(trintFq) / sum(as.numeric(trintFq))
-ratio <- 1.0
+ratio <- rep(1.0, length(trintFq))
+names(ratio) <- names(trintFq)
 if (!is.null(opt$targetBed)) {
     bed <- import(opt$targetBed)
     targetSeq <- getSeq(genome, bed)
@@ -86,12 +87,11 @@ for (n in names(vcfs)) {
 ```{r mutCounts}
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    p <- ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
+    ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
         geom_bar(stat = 'identity') + facet_wrap(~ Substitution.Type, scales = 'free_x') +
         xlab("") + ylab("") + ggtitle(tit) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
         scale_fill_manual(values = cols)
-    p
 }
 
 mutTabs <- list()
@@ -120,12 +120,12 @@ for (s in names(vcfs)) {
     m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
     X$value[m] <- tab$value
 
-    plotMutBarplot(X, s)
+    print(plotMutBarplot(X, s))
 
     Y <- transform(X, value = value * ratio[as.character(Trinucleotide)])
     Y <- transform(Y, value = value / sum(value))
 
-    plotMutBarplot(Y, paste('normalized', s))
+    print(plotMutBarplot(Y, paste('normalized', s)))
 }
 ```
 
