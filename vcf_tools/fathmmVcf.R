@@ -10,7 +10,9 @@ suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
 suppressPackageStartupMessages(library(org.Hs.eg.db))
 suppressPackageStartupMessages(library(RMySQL))
 
-#options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+}
 options(useFancyQuotes = F)
 
 optList <- list(
