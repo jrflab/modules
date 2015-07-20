@@ -66,8 +66,7 @@ nuc %<>% mutate(start = start + 1)
 doc <- files %>%
     llply(read.delim, as.is = T) %>%
     llply(select, -one_of('total_coverage', 'average_coverage')) %>%
-    join_all(type = 'inner') %>%
-    select(Target, contains("total_cvg"))
+    join_all(type = 'inner')
 
 pos <- str_match(doc[["Target"]], "(.*):(.*)-(.*)") %>%
     data.frame(stringsAsFactors = F) %>% 
