@@ -75,7 +75,7 @@ pos <- str_match(doc[["Target"]], "(.*):(.*)-(.*)") %>%
 doc <- inner_join(pos, doc)
 doc <- inner_join(nuc, doc, by = c("chr", "start", "end"))
 
-doc %<>% filter(rowSums(select(., contains('total_cvg')) < opt$minCov) == 0)
+doc %<>% filter(rowSums(select(., one_of(str_c(samplePairs[['Tumor']], '_mean_cvg'))) < opt$minCov) == 0)
 
 # step 1: square-root transformed
 doc %<>% mutate_each(funs(sqrt), ends_with("total_cvg"))
