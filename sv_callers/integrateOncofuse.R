@@ -101,13 +101,13 @@ queryResults <- unique(rbind(sendQuery(query1), sendQuery(query2)))
 cat(paste("Found", nrow(queryResults), "records\n"))
 
 results %<>% left_join(queryResults, by = c("x5p" = "gene_symbol")) %>% rename(x5p_strand = strand)
+results %<>% left_join(queryResults, by = c("x3p" = "gene_symbol")) %>% rename(x3p_strand = strand)
 results %<>% mutate(x5p_exon_strand = ifelse(is.na(x5p_exon_strand),
                                              ifelse(x5p_strand == 1, '+', '-'),
                                              x5p_exon_strand))
 results %<>% mutate(x3p_exon_strand = ifelse(is.na(x3p_exon_strand),
                                              ifelse(x3p_strand == 1, '+', '-'),
                                              x3p_exon_strand))
-results %<>% left_join(queryResults, by = c("x3p" = "gene_symbol")) %>% rename(x3p_strand = strand)
 oncofuse <- results %$% data.frame(CHROM5p=str_c("chr", chr1), RNA_BK1 = rna_bk1, CHROM3p = str_c("chr", chr2),
                                    RNA_BK2 = rna_bk2, TISSUE_TYPE = opt$oncofuseTissueType, STRAND5p = x5p_exon_strand, STRAND3p = x3p_exon_strand)
 oncofuse %<>% mutate(RNA_BK1 = ifelse(STRAND5p == "+", RNA_BK1 + 1, RNA_BK1 - 1))
