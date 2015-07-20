@@ -25,7 +25,7 @@ integrate/oncofuse/%.oncofuse.txt : integrate/sum/%.sum.tsv integrate/exons/%.ex
 	$(call LSCRIPT_MEM,7G,10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
 		--sumFile $< \
 		--exonsFile $(<<) \
-		--breakPointsFile $(<<<) \
+		--breakpointsFile $(<<<) \
 		--outPrefix $(@D)/$*")
 
 
