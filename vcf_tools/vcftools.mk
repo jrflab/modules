@@ -231,16 +231,20 @@ endif
 	$(INIT) head -1 $< > $@ && awk -v col=$$col '! (match($$col, /MODERATE/) || match($$col, /HIGH/)) && (match($$col, /LOW/) || match($$col,/MODIFIER/))' $< >> $@
 
 %.nonsilent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
-
-%.nonsilent_cds.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
-
-%.missense.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
+	col=$$(head -1 $< | tr '\t' '\n' | grep -Fn "ANN[*].HGVS_P" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col 'match($$col, /p/)' $< >> $@
 
 %.silent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
+	col=$$(head -1 $< | tr '\t' '\n' | grep -Fn "ANN[*].HGVS_P" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col '! match($$col, /p/)' $< >> $@
+
+# DEPRECATED
+#%.nonsilent_cds.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+
+#%.missense.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
+
 
 
 # extract vcf to table
