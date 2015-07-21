@@ -8,7 +8,9 @@ use Cwd;
 my $cwd = getcwd;
 my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com defilippomr+qmake.finished\@gmail.com";
 my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com defilippomr+qmake.error\@gmail.com";
+my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'"
 my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com defilippomr+qmake.start\@gmail.com";
+
 
 sub HELP_MESSAGE {
     print "Usage: qmake.pl -n [name] -m -r [numAttempts]\n";
@@ -30,6 +32,7 @@ my %opt;
 
 getopts('n:mr:l:', \%opt);
 
+my $username = $ENV{LOGNAME} || $ENV{USER} || getpwuid($<);
 my $attempts = 1;
 my $name = "qmake";
 my $logparent = "log";
@@ -102,6 +105,7 @@ do {
         $mail_msg .=  "Dir: $cwd\n";
         $mail_msg .=  "Log dir: $cwd/$logdir\n";
         $mail_msg .=  "Log file: $cwd/$logfile\n";
+        my $slack_msg = "$username: $qmake $args in $cwd";
 
         if ($opt{m} && ($n == 0 || $n == 1 || $n + 1 == $attempts)) {
             my $mail_subject = "$name: job started ($cwd)";
@@ -113,14 +117,19 @@ do {
         waitpid(-1, 0);
         $retcode = $? >> 8; # shift bits to get the real return code
         if ($opt{m} && ($retcode == 0 || $n == 0 || $n == 1 || $n + 1 == $attempts)) {
+            $slack_msg = "*Failure* $slack_msg";
             my $addrs = ($retcode > 0)? $err_email_addrs : $fin_email_addrs;
             my $mail_subject = "[$retcode] $name: job finished ($cwd)";
-            $mail_subject = "**FINAL** $mail_subject" if ($n + 1 == $attempts);
+            if ($n + 1 == $attempts) {
+                $mail_subject = "**FINAL** $mail_subject"
+                $slack_msg = ":finnadie: $slack_msg";
+            }
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
             open(MAIL, "| mail -s '$mail_subject' $addrs");
             print MAIL "Return code: $retcode\n";
             print MAIL "$mail_msg";
             close MAIL;
+            system 'curl --data "$slack_msg" $err_slack';
         }
     }
 } while ($retcode && ++$n < $attempts);
