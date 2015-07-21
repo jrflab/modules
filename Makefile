@@ -10,8 +10,7 @@ NUM_ATTEMPTS ?= 20
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
-QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
-MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
+MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
 FLAGS ?= -j 100
 NUM_JOBS = 100
 

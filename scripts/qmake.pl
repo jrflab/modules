@@ -8,13 +8,25 @@ use Cwd;
 my $cwd = getcwd;
 my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com defilippomr+qmake.finished\@gmail.com";
 my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com defilippomr+qmake.error\@gmail.com";
-my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'"
 my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com defilippomr+qmake.start\@gmail.com";
+
+my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'";
+my $fin_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_finished'";
+
+my %slack_map = (
+    limr => "raylim",
+    burkek => "burkek",
+    schizasm => "schizasm",
+    ngk1 => "charlottekyng",
+    debruiji => "debruiji",
+    defilipm => "maria"
+);
 
 
 sub HELP_MESSAGE {
     print "Usage: qmake.pl -n [name] -m -r [numAttempts]\n";
-    print "-m: e-mails notifications\n";
+    print "-m: e-mail notifications\n";
+    print "-s: slack notifications\n";
     print "-r: number of attempts (default: 1)\n";
     print "-l: parent log dir (default: log)\n";
     print "-n: job name\n";
@@ -30,9 +42,15 @@ use Getopt::Std;
 
 my %opt;
 
-getopts('n:mr:l:', \%opt);
+getopts('n:smr:l:', \%opt);
 
 my $username = $ENV{LOGNAME} || $ENV{USER} || getpwuid($<);
+my $slackname = $slack_map{$username} || $username;
+my $project_name = $cwd;
+$project_name =~ s:.*/projects/::;
+$project_name =~ s:.*/data/::;
+$project_name =~ s:.*kinglab/::;
+$project_name =~ s:/:_:g;
 my $attempts = 1;
 my $name = "qmake";
 my $logparent = "log";
@@ -105,7 +123,6 @@ do {
         $mail_msg .=  "Dir: $cwd\n";
         $mail_msg .=  "Log dir: $cwd/$logdir\n";
         $mail_msg .=  "Log file: $cwd/$logfile\n";
-        my $slack_msg = "$username: $qmake $args in $cwd";
 
         if ($opt{m} && ($n == 0 || $n == 1 || $n + 1 == $attempts)) {
             my $mail_subject = "$name: job started ($cwd)";
@@ -117,19 +134,33 @@ do {
         waitpid(-1, 0);
         $retcode = $? >> 8; # shift bits to get the real return code
         if ($opt{m} && ($retcode == 0 || $n == 0 || $n == 1 || $n + 1 == $attempts)) {
-            $slack_msg = "*Failure* $slack_msg";
             my $addrs = ($retcode > 0)? $err_email_addrs : $fin_email_addrs;
             my $mail_subject = "[$retcode] $name: job finished ($cwd)";
             if ($n + 1 == $attempts) {
-                $mail_subject = "**FINAL** $mail_subject"
-                $slack_msg = ":finnadie: $slack_msg";
+                $mail_subject = "**FINAL** $mail_subject";
             }
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
             open(MAIL, "| mail -s '$mail_subject' $addrs");
             print MAIL "Return code: $retcode\n";
             print MAIL "$mail_msg";
             close MAIL;
-            system 'curl --data "$slack_msg" $err_slack';
+        }
+
+        my $slack_msg = "\@${slackname} $project_name : $name";
+        if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
+            if ($n + 1 == $attempts) {
+                # final attempt
+                $slack_msg = ":finnadie: $slack_msg";
+            }
+            if ($retcode == 0) {
+                # op success
+                $slack_msg = "*COMPLETE* $slack_msg";
+                system "curl --data '$slack_msg' $fin_slack &> /dev/null";
+            } else {
+                # op failure
+                $slack_msg = "*FAILURE* $slack_msg";
+                system "curl --data '$slack_msg' $err_slack &> /dev/null";
+            }
         }
     }
 } while ($retcode && ++$n < $attempts);
