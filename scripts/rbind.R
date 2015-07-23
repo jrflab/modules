@@ -16,6 +16,7 @@ arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;
 files <- arguments$args;
 
+
 Data <- list();
 for (f in files) {
     X <- read.table(file = f, sep = '\t', as.is = T, comment.char = '', quote = '');
@@ -81,6 +82,36 @@ for (f in files) {
     }   
 }
 if (length(Data) == 0) {
+    # print empty table in case there are no mutations
+    f <- files[1]
+    X <- read.table(file = f, sep = '\t', as.is = T, comment.char = '', quote = '')
+    h <- X[1,]
+    h <- sub('#', '', h)
+    colnames(X) <- h
+    X <- X[-1, ]
+    if (opt$sampleName) {
+        X[,"SAMPLE"] <- character(0)
+        h <- c("SAMPLE", h)
+        sname <- sub('\\..*', '', f)
+        sname <- sub('.*/', '', sname)
+        h <- sub(paste(sname, '\\.', sep = ''), 'SAMPLE.', h)
+        colnames(X) <- h
+    }
+    if (opt$tumorNormal) {
+        sname <- sub('\\..*', '', f)
+        sname <- sub('.*/', '', sname)
+        tumor <- sub('_.*', '', sname)
+        normal <- sub('.*_', '', sname)
+        X[,"TUMOR_SAMPLE"] <- character(0)
+        X[,"NORMAL_SAMPLE"] <- character(0)
+        h <- c("TUMOR_SAMPLE", "NORMAL_SAMPLE", h)
+
+        h <- sub(paste(tumor, '\\.', sep = ''), 'TUMOR.', h)
+        h <- sub(paste(normal, '\\.', sep = ''), 'NORMAL.', h)
+        colnames(X) <- h
+    }
+    write.table(X, sep = '\t', row.names = F, quote = F)
+
     quit(save = 'no', status = 0)
 }
 

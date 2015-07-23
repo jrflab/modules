@@ -230,18 +230,27 @@ endif
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
 	$(INIT) head -1 $< > $@ && awk -v col=$$col '! (match($$col, /MODERATE/) || match($$col, /HIGH/)) && (match($$col, /LOW/) || match($$col,/MODIFIER/))' $< >> $@
 
-%.nonsilent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
+%.synonymous.txt : %.txt
+	col_imp=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	col_eff=$$(head -1 $< | tr '\t' '\n' | grep -n "EFFECT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col_imp=$$col_imp -v col_eff=$$col_eff '! (match($$col_imp, /MODERATE/) || match($$col_imp, /HIGH/)) && (match($$col_imp, /LOW/) && (match($$col_eff, /synonymous_variant/)))' $< >> $@
 
-%.nonsilent_cds.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+%.nonsynonymous.txt : %.txt
+	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col 'match($$col, /MODERATE/) || match($$col, /HIGH/)' $< >> $@
 
-%.missense.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
-
-%.silent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
-
+# DEPRECATED
+#%.nonsilent.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
+#
+#%.nonsilent_cds.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+#
+#%.missense.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
+#
+#%.silent.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf

@@ -38,16 +38,18 @@ def add_maf_join_abs_write_excel(tsv, writer, sheetname, absdf=None, write_colum
     df = add_maf(pd.read_csv(tsv, sep="\t", dtype={"CHROM":str}))
     if len(df > 0):
         if write_columns:
-            df = df[write_columns]
-        if absdf:
+            df = df[[c for c in write_columns if c in df.columns]]
+        if absdf is not None:
             df = df.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split())\
                 .join(absdf.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split()), how='left')
-        df.to_excel(writer, sheetname, index=bool(absdf))
+        df.to_excel(writer, sheetname, index=(absdf is not None))
 
 
 def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
+                           mutect_synonymous, mutect_nonsynonymous,
                            strelka_varscan_high_moderate,
                            strelka_varscan_low_modifier,
+                           strelka_varscan_synonymous, strelka_varscan_nonsynonymous,
                            excel_file,
                            absolute_somatic_txts=None,
                            absolute_segments=None):
@@ -67,16 +69,20 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
     # add summaries
     add_maf_join_abs_write_excel(mutect_high_moderate, writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns)
     add_maf_join_abs_write_excel(mutect_low_modifier, writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns)
-    # remove fathmm and chasm for indels
-    summary_columns = [c for c in summary_columns if "fathmm" not in c and "chasm" not in c]
+    add_maf_join_abs_write_excel(mutect_synonymous, writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns)
+    add_maf_join_abs_write_excel(mutect_nonsynonymous, writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns)
     add_maf_join_abs_write_excel(strelka_varscan_high_moderate, writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns)
     add_maf_join_abs_write_excel(strelka_varscan_low_modifier, writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns)
+    add_maf_join_abs_write_excel(strelka_varscan_synonymous, writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns)
+    add_maf_join_abs_write_excel(strelka_varscan_nonsynonymous, writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns)
 
     # add raw files
     add_maf_join_abs_write_excel(mutect_high_moderate, writer, "mutect_high_moderate", absdf)
     add_maf_join_abs_write_excel(mutect_low_modifier, writer, "mutect_low_modifier", absdf)
     add_maf_join_abs_write_excel(strelka_varscan_high_moderate, writer, "strelka_varscan_high_moderate", absdf)
     add_maf_join_abs_write_excel(strelka_varscan_low_modifier, writer, "strelka_varscan_low_modifier", absdf)
+    add_maf_join_abs_write_excel(strelka_varscan_synonymous, writer, "strelka_varscan_synonymous", absdf)
+    add_maf_join_abs_write_excel(strelka_varscan_nonsynonymous, writer, "strelka_varscan_nonsynonymous", absdf)
 
     writer.close()
 
@@ -86,8 +92,12 @@ def main():
                                         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("mutect_high_moderate", type=str, help="TSV")
     parser.add_argument("mutect_low_modifier", type=str, help="TSV")
+    parser.add_argument("mutect_synonymous", type=str, help="TSV")
+    parser.add_argument("mutect_nonsynonymous", type=str, help="TSV")
     parser.add_argument("strelka_varscan_high_moderate", type=str, help="TSV")
     parser.add_argument("strelka_varscan_low_modifier", type=str, help="TSV")
+    parser.add_argument("strelka_varscan_synonymous", type=str, help="TSV")
+    parser.add_argument("strelka_varscan_nonsynonymous", type=str, help="TSV")
     parser.add_argument("excel_file", type=str, help="mutation summary excel")
     parser.add_argument("--absolute_somatic_txts", default=None, type=str, help="TSV comma separated list of somatic files of absolute input")
     parser.add_argument("--absolute_segments", default=None, type=str, help="TSV comma separated list of absolute mutations output")
@@ -102,8 +112,12 @@ def main():
         absolute_segments = None
     write_mutation_summary(args.mutect_high_moderate,
                            args.mutect_low_modifier,
+                           args.mutect_synonymous,
+                           args.mutect_nonsynonymous,
                            args.strelka_varscan_high_moderate,
                            args.strelka_varscan_low_modifier,
+                           args.strelka_varscan_synonymous,
+                           args.strelka_varscan_nonsynonymous,
                            args.excel_file,
                            absolute_somatic_txts,
                            absolute_segments)

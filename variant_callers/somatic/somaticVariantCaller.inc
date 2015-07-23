@@ -23,7 +23,7 @@ FILTERS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_FILTERS),\
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
-EFF_TYPES := high_moderate low_modifier
+EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
 VCF_SUFFIXES = $(foreach type,$1,$(call FILTER_SUFFIX,$(type)))
 
