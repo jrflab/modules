@@ -43,7 +43,7 @@ VPATH ?= bam
 # create novel indel/snp tables
 
 ##### MAIN TARGETS ######
-EFF_TYPES = low_modifier high_moderate
+EFF_TYPES = low_modifier high_moderate synonymous nonsynonymous
 VARIANT_TYPES = gatk_snps gatk_indels
 
 VALIDATION ?= false
