@@ -21,9 +21,10 @@ optList <- list(
                 make_option("--outDir", default = NULL, help = "output file directory for plots"),
                 make_option("--nucFile", default = NULL, help = "bedtools nuc output for 100bp window modified target bed file"),
                 make_option("--minCov", default = 5, type = 'integer', help = "minimum coverage required in a window"),
-                make_option("--alpha", default = 0.000001, type = "double", action = "store", help ="alpha"),
-                make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help ="outlier SD scale"),
-                make_option("--undoSD", default = 2, type = "double", action = "store", help ="undo SD"),
+                make_option("--alpha", default = 0.05, type = "double", action = "store", help ="sginficance levels for the test to accept change-points"),
+                make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help = "the number of SDs from the median in the smoothing region where a smoothed point is positioned"),
+                make_option("--trim", default = 0.05, type = "double", action = "store", help = "proportion of data to be trimmed for variance calculation for smoothing outliers and undoing splits based on SD"),
+                make_option("--undoSD", default = 2, type = "double", action = "store", help = "the number of SDs between means to keep a split"),
                 make_option("--centromereFile", help = "Centromere position table"));
 
 parser <- OptionParser(usage = "%prog [options] [gatk DoC interval summary files]", option_list = optList);
@@ -115,17 +116,17 @@ colnames(genomedat) <- with(samplePairs, paste(Tumor, Normal, sep = '_'))
 # step 5: segmentation
 cna <- doc_ft %$% CNA(genomedat, chr, round(start + seq_len / 2),
            sampleid = colnames(genomedat))
-#smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = opt$outlierSDscale, trim = 0.05)
-#seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.splits = "sdundo")
-smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = 1, trim = 0.01)
-seg <- segment(smoothed.cna, undo.SD = 2, alpha = 0.05, undo.splits = "sdundo")
+smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = opt$outlierSDscale, trim = opt$trim)
+seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.splits = "sdundo", trim = opt$trim)
+#smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = 1, trim = 0.01)
+#seg <- segment(smoothed.cna, undo.SD = 2, alpha = 0.05, undo.splits = "sdundo")
 
 
 # step 6: plot (copied from existing script)
 cen <- read.table(opt$centromereFile, sep = '\t')
 for (i in colnames(genomedat)) {
     fn <- str_c(opt$outDir, '/', i, '.seg_plot.png')
-    #png(fn, type = 'cairo-png', height=400, width=2000)
+    png(fn, type = 'cairo-png', height=400, width=2000)
     obj <- subset(seg, sample=i)
 
     objdat <- obj$data[which(!is.na(obj$data[,3])),]
@@ -143,7 +144,7 @@ for (i in colnames(genomedat)) {
             text(cumsum(rle(as.vector(objdat$chrom))$lengths)-((rle(as.vector(objdat$chrom))$lengths)/2), max(objdat[,3])+0.5-0.25)
         }
 
-    #dev.off()
+    dev.off()
 }
 
 # step 7: write data
