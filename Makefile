@@ -339,5 +339,9 @@ TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
 
+TARGETS += facets
+facets :
+	$(call RUN_MAKE,modules/copy_number/facets.mk)
+
 .PHONY : $(TARGETS)
 
