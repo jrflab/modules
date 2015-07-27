@@ -20,5 +20,8 @@ endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call hetsnp-chr,$(chr))))
 
 vcf/%.het_snp.vcf : $(foreach chr,$(CHROMOSOMES),chr_vcf/%.$(chr).het_snp.vcf)
-	$(INIT) grep -P '^#' $< > $@ && sed '/^#/d' $^ >> $@
+	$(INIT) { \
+		grep -P '^#' $<; \
+		sed '/^#/d' $^ | sort -V; \
+		} > $@
 
