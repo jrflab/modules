@@ -5,6 +5,8 @@ library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
 library("reshape")
 library("boot")
+library('plyr')
+library('dplyr')
 library("ggplot2")
 library("gridExtra")
 
@@ -61,21 +63,26 @@ vcfs <- list()
 for (vcfFile in vcfFiles) {
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
-    vcfs[[s]] <- readVcf(vcfFile, 'hg19')
-    seqlevels(vcfs[[s]]) <- sub('chr', '', seqlevels(vcfs[[s]]))
-    vcfs[[s]] <- vcfs[[s]][sapply(rowData(vcfs[[s]])$ALT, length) == 1]
-    rowData(vcfs[[s]])$MUT <- paste(rowData(vcfs[[s]])$REF, unlist(rowData(vcfs[[s]])$ALT), sep = ">")
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "G>T"] <- "C>A"
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "G>C"] <- "C>G"
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "G>A"] <- "C>T"
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "A>T"] <- "T>A"
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "A>G"] <- "T>C"
-    rowData(vcfs[[s]])$MUT[rowData(vcfs[[s]])$MUT == "A>C"] <- "T>G"
-    rowData(vcfs[[s]])$MUT <- factor(rowData(vcfs[[s]])$MUT, levels = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G"))
+    vcf <- readVcf(vcfFile, 'hg19')
+    x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH', x)))
+    if (any(x)) {
+        vcf <- vcf[x,]
+        seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
+        vcf <- vcf[sapply(rowData(vcf)$ALT, length) == 1]
+        rowData(vcf)$MUT <- paste(rowData(vcf)$REF, unlist(rowData(vcf)$ALT), sep = ">")
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>T"] <- "C>A"
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>C"] <- "C>G"
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>A"] <- "C>T"
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>T"] <- "T>A"
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>G"] <- "T>C"
+        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>C"] <- "T>G"
+        rowData(vcf)$MUT <- factor(rowData(vcf)$MUT, levels = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G"))
+        vcfs[[s]] <- vcf
+    }
 }
 ```
 
-```{r pie}
+```{r pie, eval = F, echo = F}
 for (n in names(vcfs)) {
     vcf <- vcfs[[n]]
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
@@ -83,6 +90,7 @@ for (n in names(vcfs)) {
     pie(table(rowData(vcf)$MUT), col = cols, main = main)
 }
 ```
+
 
 ```{r mutCounts}
 plotMutBarplot <- function(X, tit) {
@@ -92,6 +100,14 @@ plotMutBarplot <- function(X, tit) {
         xlab("") + ylab("") + ggtitle(tit) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
         scale_fill_manual(values = cols)
+}
+
+plotMutPiechart <- function(X, tit) {
+    cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    X %>% group_by(Substitution.Type) %>% summarise(value = sum(value)) %>%
+        ggplot(aes(x = "", y = value, fill = Substitution.Type)) +
+        geom_bar(width = 1, stat = 'identity') + scale_fill_manual(values = cols) + 
+        coord_polar("y") + xlab("") + ylab("") + ggtitle(tit)
 }
 
 mutTabs <- list()
@@ -121,11 +137,14 @@ for (s in names(vcfs)) {
     X$value[m] <- tab$value
 
     print(plotMutBarplot(X, s))
+    print(plotMutPiechart(X, s))
+
 
     Y <- transform(X, value = value * ratio[as.character(Trinucleotide)])
     Y <- transform(Y, value = value / sum(value))
 
     print(plotMutBarplot(Y, paste('normalized', s)))
+    print(plotMutPiechart(Y, paste('normalized', s)))
 }
 ```
 

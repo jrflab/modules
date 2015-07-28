@@ -14,7 +14,7 @@ system "git init";
 system "git remote add origin git\@bitbucket.org:jrflab/$repoName.git";
 
 
-my $MAKEFILE = <<ENDL;
+my $CONFIG = <<ENDL;
 export REF = hg19
 DUP_TYPE = markdup
 
@@ -26,6 +26,7 @@ HARD_FILTER_SNPS = true
 
 QSUB_PRIORITY = -800
 
+my $MAKEFILE = <<ENDL;
 include modules/Makefile
 ENDL
 
@@ -37,7 +38,12 @@ unless (-e "Makefile") {
     open OUT, ">Makefile";
     print OUT $MAKEFILE;
 }
+unless (-e "config.inc") {
+    open OUT, ">config.inc";
+    print OUT $CONFIG;
+}
 system "git add Makefile";
-system "git commit -m 'makefile'";
+system "git add config.inc";
+system "git commit -m 'makefile, config.inc'";
 system "git push --set-upstream origin master";
 

@@ -4,6 +4,8 @@
 # Author: Raymond Lim <raylim@mm.st>
 #
 
+ifndef MAKEFILE
+
 export
 
 NUM_ATTEMPTS ?= 20
@@ -298,10 +300,6 @@ merge_strelka_varscan :
 TARGETS += rseqc
 rseqc :
 	$(call RUN_MAKE,modules/qc/rseqc.mk)
-
-TARGETS += mutsig_report
-mutsig_report :
-	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 
 TARGETS += integrate_rnaseq
 integrate_rnaseq :

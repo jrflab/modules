@@ -1,4 +1,7 @@
 # vim: set ft=make:
+ifneq ("$(wildcard config.inc)", "")
+include config.inc
+endif
 include modules/config.inc
 
 # default reference: 
