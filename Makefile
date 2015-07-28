@@ -4,8 +4,6 @@
 # Author: Raymond Lim <raylim@mm.st>
 #
 
-ifndef MAKEFILE
-
 export
 
 NUM_ATTEMPTS ?= 20
@@ -342,4 +340,3 @@ facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
 
 .PHONY : $(TARGETS)
-
