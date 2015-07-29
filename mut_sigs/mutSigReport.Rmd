@@ -104,6 +104,7 @@ plotMutBarplot <- function(X, tit) {
 
 plotMutPiechart <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    tit <- paste(tit, '(n = ', sum(X$value), ")", sep = '')
     X %>% group_by(Substitution.Type) %>% summarise(value = sum(value)) %>%
         ggplot(aes(x = "", y = value, fill = Substitution.Type)) +
         geom_bar(width = 1, stat = 'identity') + scale_fill_manual(values = cols) + 
