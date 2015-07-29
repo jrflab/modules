@@ -3,8 +3,6 @@
 
 ifndef GATK_INC
 DEFAULT_JAVA_MEM = 18G
-GATK_JAR = $(HOME)/share/usr/lib/java/GenomeAnalysisTK.jar
-GATK_JAR2 = $(HOME)/share/usr/lib/java/GenomeAnalysisTK-3.3-0.jar
 GATK = $(call GATK_MEM,$(DEFAULT_JAVA_MEM))
 GATK_MEM = $(JAVA7) -Xmx$(1) -jar $(GATK_JAR) -S LENIENT
 GATK2 = $(call GATK_MEM2,$(DEFAULT_JAVA_MEM))

@@ -95,5 +95,9 @@ JAVA7_BIN = /usr/bin/java
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
 ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+
+#GATK
+GATK_JAR = $(JARDIR)/GenomeAnalysisTK.jar
+GATK_JAR2 = $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
 endif
 CONFIG_INC = true

@@ -32,33 +32,21 @@ ENSEMBL_TXDB = $(REF_DIR)/hsapiens_ensembl_biomart.sqlite
 MAPSPLICE_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/chr
 MAPSPLICE_REF_BASENAME = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/hg19
 
-
 GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 
 EXOME ?= false
 ifeq ($(EXOME),true)
-   TARGETS_FILE = $(EXOME_BED_NOHEADER)
-   QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
-   EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
-else
-   ifdef TARGETS_FILE
-      CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
-   endif
+TARGETS_FILE = $(EXOME_BED_NOHEADER)
+QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
+EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
 endif
 
-#CHROMOSOMES = chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY
-#UCSC_REF ?= false
 INCLUDE_CHR_Y ?= false
-ifndef UCSC_REF
-  CHROMOSOMES ?= 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X MT
-  ifeq ($(INCLUDE_CHR_Y),true)
-     CHROMOSOMES += Y
-  endif
+ifdef TARGETS_FILE
+CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
 else
-  CHROMOSOMES ?= chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrM
-  ifeq ($(INCLUDE_CHR_Y),true)
-     CHROMOSOMES += chrY
-  endif
+CHRS = $(shell seq 1 22) $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
+CHROMOSOMES ?= $(strip $(if $(UCSC_REF),$(addprefix chr,$(CHRS)),$(CHRS)))
 endif
 
 KNOWN_CNVS = $(REF_DIR)/GRCh37_hg19_variants_2013-07-23.txt
