@@ -34,23 +34,6 @@ MAPSPLICE_REF_BASENAME = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/hg19
 
 GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 
-EXOME ?= false
-ifeq ($(EXOME),true)
-TARGETS_FILE = $(EXOME_BED_NOHEADER)
-QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
-EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
-endif
-
-INCLUDE_CHR_Y ?= false
-ifdef TARGETS_FILE
-CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
-else
-CHRS = $(shell seq 1 22) $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
-CHROMOSOMES ?= $(strip $(if $(UCSC_REF),$(addprefix chr,$(CHRS)),$(CHRS)))
-endif
-
-KNOWN_CNVS = $(REF_DIR)/GRCh37_hg19_variants_2013-07-23.txt
-
 ifndef UCSC_REF # regular gatk bundle
    REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
    REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
@@ -75,6 +58,24 @@ else # ucsc reference
    EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions.bed
    MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.bigWig
 endif
+
+EXOME ?= false
+ifeq ($(EXOME),true)
+TARGETS_FILE = $(EXOME_BED_NOHEADER)
+QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
+EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
+endif
+
+INCLUDE_CHR_Y ?= false
+ifdef TARGETS_FILE
+CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
+else
+CHRS = $(shell seq 1 22) $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
+CHROMOSOMES ?= $(strip $(if $(UCSC_REF),$(addprefix chr,$(CHRS)),$(CHRS)))
+endif
+
+KNOWN_CNVS = $(REF_DIR)/GRCh37_hg19_variants_2013-07-23.txt
+
 
 REF_NAME := 1000GenomesPilot-NCBI37
 REF_DATE := 2010517
