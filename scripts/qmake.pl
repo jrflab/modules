@@ -6,9 +6,9 @@ use warnings;
 use Cwd;
 
 my $cwd = getcwd;
-my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com defilippomr+qmake.finished\@gmail.com";
-my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com defilippomr+qmake.error\@gmail.com";
-my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com defilippomr+qmake.start\@gmail.com";
+my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com";
+my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
+my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
 
 my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'";
 my $fin_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_finished'";
@@ -146,7 +146,7 @@ do {
             close MAIL;
         }
 
-        my $slack_msg = "\@${slackname} $project_name : $name";
+        my $slack_msg = "\@${slackname} $project_name";
         if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
             if ($n + 1 == $attempts) {
                 # final attempt
@@ -154,11 +154,11 @@ do {
             }
             if ($retcode == 0) {
                 # op success
-                $slack_msg = "*COMPLETE* $slack_msg";
+                $slack_msg = "*COMPLETE* $slack_msg : $name";
                 system "curl --data '$slack_msg' $fin_slack &> /dev/null";
             } else {
                 # op failure
-                $slack_msg = "*FAILURE* $slack_msg";
+                $slack_msg = "*FAILURE* $slack_msg : " . $cwd/$logfile;
                 system "curl --data '$slack_msg' $err_slack &> /dev/null";
             }
         }
