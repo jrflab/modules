@@ -99,7 +99,8 @@ optList <- list(
                 make_option("--snp_nbhd", default = 250, type = 'integer', help = "window size"),
                 make_option("--pre_cval", default = 50, type = 'integer', help = "pre-processing critical value"),
                 make_option("--cval1", default = 150, type = 'integer', help = "critical value for estimating diploid log Ratio"),
-                make_option("--cval2", default = 50, type = 'integer', help = "critical value for segmentation"),
+                make_option("--cval2", default = 50, type = 'integer', help = "starting critical value for segmentation (increases by 10 until success)"),
+                make_option("--maxCval", default = 300, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--genome", default = 'hg19', type = 'character', help = "genome of counts file"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
@@ -151,8 +152,28 @@ cat("\n")
 
 preOut <- baseCountFile %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, chromlevels = chromLevels)
 out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
-out2 <- preOut %>% procSample(cval = opt$cval2, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
-fit <- out2 %>% emcncf
+
+cval <- opt$cval2
+success <- F
+while (!success || cval > opt$maxCval) {
+    out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
+    print(str_c("attempting to run emncf() with cval = ", cval))
+    fit <- tryCatch({
+        out2 %>% emcncf
+    }, error = function(e) {
+        print(paste("Error:", e))
+        return(NULL)
+    })
+    if (!is.null(fit)) {
+        success <- T
+    } else {
+        cval <- cval + 10
+    }
+}
+if (!success) {
+    stop("Failed to segment data\n")
+}
+
 
 CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
 plotSample(out2, chromlevels = chromLevels)
@@ -184,7 +205,7 @@ cat("# tumor =", tumorName, "\n", file = ff, append = T)
 cat("# normal =", normalName, "\n", file = ff, append = T)
 cat("# snp.nbhd =", opt$snp_nbhd, "\n", file = ff, append = T)
 cat("# cval1 =", opt$cval1, "\n", file = ff, append = T)
-cat("# cval2 =", opt$cval2, "\n", file = ff, append = T)
+cat("# cval2 =", cval, "\n", file = ff, append = T)
 cat("# min.nhet =", opt$min_nhet, "\n", file = ff, append = T)
 cat("# genome =", opt$genome, "\n", file = ff, append = T)
 cat("# Purity =", fit$purity, "\n", file = ff, append = T)
