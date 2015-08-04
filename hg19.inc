@@ -67,7 +67,7 @@ EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_nohe
 endif
 
 INCLUDE_CHR_Y ?= false
-ifdef TARGETS_FILE
+ifneq ($(and $(TARGETS_FILE),$(findstring false,$(EXOME))),)
 CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
 else
 CHRS = $(shell seq 1 22) $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
