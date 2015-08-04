@@ -9,6 +9,10 @@ LOGDIR = log/facets.$(NOW)
 .PHONY : facets
 
 RUN_FACETS = $(RSCRIPT) modules/copy_number/runFacets.R
+FACETS_PRE_CVAL ?= 50
+FACETS_CVAL ?= 50
+FACETS_MIN_NHET ?= 25
+FACETS_OPTS = --cval $(FACETS_CVAL) --genome $(REF) --min_nhet $(FACETS_MIN_NHET) --pre_cval $(FACETS_PRE_CVAL)
 
 GET_BASE_COUNTS = /ifs/e63data/socci/Code/FACETS/bin/GetBaseCounts
 GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --cov 0 --fasta $(REF_FASTA)
