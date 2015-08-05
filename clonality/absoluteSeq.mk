@@ -88,7 +88,7 @@ absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 else ifeq ($(USE_ONCOSCAN_COPYNUM),true)
 absolute/segment/%.seg.txt : oncoscan/%.probes.txt oncoscan/%.segments.txt
 	$(R_INIT)
-	r <- system('source $(PYTHON_ENV)/bin/activate $(PYTHON_ENV) && python <<EOF
+	r <- system('unset PYTHONPATH && source $(PYTHON_ENV)/bin/activate $(PYTHON_ENV) && python <<EOF
 	import pandas as pd
 	import math
 	p = pd.read_csv("$<", sep="\t")
