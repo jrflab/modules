@@ -31,7 +31,8 @@ virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.txt: virus/bowtie2/default/$
 	$(call LSCRIPT_MEM,2G,3G,"genomeCoverageBed -ibam $< > $@")
 
 virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.summary.txt: virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.txt
-	$(INIT) source $(PYTHON_ENV)/bin/activate $(PYTHON_ENV) && \
+	$(INIT) unset PYTHONPATH && \
+	source $(PYTHON_ENV)/bin/activate $(PYTHON_ENV) && \
 	echo -e '\
 import pandas as pd\n\
 cov = pd.read_csv("$<", sep="\t", names=["ref","cov","count","len","ratio"])\n\
