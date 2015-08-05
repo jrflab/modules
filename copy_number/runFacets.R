@@ -98,7 +98,9 @@ if (!interactive()) {
 optList <- list(
                 make_option("--snp_nbhd", default = 250, type = 'integer', help = "window size"),
                 make_option("--pre_cval", default = 50, type = 'integer', help = "pre-processing critical value"),
-                make_option("--cval", default = 50, type = 'integer', help = "critical value for segmentation"),
+                make_option("--cval1", default = 150, type = 'integer', help = "critical value for estimating diploid log Ratio"),
+                make_option("--cval2", default = 50, type = 'integer', help = "starting critical value for segmentation (increases by 10 until success)"),
+                make_option("--maxCval", default = 300, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--genome", default = 'hg19', type = 'character', help = "genome of counts file"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
@@ -148,12 +150,33 @@ version=buildData["Version"]
 cat("\n")
 
 
-out <- baseCountFile %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, chromlevels = chromLevels) %>%
-    procSample(cval = opt$cval, min.nhet = opt$min_nhet)
-fit <- out %>% emcncf
+preOut <- baseCountFile %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, chromlevels = chromLevels)
+out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
+
+cval <- opt$cval2
+success <- F
+while (!success || cval > opt$maxCval) {
+    out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
+    print(str_c("attempting to run emncf() with cval = ", cval))
+    fit <- tryCatch({
+        out2 %>% emcncf
+    }, error = function(e) {
+        print(paste("Error:", e))
+        return(NULL)
+    })
+    if (!is.null(fit)) {
+        success <- T
+    } else {
+        cval <- cval + 10
+    }
+}
+if (!success) {
+    stop("Failed to segment data\n")
+}
+
 
 CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
-plotSample(out, chromlevels = chromLevels)
+plotSample(out2, chromlevels = chromLevels)
 dev.off()
 
 formatSegmentOutput=function(out,sampID) {
@@ -172,8 +195,8 @@ formatSegmentOutput=function(out,sampID) {
 	as.data.frame(seg)
 }
 id <- paste(tumorName, normalName, sep = '_')
-out$IGV = formatSegmentOutput(out, id)
-save(out, fit, file = str_c(opt$outPrefix, ".Rdata"), compress=T)
+out2$IGV = formatSegmentOutput(out2, id)
+save(out2, fit, file = str_c(opt$outPrefix, ".Rdata"), compress=T)
 
 ff = str_c(opt$outPrefix, ".out")
 cat("# Version =", version, "\n", file = ff, append = T)
@@ -181,7 +204,8 @@ cat("# Input =", basename(baseCountFile), "\n", file = ff, append = T)
 cat("# tumor =", tumorName, "\n", file = ff, append = T)
 cat("# normal =", normalName, "\n", file = ff, append = T)
 cat("# snp.nbhd =", opt$snp_nbhd, "\n", file = ff, append = T)
-cat("# cval =", opt$cval, "\n", file = ff, append = T)
+cat("# cval1 =", opt$cval1, "\n", file = ff, append = T)
+cat("# cval2 =", cval, "\n", file = ff, append = T)
 cat("# min.nhet =", opt$min_nhet, "\n", file = ff, append = T)
 cat("# genome =", opt$genome, "\n", file = ff, append = T)
 cat("# Purity =", fit$purity, "\n", file = ff, append = T)
@@ -190,11 +214,11 @@ cat("# dipLogR =", fit$dipLogR, "\n", file = ff, append = T)
 cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
-write.table(cbind(out$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)]), 
+write.table(cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)]), 
     str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
 
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
-plotSampleCNCF(out, fit)
+plotSampleCNCF(out2, fit)
 #plotSampleCNCF.custom(out$jointseg, out$out, fit, 
 #        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
 

@@ -25,6 +25,7 @@ EXOME = true
 HARD_FILTER_SNPS = true
 
 QSUB_PRIORITY = -800
+ENDL
 
 my $MAKEFILE = <<ENDL;
 include modules/Makefile
