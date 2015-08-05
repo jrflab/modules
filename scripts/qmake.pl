@@ -158,7 +158,7 @@ do {
                 system "curl --data '$slack_msg' $fin_slack &> /dev/null";
             } else {
                 # op failure
-                $slack_msg = "*FAILURE* $slack_msg : " . $cwd/$logfile;
+                $slack_msg = "*FAILURE* $slack_msg : $cwd/$logfile";
                 system "curl --data '$slack_msg' $err_slack &> /dev/null";
             }
         }
