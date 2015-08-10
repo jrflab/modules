@@ -155,7 +155,7 @@ out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
 success <- F
-while (!success || cval > opt$maxCval) {
+while (!success && cval < opt$maxCval) {
     out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
     print(str_c("attempting to run emncf() with cval = ", cval))
     fit <- tryCatch({
