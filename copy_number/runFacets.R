@@ -35,7 +35,7 @@ plotSampleCNCF <- function (x, fit)
     points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2, 
         col = "brown")
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2)
+    axis(side = 2, cex.axis = 1)
     box()
     plot(mat$valor, axes = F, pch = ".", cex = 1.5, col = c("grey", 
         "lightblue")[1 + rep(cncf$chrom - 2 * floor(cncf$chrom/2), 
@@ -46,13 +46,13 @@ plotSampleCNCF <- function (x, fit)
     points(-rep(sqrt(abs(cncf$mafR)), cncf$num.mark), pch = ".", 
         cex = 2, col = "brown")
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2)
+    axis(side = 2, cex.axis = 1)
     box()
     plot(rep(cncf$cf.em, cncf$num.mark), axes = F, pch = ".", 
         cex = 2, xlab = "Chromosome", ylab = "Cellular fraction (EM)", 
         ylim = c(0, 1))
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex = 0.8)
+    axis(side = 2, cex.axis = 1)
     box()
     abline(v = start, lty = 3, col = "gray")
     abline(v = end, lty = 3, col = "gray")
@@ -63,7 +63,7 @@ plotSampleCNCF <- function (x, fit)
         cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
         lwd = 1, ylab = "Integer copy number (EM)", yaxt = "n", 
         xaxt = "n")
-    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40)
+    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
     box()
     abline(v = start, lty = 3, col = "gray")
@@ -73,7 +73,7 @@ plotSampleCNCF <- function (x, fit)
         xlab = "Chromosome", ylab = "Cellular fraction (cncf)", 
         ylim = c(0, 1))
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex = 0.8)
+    axis(side = 2, cex.axis = 1)
     box()
     abline(v = start, lty = 3, col = "gray")
     abline(v = end, lty = 3, col = "gray")
@@ -84,7 +84,7 @@ plotSampleCNCF <- function (x, fit)
         cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
         lwd = 1, ylab = "Integer copy number (cncf)", yaxt = "n", 
         xaxt = "n")
-    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40)
+    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
     box()
     abline(v = start, lty = 3, col = "gray")
@@ -155,7 +155,7 @@ out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
 success <- F
-while (!success || cval > opt$maxCval) {
+while (!success && cval < opt$maxCval) {
     out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
     print(str_c("attempting to run emncf() with cval = ", cval))
     fit <- tryCatch({
@@ -176,6 +176,10 @@ if (!success) {
 
 
 CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
+plotSample(out2, chromlevels = chromLevels)
+dev.off()
+
+pdf(file = str_c(opt$outPrefix, ".biseg.pdf"), height = 12, width = 9)
 plotSample(out2, chromlevels = chromLevels)
 dev.off()
 
@@ -219,9 +223,13 @@ write.table(cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)]),
 
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
 plotSampleCNCF(out2, fit)
+dev.off()
+
+pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 12, width = 7)
+plotSampleCNCF(out2, fit)
+dev.off()
+
 #plotSampleCNCF.custom(out$jointseg, out$out, fit, 
 #        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
-
-dev.off()
 warnings()
 
