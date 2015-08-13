@@ -100,13 +100,13 @@ optList <- list(
                 make_option("--pre_cval", default = 50, type = 'integer', help = "pre-processing critical value"),
                 make_option("--cval1", default = 150, type = 'integer', help = "critical value for estimating diploid log Ratio"),
                 make_option("--cval2", default = 50, type = 'integer', help = "starting critical value for segmentation (increases by 10 until success)"),
-                make_option("--maxCval", default = 300, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
+                make_option("--max_cval", default = 300, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
+                make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
                 make_option("--genome", default = 'hg19', type = 'character', help = "genome of counts file"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
 
 parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList);
-n
 
 arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;
@@ -155,7 +155,7 @@ out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
 success <- F
-while (!success && cval < opt$maxCval) {
+while (!success && cval < opt$max_cval) {
     out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
     print(str_c("attempting to run emncf() with cval = ", cval))
     fit <- tryCatch({
@@ -218,9 +218,6 @@ cat("# dipLogR =", fit$dipLogR, "\n", file = ff, append = T)
 cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
-write.table(cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)]), 
-    str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
-
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
 plotSampleCNCF(out2, fit)
 dev.off()
@@ -228,6 +225,54 @@ dev.off()
 pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 12, width = 7)
 plotSampleCNCF(out2, fit)
 dev.off()
+
+tab <- cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)])
+write.table(tab, row.names = F, quote = F, sep = '\t')
+
+
+#### turn segmented copy number data to gene-based copy number with findOverlaps
+## define HomDel as TCN=0, loss as TCN<ploidy, gain as TCN>ploidy, amp as TCN>=ploidy+4
+## where ploidy= mode of TCN
+### some variant of the below, also need one for the breast panel, IMPACT310 and exome
+
+genes <- read.delim(opt$gene_loc_file, as.is=T)
+
+genesGR <- GRanges(seqnames=genes$chromosome, 
+        ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
+        mcols=genes[,c("order", "Cyt", "hgnc_symbol")])
+
+tab$chrom[which(tab$chrom==23)] <- "X"
+
+tabGR <- GRanges(seqnames=tab$chrom, 
+    ranges=IRanges(as.numeric(tab$loc.start), as.numeric(tab$loc.end)),
+    mcols=tab[,-c(1:4)])
+
+fo <- findOverlaps(tabGR, genesGR)
+rr <- ranges(fo, ranges(tabGR), ranges(genesGR))
+df <- cbind(as.data.frame(fo), as.data.frame(rr))
+
+df <- cbind(df, mcols(genesGR)[df$subjectHits,], mcols(tabGR)[df$queryHits,])
+
+#when genes span multiple segments
+oo <- tapply(df$mcols.cnlr.median, df$subjectHits, function(x){which.max(abs(x))})
+oo <- oo[match(1:409, names(oo))]
+oo[which(is.na(oo))] <- 1
+
+df <- df[unlist(lapply(1:409, function(x) { which(df$mcols.order==x)[oo[which(names(oo)==x)]]})),]
+
+ploidy <- table(df$mcols.tcn)
+ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
+
+df$GL <- 0
+df$GL[which(df$mcols.tcn<ploidy)] <- -1
+df$GL[which(df$mcols.tcn==0)] <- -2
+df$GL[which(df$mcols.tcn>ploidy)] <- 1
+df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
+
+df <- df[match(genes$order, df$mcols.order),]
+
+mm <- cbind(genes, df$GL)
+write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
 
 #plotSampleCNCF.custom(out$jointseg, out$out, fit, 
 #        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))

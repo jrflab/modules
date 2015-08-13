@@ -22,7 +22,10 @@ FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/targets_dbsnp.vcf.gz,$(DBSNP))
 
 MERGE_TN = $(PYTHON) /ifs/e63data/socci/Code/FACETS/mergeTN.py
 
-facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).out)
+FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
+FACETS_GENE_CN_OPTS = --geneLocFile $(HOME)/share/reference/IMPACT410_genes_for_copynumber.txt
+
+facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt) facets/geneCN.txt
 
 facets/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -u -a $(DBSNP) -b $< | gzip -c > $@
@@ -36,6 +39,8 @@ facets/base_count/$1_$2.bc.gz : facets/base_count/$1.bc.gz facets/base_count/$2.
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call base-count-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-facets/%.out : facets/base_count/%.bc.gz
+facets/%.cncf.txt : facets/base_count/%.bc.gz
 	$(call LSCRIPT_MEM,8G,10G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix facets/$* $<")
 
+facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt)
+	$(call LSCRIPT_MEM,8G,10G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
