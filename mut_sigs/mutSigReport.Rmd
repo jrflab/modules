@@ -31,6 +31,8 @@ genome <- BSgenome.Hsapiens.UCSC.hg19;
 seqlevels(genome) <- sub('chr', '', seqlevels(genome))
 bases <- c("A", "C", "G", "T")
 
+theme_set(theme_bw(base_size = 18))
+
 ```
 
 # `r opt$name` Mutational Signature Report
@@ -96,7 +98,7 @@ for (n in names(vcfs)) {
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
     ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
-        geom_bar(stat = 'identity') + facet_wrap(~ Substitution.Type, scales = 'free_x') +
+        geom_bar(stat = 'identity') + facet_grid(~ Substitution.Type, scales = 'free_x') +
         xlab("") + ylab("") + ggtitle(tit) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
         scale_fill_manual(values = cols)
@@ -129,7 +131,7 @@ for (s in names(vcfs)) {
 }
 ```
 
-```{r mutCountPlots, fig.width=12}
+```{r mutCountPlots, fig.width=20}
 for (s in names(vcfs)) {
     tabs <- mutTabs[[s]]
     tab <- melt(tabs)
