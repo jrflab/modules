@@ -227,7 +227,7 @@ plotSampleCNCF(out2, fit)
 dev.off()
 
 tab <- cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)])
-write.table(tab, row.names = F, quote = F, sep = '\t')
+write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
 
 
 #### turn segmented copy number data to gene-based copy number with findOverlaps
@@ -235,44 +235,44 @@ write.table(tab, row.names = F, quote = F, sep = '\t')
 ## where ploidy= mode of TCN
 ### some variant of the below, also need one for the breast panel, IMPACT310 and exome
 
-genes <- read.delim(opt$gene_loc_file, as.is=T)
+#genes <- read.delim(opt$gene_loc_file, as.is=T)
 
-genesGR <- GRanges(seqnames=genes$chromosome, 
-        ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
-        mcols=genes[,c("order", "Cyt", "hgnc_symbol")])
+#genesGR <- GRanges(seqnames=genes$chromosome, 
+#        ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
+#        mcols=genes[,c("order", "Cyt", "hgnc_symbol")])
 
-tab$chrom[which(tab$chrom==23)] <- "X"
+#tab$chrom[which(tab$chrom==23)] <- "X"
 
-tabGR <- GRanges(seqnames=tab$chrom, 
-    ranges=IRanges(as.numeric(tab$loc.start), as.numeric(tab$loc.end)),
-    mcols=tab[,-c(1:4)])
+#tabGR <- GRanges(seqnames=tab$chrom, 
+#    ranges=IRanges(as.numeric(tab$loc.start), as.numeric(tab$loc.end)),
+#    mcols=tab[,-c(1:4)])
 
-fo <- findOverlaps(tabGR, genesGR)
-rr <- ranges(fo, ranges(tabGR), ranges(genesGR))
-df <- cbind(as.data.frame(fo), as.data.frame(rr))
+#fo <- findOverlaps(tabGR, genesGR)
+#rr <- ranges(fo, ranges(tabGR), ranges(genesGR))
+#df <- cbind(as.data.frame(fo), as.data.frame(rr))
 
-df <- cbind(df, mcols(genesGR)[df$subjectHits,], mcols(tabGR)[df$queryHits,])
+#df <- cbind(df, mcols(genesGR)[df$subjectHits,], mcols(tabGR)[df$queryHits,])
 
 #when genes span multiple segments
-oo <- tapply(df$mcols.cnlr.median, df$subjectHits, function(x){which.max(abs(x))})
-oo <- oo[match(1:409, names(oo))]
-oo[which(is.na(oo))] <- 1
+#oo <- tapply(df$mcols.cnlr.median, df$subjectHits, function(x){which.max(abs(x))})
+#oo <- oo[match(1:409, names(oo))]
+#oo[which(is.na(oo))] <- 1
 
-df <- df[unlist(lapply(1:409, function(x) { which(df$mcols.order==x)[oo[which(names(oo)==x)]]})),]
+#df <- df[unlist(lapply(1:409, function(x) { which(df$mcols.order==x)[oo[which(names(oo)==x)]]})),]
 
-ploidy <- table(df$mcols.tcn)
-ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
+#ploidy <- table(df$mcols.tcn)
+#ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
 
-df$GL <- 0
-df$GL[which(df$mcols.tcn<ploidy)] <- -1
-df$GL[which(df$mcols.tcn==0)] <- -2
-df$GL[which(df$mcols.tcn>ploidy)] <- 1
+#df$GL <- 0
+#df$GL[which(df$mcols.tcn<ploidy)] <- -1
+#df$GL[which(df$mcols.tcn==0)] <- -2
+#df$GL[which(df$mcols.tcn>ploidy)] <- 1
 df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
 
-df <- df[match(genes$order, df$mcols.order),]
+#df <- df[match(genes$order, df$mcols.order),]
 
-mm <- cbind(genes, df$GL)
-write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
+#mm <- cbind(genes, df$GL)
+#write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
 
 #plotSampleCNCF.custom(out$jointseg, out$out, fit, 
 #        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
