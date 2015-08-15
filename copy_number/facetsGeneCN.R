@@ -36,7 +36,7 @@ if (length(arguments$args) < 1) {
     facets_files <- arguments$args
 }
 
-genes <- read.delim("/home/ngk1/share/reference/IMPACT410_genes_for_copynumber.txt", as.is=T)
+genes <- read.delim(optList$geneLocFile, as.is=T)
 
 genesGR <- GRanges(seqnames=genes$chromosome, 
         ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
