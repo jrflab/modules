@@ -58,7 +58,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         absdf = create_absolute_df(absolute_somatic_txts, absolute_segments)
     else:
         absdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,dbNSFP_ExAC_Adj_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,dbNSFP_ExAC_Adj_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
