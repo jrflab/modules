@@ -15,10 +15,12 @@ suppressPackageStartupMessages(library("magrittr"));
 suppressPackageStartupMessages(library("facets"));
 suppressPackageStartupMessages(library("foreach"));
 suppressPackageStartupMessages(library("Cairo"));
+suppressPackageStartupMessages(library("RMySQL"))
+suppressPackageStartupMessages(library("rtracklayer"))
 
 optList <- list(
-                make_option("--geneLocFile", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
-                make_option("--outFile", default = NULL, help = "output file"))
+                make_option("--outFile", default = NULL, help = "output file"),
+                make_option("--genesFile", default = NULL, help = "list of genes to include (hgnc symbols)"))
 parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);
 
 arguments <- parse_args(parser, positional_arguments = T);
@@ -33,51 +35,79 @@ if (length(arguments$args) < 1) {
     print_help(parser);
     stop();
 } else {
-    facets_files <- arguments$args
+    facetsFiles <- arguments$args
 }
 
-genes <- read.delim(optList$geneLocFile, as.is=T)
+connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_78_38')
+cat('Connecting to ensembl ... ')
+mydb <- connect()
+on.exit(dbDisconnect(mydb))
 
-genesGR <- GRanges(seqnames=genes$chromosome, 
-        ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
-        mcols=genes[,c("order", "Cyt", "hgnc_symbol")])
+query <- "select r.name as chrom,
+g.seq_region_start as start,
+g.seq_region_end as end,
+x.display_label as hgnc,
+k.band as band
+from gene as g
+join seq_region as r on g.seq_region_id = r.seq_region_id
+join xref as x on g.display_xref_id = x.xref_id
+join karyotype k on g.seq_region_id = k.seq_region_id and g.seq_region_start >= k.seq_region_start and g.seq_region_end <= k.seq_region_end
+where x.external_db_id = 1100;"
+repeat {
+    rs <- try(dbSendQuery(mydb, query), silent = T)
+    if (is(rs, "try-error")) {
+        cat("Lost connection to mysql db ... ")
+        mydb <- connect()
+        cat("reconnected\n")
+    } else {
+        break
+    }
+}
+genes <- dbFetch(rs, -1)
+cat(paste("Found", nrow(genes), "records\n"))
 
+genes %<>% filter(chrom %in% as.character(c(1:22, "X", "Y"))) %>%
+    distinct(hgnc) %>%
+    arrange(as.integer(chrom), start, end)
 
-mm <- do.call("cbind", lapply(facets_files, function(f) {
+if (!is.null(opt$genesFile)) {
+    g <- scan(opt$genesFile, what = 'character')
+    genes %<>% filter(hgnc %in% g)
+}
+
+cat(paste("Filtering to", nrow(genes), "records\n"))
+
+genesGR <- genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
+            
+mm <- lapply(facetsFiles, function(f) {
     tab <- read.delim(f, as.is=T)
     tab$chrom[which(tab$chrom==23)] <- "X"
 
-    tabGR <- GRanges(seqnames=tab$chrom, 
-        ranges=IRanges(as.numeric(tab$loc.start), as.numeric(tab$loc.end)),
-        mcols=tab[,-c(1:4)])
+    tabGR <- tab %$% GRanges(seqnames = chrom, ranges = IRanges(loc.start, loc.end))
+    mcols(tabGR) <- tab %>% select(cnlr.median:lcn.em)
 
     fo <- findOverlaps(tabGR, genesGR)
-    rr <- ranges(fo, ranges(tabGR), ranges(genesGR))
-    df <- cbind(as.data.frame(fo), as.data.frame(rr))
 
-    df <- cbind(df, mcols(genesGR)[df$subjectHits,], mcols(tabGR)[df$queryHits,])
+    df <- as.data.frame(cbind(mcols(genesGR)[subjectHits(fo),], mcols(tabGR)[queryHits(fo),]))
+    df %<>% group_by(hgnc) %>% top_n(1, abs(cnlr.median))
 
-#when genes span multiple segments
-    oo <- tapply(df$mcols.cnlr.median, df$subjectHits, function(x){which.max(abs(x))})
-    oo <- oo[match(1:409, names(oo))]
-    oo[which(is.na(oo))] <- 1
-
-    df <- df[unlist(lapply(1:409, function(x) { which(df$mcols.order==x)[oo[which(names(oo)==x)]]})),]
-
-    ploidy <- table(df$mcols.tcn)
+    ploidy <- table(df$tcn)
     ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
 
     df$GL <- 0
-    df$GL[which(df$mcols.tcn<ploidy)] <- -1
-    df$GL[which(df$mcols.tcn==0)] <- -2
-    df$GL[which(df$mcols.tcn>ploidy)] <- 1
-    df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
+    df$GL[df$tcn < ploidy] <- -1
+    df$GL[df$tcn == 0] <- -2
+    df$GL[df$tcn > ploidy] <- 1
+    df$GL[df$tcn >= ploidy + 4] <- 2
+    df %>% select(hgnc, GL)
+})
+names(mm) <- facetsFiles
+for (f in facetsFiles) {
+    n <- sub('\\..*', '', sub('.*/', '', f))
+    colnames(mm[[f]])[2] <- n
+}
 
-    df <- df[match(genes$order, df$mcols.order),]
-    df$GL
-}))
-colnames(mm) <- facets_files
-mm <- cbind(genes, mm)
+mm <- inner_join(genes, join_all(mm)) %>% arrange(as.integer(chrom), start, end)
 write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
 
 
