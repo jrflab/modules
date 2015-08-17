@@ -267,14 +267,14 @@ write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, se
 #df$GL[which(df$mcols.tcn<ploidy)] <- -1
 #df$GL[which(df$mcols.tcn==0)] <- -2
 #df$GL[which(df$mcols.tcn>ploidy)] <- 1
-df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
+#df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
 
 #df <- df[match(genes$order, df$mcols.order),]
 
 #mm <- cbind(genes, df$GL)
 #write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
 
-#plotSampleCNCF.custom(out$jointseg, out$out, fit, 
-#        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
+plotSampleCNCF.custom(out$jointseg, out$out, fit, 
+        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
 warnings()
 
