@@ -47,11 +47,13 @@ query <- "select r.name as chrom,
 g.seq_region_start as start,
 g.seq_region_end as end,
 x.display_label as hgnc,
-k.band as band
+k.band as band,
 from gene as g
 join seq_region as r on g.seq_region_id = r.seq_region_id
 join xref as x on g.display_xref_id = x.xref_id
-join karyotype k on g.seq_region_id = k.seq_region_id and g.seq_region_start >= k.seq_region_start and g.seq_region_end <= k.seq_region_end
+left join karyotype k on g.seq_region_id = k.seq_region_id
+and ((g.seq_region_start >= k.seq_region_start and g.seq_region_start <= k.seq_region_end)
+or (g.seq_region_end >= k.seq_region_start and g.seq_region_end <= k.seq_region_end))
 where x.external_db_id = 1100;"
 repeat {
     rs <- try(dbSendQuery(mydb, query), silent = T)
@@ -75,8 +77,8 @@ if (!is.null(opt$genesFile)) {
     genes %<>% filter(hgnc %in% g)
     absentGenes <- g[!g %in% genes$hgnc]
     if (length(absentGenes) > 0) {
-        X <- data.frame(hgnc = absentGenes, stringsAsFactors = F)
-        genes %<>% full_join(X)
+        print("Unable to find", length(absentGenes), "in database\n");
+        cat(absentGenes, sep = '\n');
     }
 }
 
