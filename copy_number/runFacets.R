@@ -62,7 +62,7 @@ plotSampleCNCF <- function (x, fit)
     matplot(cbind(rep(tcnscaled, cncf$num.mark), rep(cncf$lcn.em, 
         cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
         lwd = 1, ylab = "Integer copy number (EM)", yaxt = "n", 
-        xaxt = "n")
+        xaxt = "n", ylim=c(0, max(tcnscaled)))
     axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
     box()
@@ -83,7 +83,7 @@ plotSampleCNCF <- function (x, fit)
     matplot(cbind(rep(tcnscaled, cncf$num.mark), rep(cncf$lcn, 
         cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
         lwd = 1, ylab = "Integer copy number (cncf)", yaxt = "n", 
-        xaxt = "n")
+        xaxt = "n", ylim = c(0, max(tcnscaled)))
     axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
     axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
     box()
@@ -274,7 +274,7 @@ write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, se
 #mm <- cbind(genes, df$GL)
 #write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
 
-plotSampleCNCF.custom(out$jointseg, out$out, fit, 
-        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
+#plotSampleCNCF.custom(out$jointseg, out$out, fit, 
+#        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
 warnings()
 
