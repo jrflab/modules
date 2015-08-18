@@ -112,7 +112,7 @@ for (f in facetsFiles) {
     colnames(mm[[f]])[2] <- n
 }
 
-mm <- inner_join(genes, join_all(mm)) %>% arrange(as.integer(chrom), start, end)
+mm <- left_join(genes, join_all(mm, type = 'full')) %>% arrange(as.integer(chrom), start, end)
 write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
 
 
