@@ -19,6 +19,7 @@ export REF = hg19
 DUP_TYPE = markdup
 
 #TARGETS_FILE = intervals.bed
+#GENES_FILE = genes.txt
 EXOME = true
 
 # gatk options

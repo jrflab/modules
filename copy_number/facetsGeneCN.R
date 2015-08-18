@@ -73,6 +73,11 @@ genes %<>% filter(chrom %in% as.character(c(1:22, "X", "Y"))) %>%
 if (!is.null(opt$genesFile)) {
     g <- scan(opt$genesFile, what = 'character')
     genes %<>% filter(hgnc %in% g)
+    absentGenes <- g[!g %in% genes$hgnc]
+    if (length(absentGenes) > 0) {
+        X <- data.frame(hgnc = absentGenes, stringsAsFactors = F)
+        genes %<>% full_join(X)
+    }
 }
 
 cat(paste("Filtering to", nrow(genes), "records\n"))
