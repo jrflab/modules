@@ -70,7 +70,7 @@ INCLUDE_CHR_Y ?= false
 ifneq ($(and $(TARGETS_FILE),$(findstring false,$(EXOME))),)
 CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
 else
-CHRS = $(shell seq 1 22) $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
+CHRS = $(shell seq 1 22) X $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) $(if $(UCSC_REF),M,MT)
 CHROMOSOMES ?= $(strip $(if $(UCSC_REF),$(addprefix chr,$(CHRS)),$(CHRS)))
 endif
 
