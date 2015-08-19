@@ -10,7 +10,9 @@ my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished
 my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
 my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
 
-curl = "/home/limr/share/usr/anaconda/bin/curl"
+my $curl = "curl";
+my $default_curl = "/home/limr/share/usr/anaconda/bin/curl";
+$curl = $default_curl if (-x $default_curl);
 my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'";
 my $fin_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_finished'";
 
