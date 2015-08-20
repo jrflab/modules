@@ -91,6 +91,32 @@ plotSampleCNCF <- function (x, fit)
     abline(v = end, lty = 3, col = "gray")
     abline(h = c(0:5, 5 + (1:35)/3), lty = 3, col = "gray")
 }
+
+plotSampleLRR <- function(x, fit)
+{
+    mat = x$jointseg
+    cncf = fit$cncf
+    dipLogR <- fit$dipLogR
+    par(mar = c(3, 3, 1, 1), mgp = c(2, 0.7, 0))
+    chr = mat$chrom
+    len = table(chr)
+    altcol = rep(c("light blue", "gray"), 12)[-24]
+    chr.col = rep(altcol, len)
+    nmark = cncf$num.mark
+    tmp = cumsum(len)
+    start = c(1, tmp[-23] + 1)
+    end = tmp
+    mid = start + len/2
+    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-3,
+        3), col = c("grey", "lightblue")[1 + rep(cncf$chrom -
+        2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio")
+    points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2,
+        col = "brown")
+    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
+    axis(side = 2, cex.axis = 1)
+    box()
+}
+
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
@@ -222,59 +248,12 @@ CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
 plotSampleCNCF(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 12, width = 7)
-plotSampleCNCF(out2, fit)
+pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 3, width = 7)
+plotSampleLRR(out2, fit)
 dev.off()
 
 tab <- cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)])
 write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
 
-
-#### turn segmented copy number data to gene-based copy number with findOverlaps
-## define HomDel as TCN=0, loss as TCN<ploidy, gain as TCN>ploidy, amp as TCN>=ploidy+4
-## where ploidy= mode of TCN
-### some variant of the below, also need one for the breast panel, IMPACT310 and exome
-
-#genes <- read.delim(opt$gene_loc_file, as.is=T)
-
-#genesGR <- GRanges(seqnames=genes$chromosome, 
-#        ranges=IRanges(as.numeric(genes$start_position), as.numeric(genes$end_position)),
-#        mcols=genes[,c("order", "Cyt", "hgnc_symbol")])
-
-#tab$chrom[which(tab$chrom==23)] <- "X"
-
-#tabGR <- GRanges(seqnames=tab$chrom, 
-#    ranges=IRanges(as.numeric(tab$loc.start), as.numeric(tab$loc.end)),
-#    mcols=tab[,-c(1:4)])
-
-#fo <- findOverlaps(tabGR, genesGR)
-#rr <- ranges(fo, ranges(tabGR), ranges(genesGR))
-#df <- cbind(as.data.frame(fo), as.data.frame(rr))
-
-#df <- cbind(df, mcols(genesGR)[df$subjectHits,], mcols(tabGR)[df$queryHits,])
-
-#when genes span multiple segments
-#oo <- tapply(df$mcols.cnlr.median, df$subjectHits, function(x){which.max(abs(x))})
-#oo <- oo[match(1:409, names(oo))]
-#oo[which(is.na(oo))] <- 1
-
-#df <- df[unlist(lapply(1:409, function(x) { which(df$mcols.order==x)[oo[which(names(oo)==x)]]})),]
-
-#ploidy <- table(df$mcols.tcn)
-#ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
-
-#df$GL <- 0
-#df$GL[which(df$mcols.tcn<ploidy)] <- -1
-#df$GL[which(df$mcols.tcn==0)] <- -2
-#df$GL[which(df$mcols.tcn>ploidy)] <- 1
-#df$GL[which(df$mcols.tcn>=ploidy+4)] <- 2
-
-#df <- df[match(genes$order, df$mcols.order),]
-
-#mm <- cbind(genes, df$GL)
-#write.table(mm, file="GL.txt", sep="\t", row.names=F, na="", quote=F)
-
-#plotSampleCNCF.custom(out$jointseg, out$out, fit, 
-#        main = paste(projectName, "[", tumorName, normalName, "]", "cval  = ", CVAL))
 warnings()
 

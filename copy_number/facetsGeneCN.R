@@ -106,15 +106,25 @@ mm <- lapply(facetsFiles, function(f) {
     df$GL[df$tcn == 0] <- -2
     df$GL[df$tcn > ploidy] <- 1
     df$GL[df$tcn >= ploidy + 4] <- 2
-    df %>% select(hgnc, GL)
+
+    load(gsub("cncf.txt", "Rdata", f, fixed=T))
+    lrr <- sort(out2$jointseg$cnlr)
+    lrr <- lrr[round(0.275*length(lrr)):round(0.725*length(lrr))]
+    df$GL2 <- 0
+    df$GL2[df$cnlr.median < median(lrr)-(2.5*sd(lrr))] <- -1
+    df$GL2[df$cnlr.median < median(lrr)-(7*sd(lrr))] <- -2
+    df$GL2[df$cnlr.median > median(lrr)+(2*sd(lrr))] <- 1
+    df$GL2[df$cnlr.median > median(lrr)+(6*sd(lrr))] <- 2
+
+    df %>% select(hgnc, GL, GL2)
 })
 names(mm) <- facetsFiles
 for (f in facetsFiles) {
     n <- sub('\\..*', '', sub('.*/', '', f))
-    colnames(mm[[f]])[2] <- n
+    colnames(mm[[f]])[2:3] <- paste(n, c("EM", "LRR_threshold"), sep="_")
 }
 
-mm <- left_join(genes, join_all(mm, type = 'full')) %>% arrange(as.integer(chrom), start, end)
+mm <- left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>% arrange(as.integer(chrom), start, end)
 write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
 
 
