@@ -58,8 +58,13 @@ endif
 	$(call LSCRIPT_PARALLEL_MEM,5,2G,3G,"$(call GATK_MEM,8G) -T VariantAnnotator \
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
+# snp sift using GMAF > 1% filtered dbsnp 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(DBSNP1PC) $< > $@ && $(RM) $^"))
+
+# mouse genome project dbsnp
+%.mgp_dbsnp.vcf : %.vcf %.vcf.idx 
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
 
 %.cosmic.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(COSMIC) $< > $@ && $(RM) $^"))
