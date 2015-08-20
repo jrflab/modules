@@ -68,7 +68,8 @@ X <- data.frame(x3p = unlist(y), X[rep(1:nrow(X), sapply(y, length)), -2], strin
 results <- X %>% full_join(exons)
 
 cat('Connecting to ensembl ... ')
-mydb <- dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_78_38')
+connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
+mydb <- connect()
 on.exit(dbDisconnect(mydb))
 cat('done\n')
 
@@ -89,7 +90,7 @@ sendQuery <- function(query) {
         rs <- try(dbSendQuery(mydb, query), silent = T)
         if (is(rs, "try-error")) {
             cat("Lost connection to mysql db ... ")
-            mydb <- dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_78_38')
+            mydb <- connect()
             cat("reconnected\n")
         } else {
             break
