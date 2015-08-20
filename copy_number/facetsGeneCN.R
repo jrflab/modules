@@ -108,8 +108,13 @@ mm <- lapply(facetsFiles, function(f) {
     df$GL[df$tcn >= ploidy + 4] <- 2
 
     load(gsub("cncf.txt", "Rdata", f, fixed=T))
+    noise <- median(abs(out2$jointseg$cnlr-  unlist(apply(out2$out[,c("cnlr.median", "num.mark")], 1, function(x) {rep(x[1], each=x[2])}))))
+
     lrr <- sort(out2$jointseg$cnlr)
-    lrr <- lrr[round(0.275*length(lrr)):round(0.725*length(lrr))]
+    if (noise <= 0.2) { lrr <- lrr[round(0.25*length(lrr)):round(0.75*length(lrr))]
+    } else if ( noise <= 0.3 ) { lrr <- lrr[round(0.275*length(lrr)):round(0.725*length(lrr))]
+    } else { lrr <- lrr[round(0.3*length(lrr)):round(0.7*length(lrr))]}
+
     df$GL2 <- 0
     df$GL2[df$cnlr.median < median(lrr)-(2.5*sd(lrr))] <- -1
     df$GL2[df$cnlr.median < median(lrr)-(7*sd(lrr))] <- -2
