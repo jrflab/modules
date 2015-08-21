@@ -47,7 +47,7 @@ query <- "select r.name as chrom,
 g.seq_region_start as start,
 g.seq_region_end as end,
 x.display_label as hgnc,
-k.band as band,
+k.band as band
 from gene as g
 join seq_region as r on g.seq_region_id = r.seq_region_id
 join xref as x on g.display_xref_id = x.xref_id
