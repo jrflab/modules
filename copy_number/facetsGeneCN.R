@@ -38,7 +38,7 @@ if (length(arguments$args) < 1) {
     facetsFiles <- arguments$args
 }
 
-connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_78_38')
+connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
 cat('Connecting to ensembl ... ')
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
@@ -106,15 +106,30 @@ mm <- lapply(facetsFiles, function(f) {
     df$GL[df$tcn == 0] <- -2
     df$GL[df$tcn > ploidy] <- 1
     df$GL[df$tcn >= ploidy + 4] <- 2
-    df %>% select(hgnc, GL)
+
+    load(gsub("cncf.txt", "Rdata", f, fixed=T))
+    noise <- median(abs(out2$jointseg$cnlr-  unlist(apply(out2$out[,c("cnlr.median", "num.mark")], 1, function(x) {rep(x[1], each=x[2])}))))
+
+    lrr <- sort(out2$jointseg$cnlr)
+    if (noise <= 0.2) { lrr <- lrr[round(0.25*length(lrr)):round(0.75*length(lrr))]
+    } else if ( noise <= 0.3 ) { lrr <- lrr[round(0.275*length(lrr)):round(0.725*length(lrr))]
+    } else { lrr <- lrr[round(0.3*length(lrr)):round(0.7*length(lrr))]}
+
+    df$GL2 <- 0
+    df$GL2[df$cnlr.median < median(lrr)-(2.5*sd(lrr))] <- -1
+    df$GL2[df$cnlr.median < median(lrr)-(7*sd(lrr))] <- -2
+    df$GL2[df$cnlr.median > median(lrr)+(2*sd(lrr))] <- 1
+    df$GL2[df$cnlr.median > median(lrr)+(6*sd(lrr))] <- 2
+
+    df %>% select(hgnc, GL, GL2)
 })
 names(mm) <- facetsFiles
 for (f in facetsFiles) {
     n <- sub('\\..*', '', sub('.*/', '', f))
-    colnames(mm[[f]])[2] <- n
+    colnames(mm[[f]])[2:3] <- paste(n, c("EM", "LRR_threshold"), sep="_")
 }
 
-mm <- left_join(genes, join_all(mm, type = 'full')) %>% arrange(as.integer(chrom), start, end)
+mm <- left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>% arrange(as.integer(chrom), start, end)
 write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
 
 
