@@ -5,9 +5,9 @@ FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
 
 VALIDATION_FILTERS := dbsnp eff \
-    $(if $(findstring hg19,$(REF)),cosmic nsfp) \
+    $(if $(findstring hg19,$(REF)),cosmic nsfp)
 INDEL_ANN_FILTERS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-    eff
+    eff \
     $(if $(findstring hg19,$(REF)),cosmic nsfp gene_ann cn_reg)
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) \
     $(if $(findstring hg19,$(REF)),chasm fathmm)
