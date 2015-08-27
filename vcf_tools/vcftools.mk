@@ -58,8 +58,13 @@ endif
 	$(call LSCRIPT_PARALLEL_MEM,5,2G,3G,"$(call GATK_MEM,8G) -T VariantAnnotator \
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
+# snp sift using GMAF > 1% filtered dbsnp 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(DBSNP1PC) $< > $@ && $(RM) $^"))
+
+# mouse genome project dbsnp
+%.mgp_dbsnp.vcf : %.vcf %.vcf.idx 
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
 
 %.cosmic.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(COSMIC) $< > $@ && $(RM) $^"))
@@ -112,7 +117,7 @@ endif
 	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(IGVTOOLS) index $< && sleep 10")
 
 %.chasm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"source $(CHASM_PYTHON_ENV)/bin/activate $(CHASM_PYTHON_ENV) && $(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --python $(shell which python) --outFile $@ $< && $(RM) $< $<.idx"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,8G,17G,"unset PYTHONPATH && source $(CHASM_PYTHON_ENV)/bin/activate $(CHASM_PYTHON_ENV) && $(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --python $(shell which python) --outFile $@ $< && $(RM) $< $<.idx"))
 
 %.fathmm.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,1G,4G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $< $<.idx"))
@@ -230,18 +235,27 @@ endif
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
 	$(INIT) head -1 $< > $@ && awk -v col=$$col '! (match($$col, /MODERATE/) || match($$col, /HIGH/)) && (match($$col, /LOW/) || match($$col,/MODIFIER/))' $< >> $@
 
-%.nonsilent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
+%.synonymous.txt : %.txt
+	col_imp=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	col_eff=$$(head -1 $< | tr '\t' '\n' | grep -n "EFFECT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col_imp=$$col_imp -v col_eff=$$col_eff '! (match($$col_imp, /MODERATE/) || match($$col_imp, /HIGH/)) && (match($$col_imp, /LOW/) && (match($$col_eff, /synonymous_variant/)))' $< >> $@
 
-%.nonsilent_cds.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+%.nonsynonymous.txt : %.txt
+	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
+	$(INIT) head -1 $< > $@ && awk -v col=$$col 'match($$col, /MODERATE/) || match($$col, /HIGH/)' $< >> $@
 
-%.missense.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
-
-%.silent.txt : %.txt
-	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
-
+# DEPRECATED
+#%.nonsilent.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
+#
+#%.nonsilent_cds.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
+#
+#%.missense.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
+#
+#%.silent.txt : %.txt
+#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
 
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
@@ -253,7 +267,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 			fields+=' 'GEN[\$$i].\$$f; \
 		done; \
 	done; \
-	fields+=' '\$$(grep '^##INFO=<ID=' $< | sed 's/.*ID=//; s/,.*//; s/ANN/$(ANN_FIELDS)/; ' | tr '\n' ' '); \
+	fields+=' '\$$(grep '^##INFO=<ID=' $< | grep -v '=REF,' | sed 's/.*ID=//; s/,.*//; s/ANN/$(ANN_FIELDS)/; ' | tr '\n' ' '); \
 	$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields - \$$fields > $@; \
 	for i in \`seq 0 \$$N\`; do \
 	S=\$$(grep '^#CHROM' $< | cut -f \$$((\$$i + 10))); \

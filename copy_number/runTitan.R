@@ -6,7 +6,14 @@ suppressPackageStartupMessages(library("rtracklayer"));
 suppressPackageStartupMessages(library("doMC"));
 suppressPackageStartupMessages(library("hwriter"));
 
-options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+suppressPackageStartupMessages(library("plyr"));
+suppressPackageStartupMessages(library("dplyr"));
+suppressPackageStartupMessages(library("magrittr"));
+suppressPackageStartupMessages(library("stringr"));
+
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+}
 
 optList <- list(
         make_option("--outPrefix", default = NULL, type = "character", action = "store", help ="output prefix (required)"),
@@ -58,21 +65,51 @@ if (length(arguments$args) < 1) {
     stop();
 }
 
-#options(cores = opt$numCores)
-registerDoMC(opt$numCores)
-
-chroms <- c(1:22, "X")
-if (opt$includeY) {
-    chroms <- c(chroms, "Y")
+# fix this function so that it works on data frames
+filterData <- function (data, chrs = NULL, minDepth = 10, maxDepth = 200, positionList = NULL,
+                        map = NULL, mapThres = 0.9, centromeres = NULL, centromere.flankLength = 0) {
+    if (!is.null(map)) {
+        keepMap <- map >= mapThres
+    }
+    else {
+        keepMap <- !logical(length = length(data$refOriginal))
+    }
+    if (!is.null(positionList)) {
+        chrPosnList <- paste(positionList[, 1], positionList[,
+                             2], sep = ":")
+        chrPosnData <- paste(data$chr, data$posn, sep = ":")
+        keepPosn <- is.element(chrPosnData, chrPosnList)
+    }
+    else {
+        keepPosn <- !logical(length = length(data$chr))
+    }
+    keepTumDepth <- data$tumDepth <= maxDepth & data$tumDepth >=
+        minDepth
+    if (is.null(chrs)) {
+        keepChrs <- logical(length = length(data$chr))
+    }
+    else {
+        keepChrs <- is.element(data$chr, chrs)
+    }
+    cI <- keepChrs & keepTumDepth & !is.na(data$logR) & keepMap & keepPosn
+    data <- data[cI, ]
+    if (!is.null(centromeres)) {
+        colnames(centromeres)[1:3] <- c("space", "start", "ends")
+        data <- removeCentromere(data, centromeres, flankLength = centromere.flankLength)
+    }
+    return(data)
 }
 
-if (opt$genomeStyle == "UCSC")
-    chroms <- paste('chr', chroms, sep = '')
+
+#options(cores = opt$numCores)
+registerDoMC(opt$numCores)
 
 #pg <- openPage(paste(opt$outPrefix, '_titan_report_', opt$numClusters, '.html', sep = ''), title = 'TITAN Plots')
 
 fn <- arguments$args[1]
-Data <- loadAlleleCounts(fn, header = F, genomeStyle = opt$genomeStyle)
+Data <- data.frame(loadAlleleCounts(fn, header = F, genomeStyle = opt$genomeStyle), stringsAsFactors = F)
+Data %<>% group_by(chr) %>% filter(n() > 1) %>% ungroup
+chroms <- unique(Data$chr)
 params <- loadDefaultParameters(copyNumber=5, numberClonalClusters=opt$numClusters, symmetric=TRUE, data = Data)
 params$ploidyParams$phi_0 <- opt$ploidyPrior
 
@@ -85,24 +122,6 @@ if (!is.null(opt$targetBed)) {
     cnData <- correctReadDepth(opt$tumorWig, opt$normalWig, opt$gcWig, opt$mapWig, genomeStyle = opt$genomeStyle)
 }
 
-#getPositionOverlap <- function(chr, posn, dataVal) {
-# use RangedData to perform overlap
-    #dataIR <- RangedData(space = dataVal[, 1], 
-                    #IRanges(start = dataVal[, 2], end = dataVal[, 3]),
-                    #val = as.numeric(dataVal[, 4]))
-                    
-    ## load chr/posn as data.frame first to use proper chr ordering by factors/levels
-    #chrDF <- data.frame(space=chr,start=posn,end=posn)
-    #chrDF$space <- factor(chrDF$space, levels = unique(chr))    
-    #chrIR <- as(chrDF, "RangedData")
-    
-    #hits <- findOverlaps(query = chrIR, subject = dataIR)
-    
-    ## create full dataval list ##
-    #hitVal <- rep(NA, length = length(chr))
-    #hitVal[queryHits(hits)] <- dataIR$val[subjectHits(hits)] 
-    #return(hitVal) 
-#}
 logR <- getPositionOverlap(Data$chr, Data$posn, cnData)
 Data$logR <- log(2^logR)
 rm(logR, cnData)
@@ -111,6 +130,8 @@ Data <- filterData(Data, chroms, minDepth = 10, maxDepth = 250)
 mScore <- as.data.frame(wigToRangedData(opt$mapWig))
 mScore <- getPositionOverlap(Data$chr, Data$posn, mScore[,-4])
 Data <- filterData(Data, chroms, minDepth = 10, maxDepth = 250, map = mScore, mapThres = 0.8)
+Data %<>% group_by(chr) %>% filter(n() > 1) %>% ungroup
+chroms <- unique(Data$chr)
 
 convergeParams <- runEMclonalCN(Data, gParams=params$genotypeParams, nParams=params$normalParams,
                                 pParams=params$ploidyParams, sParams=params$cellPrevParams,

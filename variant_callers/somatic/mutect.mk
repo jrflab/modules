@@ -23,13 +23,13 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 mutect/report/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^ && touch $@")
+	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^ && touch $@")
 
 mutect/lowAFreport/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) --lowAF $^ && touch $@")
+	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) --lowAF $^ && touch $@")
 
 mutect/highAFreport/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,5G,"$(MUT_FREQ_REPORT) --outDir $(@D) --highAF $^ && touch $@")
+	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) --highAF $^ && touch $@")
 
 # merge variants 
 #$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)

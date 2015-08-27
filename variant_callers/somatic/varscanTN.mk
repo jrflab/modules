@@ -7,6 +7,7 @@ LOGDIR = log/varscan.$(NOW)
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
+include modules/mut_sigs/mutSigReport.mk
 
 IGNORE_FP_FILTER ?= true
 
@@ -23,15 +24,15 @@ VARSCAN_OPTS = $(if $(findstring true,$(VALIDATION)),--validation 1 --strand-fil
 
 VPATH ?= bam
 
-.DELETE_ON_ERROR:
-.SECONDARY: 
-.PHONY: varscan varscan_vcfs varscan_tables
-
 VARIANT_TYPES = varscan_indels varscan_snps
 
-varscan : varscan_vcfs varscan_tables
+PHONY += varscan varscan_vcfs varscan_tables
+varscan : varscan_vcfs varscan_tables $(if $(findstring false,$(VALIDATION)),varscan_snps_mutsig_report)
 varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)))
 varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
+
+$(eval $(call mutsig-report-name-vcfs,varscan_snps,$(call VCFS,varscan_snps)))
+
 
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
@@ -83,3 +84,8 @@ endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 
 include modules/variant_callers/gatk.mk
+
+.DELETE_ON_ERROR:
+.SECONDARY: 
+.PHONY: $(PHONY)
+

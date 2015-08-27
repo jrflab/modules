@@ -4,14 +4,18 @@ HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
 
-VALIDATION_FILTERS := dbsnp cosmic nsfp eff
-INDEL_ANN_FILTERS := dbsnp cosmic nsfp eff gene_ann cn_reg
-SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) chasm fathmm
+VALIDATION_FILTERS := dbsnp eff \
+    $(if $(findstring hg19,$(REF)),cosmic nsfp)
+INDEL_ANN_FILTERS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
+    eff \
+    $(if $(findstring hg19,$(REF)),cosmic nsfp gene_ann cn_reg)
+SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) \
+    $(if $(findstring hg19,$(REF)),chasm fathmm)
 # apply depth filter to varscan and mutect
 FILTERS = $(if $(findstring varscan,$1) $(findstring mutect,$1),dp_ft \
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))
 # target filter
-FILTERS += $(if $(TARGETS_FILE),target_ft)\
+FILTERS += $(if $(TARGETS_FILE),target_ft)
 # hrun filter
 FILTERS += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun hrun_ft))
@@ -23,7 +27,7 @@ FILTERS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_FILTERS),\
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
 
-EFF_TYPES := high_moderate low_modifier
+EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
 VCF_SUFFIXES = $(foreach type,$1,$(call FILTER_SUFFIX,$(type)))
 

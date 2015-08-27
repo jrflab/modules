@@ -1,4 +1,7 @@
 # vim: set ft=make:
+ifneq ("$(wildcard config.inc)", "")
+include config.inc
+endif
 include modules/config.inc
 
 # default reference: 
@@ -19,8 +22,8 @@ endif
 
 get_tumors = $(wordlist 1,$(shell expr $(words $1) - 1),$1)
 get_normal = $(lastword $1)
-get_space_sets = $(shell sed -n '/^\#/d; s/\s\+/ /g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
-get_underscore_sets = $(shell sed -n '/^\#/d; s/\s\+/_/g; s/\s\+$$//; $(1)p' $(SAMPLE_SET_FILE))
+get_space_sets = $(shell sed '/^\#/d; s/\s\+/ /g; s/\s\+$$//;' $(SAMPLE_SET_FILE) | sed -n '$(1)p')
+get_underscore_sets = $(shell sed '/^\#/d; s/\s\+/_/g; s/\s\+$$//;' $(SAMPLE_SET_FILE) | sed -n '$(1)p')
 
 ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
   NUM_SETS := $(shell sed '/^\#/d' $(SAMPLE_SET_FILE) | wc -l | cut -f 1 -d' ')
@@ -32,10 +35,8 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 	  $(foreach sample,$(set.$i), \
 		  $(eval set_lookup.$(sample) := $i)))
   # define SAMPLE_SETS to contain sample_sample_normal
-  ifndef SAMPLE_SETS
-    $(foreach i,$(SETS_SEQ), \
-		$(eval SAMPLE_SETS += $(call get_underscore_sets,$i)))
-  endif
+  $(foreach i,$(SETS_SEQ), \
+	  $(eval SAMPLE_SETS += $(call get_underscore_sets,$i)))
   # tumor.SET => tumors
   $(foreach i,$(SETS_SEQ), \
 	$(eval tumor.$(call get_underscore_sets,$i) := $(call get_tumors,$(set.$i))))
@@ -221,9 +222,21 @@ LSCRIPT_NET = $(LSCRIPT)
 LSCRIPT_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
 LSCRIPT_MEM_NET = $(LSCRIPT_MEM)
 
-LSCRIPT_NAMED = $(LSCRIPT)
-LSCRIPT_NAMED_PARALLEL_MEM = $(LSCRIPT_PARALLEL_MEM)
-LSCRIPT_NAMED_MEM = $(LSCRIPT_MEM)
+LSCRIPT_NAMED = $(call LSCRIPT,$2)
+LSCRIPT_NAMED_PARALLEL_MEM = $(call LSCRIPT_PARALLEL_MEM,$2,$3,$4,$5)
+LSCRIPT_NAMED_MEM = $(call LSCRIPT_MEM,$2,$3,$4)
+
+LSCRIPT_CHECK = $(LSCRIPT)
+LSCRIPT_CHECK_PARALLEL_MEM = $(LSCRIPT_PARALLEL_MEM)
+LSCRIPT_CHECK_MEM = $(LSCRIPT_MEM)
+
+LSCRIPT_CHECK_NET = $(LSCRIPT)
+LSCRIPT_CHECK_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
+LSCRIPT_CHECK_MEM_NET = $(LSCRIPT_MEM)
+
+LSCRIPT_CHECK_NAMED = $(LSCRIPT_NAMED)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(LSCRIPT_NAMED_PARALLEL_MEM)
+LSCRIPT_CHECK_NAMED_MEM = $(LSCRIPT_MEM)
 
 else ## use cluster
 LSCRIPT = $(call LSCRIPT_NAMED,$(@F),$1)

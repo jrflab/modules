@@ -37,11 +37,23 @@ my $socketPath = file($opt{s});
 #) or die("Can't connect to server socket: $!\n");
 #
 
-my $client = IO::Socket::INET->new(
-    PeerHost => 'localhost',
-    PeerPort => '34383',
-    Proto => 'tcp',
-) or die "Can't connect to server socket: $!\n";
+my $maxRetry = 10;
+my $client;
+my $i = 0;
+while (!$client && $i < $maxRetry) {
+    $client = IO::Socket::INET->new(
+        PeerHost => 'localhost',
+        PeerPort => '34383',
+        Proto => 'tcp',
+    );
+    unless ($client) {
+        print "Can't connect to server socket: $!\n";
+        sleep 10;
+        print "Retrying... (attempt $i)\n";
+        $i++;
+    }
+}
+die "Can't connect to server\n" unless ($client);
 eval 'END { close $client } 1' or die $@;
 
 
