@@ -1,5 +1,5 @@
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 include modules/Makefile.inc
+include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 
 ALLTABLES_HIGH_MODERATE_MUTECT = alltables/allTN.$(call VCF_SUFFIXES,mutect).tab.high_moderate.txt
