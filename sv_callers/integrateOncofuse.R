@@ -110,7 +110,9 @@ results %<>% mutate(x3p_exon_strand = ifelse(is.na(x3p_exon_strand),
                                              x3p_exon_strand))
 oncofuse <- results %$% data.frame(CHROM5p=str_c("chr", chr1), RNA_BK1 = rna_bk1, CHROM3p = str_c("chr", chr2),
                                    RNA_BK2 = rna_bk2, TISSUE_TYPE = opt$oncofuseTissueType, STRAND5p = x5p_exon_strand, STRAND3p = x3p_exon_strand)
-oncofuse %<>% filter(rowSums(is.na(oncofuse)) == 0)
+x <- rowSums(is.na(oncofuse)) == 0
+oncofuse <- oncofuse[x, ]
+results <- results[x, ]
 oncofuse %<>% mutate(RNA_BK1 = ifelse(STRAND5p == "+", RNA_BK1 + 1, RNA_BK1 - 1))
 oncofuse %<>% mutate(RNA_BK2 = ifelse(STRAND3p == "+", RNA_BK2 - 1, RNA_BK2 + 1))
 
@@ -125,7 +127,7 @@ cmd <- paste(opt$java, '-Xmx1G -jar', opt$oncofuseJar, ifn, "coord - ", ofn)
 system(cmd, wait = T)
 
 oncofuse_output <- read.delim(ofn, as.is=T)
-results <- inner_join(results, oncofuse_output, by = c("id" = "GENOMIC"))
+results <- left_join(results, oncofuse_output, by = c("id" = "GENOMIC"))
 
 fn <- str_c(opt$outPrefix, ".oncofuse.txt")
 write.table(results, file=fn, sep="\t", row.names=F, quote=F, na="")
