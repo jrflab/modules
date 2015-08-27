@@ -112,8 +112,9 @@ plotSampleLRR <- function(x, fit)
         2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio")
     points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2,
         col = "brown")
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
+    axis(side = 1, at = mid, c(1:20, "", 22, "X"), cex.axis = 1, las = 2)
     axis(side = 2, cex.axis = 1)
+    abline(h=0, lty=2, col="lightgrey")
     box()
 }
 
@@ -201,13 +202,13 @@ if (!success) {
 }
 
 
-CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
-plotSample(out2, chromlevels = chromLevels)
-dev.off()
+#CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
+#plotSample(out2, chromlevels = chromLevels)
+#dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".biseg.pdf"), height = 12, width = 9)
-plotSample(out2, chromlevels = chromLevels)
-dev.off()
+#pdf(file = str_c(opt$outPrefix, ".biseg.pdf"), height = 12, width = 9)
+#plotSample(out2, chromlevels = chromLevels)
+#dev.off()
 
 formatSegmentOutput=function(out,sampID) {
 	seg=list()
@@ -248,7 +249,7 @@ CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
 plotSampleCNCF(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 3, width = 7)
+pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 3, width = 9)
 plotSampleLRR(out2, fit)
 dev.off()
 
