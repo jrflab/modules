@@ -10,8 +10,7 @@ NUM_ATTEMPTS ?= 20
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
-QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- $(QMAKE_BINARY)
-MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -- make
+MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
 FLAGS ?= -j 100
 NUM_JOBS = 100
 
@@ -300,13 +299,14 @@ TARGETS += rseqc
 rseqc :
 	$(call RUN_MAKE,modules/qc/rseqc.mk)
 
-TARGETS += mutsig_report
-mutsig_report :
-	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
-
 TARGETS += integrate_rnaseq
 integrate_rnaseq :
 	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
+
+TARGETS += integrate
+integrate :
+	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
+
 
 TARGETS += merge_split_fastq
 merge_split_fastq :
@@ -340,5 +340,8 @@ TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
 
-.PHONY : $(TARGETS)
+TARGETS += facets
+facets :
+	$(call RUN_MAKE,modules/copy_number/facets.mk)
 
+.PHONY : $(TARGETS)

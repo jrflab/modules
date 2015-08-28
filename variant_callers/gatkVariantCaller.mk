@@ -43,65 +43,43 @@ VPATH ?= bam
 # create novel indel/snp tables
 
 ##### MAIN TARGETS ######
-EFF_TYPES = low_modifier high_moderate
+EFF_TYPES = low_modifier high_moderate synonymous nonsynonymous
 VARIANT_TYPES = gatk_snps gatk_indels
 
 VALIDATION ?= false
 
-FILTER_SUFFIX := dp_ft.pass.dbsnp.cosmic
-ifdef NORMAL_VCF
-FILTER_SUFFIX := nft.$(FILTER_SUFFIX)
-endif
-ifdef TARGETS_FILE
-FILTER_SUFFIX := target_ft.$(FILTER_SUFFIX)
-endif
-ifeq ($(VALIDATION),false)
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff.chasm.fathmm
-FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
-else
-FILTER_SUFFIX.gatk_snps := $(FILTER_SUFFIX).nsfp.eff
-FILTER_SUFFIX.gatk_indels := $(FILTER_SUFFIX).eff
-endif
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab $(type).$(FILTER_SUFFIX.$(type)).tab.novel \
-				 $(foreach eff,$(EFF_TYPES),$(type).$(FILTER_SUFFIX.$(type)).tab.$(eff).novel $(type).$(FILTER_SUFFIX.$(type)).tab.$(eff)))
+FILTERS := dp_ft \
+	$(if $(NORMAL_VCF),nft) \
+	$(if $(TARGETS_FILE),target_ft) \
+	pass eff \
+	$(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
+	$(if $(findstring hg19,$(REF)),cosmic nsfp \
+		$(if $(and $(findstring snps,$1),$(findstring false,$(VALIDATION))),chasm fathmm))
+
+
+FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
+VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(call FILTER_SUFFIX,$(type)))
+TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(call FILTER_SUFFIX,$(type)).tab \
+				 $(call FILTER_SUFFIX,$(type)).tab.novel \
+				 $(foreach eff,$(EFF_TYPES),$(call FILTER_SUFFIX,$(type)).tab.$(eff).novel \
+				 	$(call FILTER_SUFFIX,$(type)).tab.$(eff)))
 
 VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
 TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
 TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
 
-ifdef SAMPLE_SET_PAIRS
-SS_FILTER_SUFFIX := dp_ft.som_ft.pass.dbsnp
-ifdef TARGETS_FILE
-SS_FILTER_SUFFIX := target_ft.$(SS_FILTER_SUFFIX)
-endif
 
-ifeq ($(VALIDATION),false)
-SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff.chasm.fathmm
-SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
-else
-SS_FILTER_SUFFIX.gatk_snps := $(SS_FILTER_SUFFIX).nsfp.eff
-SS_FILTER_SUFFIX.gatk_indels := $(SS_FILTER_SUFFIX).eff
-endif
+PHONY += gatk gatk_vcfs gatk_tables gatk_reports
 
-SS_VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)))
-SS_TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES), $(type).$(SS_FILTER_SUFFIX.$(type)).tab \
-					$(foreach eff,$(EFF_TYPES),$(type).$(SS_FILTER_SUFFIX.$(type)).tab.$(eff).novel))
-VCFS += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_VCF_SUFFIXES),vcf/$(set).$(suff).vcf))
-TABLES += $(foreach set,$(SAMPLE_SET_PAIRS),$(foreach suff,$(SS_TABLE_SUFFIXES),tables/$(set).$(suff).txt))
-TABLES += $(foreach suff,$(SS_TABLE_SUFFIXES),alltables/allSS.$(suff).txt)
-endif
+gatk : gatk_vcfs gatk_tables # reports
 
-.PHONY : all vcfs tables reports
-all : vcfs tables # reports
+gatk_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
 
-vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
+gatk_tables : $(TABLES)
 
-tables : $(TABLES)
-
-reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
-
-filtered_snps : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.filtered.vcf)
+gatk_reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 
 
 include modules/variant_callers/gatk.mk
+
+.PHONY : $(PHONY)

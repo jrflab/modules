@@ -21,9 +21,10 @@ optList <- list(
                 make_option("--outDir", default = NULL, help = "output file directory for plots"),
                 make_option("--nucFile", default = NULL, help = "bedtools nuc output for 100bp window modified target bed file"),
                 make_option("--minCov", default = 5, type = 'integer', help = "minimum coverage required in a window"),
-                make_option("--alpha", default = 0.000001, type = "double", action = "store", help ="alpha"),
-                make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help ="outlier SD scale"),
-                make_option("--undoSD", default = 2, type = "double", action = "store", help ="undo SD"),
+                make_option("--alpha", default = 0.05, type = "double", action = "store", help ="sginficance levels for the test to accept change-points"),
+                make_option("--outlierSDscale", default = 2.5, type = "double", action = "store", help = "the number of SDs from the median in the smoothing region where a smoothed point is positioned"),
+                make_option("--trim", default = 0.05, type = "double", action = "store", help = "proportion of data to be trimmed for variance calculation for smoothing outliers and undoing splits based on SD"),
+                make_option("--undoSD", default = 2, type = "double", action = "store", help = "the number of SDs between means to keep a split"),
                 make_option("--centromereFile", help = "Centromere position table"));
 
 parser <- OptionParser(usage = "%prog [options] [gatk DoC interval summary files]", option_list = optList);
@@ -66,8 +67,7 @@ nuc %<>% mutate(start = start + 1)
 doc <- files %>%
     llply(read.delim, as.is = T) %>%
     llply(select, -one_of('total_coverage', 'average_coverage')) %>%
-    join_all(type = 'inner') %>%
-    select(Target, contains("total_cvg"))
+    join_all(type = 'inner')
 
 pos <- str_match(doc[["Target"]], "(.*):(.*)-(.*)") %>%
     data.frame(stringsAsFactors = F) %>% 
@@ -77,7 +77,7 @@ pos <- str_match(doc[["Target"]], "(.*):(.*)-(.*)") %>%
 doc <- inner_join(pos, doc)
 doc <- inner_join(nuc, doc, by = c("chr", "start", "end"))
 
-doc %<>% filter(rowSums(select(., contains('total_cvg')) < opt$minCov) == 0)
+doc %<>% filter(rowSums(select(., one_of(str_c(samplePairs[['Normal']], '_mean_cvg'))) < opt$minCov) == 0)
 
 # step 1: square-root transformed
 doc %<>% mutate_each(funs(sqrt), ends_with("total_cvg"))
@@ -116,8 +116,10 @@ colnames(genomedat) <- with(samplePairs, paste(Tumor, Normal, sep = '_'))
 # step 5: segmentation
 cna <- doc_ft %$% CNA(genomedat, chr, round(start + seq_len / 2),
            sampleid = colnames(genomedat))
-smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = opt$outlierSDscale, trim = 0.01)
-seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.splits = "sdundo")
+smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = opt$outlierSDscale, trim = opt$trim)
+seg <- segment(smoothed.cna, undo.SD = opt$undoSD, alpha = opt$alpha, undo.splits = "sdundo", trim = opt$trim)
+#smoothed.cna <- smooth.CNA(cna, outlier.SD.scale = 1, trim = 0.01)
+#seg <- segment(smoothed.cna, undo.SD = 2, alpha = 0.05, undo.splits = "sdundo")
 
 
 # step 6: plot (copied from existing script)
@@ -129,7 +131,7 @@ for (i in colnames(genomedat)) {
 
     objdat <- obj$data[which(!is.na(obj$data[,3])),]
 
-    plot(objdat[,3], pch=20, xlab='Position', ylab="Copy number", xaxt='n', ylim=c(min(objdat[,3]), max(objdat[,3])+0.5))
+    plot(objdat[,3], pch=20, xlab='Position', ylab="Copy number", xaxt='n', ylim=c(min(objdat[,3]), max(objdat[,3])+0.5), main = i)
     points(unlist(apply(obj$output, 1, function(x) {rep(x[6], x[5])})), pch = 20, col = 'blue')
     abline(v=cumsum(rle(as.vector(objdat$chrom))$lengths), col="red", lty=3)
 

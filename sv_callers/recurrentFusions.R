@@ -2,7 +2,9 @@
 
 suppressPackageStartupMessages(library("optparse"));
 
-options(warn = -1, error = quote({ traceback(); q('no', status = 1) }));
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }));
+}
 
 optList <- list(
                 make_option("--geneCol1", default = NULL, help = "gene column 1"),
