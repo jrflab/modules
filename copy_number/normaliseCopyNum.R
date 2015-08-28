@@ -12,7 +12,9 @@ suppressPackageStartupMessages(library("limma"));
 suppressPackageStartupMessages(library("DNAcopy"));
 suppressPackageStartupMessages(library("foreach"));
 
-options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+}
 
 optList <- list(
                 make_option("--sampleSetsFile", default = NULL, help = "sample sets file"),
