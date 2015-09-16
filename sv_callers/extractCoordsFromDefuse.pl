@@ -45,8 +45,8 @@ while (my $line = <>) {
     my $downstreamChr = "chr" . $F{"gene_chromosome" . $downstream };
 
     # give first/last nt lost
-    my $upstreamPosn = $F{"genomic_break_pos" . $upstream } + 1;
-    my $downstreamPosn = $F{"genomic_break_pos" . $downstream } - 1;
+    my $upstreamPosn = ($F{"gene_strand" . $upstream} eq "+")? $F{"genomic_break_pos" . $upstream } + 1 : $F{"genomic_break_pos" . $upstream } - 1;
+    my $downstreamPosn = ($F{"gene_strand" . $downstream} eq "+")? $F{"genomic_break_pos" . $downstream } - 1 : $F{"genomic_break_pos" . $downstream } + 1;
 
     print join("\t", ($upstreamChr, $upstreamPosn, $downstreamChr, $downstreamPosn, $tissueType)) . "\n";
 }
