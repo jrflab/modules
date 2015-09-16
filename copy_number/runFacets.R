@@ -113,7 +113,7 @@ plotSampleLRR <- function(x, fit)
     points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2,
         col = "brown")
     axis(side = 1, at = mid, c(1:20, "", 22, "X"), cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1)
+    axis(side = 2, cex.axis = 1, las=2)
     abline(h=0, lty=2, col="lightgrey")
     box()
 }
