@@ -28,7 +28,7 @@ $SIG{INT} = \&done;
 
 # process job
 sub job_thread {
-    my ($client, $jobid) = @_;
+    my ($client, $jobid, $cwd, $outputFile) = @_;
     my $stat;
     my $error;
     my $diagnosis;
@@ -55,16 +55,48 @@ sub job_thread {
     ($error, my $coreDumped, $diagnosis ) = drmaa_wcoredump( $stat );
     print $client "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
 
-    print $client "Code: " . ($exitStatus + $aborted + $signaled + $coreDumped);
+    sleep 20; # wait for file sync
+    my $fileStatus = 0;
+    if ($outputFile ne "NULL") {
+        my $i = 0;
+        while (!check_file($cwd, $outputFile)) {
+            if ($i++ > 10) {
+                $fileStatus = 55;
+                last;
+            }
+            sleep 10;
+        }
+    }
+    print $client "Code: " . ($exitStatus + $aborted + $signaled + $coreDumped + $fileStatus) . "\n";
 };
+
+
+# check file integrity across cluster
+sub check_file {
+    my ($cwd, $file) = @_;
+    my @nodes = qw/e01 e02 e03 e04 e05 e06/;
+    my $fileSize = `stat -c\%s $cwd/$file`;
+    chomp $fileSize;
+    print "checking $cwd/$file on nodes ($fileSize)\n";
+    for my $node (@nodes) {
+        my $nodeFileSize = `ssh $node stat -c\%s $cwd/$file`;
+        chomp $nodeFileSize;
+        if ($fileSize != $nodeFileSize) {
+            print "$node: file size does not match: $fileSize != $nodeFileSize\n";
+            return 0;
+        }
+    }
+    print "$cwd/$file: all file sizes match\n";
+    return 1;
+}
 
 my $server = IO::Socket::INET->new(
     LocalHost => 'localhost',
-    LocalPort => '34383',
+    LocalPort => '34388',
     Proto => 'tcp',
     Listen => 1000,
     Reuse => 1,
-) or die "Unable to listen on port 34383$!\n";
+) or die "Unable to listen on port 34388$!\n";
 
 my ($error, $diagnosis) = drmaa_init(undef);
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
@@ -85,6 +117,8 @@ while (my $client = $server->accept()) {
     my $scriptFile = <$client>;
     chomp $scriptFile;
     print "Client script file: $scriptFile\n";
+    my $outputFile = <$client>;
+    chomp $outputFile;
 
     ($error, my $jt, $diagnosis) = drmaa_allocate_job_template();
     print $client "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" and next if $error;
@@ -106,7 +140,7 @@ while (my $client = $server->accept()) {
 
     unlink $scriptFile;
 
-    async(\&job_thread, $client, $jobid)->detach;
+    async(\&job_thread, $client, $jobid, $clientCwd, $outputFile)->detach;
 }
 
 ($error, $diagnosis) = drmaa_exit();

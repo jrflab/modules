@@ -43,7 +43,7 @@ my $i = 0;
 while (!$client && $i < $maxRetry) {
     $client = IO::Socket::INET->new(
         PeerHost => 'localhost',
-        PeerPort => '34383',
+        PeerPort => '34388',
         Proto => 'tcp',
     );
     unless ($client) {
@@ -72,6 +72,12 @@ close $scriptFile;
 #print "Sending server script: " . $scriptFile->filename . "\n";
 print $client $scriptFile->filename . "\n";
 
+if ($opt{o}) {
+    print $client $opt{o} . "\n";
+} else {
+    print $client "NULL\n";
+}
+
 my $exitCode = -1;
 while (<$client>) {
     if (/^Error:/) {
@@ -90,5 +96,7 @@ if ($opt{o} && (!-e $opt{o} || !-s $opt{o})) {
     #print "File not removed\n" if (-e $opt{o});
     die "$opt{o}: file is size 0";
 }
+
+
 
 exit $exitCode;
