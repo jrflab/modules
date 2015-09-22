@@ -37,12 +37,12 @@ sub job_thread {
         unless ($client->connected) {
             print "Client disconnected, terminating job\n";
             my ($error, $diagnosis) = drmaa_control($jobid, $DRMAA_CONTROL_TERMINATE);
-            print "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
+            print "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
         }
         ($error, my $jobidOut, $stat, my $rusage, $diagnosis) = drmaa_wait($jobid, 20);
         print $client "Keep Alive\n";
     } until ($error != $DRMAA_ERRNO_EXIT_TIMEOUT);
-    print $client "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
+    print $client "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
 
     # tell client job is complete
     # pull all exit-related codes
@@ -68,6 +68,7 @@ sub job_thread {
         }
     }
     print $client "Code: " . ($exitStatus + $aborted + $signaled + $coreDumped + $fileStatus) . "\n";
+    $client->close();
 };
 
 
@@ -94,7 +95,7 @@ my $server = IO::Socket::INET->new(
     LocalHost => 'localhost',
     LocalPort => '34388',
     Proto => 'tcp',
-    Listen => 1000,
+    Listen => SOMAXCONN,
     Reuse => 1,
 ) or die "Unable to listen on port 34388$!\n";
 
@@ -107,6 +108,7 @@ use threads ('yield',
     'stringify');
 
 while (my $client = $server->accept()) {
+    $client->autoflush(1);
     print "Client Connected\n";
     my $clientArgs = <$client>;
     chomp $clientArgs;
