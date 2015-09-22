@@ -95,6 +95,8 @@ INTEGRATE_ANN = $(REF_DIR)/annot.ucsc.txt
 INTEGRATE_BWTS = $(REF_DIR)/GATK_bundle/2.3/bwts
 ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
 
+ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
+
 endif
 HG19_INC = true
 

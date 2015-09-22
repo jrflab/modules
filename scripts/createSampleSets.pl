@@ -8,13 +8,15 @@ my %tumorSamples;
 my %normalSamples;
 for my $s (<>) {
     chomp $s;
-    my $id = $s;
-    $id =~ s/[^0-9]//g; 
-    if ($s =~ m/N$/) {
-        print STDERR "Warning: sample $id ($s) has two normals\n" if (exists $normalSamples{$id});
-        $normalSamples{$id} = $s;
-    } else {
-        push @{$tumorSamples{$id}}, $s;
+    my $id;
+    if ($s =~ /(\d+)/) {
+        $id = $1;
+        if ($s =~ m/N$/) {
+            print STDERR "Warning: sample $id ($s) has two normals\n" if (exists $normalSamples{$id});
+            $normalSamples{$id} = $s;
+        } else {
+            push @{$tumorSamples{$id}}, $s;
+        }
     }
 }
 

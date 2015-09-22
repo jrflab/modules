@@ -303,6 +303,11 @@ TARGETS += integrate_rnaseq
 integrate_rnaseq :
 	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
 
+TARGETS += integrate
+integrate :
+	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
+
+
 TARGETS += merge_split_fastq
 merge_split_fastq :
 	$(call RUN_MAKE,modules/fastq_tools/mergeSplitFastq.mk)
