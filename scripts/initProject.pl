@@ -33,17 +33,19 @@ include modules/Makefile
 ENDL
 
 unless (-d "modules") {
-    system "git clone git\@github.com:raylim/modules.git -b stable";
+    system "git clone git\@github.com:raylim/modules.git -b master";
 }
 
 unless (-e "Makefile") {
     open OUT, ">Makefile";
     print OUT $MAKEFILE;
 }
+close OUT;
 unless (-e "config.inc") {
     open OUT, ">config.inc";
     print OUT $CONFIG;
 }
+close OUT;
 system "git add Makefile";
 system "git add config.inc";
 system "git commit -m 'makefile, config.inc'";
