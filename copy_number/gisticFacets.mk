@@ -52,7 +52,7 @@ gistic/segmentationfile.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf
 	seg <- foreach (i = 1:length(segFiles), .combine = 'rbind') %dopar% {
 		segFile <- segFiles[i]
 		segName <- segNames[i]
-		s <- read.delim(segFile, header = T, as.is = T, row.names = 1, col.names=c("Sample","Chromosome","Start","End","adjusted_log_ratio","nhet","log2_ratio_seg","mafR","segclust","cnlr.median.clust","mafR.clust","cf","tcn","lcn","cf.em","tcn.em","lcn.em"))
+		s <- read.delim(segFile, header = T, as.is = T, row.names=paste0(1,"_",2,":",3,"-",4), col.names=c("Sample","Chromosome","Start","End","adjusted_log_ratio","nhet","log2_ratio_seg","mafR","segclust","cnlr.median.clust","mafR.clust","cf","tcn","lcn","cf.em","tcn.em","lcn.em"))
 		s[['Chromosome']][s[['Chromosome']] == 23] <- "X"
 		s[['Chromosome']][s[['Chromosome']] == 24] <- "Y"
 		gr <- with(s, GRanges(seqnames = Chromosome, range = IRanges(start = Start, end = End), segmented = as.numeric(log2_ratio_seg)))
