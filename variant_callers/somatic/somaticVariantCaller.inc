@@ -12,7 +12,9 @@ INDEL_ANN_FILTERS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) \
     $(if $(findstring hg19,$(REF)),chasm fathmm)
 # apply depth filter to varscan and mutect
-FILTERS = $(if $(findstring varscan,$1) $(findstring mutect,$1),dp_ft \
+# fix vcf sample header for strelka
+FILTERS = dp_ft \
+    $(if $(findstring varscan,$1)$(findstring mutect,$1),\
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))
 # target filter
 FILTERS += $(if $(TARGETS_FILE),target_ft)
@@ -25,7 +27,7 @@ FILTERS += pass
 FILTERS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_FILTERS),\
 		   $(if $(findstring indel,$1),$(INDEL_ANN_FILTERS),$(SNV_ANN_FILTERS)))
 
-FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
+FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call FILTERS,$1)))
 
 EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
