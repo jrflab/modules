@@ -173,7 +173,7 @@ LOG = $(LOGDIR)/$(@:.md5=).log
 LOG_MEM = 
 
 # SGE variables
-QUEUE = jrf.q
+QUEUE ?= jrf.q
 SGE_RREQ = -q $(QUEUE) -N X$(@F) -V -cwd 
 PARALLEL_ENV = smp
 MEM_FREE = -l virtual_free=$1,h_vmem=$2
