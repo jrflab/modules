@@ -23,7 +23,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 
 integrate_rnaseq : $(foreach sample,$(SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt)
 
-integrate_rnaseq/reads/%.reads.txt integrate/sum/%.sum.tsv integrate/exons/%.exons.tsv integrate/breakpoints/%.breakpoints.tsv : bam/%.bam.md5 bam/%.bam.bai
+integrate_rnaseq/reads/%.reads.txt integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv : bam/%.bam.md5 bam/%.bam.bai
 	$(call LSCRIPT_MEM,8G,40G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $(INTEGRATE) fusion $(INTEGRATE_OPTS) -reads integrate/reads/$*.reads.txt -sum integrate/sum/$*.sum.tsv -ex integrate/exons/$*.exons.tsv -bk integrate/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $(<M) $(<M)")
 
 integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv
