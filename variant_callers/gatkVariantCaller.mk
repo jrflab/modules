@@ -48,7 +48,7 @@ VARIANT_TYPES = gatk_snps gatk_indels
 
 VALIDATION ?= false
 
-FILTERS := dp_ft \
+FILTERS = dp_ft \
 	$(if $(NORMAL_VCF),nft) \
 	$(if $(TARGETS_FILE),target_ft) \
 	pass eff \
