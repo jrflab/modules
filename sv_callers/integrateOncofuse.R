@@ -51,7 +51,11 @@ if (is.null(opt$breakpointsFile)) {
 breakpoints <- read.delim(opt$breakpointsFile, as.is = T, check.names = F)
 colnames(breakpoints)[1:2] <- c('x5p','x3p')
 colnames(breakpoints) <- tolower(colnames(breakpoints))
+<<<<<<< HEAD
 summ <- read.delim(opt$sumFile, as.is = T, check.names = F) %>% setNames(c("id", "x5p", "x3p", "reciprocal", "tier", "type", "en_rna", "sp_rna", "en_dna_t", "sp_dna_t", "en_dna_n", "sp_dna_n", "splicings"))
+=======
+summ <- read.delim(opt$sumFile, as.is = T, check.names = F)
+>>>>>>> 7a976f44dc4e9301cdac5ad269574a1e01db5ffb
 colnames(summ)[2:3] <- c('x5p','x3p')
 colnames(summ) <- tolower(colnames(summ))
 exons <- read.delim(opt$exonsFile, as.is = T, check.names = F) %>%
@@ -69,6 +73,8 @@ X <- data.frame(x5p = unlist(y), X[rep(1:nrow(X), sapply(y, length)), -1], strin
 y <- strsplit(X[['x3p']], '/', fixed = T)
 X <- data.frame(x3p = unlist(y), X[rep(1:nrow(X), sapply(y, length)), -2], stringsAsFactors = F)
 results <- X
+results$chr1 <- as.character(results$chr1)
+results$chr2 <- as.character(results$chr2)
 
 cat('Connecting to ensembl ... ')
 connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
