@@ -51,11 +51,7 @@ if (is.null(opt$breakpointsFile)) {
 breakpoints <- read.delim(opt$breakpointsFile, as.is = T, check.names = F)
 colnames(breakpoints)[1:2] <- c('x5p','x3p')
 colnames(breakpoints) <- tolower(colnames(breakpoints))
-<<<<<<< HEAD
-summ <- read.delim(opt$sumFile, as.is = T, check.names = F) %>% setNames(c("id", "x5p", "x3p", "reciprocal", "tier", "type", "en_rna", "sp_rna", "en_dna_t", "sp_dna_t", "en_dna_n", "sp_dna_n", "splicings"))
-=======
 summ <- read.delim(opt$sumFile, as.is = T, check.names = F)
->>>>>>> 7a976f44dc4e9301cdac5ad269574a1e01db5ffb
 colnames(summ)[2:3] <- c('x5p','x3p')
 colnames(summ) <- tolower(colnames(summ))
 exons <- read.delim(opt$exonsFile, as.is = T, check.names = F) %>%
