@@ -12,7 +12,10 @@ DEFUSE_FILTER = $(PERL) modules/sv_callers/filterDefuse.pl
 DEFUSE_NORMAL_FILTER = $(PERL) modules/sv_callers/normalFilterDefuse.pl
 
 RECURRENT_FUSIONS = $(RSCRIPT) modules/sv_callers/recurrentFusions.R
-EXTRACT_COORDS = $(PERL) modules/sv_callers/extractCoordsFromDefuse.pl
+#EXTRACT_COORDS = $(PERL) modules/sv_callers/extractCoordsFromDefuse.pl
+DEFUSE_ONCOFUSE = $(RSCRIPT) modules/sv_callers/defuseOncofuse.R
+DEFUSE_ONCOFUSE_OPTS = --oncofuseJar $(ONCOFUSE_JAR) --oncofuseTissueType $(ONCOFUSE_TISSUE_TYPE) --java $(JAVA_BIN) 
+ONCOFUSE_TISSUE_TYPE ?= EPI
 
 LOGDIR = log/defuse.$(NOW)
 
@@ -34,13 +37,13 @@ endif
 #all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
 ALL = $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
 ifdef NORMAL_DEFUSE_RESULTS
-ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.merged.txt
-ALLTABLE += defuse/alltables/all.defuse_ft.nft.oncofuse.merged.txt
+ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.txt
+ALLTABLE += defuse/alltables/all.defuse_ft.nft.oncofusetxt
 ALL += defuse/recur_tables/recurFusions.defuse.nft.gene.txt
 ALL += defuse/recur_tables/recurFusions.defuse_ft.nft.gene.txt
 else
-ALLTABLE = defuse/alltables/all.defuse.oncofuse.merged.txt
-ALLTABLE += defuse/alltables/all.defuse_ft.oncofuse.merged.txt
+ALLTABLE = defuse/alltables/all.defuse.oncofuse.txt
+ALLTABLE += defuse/alltables/all.defuse_ft.oncofuse.txt
 ALL += defuse/recur_tables/recurFusions.defuse.gene.txt
 ALL += defuse/recur_tables/recurFusions.defuse_ft.gene.txt
 endif
@@ -56,18 +59,16 @@ defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : fastq/%.1.fastq.gz.md
 defuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).%.txt)
 	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
 
-defuse/alltables/%.defuse_ft.nft.txt : defuse/alltables/%.defuse_ft.txt
-	$(INIT) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
-
-defuse/alltables/%.defuse.nft.txt : defuse/alltables/%.defuse.txt
+defuse/alltables/%.nft.txt : defuse/alltables/%.txt
 	$(INIT) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
 
 defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
 	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outPrefix $(@D)/recurFusions.$* $< 
 
-
 defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
 
+defuse/alltables/%.oncofuse.txt : defuse/alltables/%.txt
+	$(call LSCRIPT_CHECK_MEM,7G,8G,"$(DEFUSE_ONCOFUSE) --outPrefix $(@D)/$* $(DEFUSE_ONCOFUSE_OPTS) $<")
+
 include modules/fastq_tools/fastq.mk
-include modules/sv_callers/oncofuse.mk
