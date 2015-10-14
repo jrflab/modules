@@ -34,7 +34,7 @@ INCLUDE_CHR_Y ?= true
 ifneq ($(and $(TARGETS_FILE),$(findstring false,$(EXOME))),)
 CHROMOSOMES := $(shell grep -v '@' $(TARGETS_FILE) | cut -f1 | sort | uniq)
 else
-CHROMOSOMES := $(shell seq 1 22) X $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) MT
+CHROMOSOMES := $(shell seq 1 19) X $(if $(findstring true,$(INCLUDE_CHR_Y)),Y) MT
 endif
 
 

@@ -28,8 +28,8 @@ plotSampleCNCF <- function (x, fit)
     start = c(1, tmp[-23] + 1)
     end = tmp
     mid = start + len/2
-    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-3, 
-        4), col = c("grey", "lightblue")[1 + rep(cncf$chrom - 
+    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-max(c(max(abs(mat$cnlr)), 4)), 
+        max(c(max(abs(mat$cnlr)), 4))), col = c("grey", "lightblue")[1 + rep(cncf$chrom - 
         2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio", xlab="Chromosomes")
 #    abline(h = dipLogR, col = "magenta4")
     points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2, 
@@ -107,8 +107,8 @@ plotSampleLRR <- function(x, fit)
     start = c(1, tmp[-23] + 1)
     end = tmp
     mid = start + len/2
-    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-3,
-        4), col = c("grey", "lightblue")[1 + rep(cncf$chrom -
+    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-max(c(max(abs(mat$cnlr)), 4)),
+        max(c(max(abs(mat$cnlr)), 4))), col = c("grey", "lightblue")[1 + rep(cncf$chrom -
         2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio", xlab="Chromosomes")
     points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2,
         col = "brown")

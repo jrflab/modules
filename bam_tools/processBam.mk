@@ -115,7 +115,7 @@ $(foreach i,$(SORT_SPLIT_SEQ),$(eval $(call split-sort,$i)))
 	$(call LSCRIPT_MEM,8G,10G,"$(CHECK_MD5) $(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $(<M)) $(@M) $(^M) && $(MD5) && $(RM) $^ $(^M) $(@:.sorted.bam=.bam) $(@:.sorted.bam.md5=.bam.md5)")
 else
 %.sorted.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G,4500000) I=$(<:.md5=) O=$(@:.md5=) SO=coordinate && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G,4500000) I=$(<:.md5=) O=$(@:.md5=) SO=coordinate VERBOSITY=ERROR && $(MD5) && $(RM) $< $(<:.md5=)")
 endif
 
 
@@ -137,7 +137,7 @@ endif
 
 # add rg
 %.rg.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) && $(RM) $< $(<:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) VERBOSITY=ERROR && $(RM) $< $(<:.md5=) && $(MD5)")
 
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome

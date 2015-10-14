@@ -48,10 +48,12 @@ if (is.null(opt$breakpointsFile)) {
     stop();
 } 
 
-breakpoints <- read.delim(opt$breakpointsFile, as.is = T, check.names = F) %>%
-    setNames(c("x5p", "x3p", "chr1", "rna_bk1", "exon_bk1", "chr2", "rna_bk2", "exon_bk2", "wgs_bk1", "wgs_bk2"))
-summ <- read.delim(opt$sumFile, as.is = T, check.names = F) %>%
-    setNames(c("id", "x5p", "x3p", "reciprocal", "tier", "type", "en_rna", "sp_rna", "splicings"))
+breakpoints <- read.delim(opt$breakpointsFile, as.is = T, check.names = F)
+colnames(breakpoints)[1:2] <- c('x5p','x3p')
+colnames(breakpoints) <- tolower(colnames(breakpoints))
+summ <- read.delim(opt$sumFile, as.is = T, check.names = F)
+colnames(summ)[2:3] <- c('x5p','x3p')
+colnames(summ) <- tolower(colnames(summ))
 exons <- read.delim(opt$exonsFile, as.is = T, check.names = F) %>%
     setNames(c("id", "x5p", "x3p",
                "x5p_transcript", "x5p_exon", "x5p_exon_strand", "x5p_exon_chr", "x5p_exon_start", "x5p_exon_end",
@@ -60,12 +62,15 @@ exons <- read.delim(opt$exonsFile, as.is = T, check.names = F) %>%
                "x3p_exon_seq", "x3p_exon_150"))
 
 # split genes separated by '/' to create separate rows (with same info)
-X <- inner_join(breakpoints, summ)
+X <- cbind(breakpoints, summ[, -(2:3)])
+X <- left_join(X, exons)
 y <- strsplit(X[['x5p']], '/', fixed = T)
 X <- data.frame(x5p = unlist(y), X[rep(1:nrow(X), sapply(y, length)), -1], stringsAsFactors = F)
 y <- strsplit(X[['x3p']], '/', fixed = T)
 X <- data.frame(x3p = unlist(y), X[rep(1:nrow(X), sapply(y, length)), -2], stringsAsFactors = F)
-results <- X %>% full_join(exons)
+results <- X
+results$chr1 <- as.character(results$chr1)
+results$chr2 <- as.character(results$chr2)
 
 cat('Connecting to ensembl ... ')
 connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
@@ -74,13 +79,15 @@ on.exit(dbDisconnect(mydb))
 cat('done\n')
 
 syms <- paste(sQuote(unique(c(results$x5p, results$x3p))), collapse = ',')
-query1 <- paste("SELECT DISTINCT G.seq_region_strand AS strand, ES.synonym AS gene_symbol
+query1 <- paste("SELECT DISTINCT G.seq_region_strand AS strand, ES.synonym AS gene_symbol, SR.name AS chrom, G.seq_region_start AS start, G.seq_region_end AS end
                FROM gene G
+               JOIN seq_region SR ON (SR.seq_region_id = G.seq_region_id)
                JOIN xref X ON (G.display_xref_id = X.xref_id)
                LEFT JOIN external_synonym ES using (xref_id)
                WHERE ES.synonym in (", syms, ");")
-query2 <- paste("SELECT DISTINCT G.seq_region_strand AS strand, X.display_label as gene_symbol
+query2 <- paste("SELECT DISTINCT G.seq_region_strand AS strand, X.display_label AS gene_symbol, SR.name AS chrom, G.seq_region_start AS start, G.seq_region_end AS end
                FROM gene G
+               JOIN seq_region SR ON (SR.seq_region_id = G.seq_region_id)
                JOIN xref X ON (G.display_xref_id = X.xref_id)
                LEFT JOIN external_synonym ES using (xref_id)
                WHERE X.display_label in (", syms, ");")
@@ -99,26 +106,33 @@ sendQuery <- function(query) {
     fetch(rs, -1)
 }
 queryResults <- unique(rbind(sendQuery(query1), sendQuery(query2)))
+queryResults %<>% group_by(chrom, strand, gene_symbol) %>% summarize(start = min(start), end = max(end)) %>% ungroup
 cat(paste("Found", nrow(queryResults), "records\n"))
 
-results %<>% left_join(queryResults, by = c("x5p" = "gene_symbol")) %>% rename(x5p_strand = strand)
-results %<>% left_join(queryResults, by = c("x3p" = "gene_symbol")) %>% rename(x3p_strand = strand)
+results %<>% left_join(queryResults, by = c("x5p" = "gene_symbol", "chr1" = "chrom")) %>% rename(x5p_strand = strand, x5p_start = start, x5p_end = end)
+results %<>% mutate(x5p_strand = ifelse(pmax(x5p_start, x5p_end) - rna_bk1 > 0 & rna_bk1 - pmin(x5p_start, x5p_end) > 0, x5p_strand, NA))
+results %<>% left_join(queryResults, by = c("x3p" = "gene_symbol", "chr2" = "chrom")) %>% rename(x3p_strand = strand, x3p_start = start, x3p_end = end)
+results %<>% mutate(x3p_strand = ifelse(pmax(x3p_start, x3p_end) - rna_bk2 > 0 & rna_bk2 - pmin(x3p_start, x3p_end) > 0, x3p_strand, NA))
+results %<>% mutate(x3p_strand = ifelse(x3p_strand == 1, '+', '-'))
+results %<>% mutate(x5p_strand = ifelse(x5p_strand == 1, '+', '-'))
 results %<>% mutate(x5p_exon_strand = ifelse(is.na(x5p_exon_strand),
-                                             ifelse(x5p_strand == 1, '+', '-'),
+                                             x5p_strand,
                                              x5p_exon_strand))
 results %<>% mutate(x3p_exon_strand = ifelse(is.na(x3p_exon_strand),
-                                             ifelse(x3p_strand == 1, '+', '-'),
+                                             x3p_strand,
                                              x3p_exon_strand))
 oncofuse <- results %$% data.frame(CHROM5p=str_c("chr", chr1), RNA_BK1 = rna_bk1, CHROM3p = str_c("chr", chr2),
                                    RNA_BK2 = rna_bk2, TISSUE_TYPE = opt$oncofuseTissueType, STRAND5p = x5p_exon_strand, STRAND3p = x3p_exon_strand)
 x <- rowSums(is.na(oncofuse)) == 0
 oncofuse <- oncofuse[x, ]
+rmResults <- results[!x, ]
 results <- results[x, ]
 oncofuse %<>% mutate(RNA_BK1 = ifelse(STRAND5p == "+", RNA_BK1 + 1, RNA_BK1 - 1))
 oncofuse %<>% mutate(RNA_BK2 = ifelse(STRAND3p == "+", RNA_BK2 - 1, RNA_BK2 + 1))
 
 results$id <- paste("chr", results$chr1, ":", oncofuse$RNA_BK1, ">",
                     "chr", results$chr2, ":", oncofuse$RNA_BK2, sep = '')
+rmResults$id <- NA
 
 ifn <- str_c(opt$outPrefix, ".oncofuse.input.txt")
 write.table(oncofuse[which(!is.na(oncofuse[,"STRAND5p"])),1:5], file=ifn, sep="\t", row.names=F, col.names=F, quote=F, na="")
@@ -129,6 +143,11 @@ system(cmd, wait = T)
 
 oncofuse_output <- read.delim(ofn, as.is=T)
 results <- left_join(results, oncofuse_output, by = c("id" = "GENOMIC"))
+results <- select(results, -SAMPLE_ID)
+
+# add back in removed result rows
+rmResults[, colnames(results)[!colnames(results) %in% colnames(rmResults)]] <- NA
+results <- rbind(results, rmResults)
 
 fn <- str_c(opt$outPrefix, ".oncofuse.txt")
 write.table(results, file=fn, sep="\t", row.names=F, quote=F, na="")
