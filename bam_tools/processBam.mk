@@ -10,7 +10,10 @@ LOGDIR ?= log/process_bam.$(NOW)
 SPLIT_SORT ?= false
 MERGE_SPLIT_BAMS ?= false # merge processed split bams
 NUM_SORT_SPLITS ?= 50
-houlORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
+SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
+
+CHR1_BASE_RECAL ?= false
+BASE_RECAL_OPTS = -knownSites $(DBSNP) $(if $(findstring true,$(CHR1_BASE_RECAL)),-L $(word 1,$(CHROMOSOMES)))
 
 ifneq ($(KNOWN_INDELS),)
 REALN_OPTS = --knownAlleles $(KNOWN_INDELS)
@@ -86,7 +89,7 @@ endif
 
 # recalibrate base quality
 %.recal_report.grp : %.bam.md5 %.bai
-	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) -knownSites $(DBSNP) -I $(<:.md5=) -o $@")
+	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $(<:.md5=) -o $@")
 
 # recalibration
 %.recal.bam.md5 : %.bam.md5 %.recal_report.grp
