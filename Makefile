@@ -340,6 +340,10 @@ TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
 
+TARGETS += recurrent_mutations
+recurrent_mutations :
+	$(call RUN_MAKE,modules/recurrent_mutations/report.mk)
+
 TARGETS += facets
 facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
