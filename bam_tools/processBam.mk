@@ -33,13 +33,13 @@ ifeq ($(REPROCESS),true)
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 processed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 bam/%.bam.md5 : unprocessed_bam/%.$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
 else
 ifeq ($(MERGE_SPLIT_BAMS),true)
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 merged_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
 bam/%.bam.md5 : unprocessed_bam/%.bam.md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
 endif
 endif
 
@@ -89,11 +89,7 @@ endif
 
 # recalibrate base quality
 %.recal_report.grp : %.bam.md5 %.bai
-	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $(<:.md5=) -o $@")
-
-# recalibration
-%.recal.bam.md5 : %.bam.md5 %.recal_report.grp
-	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $(<M) -BQSR $(word 2,$^) -o $(@:.md5=) && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $(<M) -o $@")
 
 #sort only if necessary
 #%.sorted.bam.md5 : %.bam.md5
@@ -115,7 +111,7 @@ $(foreach i,$(SORT_SPLIT_SEQ),$(eval $(call split-sort,$i)))
 	$(call LSCRIPT_MEM,8G,10G,"$(CHECK_MD5) $(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $(<M)) $(@M) $(^M) && $(MD5) && $(RM) $^ $(^M) $(@:.sorted.bam=.bam) $(@:.sorted.bam.md5=.bam.md5)")
 else
 %.sorted.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G,4500000) I=$(<:.md5=) O=$(@:.md5=) SO=coordinate VERBOSITY=ERROR && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G,4500000) I=$(<M) O=$(@M) SO=coordinate VERBOSITY=ERROR && $(MD5) && $(RM) $< $(<M)")
 endif
 
 
@@ -126,18 +122,18 @@ endif
 
 # mark duplicates
 %.markdup.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,14G,18G,"$(CHECK_MD5) $(MKDIR) metrics; $(call MARK_DUP_MEM,14G) I=$(<:.md5=) O=$(@:.md5=) METRICS_FILE=metrics/$(call strip-suffix,$(@F:.md5=)).dup_metrics.txt && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,14G,18G,"$(CHECK_MD5) $(MKDIR) metrics; $(call MARK_DUP_MEM,14G) I=$(<M) O=$(@M) METRICS_FILE=metrics/$(call strip-suffix,$(@F:.md5=)).dup_metrics.txt && $(MD5) && $(RM) $< $(<M)")
 
 %.rmdup.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,4G,7G,"$(CHECK_MD5) $(SAMTOOLS) rmdup $(<:.md5=) $(@:.md5=) && $(MD5) && $(RM) $< $(<:.md5=)")
+	$(call LSCRIPT_MEM,4G,7G,"$(CHECK_MD5) $(SAMTOOLS) rmdup $(<M) $(@M) && $(MD5) && $(RM) $< $(<M)")
 
 # clean sam files
 %.clean.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,6G,12G,"$(CHECK_MD5) $(call CLEANBAM_MEM,6G) I=$(<:.md5=) O=$(@:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,6G,12G,"$(CHECK_MD5) $(call CLEANBAM_MEM,6G) I=$(<M) O=$(@M) && $(MD5)")
 
 # add rg
 %.rg.bam.md5 : %.bam.md5
-	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<:.md5=) O=$(@:.md5=) RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) VERBOSITY=ERROR && $(RM) $< $(<:.md5=) && $(MD5)")
+	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$(<M) O=$(@M) RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) VERBOSITY=ERROR && $(RM) $< $(<M) && $(MD5)")
 
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome
@@ -165,24 +161,39 @@ define chr-realn
 	$$(call LSCRIPT_MEM,9G,12G,"$$(CHECK_MD5) if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM,8G) -T IndelRealigner \
 	-I $$(<:.md5=) -R $$(REF_FASTA) -L $1 -targetIntervals $$(word 2,$$^) \
 	-o $$(@:.md5=) $$(REALN_OPTS); \
-	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$(<:.md5=) -L $1 -o $$(@:.md5=) ; fi && $$(MD5)")
+	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$(<M) -L $1 -o $$(@M) ; fi && $$(MD5)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
 
-# merge sample chromosome bams
+# merge sample realn chromosome bams
 %.realn.bam.md5 : $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bam.md5) $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bai)
-	$(call LSCRIPT_PARALLEL_MEM,2,10G,11G,"$(CHECK_MD5) $(MERGE_SAMS) $(foreach i,$(filter %.bam.md5,$^), I=$(i:.md5=)) SORT_ORDER=coordinate O=$(@:.md5=) USE_THREADING=true && $(MD5) && $(RM) $^ $(^:.md5=) $(@:.realn.bam.md5=.bam) $(@:.realn.bam.md5=.bam.md5)")
+	$(call LSCRIPT_PARALLEL_MEM,2,10G,11G,"$(CHECK_MD5) $(MERGE_SAMS) $(foreach i,$(filter %.bam.md5,$^), I=$(i:.md5=)) SORT_ORDER=coordinate O=$(@M) USE_THREADING=true && $(MD5) && $(RM) $^ $(^M) $(@:.realn.bam.md5=.bam) $(@:.realn.bam.md5=.bam.md5)")
+
+# merge sample recal chromosome bams
+%.recal.bam.md5 : $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_recal.bam.md5) $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_recal.bai)
+	$(call LSCRIPT_PARALLEL_MEM,2,10G,11G,"$(CHECK_MD5) $(MERGE_SAMS) $(foreach i,$(filter %.bam.md5,$^), I=$(i:.md5=)) SORT_ORDER=coordinate O=$(@M) USE_THREADING=true && $(MD5) && $(RM) $^ $(^M) $(@:.recal.bam.md5=.bam) $(@:.recal.bam.md5=.bam.md5)")
+
+define chr-recal
+%.$1.chr_recal.bam.md5 : %.bam.md5 %.recal_report.grp
+	$$(call LSCRIPT_MEM,11G,15G,"$$(CHECK_MD5) $$(call GATK_MEM,10G) -T PrintReads -L $1 -R $$(REF_FASTA) -I $$(<M) -BQSR $$(<<) -o $$(@M) && $$(MD5)")
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call chr-recal,$(chr))))
 
 else # no splitting by chr
+
+# recalibration
+%.recal.bam.md5 : %.bam.md5 %.recal_report.grp
+	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $(<M) -BQSR $(word 2,$^) -o $(@M) && $(MD5) && $(RM) $< $(<M)")
+
 %.realn.bam.md5 : %.bam.md5 %.intervals %.bam.bai
 	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,9G,12G,"$(CHECK_MD5) $(call GATK_MEM,8G) -T IndelRealigner \
-	-I $(<:.md5=) -R $(REF_FASTA) -targetIntervals $(word 2,$^) \
-	-o $(@:.md5=) $(REALN_OPTS) && $(MD5) && $(RM) $< $(<:.md5=)") ; \
-	else mv $(<:.md5=) $(@:.md5=) && $(MD5) ; fi
+	-I $(<M) -R $(REF_FASTA) -targetIntervals $(<<) \
+	-o $(@M) $(REALN_OPTS) && $(MD5) && $(RM) $< $(<M)") ; \
+	else mv $(<M) $(@M) && $(MD5) ; fi
 
 %.intervals : %.bam.md5 %.bam.bai
 	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(CHECK_MD5) $(call GATK_MEM,8G) -T RealignerTargetCreator \
-	-I $(<:.md5=) \
+	-I $(<M) \
 	-nt 4 -R $(REF_FASTA)  -o $@ $(REALN_TARGET_OPTS)")
 endif
 
