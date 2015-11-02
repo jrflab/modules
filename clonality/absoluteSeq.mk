@@ -29,6 +29,8 @@ TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
 
 USE_ONCOSCAN_COPYNUM ?= false
 
+USE_FACETS_COPYNUM ?= false
+
 define LIB_INIT
 library(ABSOLUTE)
 endef
@@ -103,6 +105,13 @@ absolute/segment/%.seg.txt : oncoscan/%.probes.txt oncoscan/%.segments.txt
 	s.to_csv("$@", index=False, sep="\t")
 	EOF')
 	q(status=r, save="no")
+else ifeq ($(USE_FACETS_COPYNUM),true)
+absolute/segment/%.seg.txt : facets/%.cncf.txt
+	$(R_INIT)
+	$(LIB_INIT)
+	X <- read.table("$<", stringsAsFactors=F, header=T, sep="\t")
+	colnames(X) <- c("ID","Chromosome","Start","End","seg","Num_Probes","nhet","Segment_Mean","mafR","segclust","cnlr.median.clust","mafR.clust","cf","tcn","lcn","cf.em","tcn.em","lcn.em")
+	write.table(X, file="$@", sep="\t", quote=F, row.names=F, append=F)
 else
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)

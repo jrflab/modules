@@ -20,11 +20,14 @@ SEG_SDS ?= 1 2 3
 SEG_SMOOTHS ?= 10 5
 SEG_ALPHAS ?= 0.01 0.0001 0.000001 0.0000000001
 
+VARSCAN_GENE_CN = $(RSCRIPT) modules/copy_number/varscanCNVGeneCN.R
+VARSCAN_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE))
+
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: all copycalls segments cnv
 
-all : copycalls segments cghcalls
+all : copycalls segments geneCN #cghcalls
 
 CGHCALLS := $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).cgh_call.txt)
 ifeq ($(MULTIPARAM_SEGMENT),true) 
@@ -38,6 +41,7 @@ endif
 segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
 copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
 cghcalls : $(CGHCALLS)
+geneCN : varscan/segment/geneCN.txt
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
@@ -59,6 +63,9 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 
 varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+
+varscan/segment/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).collapsed_seg.txt)
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(VARSCAN_GENE_CN) $(VARSCAN_GENE_CN_OPTS) --outFile $@ $^")	
 
 varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")

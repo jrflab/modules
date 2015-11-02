@@ -13,6 +13,7 @@ library("gridExtra")
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
                 make_option("--alexandrovData", default = '~/share/reference/Alexandrov_NMF_signatures.txt', type = "character", action = "store", help = "alexandrov nmf signatures"),
+                make_option("--lowPlus", default = F, type = "boolean", help = "use only positions with effects annotated as greater than LOW"),
                 make_option("--targetBed", default = NULL, type = "character", action = "store", help = "target intervals in bed format"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file(s)]", option_list = optList);
@@ -66,9 +67,11 @@ for (vcfFile in vcfFiles) {
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
     vcf <- readVcf(vcfFile, 'hg19')
-    x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH', x)))
-    if (any(x)) {
+    if (nrow(vcf) > 0 && opt$lowPlus) {
+        x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH', x)))
         vcf <- vcf[x,]
+    }
+    if (nrow(vcf) > 0) {
         seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
         vcf <- vcf[sapply(rowData(vcf)$ALT, length) == 1]
         rowData(vcf)$MUT <- paste(rowData(vcf)$REF, unlist(rowData(vcf)$ALT), sep = ">")

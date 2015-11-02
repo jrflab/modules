@@ -21,6 +21,7 @@ DUP_TYPE = markdup
 #TARGETS_FILE = intervals.bed
 #GENES_FILE = genes.txt
 EXOME = true
+CHR1_BASE_RECAL = true
 
 # gatk options
 HARD_FILTER_SNPS = true
