@@ -13,7 +13,7 @@ library("gridExtra")
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
                 make_option("--alexandrovData", default = '~/share/reference/Alexandrov_NMF_signatures.txt', type = "character", action = "store", help = "alexandrov nmf signatures"),
-                make_option("--lowPlus", default = F, type = "boolean", help = "use only positions with effects annotated as greater than LOW"),
+                make_option("--lowPlus", default = F, help = "use only positions with effects annotated as greater than LOW"),
                 make_option("--targetBed", default = NULL, type = "character", action = "store", help = "target intervals in bed format"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file(s)]", option_list = optList);
