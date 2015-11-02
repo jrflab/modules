@@ -74,10 +74,10 @@ if (length(arguments$args) != 2) {
 phenoFile <- arguments$args[2];
 countsFile <- arguments$args[1];
 
-pheno <- read.table(phenoFile, header = T, sep = '\t', row.names = 1);
+pheno <- read.table(phenoFile, header = T, sep = '\t', row.names = 1, check.names = F);
 pheno[, opt$condition] <- relevel(pheno[, opt$condition], opt$refCondition);
 
-counts <- read.table(countsFile, header = T, sep = '\t', na.strings = "", comment.char = "", stringsAsFactors = F);
+counts <- read.table(countsFile, header = T, sep = '\t', na.strings = "", comment.char = "", stringsAsFactors = F, check.names = F);
 counts <- counts[!duplicated(counts[,1]), ]
 rownames(counts) <- counts[,1]
 counts <- counts[-1]
