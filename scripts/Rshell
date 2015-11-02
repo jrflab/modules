@@ -58,6 +58,7 @@ if [[ -n "$R" ]]; then
     echo "Sys.umask('002')" > ${TMP}
     echo "${R}" >> ${TMP}
     echo "${R}" > $LOGDIR/$NAME.R
+    chmod +rx ${TMP}
     if [[ -n "$SGE" ]]; then
         mkdir -p $LOGDIR
         echo "umask 002; ${RCMD} ${TMP}" | $QSUB -- -cwd -V -now n -q $QUEUE -N X$NAME $PE -l virtual_free=$MEM,h_vmem=$MEM -o $LOGDIR/$NAME.log -j y -b n
