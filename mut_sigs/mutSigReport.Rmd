@@ -19,6 +19,7 @@ optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
                 make_option("--alexandrovData", default = '~/share/reference/Alexandrov_NMF_signatures.txt', type = "character", action = "store", help = "alexandrov nmf signatures"),
                 make_option("--lowPlus", default = F, help = "use only positions with effects annotated as greater than LOW"),
+                make_option("--novel", default = T, help = "use only positions with GMAF < 0.01 or no GMAF"),
                 make_option("--outDir", default = NULL, type = "character", action = "store", help = "output directory"),
                 make_option("--targetBed", default = NULL, type = "character", action = "store", help = "target intervals in bed format"))
 
@@ -75,6 +76,10 @@ for (vcfFile in vcfFiles) {
     vcf <- readVcf(vcfFile, 'hg19')
     if (nrow(vcf) > 0 && opt$lowPlus) {
         x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH', x)))
+        vcf <- vcf[x,]
+    }
+    if (nrow(vcf) > 0 && opt$novel) {
+        x <- is.na(info(vcf)$GMAF) | info(vcf)$GMAF < 0.01
         vcf <- vcf[x,]
     }
     if (nrow(vcf) > 0) {
