@@ -12,9 +12,8 @@ suppressPackageStartupMessages(library("GenomicRanges"));
 
 optList <- list(
         make_option("--titanSeg", default = NULL, type = "character", action = "store", help ="targeted titan segment file"),
-        make_option("--outFile", default = NULL, type = "character", action = "store", help ="targeted interval bed"))
-# only hg19 is supported
-#make_option("--genome", default = 'hg19', type = "character", action = "store", help ="reference genome"))
+        make_option("--outFile", default = NULL, type = "character", action = "store", help ="targeted interval bed"),
+        make_option("--genome", default = 'b37', type = "character", action = "store", help ="reference genome"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file]", option_list = optList);
 arguments <- parse_args(parser, positional_arguments = T);
@@ -65,7 +64,7 @@ idx <- indexTabix(temp, "vcf")
 tab <- TabixFile(zipped, idx, yieldSize = 8000)
 
 open(tab)
-while(nrow(vcf <- readVcf(tab, 'hg19'))) {
+while(nrow(vcf <- readVcf(tab, opt$genome))) {
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Titan transcript copy number", row.names = "titanCN"))
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Titan transcript minor allele copy number", row.names = "titanMinorCN"))
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Titan transcript major allele copy number", row.names = "titanMajorCN"))

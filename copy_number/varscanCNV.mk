@@ -2,7 +2,6 @@
 # Detect copy number
 ##### DEFAULTS ######
 
-REF ?= hg19
 LOGDIR = log/varscan.$(NOW)
 
 ##### MAKE INCLUDES #####

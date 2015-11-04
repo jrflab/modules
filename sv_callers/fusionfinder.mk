@@ -1,7 +1,6 @@
 # Run fusionfinder
 ##### DEFAULTS ######
 
-REF ?= hg19
 LOGDIR = log/fusionfinder.$(NOW)
 
 ##### MAKE INCLUDES #####

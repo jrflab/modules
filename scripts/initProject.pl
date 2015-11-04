@@ -15,7 +15,7 @@ system "git remote add origin git\@bitbucket.org:jrflab/$repoName.git";
 
 
 my $CONFIG = <<ENDL;
-export REF = hg19
+export REF = b37
 DUP_TYPE = markdup
 
 #TARGETS_FILE = intervals.bed

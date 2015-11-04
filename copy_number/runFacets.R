@@ -130,7 +130,7 @@ optList <- list(
                 make_option("--max_cval", default = 300, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
-                make_option("--genome", default = 'hg19', type = 'character', help = "genome of counts file"),
+                make_option("--genome", default = 'b37', type = 'character', help = "genome of counts file"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
 
 parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList);
@@ -154,13 +154,21 @@ tumorName <- baseCountFile %>% sub('.*/', '', .) %>% sub('_.*', '', .)
 normalName <- baseCountFile %>% sub('.*/', '', .) %>% sub('.*_', '', .) %>% sub('\\..*', '', .)
 
 switch(opt$genome,
-       hg19={
+       b37={
            data(hg19gcpct)
            chromLevels=c(1:22, "X")
        },
+       GRCh37={
+           data(hg19gcpct)
+           chromLevels=c(1:22, "X")
+       },
+       hg19={
+           data(hg19gcpct)
+           chromLevels=paste("chr", c(1:22, "X"), sep = '')
+       },
        mm9={
            data(mm9gcpct)
-           chromLevels=c(1:19)
+           chromLevels=paste("chr", c(1:19, "X", "Y"), sep = '')
        },
        {
            stop(paste("Invalid Genome",opt$genome))

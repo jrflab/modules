@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library("VariantAnnotation"));
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 
 optList <- list(
-        make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+        make_option("--genome", default = 'b37', help = "genome build [default %default]"),
         make_option("--outFile", default = NULL, help = "vcf output file [default %default]")
         )
 parser <- OptionParser(usage = "%prog vcf.file", option_list = optList);

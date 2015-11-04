@@ -8,7 +8,7 @@ suppressPackageStartupMessages(library("gplots"));
 options(error = quote(dump.frames("testdump", TRUE)))
 
 optList <- list(
-                make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+                make_option("--genome", default = 'b37', help = "genome build [default %default]"),
                 make_option("--outPrefix", default = NULL, help = "output prefix [default %default]"))
 
 parser <- OptionParser(usage = "%prog vcf.files", option_list = optList);

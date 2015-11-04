@@ -1,7 +1,6 @@
 # Run mapsplice
 ##### DEFAULTS ######
 
-REF ?= hg19
 LOGDIR = log/mapsplice.$(NOW)
 
 ##### MAKE INCLUDES #####
