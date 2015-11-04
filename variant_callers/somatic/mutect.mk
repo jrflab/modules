@@ -22,14 +22,14 @@ mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
-mutect/report/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) $^ && touch $@")
+mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+	$(call LSCRIPT_NAMED_MEM,mutect_report,6G,15G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) $^")
 
-mutect/lowAFreport/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) --lowAF $^ && touch $@")
+mutect/lowAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+	$(call LSCRIPT_NAMED_MEM,mutect_lowaf_report,6G,15G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --lowAF $^")
 
-mutect/highAFreport/report.timestamp: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_MEM,3G,10G,"$(MUT_FREQ_REPORT) --outDir $(@D) --highAF $^ && touch $@")
+mutect/highAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
+	$(call LSCRIPT_NAMED_MEM,mutect_highaf_report,6G,15G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --highAF $^")
 
 # merge variants 
 #$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)

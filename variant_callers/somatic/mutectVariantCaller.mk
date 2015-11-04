@@ -18,7 +18,7 @@ include modules/mut_sigs/mutSigReport.mk
 mutect_vcfs : $(call VCFS,mutect) $(addsuffix .idx,$(call VCFS,mutect))
 mutect_tables : $(call TABLES,mutect)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-mut_report : mutect/report/report.timestamp mutect/lowAFreport/report.timestamp mutect/highAFreport/report.timestamp
+mut_report : mutect/report/index.html mutect/lowAFreport/index.html mutect/highAFreport/index.html
 $(eval $(call mutsig-report-name-vcfs,mutect,$(call VCFS,mutect)))
 
 .DELETE_ON_ERROR:
