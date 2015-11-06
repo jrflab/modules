@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library("VariantAnnotation"));
 options(error = quote(dump.frames("testdump", TRUE)))
 
 optList <- list(
-                make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+                make_option("--genome", default = 'b37', help = "genome build [default %default]"),
                 make_option("--tumor", default = NULL, help = "tumor sample"),
                 make_option("--outFile", default = NULL, help = "output file [default %default]"))
 

@@ -1,7 +1,6 @@
 # Run fusioncatcher
 ##### DEFAULTS ######
 
-REF ?= hg19
 LOGDIR = log/fusioncatcher.$(NOW)
 
 ##### MAKE INCLUDES #####

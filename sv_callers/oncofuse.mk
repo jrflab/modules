@@ -1,5 +1,5 @@
 # run oncofuse
-# hg19 only
+# b37 only
 
 ONCOFUSE_MEM = $(JAVA7) -Xmx$1 -jar $(ONCOFUSE_JAR)
 ONCOFUSE_TISSUE_TYPE ?= EPI

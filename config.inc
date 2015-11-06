@@ -1,5 +1,5 @@
 ifndef CONFIG_INC
-REF ?= hg19
+REF ?= b37
 SEQ_PLATFORM ?= illumina
 SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt

@@ -9,7 +9,7 @@ options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 #options(error = quote(dump.frames("testdump", TRUE)))
 
 optList <- list(
-                make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+                make_option("--genome", default = 'b37', help = "genome build [default %default]"),
                 make_option("--chasmDir", default = NULL, help = "CHASM dir"),
                 make_option("--python", default = NULL, help = "python binary"),
                 make_option("--classifier", default = 'Breast', help = "CHASM classifier(s), comma-delimited [default %default]"),

@@ -5,64 +5,71 @@ LOGDIR = log/lumpy.$(NOW)
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-LUMPY_SCRIPTS_DIR = $(HOME)/share/usr/lumpy-sv/scripts
-LUMPY = $(HOME)/share/usr/lumpy-sv/bin/lumpy
+LUMPY_DIR = $(HOME)/share/usr/lumpy-sv
+LUMPY_SCRIPTS_DIR = $(LUMPY_DIR)/scripts
+EXTRACT_DISCORDANT = $(PYTHON) $(LUMPY_SCRIPTS_DIR)/extractSplitReads_BwaMem
+LUMPY = $(LUMPY_DIR)/bin/lumpy
+LUMPYEXPRESS = $(LUMPY_DIR)/bin/lumpyexpress
+LUMPYEXPRESS_OPTS = -K $(LUMPY_DIR)/bin/lumpyexpress.config
 LUMPY_HISTO = $(PERL) $(LUMPY_SCRIPTS_DIR)/pairend_distro.pl
 LUMPY_UNMAPPED_TO_FASTQ = $(PERL) $(LUMPY_SCRIPTS_DIR)/split_unmapped_to_fasta.pl
 LUMPY_UNMAPPED_TO_FASTQ_OPTS = -b 20
 
-LUMPY_OPTS = -tt 1e-3 -mw 4
-LUMPY_PE_PARAMS = min_non_overlap:150$(,)discordant_z:4$(,)back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
-LUMPY_SR_PARAMS = back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
+SAMBLASTER = $(HOME)/share/usr/bin/samblaster
+
+# deprecated, using lumpyexpress instead
+#LUMPY_OPTS = -g $(REF_FASTA) -tt 1e-3 -mw 4
+#LUMPY_PE_PARAMS = min_non_overlap:150$(,)discordant_z:4$(,)back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
+#LUMPY_SR_PARAMS = back_distance:20$(,)weight:1$(,)id:1$(,)min_mapping_threshold:1
 
 BWASW_OPTS = -H
 
+ANNOVAR_PROTOCOL = refGene$(,)cytoBand$(,)genomicSuperDups
+ANNOVAR_OPERATION = g$(,)r$(,)r
+
+LUMPY_SUFFIX = sv_som_ft.pass.$(REF)_multianno
+
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all
 
-all : $(foreach sample,$(SAMPLES),lumpy/bed/$(sample).sr.bedpe lumpy/bed/$(sample).pe.bedpe)
 
-lumpy/fastq/%.um.fastq.gz : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(LUMPY_UNMAPPED_TO_FASTQ) $(LUMPY_UNMAPPED_TO_FASTQ_OPTS) | gzip -c > $@")
+ifdef SAMPLE_PAIRS
+PHONY += lumpyTN
+lumpyTN : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).lumpy.$(LUMPY_SUFFIX).vcf)
+else
+PHONY += lumpy
+lumpy : $(foreach sample,$(SAMPLES),vcf/$(sample).lumpy.$(LUMPY_SUFFIX).vcf)
+endif
 
-lumpy/sr_bam/%.sr.bam : lumpy/fastq/%.um.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,2G,"$(BWA) bwasw $(BWASW_OPTS) -t 4 $(REF_FASTA) $< | samtools view -Sb - > $@")
+lumpy/bam/%.split.bam : bam/%.bam
+	$(call LSCRIPT_MEM,7G,9G,"$(SAMTOOLS2) view -h $< | $(EXTRACT_DISCORDANT) -i stdin | $(SAMTOOLS2) view -b - > $@")
+
+lumpy/bam/%.disc.bam : bam/%.bam
+	$(call LSCRIPT_MEM,7G,9G,"$(SAMTOOLS2) view -b -F 1294 $< > $@")
 
 lumpy/metrics/%.read_len : bam/%.bam
-	$(INIT) $(MKDIR) $(@D); $(SAMTOOLS) view $< | tail -n+100000 | head -1 | awk '{ print length($$10) }' > $@
+	$(INIT) $(SAMTOOLS) view $< | tail -n+100000 | head -1 | awk '{ print length($$10) }' > $@
 
 lumpy/metrics/%.histo lumpy/metrics/%.histo.txt: bam/%.bam lumpy/metrics/%.read_len
 	READ_LEN=`cat $(word 2,$^)`; \
 	$(call LSCRIPT,"$(SAMTOOLS) view $< | tail -n+100000 | $(LUMPY_HISTO) -rl $$READ_LEN -X 4 -N 10000 -o lumpy/metrics/$*.histo > lumpy/metrics/$*.histo.txt")
 
-lumpy/bed/%.pe.bedpe : bam/%.bam lumpy/metrics/%.read_len lumpy/metrics/%.histo lumpy/metrics/%.histo.txt
-	READ_LEN=`cat $(word 2,$^)`; \
-	MEAN=`cut -f1 $(word 4,$^)`; \
-	STDEV=`cut -f2 $(word 4,$^)`; \
-	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -pe bam_file:$<$(,)histo_file:$(word 3,$^)$(,)$$MEAN$(,)$$STDEV$(,)read_length:$$READ_LEN$(,)$(LUMPY_PE_PARAMS) > $@")
-
-lumpy/bed/%.sr.bedpe : lumpy/sr_bam/%.sr.bam lumpy/metrics/%.read_len lumpy/metrics/%.histo lumpy/metrics/%.histo.txt
-	READ_LEN=`cat $(word 2,$^)`; \
-	MEAN=`cut -f1 $(word 4,$^)`; \
-	STDEV=`cut -f2 $(word 4,$^)`; \
-	$(call LSCRIPT_MEM,4G,8G,"$(LUMPY) $(LUMPY_OPTS) -sr bam_file:$<$(,)$(LUMPY_SR_PARAMS) > $@")
+lumpy/vcf/%.lumpy.vcf : bam/%.bam lumpy/bam/%.split.bam lumpy/bam/%.disc.bam
+	$(call LSCRIPT_MEM,15G,20G,"$(LUMPYEXPRESS) $(LUMPYEXPRESS_OPTS) -B $<$ -S $(<<) -D $(<<<) -o $@")
 
 ifdef SAMPLE_PAIRS
 define lumpy-tumor-normal
-lumpy/bed/$1_$2.pe.bedpe : bam/$1.bam bam/$2.bam lumpy/metrics/$1.read_len lumpy/metrics/$2.read_len lumpy/metrics/$1.histo lumpy/metrics/$2.histo lumpy/metrics/$1.histo.txt lumpy/metrics/$2.hist.txt
-	READ_LEN1=`cat $$(word 3,$$^)`; \
-	READ_LEN2=`cat $$(word 4,$$^)`; \
-	MEAN1=`cut -f1 $$(word 6,$$^)`; \
-	MEAN2=`cut -f1 $$(word 7,$$^)`; \
-	STDEV1=`cut -f2 $$(word 6,$$^)`; \
-	STDEV2=`cut -f2 $$(word 7,$$^)`; \
-	$$(call LSCRIPT_MEM,4G,8G,"$$(LUMPY) $$(LUMPY_OPTS) \
-	    -pe bam_file:$$<,histo_file:$$(word 5,$$^)$$(,)$$$$MEAN1$$(,)$$$$STDEV1$$(,)read_length:$$$$READ_LEN1$$(,)$(LUMPY_PE_PARAMS) \
-	    -pe bam_file:$$(word 2,$$^)$$(,)histo_file:$$(word 6,$$^)$$(,)$$$$MEAN2$$(,)$$$$STDEV2$$(,)read_length:$$$$READ_LEN2$$(,)$(LUMPY_PE_PARAMS) > $@")
+lumpy/vcf/$1_$2.lumpy.vcf : bam/$1.bam bam/$2.bam lumpy/bam/$1.split.bam lumpy/bam/$2.split.bam lumpy/bam/$1.disc.bam lumpy/bam/$2.disc.bam
+	$$(call LSCRIPT_MEM,30G,60G,"$$(LUMPYEXPRESS) $$(LUMPYEXPRESS_OPTS) -B $$<$$(,)$$(<<) -S $$(<<<)$$(,)$$(<<<<) -D $$(word 5,$$^)$$(,)$$(word 6,$$^) -o $$@")
 endef
-$(foreach i,$(SETS_SEQ), \
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call lumpy-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(chr)))))
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call lumpy-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
+
+SORT_VCF = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
+vcf/%.lumpy.vcf : lumpy/vcf/%.lumpy.vcf
+	$(call LSCRIPT,"$(SORT_VCF) $(REF_DICT) $< > $@")
+
+include modules/vcf_tools/vcftools.mk
+
+.PHONY: $(PHONY)
 

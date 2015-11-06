@@ -15,12 +15,13 @@ system "git remote add origin git\@bitbucket.org:jrflab/$repoName.git";
 
 
 my $CONFIG = <<ENDL;
-export REF = hg19
+export REF = b37
 DUP_TYPE = markdup
 
 #TARGETS_FILE = intervals.bed
 #GENES_FILE = genes.txt
 EXOME = true
+CHR1_BASE_RECAL = true
 
 # gatk options
 HARD_FILTER_SNPS = true
@@ -33,17 +34,19 @@ include modules/Makefile
 ENDL
 
 unless (-d "modules") {
-    system "git clone git\@github.com:raylim/modules.git -b stable";
+    system "git clone git\@github.com:raylim/modules.git -b master";
 }
 
 unless (-e "Makefile") {
     open OUT, ">Makefile";
     print OUT $MAKEFILE;
 }
+close OUT;
 unless (-e "config.inc") {
     open OUT, ">config.inc";
     print OUT $CONFIG;
 }
+close OUT;
 system "git add Makefile";
 system "git add config.inc";
 system "git commit -m 'makefile, config.inc'";

@@ -1,8 +1,6 @@
 # Run VarScan
 ##### DEFAULTS ######
 
-
-REF ?= hg19
 LOGDIR = log/varscan.$(NOW)
 
 SPLIT_CHR ?= true

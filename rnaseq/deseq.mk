@@ -3,8 +3,8 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR = log/deseq.$(NOW)
 
-DESEQ_RNW = scripts/deSeq.Rnw
-SWEAVE = $(RSCRIPT) scripts/Sweave.R
+DESEQ_RNW = modules/rnaseq/deseq.Rnw
+SWEAVE = $(RSCRIPT) modules/scripts/Sweave.R
 
 CONDITION ?= condition
 REF_CONDITION ?= ref

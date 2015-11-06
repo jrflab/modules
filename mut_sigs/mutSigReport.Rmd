@@ -8,11 +8,20 @@ library("boot")
 library('plyr')
 library('dplyr')
 library("ggplot2")
+library("RColorBrewer")
+require(gplots)
 library("gridExtra")
+require(NMF)
+require(lsa)
+require(reshape2)
 
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
                 make_option("--alexandrovData", default = '~/share/reference/Alexandrov_NMF_signatures.txt', type = "character", action = "store", help = "alexandrov nmf signatures"),
+                make_option("--lowPlus", default = F, help = "use only positions with effects annotated as greater than LOW"),
+                make_option("--novel", default = T, help = "use only positions with GMAF < 0.01 or no GMAF"),
+                make_option("--genome", default = 'b37', help = "reference genome"),
+                make_option("--outDir", default = NULL, type = "character", action = "store", help = "output directory"),
                 make_option("--targetBed", default = NULL, type = "character", action = "store", help = "target intervals in bed format"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file(s)]", option_list = optList);
@@ -65,10 +74,17 @@ vcfs <- list()
 for (vcfFile in vcfFiles) {
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
-    vcf <- readVcf(vcfFile, 'hg19')
-    x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH', x)))
-    if (any(x)) {
+    vcf <- readVcf(vcfFile, opt$genome)
+    if (nrow(vcf) > 0 && opt$lowPlus) {
+        x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH',
+                                                         x)))
         vcf <- vcf[x,]
+    }
+    if (nrow(vcf) > 0 && opt$novel) {
+        x <- is.na(info(vcf)$GMAF) | info(vcf)$GMAF < 0.01
+        vcf <- vcf[x,]
+    }
+    if (nrow(vcf) > 0) {
         seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
         vcf <- vcf[sapply(rowData(vcf)$ALT, length) == 1]
         rowData(vcf)$MUT <- paste(rowData(vcf)$REF, unlist(rowData(vcf)$ALT), sep = ">")
@@ -120,8 +136,12 @@ for (s in names(vcfs)) {
     for (mut in names(svcf)) {
         if (length(svcf[[mut]]) > 0) {
             seqs <- getSeq(genome, resize(flank(svcf[[mut]], width = 1, start = T, both = T), width = 3))
-            seqs[subseq(seqs,2,2) == "G"] <- reverseComplement(seqs[subseq(seqs,2,2) == "G"])
-            seqs[subseq(seqs, 2, 2) == "A"] <- reverseComplement(seqs[subseq(seqs,2,2) == "A"])
+            if (any(as.character(subseq(seqs, 2, 2)) == "G")) {
+                seqs[as.character(subseq(seqs,2,2)) == "G"] <- reverseComplement(seqs[as.character(subseq(seqs,2,2)) == "G"])
+            }
+            if (any(as.character(subseq(seqs, 2, 2)) == "A")) {
+                seqs[as.character(subseq(seqs, 2, 2)) == "A"] <- reverseComplement(seqs[as.character(subseq(seqs,2,2)) == "A"])
+            }
             x <- as.character(subseq(seqs[1], 2, 2))
             lvls <- paste(rep(bases, each = 4), x, bases, sep = '')
             tabs[[mut]] <- table(factor(as.character(seqs), level = lvls))
@@ -184,4 +204,38 @@ for (s in names(vcfs)) {
     # vote barplot
     barplot(table(factor(n[apply(boots$t, 1, which.max)], levels = n)), ylab = '# Votes')
 }
+```
+
+```{r nmf, fig.width = 10, fig.height = 10}
+rownames(alexandrov) <- with(alexandrov, gsub(">", ".", paste(Trinucleotide, Substitution.Type, sep=".")))
+alexandrovM <- data.matrix(alexandrov[,4:ncol(alexandrov)])
+
+solveNMF <- function(x, inmatrix){
+    coef <- fcnnls(x, inmatrix[rownames(x),]) # reorder the rownames of the in matrix 
+    colsum <- apply(coef$x, 2, sum)
+    coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
+    return(coef_x_scaled)
+}
+
+
+X <- alexandrov[, 1:2]
+for (s in names(vcfs)) {
+    tabs <- mutTabs[[s]]
+    tab <- melt(tabs)
+    m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
+    X[, s] <- 0
+    X[m, s] <- tab$value
+}
+X <- as.matrix(X[, -(1:2)])
+
+nmfMutCounts <- solveNMF(alexandrovM, X)
+
+if (!is.null(opt$outDir)) {
+    fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
+    write.table(nmfMutCounts, file = fn, quote = F, sep = '\t')
+}
+
+
+cols <- brewer.pal(9, 'Blues')
+heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols)
 ```

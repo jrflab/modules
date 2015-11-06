@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library(VariantAnnotation));
 optionList <- list(
 	make_option(c('-t', '--seqType'), action='store', default = "WES", help = 'sequence type (WES or WGS) [Default %default]'),
 	make_option(c('-n', '--tumorName'), action='store', default = NULL, help = 'name of the tumor sample. By default, derive from file name'),
-	make_option('--genome', action='store', default = 'hg19', help = 'genome [default %default]'),
+	make_option('--genome', action='store', default = 'b37', help = 'genome [default %default]'),
 	make_option(c('-o', '--outPrefix'), action='store', default = NULL, help = 'output prefix'))
 posArgs <- c('varscanSegFile', 'snvFile')
 parser <- OptionParser(usage = paste('%prog [options]', paste(posArgs, collapse=' ')),  option_list=optionList)

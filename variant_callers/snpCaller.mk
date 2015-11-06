@@ -1,6 +1,5 @@
 # Run samtools mpileup on all snp positions and bams
 ##### DEFAULTS ######
-REF ?= hg19
 LOGDIR = log/snpCaller.$(NOW)
 
 ##### MAKE INCLUDES #####

@@ -9,7 +9,7 @@ suppressPackageStartupMessages(library("VariantAnnotation"));
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 
 optList <- list(
-        make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+        make_option("--genome", default = 'b37', help = "genome build [default %default]"),
         make_option("--geneBed", default = NULL, type = "character", action = "store", help ="input gene beds, comma separated (required)"),
         make_option("--name", default = 'genelist', type = "character", action = "store", help ="annotation names, comma separated (default %default)"),
         make_option("--outFile", default = NULL, type = "character", action = "store", help ="output file (required)"))

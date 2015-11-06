@@ -173,7 +173,7 @@ LOG = $(LOGDIR)/$(@:.md5=).log
 LOG_MEM = 
 
 # SGE variables
-QUEUE = jrf.q
+QUEUE ?= jrf.q
 SGE_RREQ = -q $(QUEUE) -N X$(@F) -V -cwd 
 PARALLEL_ENV = smp
 MEM_FREE = -l virtual_free=$1,h_vmem=$2
@@ -292,6 +292,7 @@ CHECK_VCF = if [ `grep -v '^\#' $1 | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $1 | w
 #makepp_no_builtin = 1
 #makepp_percent_subdirs := 1
 
+KNIT = $(RSCRIPT) modules/scripts/knit.R
 
 
 define R_INIT

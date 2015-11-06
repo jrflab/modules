@@ -4,7 +4,6 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-REF ?= hg19
 LOGDIR = log/gatk_som_indel.$(NOW)
 SPLIT_CHR ?= true
 

@@ -15,7 +15,7 @@ suppressPackageStartupMessages(library(org.Mm.eg.db))
 optionList <- list(
 	#make_option(c('-a', '--addChr'), action='store_true', default = TRUE, help = 'Set the flag to add chr as a prefix to each seqlevel. Necessarily when the bamFile has read containing the chr prefix and the txdbFile does not [%default]'),
 	make_option(c('-i', '--intronListFile'), action='store', default = NULL, help = 'Set a file containing intronIDs to include in the summarization [%default]'),
-	make_option(c('-g', '--genome'), action='store', default = 'hg19', help = 'genome to use [%default]'),
+	make_option(c('-g', '--genome'), action='store', default = 'b37', help = 'genome to use [%default]'),
 	make_option(c('-o', '--outFile'), action='store', default = NULL, help = 'output file'),
 	make_option(c('-w', '--intronWindow'), action='store', type = 'integer', default = NULL, help = 'Set the intronic window to be first x bases from the start [%default]')
 	)
@@ -82,9 +82,9 @@ getExprs <- function( features, featureCounts, feature = 'gene' ){
 }
 
 print("Loading txdb ")
-if (opt$genome == "hg19") {
+if (opt$genome == "b37" || opt$genome == "hg19" || opt$genome == "GRCh37") {
     txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-} else if (opt$genome == "mm10") {
+} else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
     txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
 } else {
     cat("Unsupported genome\n")
@@ -167,7 +167,7 @@ print('... for introns ...')
 intronExprsVals <- getExprs( intronsByGene, countsForIntrons )
 print('... Done')
 
-if (opt$genome == "hg19") {
+if (opt$genome == "hg19" || opt$genome == "b37" || opt$genome == "GRCh37") {
     geneSymbols <- sapply(mget(genes, org.Hs.egSYMBOL, ifnotfound = NA), function (x) x[1])
 } else {
     geneSymbols <- sapply(mget(genes, org.Mm.egSYMBOL, ifnotfound = NA), function (x) x[1])

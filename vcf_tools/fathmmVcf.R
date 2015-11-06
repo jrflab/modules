@@ -16,7 +16,7 @@ if (!interactive()) {
 options(useFancyQuotes = F)
 
 optList <- list(
-        make_option("--genome", default = 'hg19', help = "genome build [default %default]"),
+        make_option("--genome", default = 'b37', help = "genome build [default %default]"),
         make_option("--fathmmDir", default = '~/share/usr/fathmm', help = "fathmm dir"),
         make_option("--fathmmAlg", default = 'Cancer', help = "fathmm algorithm [default %default]"),
         make_option("--fathmmOnt", default = 'DO', help = "fathmm ontology [default %default]"),
