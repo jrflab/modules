@@ -13,11 +13,12 @@ use Storable qw/ nfreeze /;
 
 use Getopt::Std;
 my %opt;
-getopts('ho:', \%opt);
+getopts('hco:', \%opt);
 
 my $usage = <<ENDL;
 Usage: perl qsubClient.pl -h -- [qsub args]
-    -o [file]: check file for non-zero size
+    -c : check file for non-zero size
+    -o [file]: output file (checked for uniform size among all nodes)
 ENDL
 
 sub HELP_MESSAGE {
@@ -40,10 +41,11 @@ my $socketPath = file($opt{s});
 my $maxRetry = 10;
 my $client;
 my $i = 0;
+my $port = 34389;
 while (!$client && $i < $maxRetry) {
     $client = IO::Socket::INET->new(
         PeerHost => 'localhost',
-        PeerPort => '34388',
+        PeerPort => "$port",
         Proto => 'tcp',
     );
     unless ($client) {
@@ -90,7 +92,7 @@ while (<$client>) {
     }
 }
 
-if ($opt{o} && (!-e $opt{o} || !-s $opt{o})) {
+if ($opt{c} && $opt{o} && (!-e $opt{o} || !-s $opt{o})) {
     sleep 60; # wait for file system to update
     system("rm $opt{o}");
     #print "File not removed\n" if (-e $opt{o});

@@ -205,12 +205,14 @@ override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p 
 QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
 QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-QSUB_BIN = $(PERL) modules/scripts/qsubClient.pl $1 --
-QSUB_QUEUE = $(call QSUB_BIN,$2) -q $1
-QSUB = $(call QSUB_QUEUE,$(QUEUE))
+
+QSUB_BIN_OPTS = -o $@
+QSUB_BIN = $(PERL) modules/scripts/qsubClient.pl
+QSUB_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $1
+QSUB = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $(QUEUE)
 # check output file
-QSUB_CHECK = $(call QSUB_QUEUE,$(QUEUE),-o $@)
-QSUB_CHECK_QUEUE = $(call QSUB_QUEUE,$1,-o $@)
+QSUB_CHECK = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -q $(QUEUE)
+QSUB_CHECK_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -q $1
 
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)

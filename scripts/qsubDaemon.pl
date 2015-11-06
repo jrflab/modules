@@ -91,13 +91,14 @@ sub check_file {
     return 1;
 }
 
+my $port = 34389;
 my $server = IO::Socket::INET->new(
     LocalHost => 'localhost',
-    LocalPort => '34388',
+    LocalPort => "$port",
     Proto => 'tcp',
     Listen => SOMAXCONN,
     Reuse => 1,
-) or die "Unable to listen on port 34388$!\n";
+) or die "Unable to listen on port $port: $!\n";
 
 my ($error, $diagnosis) = drmaa_init(undef);
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
