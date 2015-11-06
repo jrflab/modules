@@ -14,7 +14,7 @@ optList <- list(
                 make_option("--highAF", default = F, action = "store_true", help = "only output high tumor allelic frequency variants"))
 
 parser <- OptionParser(usage = "%prog [options]", option_list = optList);
-arguments <- parse_args(parser, positional_arguments = T);
+arguments <- parse_args(parser, positional_arguments = T, args = args);
 opt <- arguments$options;
 
 if (length(args) < 1) {
@@ -22,7 +22,7 @@ if (length(args) < 1) {
     print_help(parser);
     stop();
 }
-mutectFiles <- args
+mutectFiles <- arguments$args
 
 pset <- powerset(1:7)
 rnges <- pset[sapply(pset, function(x) length(x) >= 2 & 4 %in% x)]
