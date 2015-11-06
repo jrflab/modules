@@ -22,6 +22,7 @@ fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : bam/%.bam
 	$(call LSCRIPT_MEM,10G,20G,"$(SAM_TO_FASTQ) I=$< FASTQ=>(gzip -c > fastq/$*.1.fastq.gz) SECOND_END_FASTQ=>(gzip -c > fastq/$*.2.fastq.gz) && md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz.md5 && md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz.md5")
 else
 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5 : bam/%.bam
-	$(call LSCRIPT_MEM,10G,20G,"$(BAM_TO_FASTQ) -bam $< -fq1 >(gzip -c > fastq/$*.1.fastq.gz) -fq2 >(gzip -c > fastq/$*.2.fastq.gz) \
+	$(call LSCRIPT_PARALLEL_MEM,4,4G,5G,"$(BAM_TO_FASTQ) -i <($(SAMTOOLS2) sort -T bam/$* -O bam -n -@ 4 -m 4G $<) \
+		-fq >(gzip -c > fastq/$*.1.fastq.gz) -fq2 >(gzip -c > fastq/$*.2.fastq.gz) \
 		&& md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz.md5 && md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz.md5")
 endif
