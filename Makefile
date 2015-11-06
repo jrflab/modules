@@ -256,7 +256,7 @@ strelka :
 
 TARGETS += crest
 crest :
-	$(call RUN_MAKE,modules/variant_callers/somatic/crest.mk)
+	$(call RUN_MAKE,modules/sv_callers/crest.mk)
 
 TARGETS += pyloh
 pyloh :
@@ -343,5 +343,10 @@ mutation_summary :
 TARGETS += facets
 facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
+
+TARGETS += brass
+brass :
+	$(call RUN_MAKE,modules/sv_callers/brass.mk)
+
 
 .PHONY : $(TARGETS)
