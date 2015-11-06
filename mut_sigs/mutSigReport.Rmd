@@ -69,7 +69,7 @@ if (!is.null(opt$targetBed)) {
 }
 ```
 
-```{r loadvcf, include=F, cache=T}
+```{r loadvcf, include=F, cache=F}
 vcfs <- list()
 for (vcfFile in vcfFiles) {
     s <- sub('\\..*', '', vcfFile)
@@ -101,10 +101,10 @@ for (vcfFile in vcfFiles) {
 ```
 
 ```{r pie, eval = F, echo = F}
-for (n in names(vcfs)) {
-    vcf <- vcfs[[n]]
+for (s in names(vcfs)) {
+    vcf <- vcfs[[s]]
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    main <- paste(n, " (n=", length(rowData(vcf)), ")", sep = '')
+    main <- paste(s, " (n=", length(rowData(vcf)), ")", sep = '')
     pie(table(rowData(vcf)$MUT), col = cols, main = main)
 }
 ```
@@ -135,7 +135,9 @@ for (s in names(vcfs)) {
     tabs <- list()
     for (mut in names(svcf)) {
         if (length(svcf[[mut]]) > 0) {
-            seqs <- getSeq(genome, resize(flank(svcf[[mut]], width = 1, start = T, both = T), width = 3))
+            x <- resize(flank(svcf[[mut]], width = 1, start = T, both = T), width = 3)
+            genome(x) <- genome(genome)[1]
+            seqs <- getSeq(genome, x)
             if (any(as.character(subseq(seqs, 2, 2)) == "G")) {
                 seqs[as.character(subseq(seqs,2,2)) == "G"] <- reverseComplement(seqs[as.character(subseq(seqs,2,2)) == "G"])
             }
@@ -237,5 +239,5 @@ if (!is.null(opt$outDir)) {
 
 
 cols <- brewer.pal(9, 'Blues')
-heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols)
+heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
 ```
