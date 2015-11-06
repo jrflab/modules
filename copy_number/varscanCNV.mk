@@ -21,6 +21,7 @@ SEG_ALPHAS ?= 0.01 0.0001 0.000001 0.0000000001
 
 VARSCAN_GENE_CN = $(RSCRIPT) modules/copy_number/varscanCNVGeneCN.R
 VARSCAN_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE))
+MPILEUP_OPTS = -q 1 $(if $(TARGETS_FILE),-l $(TARGETS_FILE))
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -44,7 +45,7 @@ geneCN : varscan/segment/geneCN.txt
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(SAMTOOLS) mpileup -q 1 -l $$(TARGETS_FILE) -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
+	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(SAMTOOLS) mpileup $$(MPILEUP_OPTS) -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
 endef
 $(foreach i,$(SETS_SEQ),\
 	$(foreach tumor,$(call get_tumors,$(set.$i)), \
