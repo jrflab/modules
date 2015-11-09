@@ -43,7 +43,7 @@ my $socketPath = file($opt{s});
 my $maxRetry = 10;
 my $client;
 my $i = 0;
-my $port = 34399;
+my $port = 34999;
 while (!$client && $i < $maxRetry) {
     $client = IO::Socket::INET->new(
         PeerHost => 'localhost',

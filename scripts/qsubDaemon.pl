@@ -45,24 +45,24 @@ sub job_thread {
         unless ($client->connected) {
             print "Client disconnected, terminating job\n";
             my ($error, $diagnosis) = drmaa_control($jobid, $DRMAA_CONTROL_TERMINATE);
-            print STDERR "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" if $error;
+            print STDERR "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n" and $client->close() and return if $error;
         }
         #print "waiting on job\n";
         ($error, my $jobidOut, $stat, my $rusage, $diagnosis) = drmaa_wait($jobid, 20);
         print $client "Keep Alive\n";
     } until ($error != $DRMAA_ERRNO_EXIT_TIMEOUT);
-    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") if $error;
+    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") and $client->close() and return if $error;
 
     # tell client job is complete
     # pull all exit-related codes
     ($error, my $exitStatus, $diagnosis) = drmaa_wexitstatus($stat);
-    printError($client, "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n")if $error;
+    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") and $client->close() and return if $error;
     ($error, my $aborted, $diagnosis) = drmaa_wifaborted( $stat );
-    printError($client, "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n")if $error;
+    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") and $client->close() and return if $error;
     ($error, my $signaled, $diagnosis ) = drmaa_wifsignaled( $stat );
-    printError($client, "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n")if $error;
+    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") and $client->close() and return if $error;
     ($error, my $coreDumped, $diagnosis ) = drmaa_wcoredump( $stat );
-    printError($client, "Error: " .drmaa_strerror($error) . " : " . $diagnosis . "\n")if $error;
+    printError($client, "Error: " . drmaa_strerror($error) . " : " . $diagnosis . "\n") and $client->close() and return if $error;
 
     sleep 20; # wait for file sync
     my $fileStatus = 0;
@@ -100,7 +100,7 @@ sub check_file {
     return 1;
 }
 
-my $port = 34399;
+my $port = 34999;
 my $server = IO::Socket::INET->new(
     LocalHost => 'localhost',
     LocalPort => "$port",
