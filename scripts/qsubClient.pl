@@ -6,6 +6,8 @@ use warnings;
 use Cwd qw/ realpath /;
 #use IO::Socket qw/ AF_UNIX SOCK_STREAM /;
 use IO::Socket::INET;
+use IO::Socket::Timeout;
+use Errno qw(ETIMEDOUT EWOULDBLOCK);
 use Path::Class qw/ file /;
 use File::Temp();
 use Cwd;
@@ -41,7 +43,7 @@ my $socketPath = file($opt{s});
 my $maxRetry = 10;
 my $client;
 my $i = 0;
-my $port = 34389;
+my $port = 34399;
 while (!$client && $i < $maxRetry) {
     $client = IO::Socket::INET->new(
         PeerHost => 'localhost',
@@ -58,6 +60,9 @@ while (!$client && $i < $maxRetry) {
 die "Can't connect to server\n" unless ($client);
 eval 'END { close $client } 1' or die $@;
 
+IO::Socket::Timeout->enable_timeouts_on($client);
+$client->read_timeout(200);
+$client->write_timeout(200);
 
 #print "Connected to server $socketPath\n";
 #print "Sending server args: $args\n";
@@ -82,7 +87,10 @@ if ($opt{o}) {
 
 my $exitCode = -1;
 while (<$client>) {
-    if (/^Error:/) {
+    if (! $_ && (0+$! == ETIMEDOUT || 0+$! == EWOULDBLOCK)) {
+        print STDERR "Connection timeout\n";
+        last;
+    } elsif (/^Error:/) {
         print STDERR;
         $exitCode = -1;
         last;
