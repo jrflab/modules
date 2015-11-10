@@ -11,13 +11,14 @@ ALLTABLES_LOW_MODIFIER_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.
 ALLTABLES_SYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.synonymous.novel.txt
 ALLTABLES_NONSYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.nonsynonymous.novel.txt
 
-ABSOLUTE_SOMATIC_TXTS ?= $(foreach sample,$(SAMPLE_SETS),absolute/tables/$(set).somatic.txt)
-ABSOLUTE_SEGMENTS ?= $(foreach sample,$(SAMPLE_SETS),absolute/reviewed/SEG_MAF/$(set)_ABS_MAF.txt
+ABSOLUTE_SOMATIC_TXTS ?= $(foreach set,$(SAMPLE_SETS),absolute/tables/$(set).somatic.txt)
+ABSOLUTE_SEGMENTS ?= $(foreach set,$(SAMPLE_SETS),absolute/reviewed/SEG_MAF/$(set)_ABS_MAF.txt)
 
 mutation_summary: excel/mutation_summary.xlsx
 
 EXCEL_MERGE_ABSOLUTE ?= false
 
+LOGDIR = log/excel.$(NOW)
 
 ifeq ($(EXCEL_MERGE_ABSOLUTE),false)
 excel/mutation_summary.xlsx : $(ALLTABLES_HIGH_MODERATE_MUTECT) $(ALLTABLES_LOW_MODIFIER_MUTECT) $(ALLTABLES_SYNONYMOUS_MUTECT) $(ALLTABLES_NONSYNONYMOUS_MUTECT) $(ALLTABLES_HIGH_MODERATE_STRELKA_VARSCAN) $(ALLTABLES_LOW_MODIFIER_STRELKA_VARSCAN) $(ALLTABLES_SYNONYMOUS_STRELKA_VARSCAN) $(ALLTABLES_NONSYNONYMOUS_STRELKA_VARSCAN)
