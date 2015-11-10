@@ -207,7 +207,11 @@ QMAKE_QUEUE = $(QMAKE_BIN) -q $1
 QMAKE = $(call QSUB_QUEUE,$(QUEUE))
 
 QSUB_BIN_OPTS = -o $@
+ifeq ($(USE_QSUB_DAEMON),true)
 QSUB_BIN = $(PERL) modules/scripts/qsubClient.pl
+else
+QSUB_BIN = $(PERL) modules/scripts/qsub.pl
+endif
 QSUB_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $1
 QSUB = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $(QUEUE)
 # check output file
