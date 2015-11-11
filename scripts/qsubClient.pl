@@ -28,6 +28,7 @@ sub HELP_MESSAGE {
    exit(1);
 }
 
+
 HELP_MESSAGE if $opt{h};
 
 my $args = join " ", @ARGV;

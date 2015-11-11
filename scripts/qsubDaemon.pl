@@ -28,6 +28,7 @@ sub printError {
     print STDERR $_[1];
 }
 
+# daemon mode
 Proc::Daemon::Init;
 
 sub done { exit(0); }

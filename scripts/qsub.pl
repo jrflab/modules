@@ -8,8 +8,8 @@ use Schedule::DRMAAc qw/ :all /;
 use File::Temp();
 use Cwd qw/ realpath /;
 use Cwd;
-
 use Getopt::Std;
+
 my %opt;
 getopts('hco:', \%opt);
 
