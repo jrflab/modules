@@ -28,7 +28,7 @@ sub check_file {
     for my $node (@nodes) {
         my $nodeFileSize = `ssh $node stat -c\%s $cwd/$file`;
         chomp $nodeFileSize;
-        if ($fileSize != $nodeFileSize) {
+        if ($nodeFileSize eq "" || $fileSize != $nodeFileSize) {
             #print "$node: file size does not match: $fileSize != $nodeFileSize\n";
             return 0;
         }
@@ -102,21 +102,21 @@ die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 
 my $fileStatus = 0;
-if ($opt{o} && (!-e $opt{o} || !-s $opt{o})) {
+if ($opt{c} && $opt{o} && (!-e $opt{o} || !-s $opt{o})) {
     sleep 60; # wait for file system to update
     system("rm $opt{o}");
     #print "File not removed\n" if (-e $opt{o});
     $fileStatus = 99;
-    print STDERR "$opt{o}: file is size 0";
+    print STDERR "$opt{o}: file is size 0\n";
 }
 
 sleep 20; # wait for file sync
-if ($opt{c} && $opt{o} ne "NULL") {
+if ($opt{o} && $opt{o} ne "NULL") {
     my $i = 0;
     while (!check_file(getcwd(), $opt{o})) {
         if ($i++ > 30) {
             $fileStatus = 77;
-            print STDERR "file sizes do not match across nodes";
+            print STDERR "file sizes do not match across nodes\n";
         }
         sleep 10;
     }
