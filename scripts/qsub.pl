@@ -117,6 +117,7 @@ if ($opt{o} && $opt{o} ne "NULL") {
         if ($i++ > 30) {
             $fileStatus = 77;
             print STDERR "file sizes do not match across nodes\n";
+            last;
         }
         sleep 10;
     }
