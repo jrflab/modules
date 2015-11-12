@@ -5,6 +5,8 @@ REF_DIR = $(HOME)/share/reference
 TOPHAT_REF = GRCh37
 GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 
+CLINVAR = $(REF_DIR)/clinvar_20151102.vcf.gz
+
 #UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
 
