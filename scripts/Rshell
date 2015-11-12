@@ -9,7 +9,7 @@ QUEUE="jrf.q"
 LOGDIR=.
 MEM="1G"
 PARALLEL=1
-QSUB="perl modules/scripts/qsubClient.pl"
+QSUB="perl modules/scripts/qsub.pl"
 
 while getopts "e:sm:n:l:p:" opt; do
   case $opt in
