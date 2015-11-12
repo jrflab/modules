@@ -102,24 +102,26 @@ die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 
 my $fileStatus = 0;
-if ($opt{c} && $opt{o} && (!-e $opt{o} || !-s $opt{o})) {
-    sleep 60; # wait for file system to update
-    system("rm $opt{o}");
-    #print "File not removed\n" if (-e $opt{o});
-    $fileStatus = 99;
-    print STDERR "$opt{o}: file is size 0\n";
-}
+if ($exitStatus + $aborted + $signaled + $coreDumped == 0) {
+    if ($opt{c} && $opt{o} && (!-e $opt{o} || !-s $opt{o})) {
+        sleep 60; # wait for file system to update
+        system("rm $opt{o}");
+        #print "File not removed\n" if (-e $opt{o});
+        $fileStatus = 99;
+        print STDERR "$opt{o}: file is size 0\n";
+    }
 
-sleep 20; # wait for file sync
-if ($opt{o} && $opt{o} ne "NULL") {
-    my $i = 0;
-    while (!check_file(getcwd(), $opt{o})) {
-        if ($i++ > 30) {
-            $fileStatus = 77;
-            print STDERR "file sizes do not match across nodes\n";
-            last;
+    sleep 20; # wait for file sync
+    if ($opt{o} && $opt{o} ne "NULL") {
+        my $i = 0;
+        while (!check_file(getcwd(), $opt{o})) {
+            if ($i++ > 30) {
+                $fileStatus = 77;
+                print STDERR "file sizes do not match across nodes\n";
+                last;
+            }
+            sleep 10;
         }
-        sleep 10;
     }
 }
 
