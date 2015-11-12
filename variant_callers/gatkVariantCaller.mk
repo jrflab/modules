@@ -53,7 +53,7 @@ FILTERS = dp_ft \
 	$(if $(TARGETS_FILE),target_ft) \
 	pass eff \
 	$(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-	$(if $(findstring b37,$(REF)),cosmic nsfp \
+	$(if $(findstring b37,$(REF)),cosmic nsfp clinvar \
 		$(if $(and $(findstring snps,$1),$(findstring false,$(VALIDATION))),chasm fathmm))
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))

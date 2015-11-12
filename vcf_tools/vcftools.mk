@@ -74,6 +74,9 @@ endif
 %.cosmic.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(COSMIC) $< > $@ && $(RM) $^"))
 
+%.clinvar.vcf : %.vcf %.vcf.idx 
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(CLINVAR) $< > $@ && $(RM) $^"))
+
 
 # apply overall depth filter
 %.dp_ft.vcf : %.vcf
