@@ -15,7 +15,7 @@ FACETS_CVAL2 ?= 50
 FACETS_MIN_NHET ?= 25
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) --min_nhet $(FACETS_MIN_NHET) --pre_cval $(FACETS_PRE_CVAL)
 
-GET_BASE_COUNTS = /ifs/e63data/socci/Code/FACETS/bin/GetBaseCounts
+GET_BASE_COUNTS = /ifs/e63data/reis-filho/usr/bin/GetBaseCounts
 GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --cov 0 --fasta $(REF_FASTA)
 
 FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/targets_dbsnp.vcf.gz,$(DBSNP))

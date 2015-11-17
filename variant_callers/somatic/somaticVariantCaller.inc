@@ -8,7 +8,7 @@ VALIDATION_FILTERS := dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
 INDEL_ANN_FILTERS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
-    $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg)
+    $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
 SNV_ANN_FILTERS := $(INDEL_ANN_FILTERS) \
     $(if $(findstring b37,$(REF)),chasm fathmm)
 # apply depth filter to varscan and mutect

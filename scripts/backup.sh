@@ -8,18 +8,13 @@ if ! mkdir $LOCK 2> /dev/null; then
 fi
 
 TMP=`mktemp`;
+TOPDIR=/ifs/e63data/reis-filho
 if mountpoint -q "/mount/limr/zedshared/"; then
-    echo "searching for files in /ifs/e63data/reis-filho/"
-    cd /ifs/e63data/reis-filho/ && \
-    find data projects -type d \
-        \( -name bam -o -name tables -o -name alltables -o -name vcf \) \
-        ! -path "*/log/*" ! -path "*/tmap/*" ! -path "*/gatk/*" ! -path "*/hydra/*" ! -path "*/bwa/*" ! -path "*/bwamem/*" ! -path "*/tophat/*" \
-        ! -path "*/varscan/*" ! -path "*/mutect/*" ! -path "*/scalpel/*" ! -path "*/som_sniper/*" ! -path "*/rawdata/*" \
-        ! -path "*/unprocessed_bam/*" ! -path "*/defuse/*" ! -path "*/chimscan/*" -print0 > ${TMP}
-
     while [ 1 ]; do
-        cd /ifs/e63data/reis-filho/ && \
-            rsync --verbose --stats --recursive -a -0 --files-from=${TMP} --log-file=$LOGFILE --prune-empty-dirs ./ /mount/limr/zedshared
+        echo "searching for files in $TOPDIR"
+        cd $TOPDIR
+        'ls' data/*/*/bam/*.bam* projects/*/bam/*.bam* data/*/wgs*/fastq/*.fastq.gz | \
+            rsync --verbose --stats --recursive -a --files-from=- --log-file=$LOGFILE --prune-empty-dirs ./ /mount/limr/zedshared
         if [ "$?" = "0" ]; then
             echo "rsync complete"
             exit
@@ -28,7 +23,6 @@ if mountpoint -q "/mount/limr/zedshared/"; then
             sleep 60
         fi
     done
-    rm ${TMP}
 fi
 
 rmdir $LOCK

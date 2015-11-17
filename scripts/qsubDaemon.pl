@@ -109,7 +109,6 @@ my $server = IO::Socket::INET->new(
     Listen => SOMAXCONN,
     Reuse => 1
 ) or die "Unable to listen on port $port: $!\n";
-IO::Socket::Timeout->enable_timeouts_on($server);
 $server->read_timeout(200);
 $server->write_timeout(200);
 

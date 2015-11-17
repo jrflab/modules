@@ -26,7 +26,7 @@ sub check_file {
     chomp $fileSize;
     #print "checking $cwd/$file on nodes ($fileSize)\n";
     for my $node (@nodes) {
-        my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file`;
+        my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file 2> /dev/null`;
         chomp $nodeFileSize;
         if ($nodeFileSize eq "" || $fileSize != $nodeFileSize) {
             #print "$node: file size does not match: $fileSize != $nodeFileSize\n";
@@ -101,28 +101,44 @@ die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 ($error, $diagnosis) = drmaa_exit();
 die drmaa_strerror($error) . "\n" . $diagnosis if $error;
 
+my $exitCodes = $exitStatus + $aborted + $signaled + $coreDumped;
 my $fileStatus = 0;
-if ($exitStatus + $aborted + $signaled + $coreDumped == 0) {
-    if ($opt{c} && $opt{o} && (!-e $opt{o} || !-s $opt{o})) {
-        sleep 60; # wait for file system to update
-        system("rm $opt{o}");
-        #print "File not removed\n" if (-e $opt{o});
-        $fileStatus = 99;
-        print STDERR "$opt{o}: file is size 0\n";
-    }
-
+if ($exitCodes == 0) {
     sleep 20; # wait for file sync
     if ($opt{o} && $opt{o} ne "NULL") {
         my $i = 0;
         while (!check_file(getcwd(), $opt{o})) {
             if ($i++ > 30) {
-                $fileStatus = 77;
-                print STDERR "file sizes do not match across nodes\n";
+                if (!-e $opt{o}) {
+                    $fileStatus = 66;
+                    print STDERR "ERROR $opt{o}: file does not exist\n";
+                } else {
+                    $fileStatus = 77;
+                    print STDERR "ERROR $opt{o}: file sizes do not match across nodes\n";
+                    system("rm $opt{o}");
+                }
                 last;
             }
-            sleep 10;
+            sleep 20;
         }
     }
 }
+$exitCodes += $fileStatus;
 
-exit $exitStatus + $aborted + $signaled + $coreDumped + $fileStatus;
+# check for zero-size output file and remove it
+if ($exitCodes == 0) {
+    my $i = 0;
+    while ($opt{c} && $opt{o} && $opt{o} ne "NULL" && !-s $opt{o}) {
+        if ($i++ > 30) { 
+            $fileStatus = 99;
+            print STDERR "ERROR $opt{o}: file is size 0\n";
+            system("rm $opt{o}");
+            last;
+        }
+        sleep 20;
+    }
+
+}
+$exitCodes += $fileStatus;
+
+exit $exitCodes;
