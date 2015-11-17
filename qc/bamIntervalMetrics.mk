@@ -67,10 +67,10 @@ metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).
 
 
 metrics/interval_report/index.html : metrics/hs_metrics.txt
-	$(call LSCRIPT,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
+	$(call LSCRIPT_MEM,7G,10G,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
 metrics/%.interval_nonref_freq.txt : %.bam
-	$(call LSCRIPT,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
+	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 
 include modules/bam_tools/processBam.mk
