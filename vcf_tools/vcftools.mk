@@ -289,7 +289,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 	done")
 
 %.tab.txt : %.opl_tab.txt
-	$(INIT) $(PERL) $(VCF_JOIN_EFF) < $< > $@ 2> $(LOG)
+	$(call LSCRIPT_MEM,8G,20G,"$(PERL) $(VCF_JOIN_EFF) < $< > $@")
 	
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
