@@ -11,8 +11,7 @@ NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
 MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
-FLAGS ?= -j 100
-NUM_JOBS = 100
+NUM_JOBS ?= 100
 
 PHRED64 ?= false
 HARD_FILTER_SNPS ?= true
