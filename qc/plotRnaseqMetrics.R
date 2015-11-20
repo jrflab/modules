@@ -5,7 +5,9 @@ suppressPackageStartupMessages(library("hwriter"));
 suppressPackageStartupMessages(library("RColorBrewer"));
 
 
-options(warn = -1, error = quote({ traceback(); q('no', status = 1) }));
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }));
+}
 
 optList <- list(
                 make_option("--outDir", default = ".", help = "Output dir"));
@@ -35,8 +37,10 @@ n <- ceiling((ncol(normCovMetrics) - 1) / 8)
 ltys <- as.integer(gl(n, 8))
 cols <- rep(1:8, n)
 plot(normCovMetrics[, 1], normCovMetrics[, 2], type = 'l', col = cols[1], lty = ltys[1])
-for (i in 3:(ncol(normCovMetrics)-1)) {
-    lines(normCovMetrics[, 1], normCovMetrics[, i], type = 'l', col = cols[i-1], lty = ltys[i-1])
+if (ncol(normCovMetrics) > 2) {
+    for (i in 3:(ncol(normCovMetrics)-1)) {
+        lines(normCovMetrics[, 1], normCovMetrics[, i], type = 'l', col = cols[i-1], lty = ltys[i-1])
+    }
 }
 legend('bottom', legend = sub('\\..*', '', colnames(normCovMetrics)[-1], perl = T), lty = ltys, col = cols)
 null <- dev.off()
