@@ -20,7 +20,7 @@ GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --
 
 FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/targets_dbsnp.vcf.gz,$(DBSNP))
 
-MERGE_TN = $(PYTHON) /ifs/e63data/socci/Code/FACETS/mergeTN.py
+MERGE_TN = $(PYTHON) /ifs/e63data/reis-filho/usr/bin/FACETS.app/mergeTN.py
 
 FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
 FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE))
