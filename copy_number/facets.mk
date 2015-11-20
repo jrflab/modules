@@ -31,16 +31,16 @@ facets/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -u -a $(DBSNP) -b $< | gzip -c > $@
 
 facets/base_count/%.bc.gz : bam/%.bam $(FACETS_SNP_VCF)
-	$(call LSCRIPT_CHECK_MEM,8G,10G,"$(GET_BASE_COUNTS) $(GET_BASE_COUNTS_OPTS) --bam $< --vcf $(<<) --out >( gzip -c > $@)")
+	$(call LSCRIPT_CHECK_MEM,8G,13G,"$(GET_BASE_COUNTS) $(GET_BASE_COUNTS_OPTS) --bam $< --vcf $(<<) --out >( gzip -c > $@)")
 
 define base-count-tumor-normal
 facets/base_count/$1_$2.bc.gz : facets/base_count/$1.bc.gz facets/base_count/$2.bc.gz
-	$$(call LSCRIPT_CHECK_MEM,8G,10G,"$$(MERGE_TN) $$^ | gzip -c > $$@")
+	$$(call LSCRIPT_CHECK_MEM,8G,30G,"$$(MERGE_TN) $$^ | gzip -c > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call base-count-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 facets/%.cncf.txt : facets/base_count/%.bc.gz
-	$(call LSCRIPT_CHECK_MEM,8G,10G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix facets/$* $<")
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix facets/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt)
-	$(call LSCRIPT_CHECK_MEM,8G,20G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
