@@ -113,6 +113,7 @@ for (s in names(vcfs)) {
 ```{r mutCounts}
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    tit <- paste(tit, ' (n = ', sum(X$value), ")", sep = '')
     ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
         geom_bar(stat = 'identity') + facet_grid(~ Substitution.Type, scales = 'free_x') +
         xlab("") + ylab("") + ggtitle(tit) +
@@ -120,13 +121,12 @@ plotMutBarplot <- function(X, tit) {
         scale_fill_manual(values = cols)
 }
 
-plotMutPiechart <- function(X, tit) {
+plotMutPiechart <- function(X) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    tit <- paste(tit, '(n = ', sum(X$value), ")", sep = '')
     X %>% group_by(Substitution.Type) %>% summarise(value = sum(value)) %>%
         ggplot(aes(x = "", y = value, fill = Substitution.Type)) +
         geom_bar(width = 1, stat = 'identity') + scale_fill_manual(values = cols) + 
-        coord_polar("y") + xlab("") + ylab("") + ggtitle(tit)
+        coord_polar("y") + xlab("") + ylab("")
 }
 
 mutTabs <- list()
@@ -153,7 +153,7 @@ for (s in names(vcfs)) {
 }
 ```
 
-```{r mutCountPlots, fig.width=20}
+```{r mutCountPlots, fig.height = 7, fig.width=28}
 for (s in names(vcfs)) {
     tabs <- mutTabs[[s]]
     tab <- melt(tabs)
@@ -161,15 +161,16 @@ for (s in names(vcfs)) {
     m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
     X$value[m] <- tab$value
 
-    print(plotMutBarplot(X, s))
-    print(plotMutPiechart(X, s))
-
+    p1 <- plotMutBarplot(X, s)
+    p2 <- plotMutPiechart(X)
+    grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
 
     Y <- transform(X, value = value * ratio[as.character(Trinucleotide)])
     Y <- transform(Y, value = value / sum(value))
 
-    print(plotMutBarplot(Y, paste('normalized', s)))
-    print(plotMutPiechart(Y, paste('normalized', s)))
+    p1 <- plotMutBarplot(Y, paste('normalized', s))
+    p2 <- plotMutPiechart(Y)
+    grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
 }
 ```
 
