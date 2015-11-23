@@ -63,7 +63,7 @@ cat('done\n')
 ref <- FaFile(opt$ref)
 
 cat('Connecting to ensembl ... ')
-connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
+connect <- function() dbConnect(MySQL(), host = "10.0.200.42", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
 #ensembl = useMart("ensembl") #, host = 'localhost', port = 9000)
