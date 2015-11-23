@@ -13,15 +13,15 @@ LOGDIR := log/tmap.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
 
-VPATH ?= unprocessed_bam
-
 FASTQ_CHUNKS := 10
 FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
 FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 
 TMAP = $(HOME)/share/usr/bin/tmap
 TMAP_MODE ?= map3
-TMAP_OPTS = -Q 2
+TMAP_OPTS =
+
+SEQ_PLATFORM = IONTORRENT
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
@@ -31,13 +31,16 @@ TMAP_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 tmap : $(addsuffix .md5,$(TMAP_BAMS)) $(addsuffix .bai,$(TMAP_BAMS))
 
 bam/%.bam.md5 : tmap/bam/%.$(TMAP_MODE).$(BAM_SUFFIX).md5
-	$(INIT) cp $< $@ && ln -f $(<:.md5=) $(@:.md5=)
+	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
 
 tmap/sam/%.header.sam : unprocessed_bam/%.bam
 	$(INIT) $(SAMTOOLS) view -H $< | grep -e '^@HD' -e '^@RG' > $@
 
 tmap/bam/%.$(TMAP_MODE).bam.md5 : tmap/sam/%.header.sam unprocessed_bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,6G,8G,"$(SAMTOOLS) reheader $^ | $(TMAP) $(TMAP_MODE) $(TMAP_OPTS) -f $(REF_FASTA) -i bam -s $(@M) -o 1 -n 4 && $(MD5)")
+	$(call LSCRIPT_CHECK_PARALLEL_MEM,4,6G,8G,"$(SAMTOOLS) reheader $^ | $(TMAP) $(TMAP_MODE) $(TMAP_OPTS) -Q 2 -f $(REF_FASTA) -i bam -s $(@M) -o 1 -n 4 && $(MD5)")
+
+tmap/bam/%.$(TMAP_MODE).bam.md5 : fastq/%.fastq.gz
+	$(call LSCRIPT_CHECK_PARALLEL_MEM,4,6G,8G,"zcat $< | $(TMAP) $(TMAP_MODE) $(TMAP_OPTS) -f $(REF_FASTA) -i fastq -s $(@M) -Q 0 -o 1 -n 4 -R ID:$* -R SM:$* -R PL:$(SEQ_PLATFORM) -R PU:00000000 && $(MD5)")
 
 ifdef SPLIT_SAMPLES
 define bam-header
@@ -51,7 +54,7 @@ $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_loo
 define merged-bam
 tmap/bam/$1.$$(TMAP_MODE).sorted.bam.md5 : tmap/bam/$1.header.sam $$(foreach split,$2,tmap/bam/$$(split).$$(TMAP_MODE).sorted.bam.md5)
 	if [ `echo "$$(filter %.bam,$$(^M))" | wc -w` -gt 1 ]; then \
-		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
+		$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
 	else \
 		ln -f $$(word 2,$$(^M)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
 	fi
