@@ -1,6 +1,6 @@
 # vim: set ft=make:
-ifndef MM10_INC
-REF = mm10
+ifndef GRCM38_INC
+REF = GRCm38
 
 REF_FASTA := $(HOME)/share/reference/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.fa
 REF_DICT := $(HOME)/share/reference/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.dict
@@ -39,4 +39,4 @@ endif
 
 
 endif
-MM10_INC = true
+GRCM38_INC = true
