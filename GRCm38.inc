@@ -4,6 +4,9 @@ REF = GRCm38
 TOPHAT_REF = GRCm38
 REF_DIR = $(HOME)/share/reference
 
+INTEGRATE_ANN = $(REF_DIR)/mm10_annot.ucsc.txt
+INTEGRATE_BWTS =$(REF_DIR)/Mus_musculus_GRCm38/bwts
+
 GENES_GTF = $(REF_DIR)/Mus_musculus/NCBI/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 
 REF_FASTA := $(REF_DIR)/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.fa
