@@ -81,7 +81,7 @@ if (opt$ref == "b37" || opt$ref == "hg19") {
     cat("reference unsupported:", opt$ref, '\n')
     quit('no', status = 1)
 }
-cat(opt$ref ': Connecting to ensembl', dbName, '... ')
+cat(opt$ref, ': Connecting to ensembl', dbName, '... ')
 connect <- function() dbConnect(MySQL(), host = "10.0.200.42", port = 38493, user = "embl", password = "embl", dbname = dbName)
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
