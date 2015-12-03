@@ -16,6 +16,7 @@ if (!interactive()) {
 options(useFancyQuotes = F)
 
 optList <- list(
+                make_option("--ref", default = 'b37', help = "reference [default %default]"),
                 make_option("--breakpointsFile", default = NULL, help = "integrate breakpoints file"),
                 make_option("--sumFile", default = NULL, help = "integrate sum file"),
                 make_option("--exonsFile", default = NULL, help = "integrate exons file"),
@@ -72,8 +73,16 @@ results <- X
 results$chr1 <- as.character(results$chr1)
 results$chr2 <- as.character(results$chr2)
 
-cat('Connecting to ensembl ... ')
-connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
+if (opt$ref == "b37" || opt$ref == "hg19") {
+    dbName <- 'homo_sapiens_core_75_37'
+} else if (opt$ref == "mm10" || opt$ref == "GRCm38") {
+    dbName <- 'mus_musculus_core_82_38'
+} else {
+    cat("reference unsupported:", opt$ref, '\n')
+    quit('no', status = 1)
+}
+cat(opt$ref, ': Connecting to ensembl', dbName, '... ')
+connect <- function() dbConnect(MySQL(), host = "10.0.200.42", port = 38493, user = "embl", password = "embl", dbname = dbName)
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
 cat('done\n')

@@ -77,6 +77,7 @@ VARSCAN_JAR = $(JARDIR)/VarScan.v2.3.9.jar
 
 # PICARD tools
 PICARD_DIR = $(JARDIR)/picard-1.92
+PICARD_JAR = $(JARDIR)/picard-tools-1.141/picard.jar
 
 # scripts
 SCRIPTS_DIR = modules/scripts
