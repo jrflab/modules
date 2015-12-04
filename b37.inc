@@ -5,6 +5,8 @@ REF_DIR = $(HOME)/share/reference
 TOPHAT_REF = GRCh37
 GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 
+ANNOVAR_REF = hg19
+
 CLINVAR = $(REF_DIR)/clinvar_20151102.vcf.gz
 EXAC_NONTCGA = $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.vcf.gz
 

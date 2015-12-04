@@ -4,6 +4,8 @@ ifndef HG19_INC
 REF = hg19
 REF_DIR = $(HOME)/share/reference
 
+ANNOVAR_REF = hg19
+
 #TOPHAT_REF = hg19
 #GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 
