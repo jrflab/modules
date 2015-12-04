@@ -27,7 +27,7 @@ BWASW_OPTS = -H
 ANNOVAR_PROTOCOL = refGene$(,)cytoBand$(,)genomicSuperDups
 ANNOVAR_OPERATION = g$(,)r$(,)r
 
-LUMPY_SUFFIX = sv_som_ft.pass.$(REF)_multianno
+LUMPY_SUFFIX = sv_som_ft.pass.$(ANNOVAR_REF)_multianno
 
 .SECONDARY:
 .DELETE_ON_ERROR:
