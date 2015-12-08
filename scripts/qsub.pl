@@ -28,7 +28,10 @@ sub check_file {
     for my $node (@nodes) {
         my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file 2> /dev/null`;
         chomp $nodeFileSize;
-        if ($nodeFileSize eq "" || $fileSize != $nodeFileSize) {
+        if ($nodeFileSize eq "") {
+            print "$node: unable to connect\n";
+            return 0;
+        } elsif ($fileSize != $nodeFileSize) {
             #print "$node: file size does not match: $fileSize != $nodeFileSize\n";
             return 0;
         }
