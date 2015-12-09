@@ -131,7 +131,7 @@ endif
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,8G,17G,"unset PYTHONPATH && source $(CHASM_PYTHON_ENV)/bin/activate $(CHASM_PYTHON_ENV) && $(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --python $(shell which python) --outFile $@ $< && $(RM) $< $<.idx"))
 
 %.fathmm.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,1G,4G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $< $<.idx"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,8G,10G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --outFile $@ --python $(FATHMM_PYTHON) $< && $(RM) $< $<.idx"))
 
 %.mutass.vcf : %.vcf
 	$(call LSCRIPT_MEM,12G,15G,$(MUT_ASS) --outFile $@ --maData $(MUT_ASS_RDATA) $<)
