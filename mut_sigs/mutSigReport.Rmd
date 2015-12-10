@@ -3,6 +3,7 @@ library("optparse");
 library("hwriter");
 library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library("reshape")
 library("boot")
 library('plyr')
@@ -14,6 +15,7 @@ library("gridExtra")
 require(NMF)
 require(lsa)
 require(reshape2)
+library('RMySQL')
 
 optList <- list(
                 make_option("--name", default = '', type = "character", action = "store", help = "report name"),
@@ -37,11 +39,13 @@ if (length(arguments$args) < 1) {
 vcfFiles <- arguments$args
 outFile <- opt$outFile
 genome <- BSgenome.Hsapiens.UCSC.hg19;
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+txdb <- renameSeqlevels(txdb, sub('chr', '', seqlevels(txdb)))
+txByGenes <- transcriptsBy(txdb, 'gene')
 seqlevels(genome) <- sub('chr', '', seqlevels(genome))
 bases <- c("A", "C", "G", "T")
 
 theme_set(theme_bw(base_size = 18))
-
 ```
 
 # `r opt$name` Mutational Signature Report
@@ -88,6 +92,17 @@ for (vcfFile in vcfFiles) {
         seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
         vcf <- vcf[sapply(rowData(vcf)$ALT, length) == 1]
         rowData(vcf)$MUT <- paste(rowData(vcf)$REF, unlist(rowData(vcf)$ALT), sep = ">")
+        # query transcript ids
+        ol <- findOverlaps(rowData(vcf), txByGenes)
+        subjectStrands <- sapply(txByGenes[subjectHits(ol)], function(x) paste(unique(as.character(strand(x))), collapse = ','))
+        queryStrands <- tapply(subjectStrands, queryHits(ol), function(x) paste(unique(x), collapse = ","))
+        info(vcf)$strand <- NA
+        info(vcf)$strand[as.integer(names(queryStrands))] <- queryStrands
+        info(vcf)$transcribed <- F
+        info(vcf)$transcribed[is.na(info(vcf)$strand)] <- NA
+        info(vcf)$transcribed[rowData(vcf)$MUT %in% c("G>A", "G>C", "G>T", "A>C", "A>G", "A>T") & grepl('\\+', info(vcf)$strand)] <- T
+        info(vcf)$transcribed[rowData(vcf)$MUT %in% c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G") & grepl('-', info(vcf)$strand)] <- T
+
         rowData(vcf)$MUT[rowData(vcf)$MUT == "G>T"] <- "C>A"
         rowData(vcf)$MUT[rowData(vcf)$MUT == "G>C"] <- "C>G"
         rowData(vcf)$MUT[rowData(vcf)$MUT == "G>A"] <- "C>T"
@@ -106,11 +121,32 @@ for (s in names(vcfs)) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
     main <- paste(s, " (n=", length(rowData(vcf)), ")", sep = '')
     pie(table(rowData(vcf)$MUT), col = cols, main = main)
+    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
+        main <- paste('transcribed', s, " (n=", sum(info(vcf)$transcribed), ")", sep = '')
+        pie(table(rowData(subset(vcf, info(vcf)$transcribed))$MUT), col = cols, main = main)
+        main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed), ")", sep = '')
+        pie(table(rowData(subset(vcf, !info(vcf)$transcribed))$MUT), col = cols, main = paste('untranscribed', main))
+    }
 }
 ```
 
 
+
 ```{r mutCounts}
+mutTabs <- list()
+for (s in names(vcfs)) {
+    vcf <- vcfs[[s]]
+    mutTabs[[s]] <- createMutationTable(vcf)
+    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
+        s1 <- paste('transcribed', s)
+        mutTabs[[s1]] <- createMutationTable(subset(vcf, info(vcf)$transcribed))
+        s2 <- paste('untranscribed', s)
+        mutTabs[[s2]] <- createMutationTable(subset(vcf, !info(vcf)$transcribed))
+    }
+}
+```
+
+```{r mutCountPlots, fig.height = 7, fig.width=28}
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
     tit <- paste(tit, ' (n = ', sum(X$value), ")", sep = '')
@@ -121,6 +157,16 @@ plotMutBarplot <- function(X, tit) {
         scale_fill_manual(values = cols)
 }
 
+plotMutBarplotStranded <- function(X, tit) {
+    cols <- c('blue', 'red')
+    tit <- paste(tit, ' (n = ', sum(X$value), ")", sep = '')
+    ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = transcribed)) +
+        geom_bar(stat = 'identity', position = 'dodge') + facet_grid(~ Substitution.Type, scales = 'free_x') +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        scale_fill_manual(name = "", values = cols, labels = c("Transcribed strand", 'Untranscribed strand')) + 
+        xlab("") + ylab("") + ggtitle(tit)
+}
+
 plotMutPiechart <- function(X) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
     X %>% group_by(Substitution.Type) %>% summarise(value = sum(value)) %>%
@@ -129,9 +175,8 @@ plotMutPiechart <- function(X) {
         coord_polar("y") + xlab("") + ylab("")
 }
 
-mutTabs <- list()
-for (s in names(vcfs)) {
-    svcf <- split(rowData(vcfs[[s]]), rowData(vcfs[[s]])$MUT)
+createMutationTable <- function(vcf) {
+    svcf <- split(rowData(vcf), rowData(vcf)$MUT)
     tabs <- list()
     for (mut in names(svcf)) {
         if (length(svcf[[mut]]) > 0) {
@@ -149,18 +194,16 @@ for (s in names(vcfs)) {
             tabs[[mut]] <- table(factor(as.character(seqs), level = lvls))
         }
     }
-    mutTabs[[s]] <- tabs
-}
-```
-
-```{r mutCountPlots, fig.height = 7, fig.width=28}
-for (s in names(vcfs)) {
-    tabs <- mutTabs[[s]]
     tab <- melt(tabs)
     X <- cbind(alexandrov[, 1:2], value = 0)
     m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
     X$value[m] <- tab$value
+    X
+}
 
+for (s in names(vcfs)) {
+    vcf <- vcfs[[s]]
+    X <- createMutationTable(vcf)
     p1 <- plotMutBarplot(X, s)
     p2 <- plotMutPiechart(X)
     grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
@@ -172,6 +215,29 @@ for (s in names(vcfs)) {
     p2 <- plotMutPiechart(Y)
     grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
 }
+
+for (s in names(vcfs)) {
+    vcf <- vcfs[[s]]
+    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
+        transcribedTab <- cbind(createMutationTable(subset(vcf, info(vcf)$transcribed)), transcribed = T)
+        untranscribedTab <- cbind(createMutationTable(subset(vcf, !info(vcf)$transcribed)), transcribed = F)
+        X <- rbind(transcribedTab, untranscribedTab)
+        p1 <- plotMutBarplotStranded(X, s)
+        p2 <- plotMutPiechart(transcribedTab)
+        p3 <- plotMutPiechart(untranscribedTab)
+        lom <- matrix(c(1,1, 2,3), nrow = 2, ncol = 2)
+        grid.arrange(p1, p2, p3, layout_matrix = lom,  widths = c(4, 2))
+
+        Y <- X %>% group_by(transcribed) %>% transform(value = value * ratio[as.character(Trinucleotide)])
+        Y <- transform(Y, value = value / sum(value))
+
+        p1 <- plotMutBarplotStranded(Y, paste('normalized', s))
+        p2 <- plotMutPiechart(subset(Y, transcribed))
+        p3 <- plotMutPiechart(subset(Y, !transcribed))
+        grid.arrange(p1, p2, p3, layout_matrix = lom,  widths = c(4, 2))
+    }
+}
+
 ```
 
 ```{r bootPlot, fig.width=12}
@@ -191,11 +257,7 @@ ranFun <- function(p, d) {
 }
 
 for (s in names(vcfs)) {
-    tabs <- mutTabs[[s]]
-    tab <- melt(tabs)
-    X <- cbind(alexandrov, value = 0)
-    m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
-    X$value[m] <- tab$value
+    X <- createMutationTable(vcfs[[s]])
     boots <- boot(X, bootFun, R = 1000, ran.gen = ranFun, sim = 'parametric')
     boots.sd <- apply(boots$t, 2, sd)
     ci <- norm.ci(boots, index = 1:ncol(sigs))
@@ -222,7 +284,7 @@ solveNMF <- function(x, inmatrix){
 
 
 X <- alexandrov[, 1:2]
-for (s in names(vcfs)) {
+for (s in names(mutTabs)) {
     tabs <- mutTabs[[s]]
     tab <- melt(tabs)
     m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
@@ -237,7 +299,6 @@ if (!is.null(opt$outDir)) {
     fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
     write.table(nmfMutCounts, file = fn, quote = F, sep = '\t')
 }
-
 
 cols <- brewer.pal(9, 'Blues')
 heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
