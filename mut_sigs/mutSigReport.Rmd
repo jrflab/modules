@@ -141,7 +141,7 @@ for (s in names(vcfs)) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
     main <- paste(s, " (n=", length(rowData(vcf)), ")", sep = '')
     pie(table(rowData(vcf)$MUT), col = cols, main = main)
-    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
+    if (sum(info(vcf)$transcribed, na.rm = T) > 0 && sum(!info(vcf)$transcribed, na.rm = T) > 0) {
         main <- paste('transcribed', s, " (n=", sum(info(vcf)$transcribed), ")", sep = '')
         pie(table(rowData(subset(vcf, info(vcf)$transcribed))$MUT), col = cols, main = main)
         main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed), ")", sep = '')
@@ -223,7 +223,7 @@ for (s in names(vcfs)) {
 
 for (s in names(vcfs)) {
     vcf <- vcfs[[s]]
-    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
+    if (sum(info(vcf)$transcribed, na.rm = T) > 0 && sum(!info(vcf)$transcribed, na.rm = T) > 0) {
         transcribedTab <- cbind(createMutationTable(subset(vcf, info(vcf)$transcribed)), transcribed = T)
         untranscribedTab <- cbind(createMutationTable(subset(vcf, !info(vcf)$transcribed)), transcribed = F)
         X <- rbind(transcribedTab, untranscribedTab)
