@@ -268,15 +268,13 @@ solveNMF <- function(x, inmatrix){
 }
 
 
-X <- alexandrov[, 1:2]
+tabs <- list()
 for (s in names(vcfs)) {
-    tabs <- createMutationTable(vcfs[[s]])
-    tab <- melt(tabs)
-    m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
-    X[, s] <- 0
-    X[m, s] <- tab$value
+    tabs[[s]] <- createMutationTable(vcfs[[s]])
+    names(tabs[[s]])[3] <- s
 }
-X <- as.matrix(X[, -(1:2)])
+X <- as.matrix(join_all(tabs)[,-(1:2)])
+rownames(X) <- with(alexandrov, gsub(">", ".", paste(Trinucleotide, Substitution.Type, sep=".")))
 
 nmfMutCounts <- solveNMF(alexandrovM, X)
 
