@@ -131,21 +131,6 @@ for (s in names(vcfs)) {
 ```
 
 
-
-```{r mutCounts}
-mutTabs <- list()
-for (s in names(vcfs)) {
-    vcf <- vcfs[[s]]
-    mutTabs[[s]] <- createMutationTable(vcf)
-    if (sum(info(vcf)$transcribed) > 0 && sum(!info(vcf)$transcribed) > 0) {
-        s1 <- paste('transcribed', s)
-        mutTabs[[s1]] <- createMutationTable(subset(vcf, info(vcf)$transcribed))
-        s2 <- paste('untranscribed', s)
-        mutTabs[[s2]] <- createMutationTable(subset(vcf, !info(vcf)$transcribed))
-    }
-}
-```
-
 ```{r mutCountPlots, fig.height = 7, fig.width=28}
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
@@ -257,7 +242,7 @@ ranFun <- function(p, d) {
 }
 
 for (s in names(vcfs)) {
-    X <- createMutationTable(vcfs[[s]])
+    X <- inner_join(alexandrov, createMutationTable(vcfs[[s]]))
     boots <- boot(X, bootFun, R = 1000, ran.gen = ranFun, sim = 'parametric')
     boots.sd <- apply(boots$t, 2, sd)
     ci <- norm.ci(boots, index = 1:ncol(sigs))
@@ -284,8 +269,8 @@ solveNMF <- function(x, inmatrix){
 
 
 X <- alexandrov[, 1:2]
-for (s in names(mutTabs)) {
-    tabs <- mutTabs[[s]]
+for (s in names(vcfs)) {
+    tabs <- createMutationTable(vcfs[[s]])
     tab <- melt(tabs)
     m <- match(paste(tab$L1, tab$Var.1), paste(X$Substitution.Type, X$Trinucleotide))
     X[, s] <- 0
