@@ -28,10 +28,10 @@ VARIANT_TYPES = varscan_indels varscan_snps
 
 PHONY += varscan varscan_vcfs varscan_tables
 varscan : varscan_vcfs varscan_tables $(if $(findstring false,$(VALIDATION)),varscan_snps_mutsig_report)
-varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)))
-varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
+varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
+varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
 
-$(eval $(call mutsig-report-name-vcfs,varscan_snps,$(call VCFS,varscan_snps)))
+$(eval $(call mutsig-report-name-vcfs,varscan_snps,$(call SOMATIC_VCFS,varscan_snps)))
 
 
 %.Somatic.txt : %.txt

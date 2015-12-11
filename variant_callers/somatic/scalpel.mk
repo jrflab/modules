@@ -16,8 +16,8 @@ LOGDIR = log/scalpel.$(NOW)
 
 scalpel : scalpel_vcfs scalpel_tables
 
-scalpel_vcfs : $(call VCFS,scalpel_indels)
-scalpel_tables : $(call TABLES,scalpel_indels)
+scalpel_vcfs : $(call SOMATIC_VCFS,scalpel_indels)
+scalpel_tables : $(call SOMATIC_TABLES,scalpel_indels)
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal

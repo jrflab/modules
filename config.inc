@@ -100,5 +100,9 @@ ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 #GATK
 GATK_JAR = $(JARDIR)/GenomeAnalysisTK.jar
 GATK_JAR2 = $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
+
+VT = $(HOME)/share/usr/bin/vt
+TABIX = $(HOME)/share/usr/bin/tabix
+
 endif
 CONFIG_INC = true
