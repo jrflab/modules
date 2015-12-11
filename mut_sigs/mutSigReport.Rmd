@@ -3,7 +3,9 @@ library("optparse");
 library("hwriter");
 library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
+library("BSgenome.Mmusculus.UCSC.mm10");
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Mmusculus.UCSC.mm10.knownGene)
 library("reshape")
 library("boot")
 library('plyr')
@@ -38,8 +40,16 @@ if (length(arguments$args) < 1) {
 
 vcfFiles <- arguments$args
 outFile <- opt$outFile
-genome <- BSgenome.Hsapiens.UCSC.hg19;
-txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+if (opt$genome == "b37" || opt$genome == "hg19") {
+    genome <- BSgenome.Hsapiens.UCSC.hg19
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+    genomeName <- 'hg19'
+} else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
+    genome <- BSgenome.Mmusculus.UCSC.mm10
+    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
+    genomeName <- 'mm10'
+}
+
 txdb <- renameSeqlevels(txdb, sub('chr', '', seqlevels(txdb)))
 txByGenes <- transcriptsBy(txdb, 'gene')
 seqlevels(genome) <- sub('chr', '', seqlevels(genome))
@@ -78,7 +88,17 @@ vcfs <- list()
 for (vcfFile in vcfFiles) {
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
-    vcf <- readVcf(vcfFile, opt$genome)
+
+    temp <- tempfile()
+    zipped <- bgzip(vcfFile, temp)
+    idx <- indexTabix(temp, "vcf")
+    cat('done\n')
+
+    tab <- TabixFile(zipped, idx)
+    open(tab)
+
+    i <- 1
+    vcf <- readVcf(tab, genomeName)
     if (nrow(vcf) > 0 && opt$lowPlus) {
         x <- sapply(info(vcf)$ANN, function(x) any(grepl('MODERATE|LOW|HIGH',
                                                          x)))
