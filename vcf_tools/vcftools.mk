@@ -4,6 +4,8 @@
 include modules/Makefile.inc
 #include modules/variant_callers/gatk.inc
 
+LOGDIR ?= log/vcf.$(NOW)
+
 ..DUMMY := $(shell mkdir -p version; echo "$(SNP_EFF) &> version/snp_eff.txt")
 
 ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
@@ -347,4 +349,14 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 %.$(ANNOVAR_REF)_multianno.vcf : %.vcf
 	$(call LSCRIPT_CHECK_MEM,7G,9G,"$(ANNOVAR) -out $* $(ANNOVAR_OPTS) $< $(ANNOVAR_DB) && $(RM) $< $<.idx")
 
+%.norm.vcf.gz : %.vcf
+	$(call LSCRIPT_MEM,9G,12G,"sed '/^##GATKCommandLine/d;/^##MuTect/d;' $< | \
+		$(VT) view -h -f PASS - | \
+		$(VT) decompose -s - | \
+		$(VT) normalize -r $(REF_FASTA) - | \
+		$(call SNP_EFF_MEM,8G) ann -c $(SNP_EFF_CONFIG) $(SNP_EFF_GENOME) -formatEff -classic | \
+		bgzip -c > $@")
+
+%.vcf.gz.tbi : %.vcf.gz
+	$(call LSCRIPT_MEM,3G,5G,"$(VT) index $<")
 
