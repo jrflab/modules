@@ -142,9 +142,9 @@ for (s in names(vcfs)) {
     main <- paste(s, " (n=", length(rowData(vcf)), ")", sep = '')
     pie(table(rowData(vcf)$MUT), col = cols, main = main)
     if (sum(info(vcf)$transcribed, na.rm = T) > 0 && sum(!info(vcf)$transcribed, na.rm = T) > 0) {
-        main <- paste('transcribed', s, " (n=", sum(info(vcf)$transcribed), ")", sep = '')
+        main <- paste('transcribed', s, " (n=", sum(info(vcf)$transcribed, na.rm = T), ")", sep = '')
         pie(table(rowData(subset(vcf, info(vcf)$transcribed))$MUT), col = cols, main = main)
-        main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed), ")", sep = '')
+        main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed, na.rm = T), ")", sep = '')
         pie(table(rowData(subset(vcf, !info(vcf)$transcribed))$MUT), col = cols, main = paste('untranscribed', main))
     }
 }
@@ -154,7 +154,7 @@ for (s in names(vcfs)) {
 ```{r mutCountPlots, fig.height = 7, fig.width=28}
 plotMutBarplot <- function(X, tit) {
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    tit <- paste(tit, ' (n = ', sum(X$value), ")", sep = '')
+    tit <- paste(tit, ' (n = ', sum(X$value, na.rm = T), ")", sep = '')
     ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = Substitution.Type)) +
         geom_bar(stat = 'identity') + facet_grid(~ Substitution.Type, scales = 'free_x') +
         xlab("") + ylab("") + ggtitle(tit) +
@@ -164,7 +164,7 @@ plotMutBarplot <- function(X, tit) {
 
 plotMutBarplotStranded <- function(X, tit) {
     cols <- c('blue', 'red')
-    tit <- paste(tit, ' (n = ', sum(X$value), ")", sep = '')
+    tit <- paste(tit, ' (n = ', sum(X$value, na.rm = T), ")", sep = '')
     ggplot(X, aes(x = factor(Trinucleotide), y = value, fill = transcribed)) +
         geom_bar(stat = 'identity', position = 'dodge') + facet_grid(~ Substitution.Type, scales = 'free_x') +
         theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
@@ -281,7 +281,7 @@ rownames(alexandrov) <- with(alexandrov, gsub(">", ".", paste(Trinucleotide, Sub
 alexandrovM <- data.matrix(alexandrov[,4:ncol(alexandrov)])
 
 solveNMF <- function(x, inmatrix){
-    coef <- fcnnls(x, inmatrix[rownames(x),]) # reorder the rownames of the in matrix 
+    coef <- fcnnls(x, inmatrix[rownames(x),, drop = F]) # reorder the rownames of the in matrix 
     colsum <- apply(coef$x, 2, sum)
     coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
     return(coef_x_scaled)
@@ -297,6 +297,7 @@ X <- as.matrix(join_all(tabs)[,-(1:2)])
 rownames(X) <- with(alexandrov, gsub(">", ".", paste(Trinucleotide, Substitution.Type, sep=".")))
 
 nmfMutCounts <- solveNMF(alexandrovM, X)
+colnames(nmfMutCounts) <- names(vcfs)
 
 if (!is.null(opt$outDir)) {
     fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
@@ -304,5 +305,12 @@ if (!is.null(opt$outDir)) {
 }
 
 cols <- brewer.pal(9, 'Blues')
-heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
+if (ncol(nmfMutCounts) > 2) {
+    heatmap.2(nmfMutCounts, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
+}
+
+par(mar = c(10,5,5,5))
+for (s in colnames(nmfMutCounts)) {
+    barplot(nmfMutCounts[,s], main = s, las = 2)
+}
 ```

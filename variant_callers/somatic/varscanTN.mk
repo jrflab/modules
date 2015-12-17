@@ -31,8 +31,6 @@ varscan : varscan_vcfs varscan_tables $(if $(findstring false,$(VALIDATION)),var
 varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
 varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
 
-$(eval $(call mutsig-report-name-vcfs,varscan_snps,$(call SOMATIC_VCFS,varscan_snps)))
-
 
 %.Somatic.txt : %.txt
 	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")

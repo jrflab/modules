@@ -16,7 +16,6 @@ strelka_all : strelka_vcfs strelka_tables
 VARIANT_TYPES := strelka_snps strelka_indels
 strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
 strelka_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
-$(eval $(call mutsig-report-name-vcfs,strelka_snps,$(call SOMATIC_VCFS,strelka_snps)))
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
