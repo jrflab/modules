@@ -27,8 +27,8 @@ recurrent_mutations/sufam/all_mutations.vcf: $(ALLTABLES_NONSYNONYMOUS_MUTECT) $
 
 recurrent_mutations/sufam/%_validated_sufam.txt: recurrent_mutations/sufam/all_mutations.vcf bam/%.bam
 	$(INIT) unset PYTHONPATH && \
-		source /home/debruiji/share/usr/anaconda-envs/sufam-0.4.1/bin/activate \
-			   /home/debruiji/share/usr/anaconda-envs/sufam-0.4.1 && \
+		source $(SUFAM_ENV)/bin/activate \
+			   $(SUFAM_ENV) && \
 		sufam --sample_name $* $(REF_FASTA) $< $(<<) > $@
 
 recurrent_mutations/sufam/all_sufam.txt: $(foreach sample,$(SAMPLES),recurrent_mutations/sufam/$(sample)_validated_sufam.txt)
