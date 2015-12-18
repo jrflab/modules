@@ -19,7 +19,7 @@ mutect_vcfs : $(call SOMATIC_VCFS,mutect) $(addsuffix .idx,$(call SOMATIC_VCFS,m
 mutect_tables : $(call SOMATIC_TABLES,mutect)
 ext_output : $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 mut_report : mutect/report/index.html mutect/lowAFreport/index.html mutect/highAFreport/index.html
-$(eval $(call mutsig-report-name-vcfs,mutect,$(call VCFS,mutect)))
+$(eval $(call mutsig-report-name-vcfs,mutect,$(call SOMATIC_VCFS,mutect)))
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
