@@ -9,6 +9,7 @@ use File::Temp();
 use Cwd qw/ realpath /;
 use Cwd;
 use Getopt::Std;
+use Scalar::Util qw(looks_like_number);
 
 my %opt;
 getopts('hco:', \%opt);
@@ -28,7 +29,7 @@ sub check_file {
     for my $node (@nodes) {
         my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file`;
         chomp $nodeFileSize;
-        if ($nodeFileSize =~ /^stat/ || $nodeFileSize =~ /^ssh/) {
+        if ($nodeFileSize =~ /^stat/ || $nodeFileSize =~ /^ssh/ || !looks_like_number($nodeFileSize)) {
             print "$nodeFileSize\n";
             return 0;
         } elsif ($fileSize != $nodeFileSize) {
