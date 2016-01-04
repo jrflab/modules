@@ -36,8 +36,7 @@ library(ABSOLUTE)
 endef
 
 
-$(info absolute/tables/%.somatic.txt : tables/%.$(call SOMATIC_FILTER_SUFFIX,mutect).tab.txt tables/%.strelka_varscan_indels.tab.txt)
-absolute/tables/%.somatic.txt : tables/%.$(call SOMATIC_FILTER_SUFFIX,mutect).tab.txt tables/%.strelka_varscan_indels.tab.txt
+absolute/tables/%.somatic.txt : tables/%.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.txt tables/%.strelka_varscan_indels.tab.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	tn <- unlist(strsplit("$*", '_'))
