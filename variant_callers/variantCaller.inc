@@ -8,7 +8,7 @@ VALIDATION_ANNS := dbsnp eff \
 INDEL_ANNS := $(if $(findstring GRCm38,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
-SNV_ANNS := $(INDEL_ANN_FILTERS) \
+SNV_ANNS := $(INDEL_ANNS) \
     $(if $(findstring b37,$(REF)),chasm fathmm)
 
 FILTERS = dp_ft
