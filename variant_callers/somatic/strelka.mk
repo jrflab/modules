@@ -7,10 +7,10 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 ##### DEFAULTS ######
 
 
-LOGDIR = log/strelka.$(NOW)
-PHONY += strelka_all strelka_vcfs strelka_tables
+LOGDIR ?= log/strelka.$(NOW)
+PHONY += strelka strelka_vcfs strelka_tables
 
-strelka_all : strelka_vcfs strelka_tables
+strelka : strelka_vcfs strelka_tables
 	
 VARIANT_TYPES := strelka_snps strelka_indels
 strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))

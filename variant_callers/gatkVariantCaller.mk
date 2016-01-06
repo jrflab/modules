@@ -3,7 +3,7 @@
 # 
 
 ##### DEFAULTS ######
-LOGDIR = log/gatk.$(NOW)
+LOGDIR ?= log/gatk.$(NOW)
 
 ##### OPTIONS ######
 # HARD_FILTER_SNPS = true/false (default: true)

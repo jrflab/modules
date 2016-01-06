@@ -2,7 +2,7 @@
 # Detect point mutations
 ##### DEFAULTS ######
 
-LOGDIR = log/varscan.$(NOW)
+LOGDIR ?= log/varscanTN.$(NOW)
 
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc

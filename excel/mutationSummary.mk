@@ -1,6 +1,7 @@
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
+LOGDIR ?= log/mutation_summary.$(NOW)
 
 ALLTABLES_HIGH_MODERATE_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.high_moderate.novel.txt
 ALLTABLES_LOW_MODIFIER_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.low_modifier.novel.txt

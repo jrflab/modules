@@ -1,6 +1,8 @@
 # vim: set ft=make :
 # sub module containing vcf related tools
 
+ifdef VCFTOOLS_MK
+
 include modules/Makefile.inc
 #include modules/variant_callers/gatk.inc
 
@@ -361,4 +363,7 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 
 %.vcf.gz.tbi : %.vcf.gz
 	$(call LSCRIPT_MEM,3G,5G,"$(VT) index $<")
+
+endif
+VCFTOOLS_MK = true
 

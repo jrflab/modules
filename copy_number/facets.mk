@@ -2,7 +2,7 @@
 #
 include modules/Makefile.inc
 
-LOGDIR = log/facets.$(NOW)
+LOGDIR ?= log/facets.$(NOW)
 
 .SECONDARY:
 .DELETE_ON_ERROR:

@@ -8,7 +8,7 @@ include modules/variant_callers/gatk.inc
 
 VPATH ?= bam
 
-LOGDIR = log/metrics.$(NOW)
+LOGDIR ?= log/metrics.$(NOW)
 
 EXOME ?= false
 
@@ -21,9 +21,9 @@ NON_REF_FREQ_BIN_SIZE = 0.01
 
 .SECONDARY: 
 
-.PHONY: all hs_metrics amplicon_metrics report non_ref_metrics
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics
 
-all : hs_metrics report non_ref_metrics
+bam_interval_metrics : hs_metrics report non_ref_metrics
 
 non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.txt)
 
@@ -31,7 +31,7 @@ hs_metrics : metrics/hs_metrics.txt metrics/interval_hs_metrics.txt
 
 amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metrics.txt)
 
-report : metrics/interval_report/index.html
+interval_report : metrics/interval_report/index.html
 
 
 # interval metrics per sample

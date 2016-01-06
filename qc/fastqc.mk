@@ -5,7 +5,7 @@ include modules/Makefile.inc
 
 FASTQC_SUMMARY_PLOT = $(RSCRIPT) modules/qc/fastqcSummaryPlot.R
 
-LOGDIR = log/fastqc.$(NOW)
+LOGDIR ?= log/fastqc.$(NOW)
 
 .PHONY: fastqc
 .SECONDARY: 

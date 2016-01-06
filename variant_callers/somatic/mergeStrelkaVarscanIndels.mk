@@ -1,5 +1,5 @@
 # Merge strelka and varscan indel results
-LOGDIR = log/merge_strelka_varscan_indels.$(NOW)
+LOGDIR ?= log/merge_strelka_varscan_indels.$(NOW)
 
 include modules/Makefile.inc
 include modules/config.inc

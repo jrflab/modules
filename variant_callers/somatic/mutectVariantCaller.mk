@@ -2,7 +2,7 @@
 # Detect point mutations
 ##### DEFAULTS ######
 
-LOGDIR = log/mutect.$(NOW)
+LOGDIR ?= log/mutect.$(NOW)
 
 PHONY += mutect mutect_vcfs mutect_tables ext_output mut_report
 

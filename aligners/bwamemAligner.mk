@@ -10,7 +10,7 @@ include modules/aligners/align.inc
 
 ALIGNER := bwamem
 
-LOGDIR := log/bwamem.$(NOW)
+LOGDIR ?= log/bwamem.$(NOW)
 
 SAMTOOLS_SORT_MEM = 2000000000
 SEQ_PLATFORM = illumina
@@ -33,41 +33,41 @@ BWA_ALN_OPTS ?= -M
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
-bwamem : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
+bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
 
-bam/%.bam.md5 : bwamem/bam/%.bwamem.$(BAM_SUFFIX).md5
-	$(call LSCRIPT,"ln -f $(<M) $(@M) && $(MD5)")
+bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
+	$(call LSCRIPT,"ln -f $(<) $(@)")
 
 ifdef SPLIT_SAMPLES
 define bam-header
-bwamem/sam/$1.header.sam : $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam.md5)
-	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
-	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+bwamem/sam/$1.header.sam : $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam)
+	$$(INIT) $$(SAMTOOLS) view -H $$< | grep -v '^@RG' > $$@.tmp; \
+	for bam in $$^; do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
 	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
 
 define merged-bam
-bwamem/bam/$1.bwamem.sorted.bam.md5 : bwamem/sam/$1.header.sam $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam.md5)
-	if [ `echo "$$(filter %.bam,$$(^M))" | wc -w` -gt 1 ]; then \
-		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
+bwamem/bam/$1.bwamem.sorted.bam : bwamem/sam/$1.header.sam $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam)
+	if [ `echo "$$(filter %.bam,$$(^))" | wc -w` -gt 1 ]; then \
+		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$^) && $$(RM) $$^ $$^"); \
 	else \
-		ln -f $$(word 2,$$(^M)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
+		ln -f $$(word 2,$$(^)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
 	fi
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
 
-fastq/%.fastq.gz.md5 : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@:.md5=) && $(RM) $< && $(MD5)")
+fastq/%.fastq.gz : fastq/%.fastq
+	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $<")
 
-bwamem/bam/%.bwamem.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
+bwamem/bam/%.bwamem.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(CHECK_MD5) $(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
-bwamem/bam/%.bwamem.bam.md5 : fastq/%.fastq.gz.md5
+bwamem/bam/%.bwamem.bam : fastq/%.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(CHECK_MD5) $(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
 include modules/bam_tools/processBam.mk
 include modules/fastq_tools/fastq.mk
