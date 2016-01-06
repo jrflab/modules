@@ -26,7 +26,7 @@ VPATH ?= bam
 VARIANT_TYPES = varscan_indels varscan_snps
 
 PHONY += varscan varscan_vcfs varscan_tables
-varscan : varscan_vcfs varscan_tables $(if $(findstring false,$(VALIDATION)),varscan_snps_mutsig_report)
+varscan : varscan_vcfs varscan_tables
 varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
 varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
 
