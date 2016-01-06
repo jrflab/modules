@@ -78,37 +78,37 @@ endif
 
 # limit coverage
 %.dcov.bam : %.bam
-	$(call LSCRIPT_MEM,18G,24G,"$(CHECK_MD5) $(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 50 -o $@")
+	$(call LSCRIPT_MEM,18G,24G,"$(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 50 -o $@")
 
 # filter
 %.filtered.bam : %.bam
-	$(call LSCRIPT_MEM,6G,7G,"$(CHECK_MD5) $(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $< > $@ && $(MD5) && $(RM) $<")
+	$(call LSCRIPT_MEM,6G,7G,"$(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $< > $@ && $(RM) $<")
 
 %.fixmate.bam : %.bam
 	$(call LSCRIPT_MEM,9G,14G,"$(call FIX_MATE_MEM,8G) I=$< O=$@ && $(RM) $<")
 
 # recalibrate base quality
 %.recal_report.grp : %.bam %.bai
-	$(call LSCRIPT_MEM,11G,15G,"$(CHECK_MD5) $(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $< -o $@")
+	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $< -o $@")
 
 #sort only if necessary
 #%.sorted.bam : %.bam
-#	 if ! $(SAMTOOLS) view -H $< | grep -q 'SO:coordinate' -; then $(call LSCRIPT_MEM,20G,25G,"$(CHECK_MD5) $(call SORT_SAM_MEM,19G) I=$< O=$@ SO=coordinate"); else cp $< $@ && ln -v $< $@; fi && $(RM) $<
+#	 if ! $(SAMTOOLS) view -H $< | grep -q 'SO:coordinate' -; then $(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G) I=$< O=$@ SO=coordinate"); else cp $< $@ && ln -v $< $@; fi && $(RM) $<
 
 #define split-sort
 #%.sorted_split_$1.bam : %.bam
-#$$(call LSCRIPT_MEM,17G,19G,"$$(CHECK_MD5) cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(call SORT_SAM_MEM,15G,3000000) I=/dev/stdin O=$$@ SO=coordinate && $$(MD5)")
+#$$(call LSCRIPT_MEM,17G,19G,"$cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(call SORT_SAM_MEM,15G,3000000) I=/dev/stdin O=$$@ SO=coordinate && $$(MD5)")
 #endef
 
 ifeq ($(SPLIT_SORT),true)
 define split-sort
 %.sorted_split_$1.bam : %.bam
-	$$(call LSCRIPT_MEM,7G,10G,"$$(CHECK_MD5) cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(SAMTOOLS) view -Sub - | $$(SAMTOOLS) sort -m 4G - $$(@:.bam=)")
+	$$(call LSCRIPT_MEM,7G,10G,"$cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(SAMTOOLS) view -Sub - | $$(SAMTOOLS) sort -m 4G - $$(@:.bam=)")
 endef
 $(foreach i,$(SORT_SPLIT_SEQ),$(eval $(call split-sort,$i)))
 
 %.sorted.bam : $(foreach i,$(SORT_SPLIT_SEQ),%.sorted_split_$i.bam)
-	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $<) $@ $(^M) && $(MD5) && $(RM) $^ $(@:.sorted.bam=.bam)")
+	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $<) $@ $^ && $(RM) $^ $(@:.sorted.bam=.bam)")
 else
 %.sorted.bam : %.bam
 	$(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=coordinate VERBOSITY=ERROR && $(RM) $<")
