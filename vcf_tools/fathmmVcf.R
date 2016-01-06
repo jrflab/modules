@@ -21,6 +21,11 @@ optList <- list(
         make_option("--fathmmAlg", default = 'Cancer', help = "fathmm algorithm [default %default]"),
         make_option("--fathmmOnt", default = 'DO', help = "fathmm ontology [default %default]"),
         make_option("--ensemblTxdb", default = '~/share/reference/hsapiens_ensembl_biomart.sqlite', help = "Ensembl TxDb SQLite"),
+        make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
+        make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
+        make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
+        make_option("--mysqlPassword", default = 'embl', help = "MySQL server password"),
+        make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
         make_option("--ref", default = '~/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta', help = "Reference fasta file"),
         make_option("--python", default = 'python', help = "python executable [default %default]"),
         make_option("--outFile", default = NULL, help = "vcf output file [default %default]")
@@ -63,7 +68,7 @@ cat('done\n')
 ref <- FaFile(opt$ref)
 
 cat('Connecting to ensembl ... ')
-connect <- function() dbConnect(MySQL(), host = "10.0.200.42", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
+connect <- function() dbConnect(MySQL(), host = opt$mysqlHost, port = opt$mysqlPort, user = opt$mysqlUser, password = opt$mysqlPassword, dbname = opt$mysqlDb)
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
 #ensembl = useMart("ensembl") #, host = 'localhost', port = 9000)
