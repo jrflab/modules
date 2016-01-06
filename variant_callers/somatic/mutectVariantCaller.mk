@@ -6,7 +6,7 @@ LOGDIR = log/mutect.$(NOW)
 
 PHONY += mutect mutect_vcfs mutect_tables ext_output mut_report
 
-mutect : mutect_vcfs mutect_tables ext_output mut_report mutect_mutsig_report
+mutect : mutect_vcfs mutect_tables ext_output
 
 include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/mutect.inc

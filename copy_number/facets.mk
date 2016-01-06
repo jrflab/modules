@@ -23,7 +23,8 @@ FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/targets_dbsnp.vcf.gz,$(DBSNP))
 MERGE_TN = $(PYTHON) /ifs/e63data/reis-filho/usr/bin/FACETS.app/mergeTN.py
 
 FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
-FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE))
+FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
+					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) --mysqlDb $(EMBL_MYSQLDB_DB)
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt) facets/geneCN.txt
 

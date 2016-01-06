@@ -33,6 +33,11 @@ MY_RSCRIPT = $(HOME)/share/usr/bin/Rscript-3.1.2
 RSCRIPT = $(MY_RSCRIPT)
 #RSCRIPT = $(HOME)/usr/bin/Rscript
 
+# General python 2.7 environment
+ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+# SUFAM python environment
+SUFAM_ENV = /home/debruiji/share/usr/anaconda-envs/sufam-0.4.1
+
 JARDIR := $(HOME)/share/usr/lib/java
 
 ### Applications
@@ -95,14 +100,18 @@ JAVA7_BIN = /usr/bin/java
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
-ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
-
 #GATK
 GATK_JAR = $(JARDIR)/GenomeAnalysisTK.jar
 GATK_JAR2 = $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
 
 VT = $(HOME)/share/usr/bin/vt
 TABIX = $(HOME)/share/usr/bin/tabix
+
+EMBL_MYSQLDB_HOST = 10.0.200.48
+EMBL_MYSQLDB_PORT = 38493
+EMBL_MYSQLDB_USER = embl
+EMBL_MYSQLDB_PW = embl
+EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
 
 endif
 CONFIG_INC = true

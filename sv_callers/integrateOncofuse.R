@@ -21,6 +21,11 @@ optList <- list(
                 make_option("--sumFile", default = NULL, help = "integrate sum file"),
                 make_option("--exonsFile", default = NULL, help = "integrate exons file"),
                 make_option("--java", default = 'java', help = "java binary"),
+                make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
+                make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
+                make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
+                make_option("--mysqlPassword", default = 'embl', help = "MySQL server password"),
+                make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
                 make_option("--oncofuseJar", default = '~/share/usr/oncofuse-v1.0.6/Oncofuse.jar', help = "oncofuse jar"),
                 make_option("--oncofuseTissueType", default = 'EPI', help = "oncofuse tissue type"),
                 make_option("--outPrefix", default = NULL, help = "Output prefix"));
@@ -82,7 +87,7 @@ if (opt$ref == "b37" || opt$ref == "hg19") {
     quit('no', status = 1)
 }
 cat(opt$ref, ': Connecting to ensembl', dbName, '... ')
-connect <- function() dbConnect(MySQL(), host = "10.0.200.42", port = 38493, user = "embl", password = "embl", dbname = dbName)
+connect <- function() dbConnect(MySQL(), host = opt$mysqlHost, port = opt$mysqlPort, user = opt$mysqlUser, password = opt$mysqlPassword, dbname = opt$mysqlDb)
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
 cat('done\n')
