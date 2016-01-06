@@ -107,10 +107,11 @@ GATK_JAR2 = $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
 VT = $(HOME)/share/usr/bin/vt
 TABIX = $(HOME)/share/usr/bin/tabix
 
-EMBL_MYSQLDB_HOST = 10.0.200.42
+EMBL_MYSQLDB_HOST = 10.0.200.48
 EMBL_MYSQLDB_PORT = 38493
 EMBL_MYSQLDB_USER = embl
 EMBL_MYSQLDB_PW = embl
+EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
 
 endif
 CONFIG_INC = true
