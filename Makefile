@@ -351,5 +351,10 @@ TARGETS += brass
 brass :
 	$(call RUN_MAKE,modules/sv_callers/brass.mk)
 
+TARGETS += mutsig_report
+mutsig_report :
+	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
+
+
 
 .PHONY : $(TARGETS)
