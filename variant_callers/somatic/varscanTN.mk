@@ -7,7 +7,6 @@ LOGDIR = log/varscan.$(NOW)
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
-include modules/mut_sigs/mutSigReport.mk
 
 IGNORE_FP_FILTER ?= true
 

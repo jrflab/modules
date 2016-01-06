@@ -11,7 +11,6 @@ mutect : mutect_vcfs mutect_tables ext_output
 include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/mutect.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
-include modules/mut_sigs/mutSigReport.mk
 
 ..DUMMY := $(shell mkdir -p version; echo "$(MUTECT) &> version/mutect.txt")
 

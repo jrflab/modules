@@ -4,7 +4,6 @@ include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/strelka.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
-include modules/mut_sigs/mutSigReport.mk
 ##### DEFAULTS ######
 
 
