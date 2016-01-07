@@ -18,7 +18,7 @@ strelka_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
-	$$(INIT) rm -rf $$(@D) && $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=$$(@D) &> $$(LOG)
+	$$(call LSCRIPT_NAMED,strelka_$1_$2,"rm -rf $$(@D) && $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=$$(@D)")
 
 #$$(INIT) qmake -inherit -q jrf.q -- -j 20 -C $$< > $$(LOG) && touch $$@
 strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
