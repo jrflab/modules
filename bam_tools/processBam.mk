@@ -1,7 +1,7 @@
 # various bam processing steps
 ##### MAKE INCLUDES #####
 
-ifdef PROCESS_BAM_MK
+ifndef PROCESS_BAM_MK
 
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc

@@ -15,7 +15,7 @@ LOGDIR ?= log/bwamem.$(NOW)
 SAMTOOLS_SORT_MEM = 2000000000
 SEQ_PLATFORM = illumina
 
-VPATH ?= unprocessed_bam
+VPATH += bam unprocessed_bam
 
 # use fastq; otherwise use bams
 FASTQ_CHUNKS := 10
