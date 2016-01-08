@@ -1,7 +1,7 @@
 # vim: set ft=make :
 # sub module containing vcf related tools
 
-ifdef VCFTOOLS_MK
+ifndef VCFTOOLS_MK
 
 include modules/Makefile.inc
 #include modules/variant_callers/gatk.inc
