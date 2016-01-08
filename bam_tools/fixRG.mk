@@ -7,10 +7,10 @@ include modules/aligners/align.inc
 LOGDIR ?= log/fixRG.$(NOW)
 
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-fixed_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
+fixed_bams : $(BAMS) $(addsuffix .bai,$(BAMS))
 
-bam/%.bam.md5 : unprocessed_bam/%.rg.bam.md5
-	$(INIT) cp $< $@ && ln -f $(<M) $(@M)
+bam/%.bam : unprocessed_bam/%.rg.bam
+	$(INIT) ln -f $(<) $(@)
 
 
 include modules/bam_tools/processBam.mk

@@ -41,9 +41,7 @@ fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
 	$(call LSCRIPT_MEM,22G,40G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
 	gzip < \$${TEMP}_1 > fastq/$*.1.fastq.gz & \
 	gzip < \$${TEMP}_2 > fastq/$*.2.fastq.gz & \
-	$(call SAM_TO_FASTQ_MEM,21G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2 && \
-	md5sum fastq/$*.1.fastq.gz > fastq/$*.1.fastq.gz && \
-	md5sum fastq/$*.2.fastq.gz > fastq/$*.2.fastq.gz")
+	$(call SAM_TO_FASTQ_MEM,21G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2")
 else ifeq ($(EXTRACT_TOOL),bam2fastx)
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.nsorted.bam
 	$(call LSCRIPT_MEM,12G,14G,"$(BAM2FASTX) --fastq --sam --all -o $@ -P -N $<")

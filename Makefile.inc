@@ -166,7 +166,7 @@ NOW := $(shell date +"%F")
 
 MKDIR = mkdir -p -m 775
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
-LOG = $(LOGDIR)/$(@:.md5=).log
+LOG = $(LOGDIR)/$(@).log
 
 
 #LOG_MEM = $(HOME)/share/scripts/monitorMem.sh $(LOG).top &
@@ -293,10 +293,6 @@ CHECK_VCF = if [ `grep -v '^\#' $1 | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $1 | w
 4< = $(word 4,$^)
 <<<<< = $(word 5,$^)
 5< = $(word 5,$^)
-
-#signature md5
-#makepp_no_builtin = 1
-#makepp_percent_subdirs := 1
 
 KNIT = $(RSCRIPT) modules/scripts/knit.R
 

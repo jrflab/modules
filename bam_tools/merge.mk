@@ -10,7 +10,7 @@ LOGDIR = log/merge.$(NOW)
 .DELETE_ON_ERROR: 
 .PHONY : merged_bam
 
-merged_bam : $(foreach sample,$(SPLIT_SAMPLES),bam/$(sample).bam.md5) $(foreach sample,$(SPLIT_SAMPLES),bam/$(sample).bam.bai) 
+merged_bam : $(foreach sample,$(SPLIT_SAMPLES),bam/$(sample).bam) $(foreach sample,$(SPLIT_SAMPLES),bam/$(sample).bam.bai) 
 
 define bam-header
 merged_bam/$1.header.sam : $$(foreach split,$2,bam/$$(split).bam)
@@ -21,8 +21,8 @@ endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_lookup.$(sample)))))
 
 define merged-bam
-bam/$1.bam.md5 : merged_bam/$1.header.sam $$(foreach split,$2,bam/$$(split).bam)
-	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$^) && $$(MD5)")
+bam/$1.bam : merged_bam/$1.header.sam $$(foreach split,$2,bam/$$(split).bam)
+	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$^)")
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 

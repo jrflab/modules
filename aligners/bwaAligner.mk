@@ -31,46 +31,46 @@ BWA_ALN_OPTS ?=
 
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-bwa : $(addsuffix .md5,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
-splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam.md5))
+bwa : $(addsuffix ,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
+splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam))
 
-bam/%.bam.md5 : bwa/bam/%.bwa.$(BAM_SUFFIX).md5
-	$(call LSCRIPT,"ln -f $(<M) $(@M) && $(MD5)")
+bam/%.bam : bwa/bam/%.bwa.$(BAM_SUFFIX)
+	$(call LSCRIPT,"ln -f $(<) $(@) ")
 
 ifdef SPLIT_SAMPLES
 define merged-bam
 ifeq ($(shell echo "$(words $2) > 1" | bc),1)
-bwa/bam/$1.header.sam : $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
-	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
-	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+bwa/bam/$1.header.sam : $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam)
+	$$(INIT) $$(SAMTOOLS) view -H $$(<) | grep -v '^@RG' > $$@.tmp; \
+	for bam in $$(^); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
 	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
 
-bwa/bam/$1.bwa.sorted.bam.md5 : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam.md5)
-	if [ `echo "$$(filter %.bam,$$(^M))" | wc -w` -gt 1 ]; then \
-		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^"); \
+bwa/bam/$1.bwa.sorted.bam : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/bam/$$(split).bwa.sorted.bam)
+	if [ `echo "$$(filter %.bam,$$(^))" | wc -w` -gt 1 ]; then \
+		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$(^))  && $$(RM) $$^"); \
 	else \
-		ln -f $$(word 2,$$(^M)) $$(@M) && ln -f $$(word 2,$$^) $$@; \
+		ln -f $$(word 2,$$(^)) $$(@) \
 	fi
 endif
 ifeq ($(shell echo "$(words $2) == 1" | bc),1)
-bwa/bam/$1.bwa.bam.md5 : bwa/bam/$2.bwa.bam.md5
-	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
+bwa/bam/$1.bwa.bam : bwa/bam/$2.bwa.bam
+	$$(INIT) mv $$(<) $$(@) 
 endif
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
 endif
 
 
-fastq/%.fastq.gz.md5 : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@M) && $(RM) $< && $(MD5)")
+fastq/%.fastq.gz : fastq/%.fastq
+	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $< ")
 
-bwa/sai/%.sai.md5 : fastq/%.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(CHECK_MD5) $(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<M) > $(@M) 2> $(LOG) && $(MD5)")
-#echo "$(BWA) aln -t 8 $(REF_FASTA) $(<:.md5=) > $(@:.md5=) 2> $(LOG) && $(MD5)" | $(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G)
+bwa/sai/%.sai : fastq/%.fastq.gz
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<) > $(@) ")
+#echo "$(BWA) aln -t 8 $(REF_FASTA) $(<:=) > $(@:=) 2> $(LOG) " | $(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G)
 
-bwa/bam/%.bwa.bam.md5 : bwa/sai/%.1.sai.md5 bwa/sai/%.2.sai.md5 fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
+bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_MEM,4G,10G,"$(CHECK_MD5) $(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^M) 2> $(LOG) | $(SAMTOOLS) view -bhS - > $(@M) && $(MD5)")
+	$(call LSCRIPT_MEM,4G,10G,"$(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^) | $(SAMTOOLS) view -bhS - > $(@) ")
 
 include modules/bam_tools/processBam.mk
 include modules/fastq_tools/fastq.mk

@@ -35,35 +35,35 @@ BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 .DELETE_ON_ERROR:
 .PHONY: bowtie_bams
 
-bowtie_bams : $(addsuffix .md5,$(BAMS)) $(addsuffix .bai,$(BAMS))
+bowtie_bams : $(BAMS) $(addsuffix .bai,$(BAMS))
 
 # memory for human genome: ~3.2G
-bowtie/bam/%.bwt.bam.md5 : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[A-Za-z0-9]\+//'`; \
-		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) --1 $(word 1,$(^:.md5=)) -2 $(word 2,$(^:.md5=)) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+bowtie/bam/%.bwt.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"LBID=`echo \"$*\" | sed 's/_[A-Za-z0-9]\+//'`; \
+		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) --1 $(word 1,$(^)) -2 $(word 2,$(^)) | $(SAMTOOLS) view -bhS - > $(@) ")
 
-bowtie/bam/%.bwt.bam.md5 : fastq/%.fastq.gz.md5
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"$(CHECK_MD5) LBID=`echo \"$*\" | sed 's/_[A-Za-z0-9]\+//'`; \
-		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) -U $(<:.md5=) | $(SAMTOOLS) view -bhS - > $(@:.md5=) && $(MD5)")
+bowtie/bam/%.bwt.bam : fastq/%.fastq.gz
+	$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"LBID=`echo \"$*\" | sed 's/_[A-Za-z0-9]\+//'`; \
+		$(BOWTIE) $(BOWTIE_OPTS) --rg-id $* --rg \"LB:\$${LBID}\" --rg \"PL:${SEQ_PLATFORM}\" --rg \"SM:\$${LBID}\" -p $(NUM_CORES) -U $(<) | $(SAMTOOLS) view -bhS - > $(@) ")
 
 
-bam/%.bam.md5 : bowtie/bam/%.bwt.$(BAM_SUFFIX).md5
-	$(call LSCRIPT,"ln -f $(<:.md5=) $(@:.md5=) && $(MD5)")
+bam/%.bam : bowtie/bam/%.bwt.$(BAM_SUFFIX)
+	$(call LSCRIPT,"ln -f $(<) $(@) ")
 
 ifdef SPLIT_SAMPLES
 define merged-bam
 ifeq ($(shell echo "$(words $2) > 1" | bc),1)
-bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
+bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
-	for bam in $$(^M); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
+	for bam in $$(^); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
 	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
 
-bowtie/bam/$1.bwt.sorted.bam.md5 : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam.md5)
-	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$(^M)) && $$(MD5) && $$(RM) $$(^M) $$^")
+bowtie/bam/$1.bwt.sorted.bam : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam)
+	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$(^)) && $$(RM) $$(^)")
 endif
 ifeq ($(shell echo "$(words $2) == 1" | bc),1)
-bowtie/bam/$1.bwt.bam.md5 : bowtie/bam/$2.bwt.bam.md5
-	$$(INIT) mv $$(<M) $$(@M) && $$(MD5)
+bowtie/bam/$1.bwt.bam : bowtie/bam/$2.bwt.bam
+	$$(INIT) mv $$(<) $$(@) 
 endif
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
