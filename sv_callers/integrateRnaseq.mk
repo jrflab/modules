@@ -8,7 +8,6 @@ LOGDIR = log/integrate_rnaseq.$(NOW)
 
 ..DUMMY := $(shell mkdir -p version; echo "$(INTEGRATE) &> version/integrate.txt")
 
-INTEGRATE = $(HOME)/share/usr/bin/Integrate
 INTEGRATE_MINW ?= 2.0
 INTEGRATE_LARGENUM ?= 4
 INTEGRATE_OPTS = -minW $(INTEGRATE_MINW) -largeNum $(INTEGRATE_LARGENUM)

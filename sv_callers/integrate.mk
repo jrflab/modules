@@ -8,7 +8,6 @@ LOGDIR = log/integrate_rnaseq.$(NOW)
 
 ..DUMMY := $(shell mkdir -p version; echo "$(INTEGRATE) &> version/integrate.txt")
 
-INTEGRATE = $(HOME)/share/usr/bin/Integrate
 INTEGRATE_ONCOFUSE = $(RSCRIPT) modules/sv_callers/integrateOncofuse.R
 INTEGRATE_ONCOFUSE_OPTS = --oncofuseJar $(ONCOFUSE_JAR) --oncofuseTissueType $(ONCOFUSE_TISSUE_TYPE) --java $(JAVA_BIN) 
 ONCOFUSE_TISSUE_TYPE ?= EPI
