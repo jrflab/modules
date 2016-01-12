@@ -1,4 +1,6 @@
 # various bam processing steps
+# can be used to reprocess bam files, merge them, or merge and reprocess bam files
+# possible post-processing steps are defined in modules/aligners/align.inc
 ##### MAKE INCLUDES #####
 
 ifndef PROCESS_BAM_MK
@@ -10,8 +12,7 @@ include modules/aligners/align.inc
 
 LOGDIR ?= log/process_bam.$(NOW)
 
-SPLIT_SORT ?= false
-MERGE_SPLIT_BAMS ?= false # merge processed split bams
+MERGE_SPLIT_BAMS ?= false  # merge processed split bams
 NUM_SORT_SPLITS ?= 50
 SORT_SPLIT_SEQ = $(shell seq 0 $$(($(NUM_SORT_SPLITS) - 1)))
 
@@ -32,17 +33,16 @@ BAM_FILTER_FLAGS ?= 768
 
 REPROCESS ?= false
 
-ifeq ($(REPROCESS),true)
 BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-processed_bams : $(addsuffix ,$(BAMS)) $(addsuffix .bai,$(BAMS))
+ifeq ($(REPROCESS),true)
+processed_bams : $(BAMS) $(addsuffix .bai,$(BAMS))
 bam/%.bam : unprocessed_bam/%.$(BAM_SUFFIX)
-	$(INIT) cp $< $@ && ln -f $< $@
+	$(INIT) ln -f $< $@
 else
 ifeq ($(MERGE_SPLIT_BAMS),true)
-BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
-merged_bams : $(addsuffix ,$(BAMS)) $(addsuffix .bai,$(BAMS))
-bam/%.bam : unprocessed_bam/%.bam
-	$(INIT) cp $< $@ && ln -f $< $@
+merged_bams : $(BAMS) $(addsuffix .bai,$(BAMS))
+bam/%.bam : unprocessed_bam/%$(if $(findstring true,$(FIX_RG)),.rg).bam
+	$(INIT) ln -f $< $@
 endif
 endif
 
@@ -72,10 +72,6 @@ endif
 %.bai : %.bam.bai
 	$(INIT) cp $< $@
 
-# sam to bam
-#%.bam : %.sam
-#	$(call INIT_MEM,2G,3G) $(SAMTOOLS) view -bS $< > $@
-
 # limit coverage
 %.dcov.bam : %.bam
 	$(call LSCRIPT_MEM,18G,24G,"$(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 50 -o $@")
@@ -94,25 +90,6 @@ endif
 #sort only if necessary
 #%.sorted.bam : %.bam
 #	 if ! $(SAMTOOLS) view -H $< | grep -q 'SO:coordinate' -; then $(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G) I=$< O=$@ SO=coordinate"); else cp $< $@ && ln -v $< $@; fi && $(RM) $<
-
-#define split-sort
-#%.sorted_split_$1.bam : %.bam
-#$$(call LSCRIPT_MEM,17G,19G,"$cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(call SORT_SAM_MEM,15G,3000000) I=/dev/stdin O=$$@ SO=coordinate && $$(MD5)")
-#endef
-
-ifeq ($(SPLIT_SORT),true)
-define split-sort
-%.sorted_split_$1.bam : %.bam
-	$$(call LSCRIPT_MEM,7G,10G,"$cat <($$(SAMTOOLS) view -H $$<) <($$(SAMTOOLS) view $$< | awk 'NR % $$(NUM_SORT_SPLITS) == $1') | $$(SAMTOOLS) view -Sub - | $$(SAMTOOLS) sort -m 4G - $$(@:.bam=)")
-endef
-$(foreach i,$(SORT_SPLIT_SEQ),$(eval $(call split-sort,$i)))
-
-%.sorted.bam : $(foreach i,$(SORT_SPLIT_SEQ),%.sorted_split_$i.bam)
-	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) merge -h <($(SAMTOOLS) view -H $<) $@ $^ && $(RM) $^ $(@:.sorted.bam=.bam)")
-else
-%.sorted.bam : %.bam
-	$(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=coordinate VERBOSITY=ERROR && $(RM) $<")
-endif
 
 
 # reorder only if necessary
@@ -134,7 +111,6 @@ endif
 # add rg
 %.rg.bam : %.bam
 	$(call LSCRIPT_MEM,12G,16G,"$(call ADD_RG_MEM,10G) I=$< O=$@ RGLB=$(call strip-suffix,$(@F)) RGPL=$(SEQ_PLATFORM) RGPU=00000000 RGSM=$(call strip-suffix,$(@F)) RGID=$(call strip-suffix,$(@F)) VERBOSITY=ERROR && $(RM) $<")
-
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome
 ifeq ($(SPLIT_CHR),true)

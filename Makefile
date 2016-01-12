@@ -355,6 +355,9 @@ TARGETS += mutsig_report
 mutsig_report :
 	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 
-
+# standalone bam file merger
+TARGETS += merge_bam
+merge_bam :
+	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
 .PHONY : $(TARGETS)
