@@ -337,7 +337,7 @@ norm_copynum :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 
 TARGETS += recurrent_mutations
 recurrent_mutations :

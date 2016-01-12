@@ -24,7 +24,7 @@ include modules/variant_callers/somatic/strelka.mk
 include modules/variant_callers/somatic/varscanTN.mk
 include modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk
 include modules/copy_number/facets.mk
-include modules/excel/mutationSummary.mk
+include modules/summary/mutationSummary.mk
 include modules/qc/fastqc.mk
 include modules/qc/bamIntervalMetrics.mk
 
