@@ -1,0 +1,3 @@
+samtools=0.1.19
+bwa=0.7.12
+java-jdk=7.0.91

@@ -45,7 +45,7 @@ ifneq ($(wildcard $(SAMPLE_SET_FILE)),)
 	$(eval normal.$(call get_underscore_sets,$i) := $(call get_normal,$(set.$i))))
   NORMAL_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_normal,$(set.$i)))
   TUMOR_SAMPLES = $(foreach i,$(SETS_SEQ),$(call get_tumors,$(set.$i)))
-  SAMPLE_PAIRS ?= $(foreach set,$(SAMPLE_SETS),$(foreach tumor,$(tumor.$(set)),$(tumor)_$(normal.$(set))))
+  SAMPLE_PAIRS = $(foreach set,$(SAMPLE_SETS),$(foreach tumor,$(tumor.$(set)),$(tumor)_$(normal.$(set))))
   # define tumor.pair and normal.pair to retrieve tumor/normal from pairs
   $(foreach set,$(SAMPLE_SETS), \
 	  $(foreach tumor,$(tumor.$(set)), \
@@ -169,9 +169,6 @@ MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
 LOG = $(LOGDIR)/$(@).log
 
 
-#LOG_MEM = $(HOME)/share/scripts/monitorMem.sh $(LOG).top &
-LOG_MEM = 
-
 # SGE variables
 QUEUE ?= jrf.q
 SGE_RREQ = -q $(QUEUE) -N X$(@F) -V -cwd 
@@ -182,11 +179,12 @@ REQ = SGE_RREQ="$(SGE_RREQ)"
 REQ_PARALLEL_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(PARALLEL_ENV) $(1)"
 REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
 UMASK = 002
-INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; $(LOG_MEM)
+ACTIVATE_JRFLAB_MODULES_ENV = source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
+INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; echo $(ACTIVATE_JRFLAB_MODULES_ENV);
 # $(call INIT_MEM,mem_free,h_vmem)
-INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2); $(LOG_MEM) 
+INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2);
 # $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
-INIT_PARALLEL_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_PARALLEL_MEM,$1,$2,$3); $(LOG_MEM) 
+INIT_PARALLEL_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_PARALLEL_MEM,$1,$2,$3);
 
 # openMPI
 MPIRUN = /opt/bin/mpirun
@@ -220,9 +218,9 @@ QSUB_CHECK_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- -q $1
 
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
-LSCRIPT = $(INIT) echo "umask $(UMASK);" $1 | $(SHELL) > $(LOG).o 2> $(LOG).e
-LSCRIPT_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(SHELL) > $(LOG).o 2> $(LOG).e
-LSCRIPT_MEM = $(INIT) echo "umask $(UMASK);" $3 | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT = ($(INIT) echo "umask $(UMASK);" $1) | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT_MEM = ($(INIT) echo "umask $(UMASK);" $3) | $(SHELL) > $(LOG).o 2> $(LOG).e
 
 LSCRIPT_NET = $(LSCRIPT)
 LSCRIPT_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
@@ -249,28 +247,28 @@ LSCRIPT = $(call LSCRIPT_NAMED_MEM,$(@F),1G,2G,$1)
 LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
 
-LSCRIPT_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
-LSCRIPT_BIG = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS)
-LSCRIPT_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
-LSCRIPT_PARALLEL_MEM_BIG = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
-LSCRIPT_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
-LSCRIPT_MEM_BIG = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2)
+LSCRIPT_NET = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
+LSCRIPT_BIG = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS)
+LSCRIPT_PARALLEL_MEM_NET = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
+LSCRIPT_PARALLEL_MEM_BIG = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
+LSCRIPT_MEM_NET = ($(INIT) echo "umask $(UMASK);" $3) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
+LSCRIPT_MEM_BIG = ($(INIT) echo "umask $(UMASK);" $3) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2)
 
-LSCRIPT_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,1G,2G)
-LSCRIPT_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
-LSCRIPT_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+LSCRIPT_NAMED = ($(INIT) echo "umask $(UMASK);" $2) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,1G,2G)
+LSCRIPT_NAMED_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $5) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
+LSCRIPT_NAMED_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
 
 LSCRIPT_CHECK = $(call LSCRIPT_CHECK_NAMED,$(@F),$1)
 LSCRIPT_CHECK_PARALLEL_MEM = $(call LSCRIPT_CHECK_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_CHECK_MEM = $(call LSCRIPT_CHECK_NAMED_MEM,$(@F),$1,$2,$3)
 
-LSCRIPT_CHECK_NET = $(INIT) echo "umask $(UMASK);" $1 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
-LSCRIPT_CHECK_PARALLEL_MEM_NET = $(INIT) echo "umask $(UMASK);" $4 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
+LSCRIPT_CHECK_NET = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
+LSCRIPT_CHECK_PARALLEL_MEM_NET = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
 LSCRIPT_CHECK_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
 
 LSCRIPT_CHECK_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS)
-LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(INIT) echo "umask $(UMASK);" $5 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
-LSCRIPT_CHECK_NAMED_MEM = $(INIT) echo "umask $(UMASK);" $4 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $5) | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
+LSCRIPT_CHECK_NAMED_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1
