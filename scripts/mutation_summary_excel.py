@@ -5,7 +5,10 @@ Create mutation summary excel from given tsvs
 import argparse
 import pandas as pd
 import os
+import sys
 
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 def create_absolute_df(absolute_somatic_txts, absolute_segments):
     absdf = pd.concat([pd.read_csv(asegs, sep="\t", dtype={"Chromosome":str}) for asegs
