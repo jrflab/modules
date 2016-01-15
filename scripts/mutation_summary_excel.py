@@ -163,11 +163,12 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
                            strelka_varscan_low_modifier,
                            strelka_varscan_synonymous, strelka_varscan_nonsynonymous,
                            excel_file,
-                           absolute_somatic_txts=None,
-                           absolute_segments=None,
-                           output_tsv_dir=None,
-                           facets_em_reviewed=None,
-                           annotation_tsv=None):
+                           absolute_somatic_txts,
+                           absolute_segments,
+                           output_tsv_dir,
+                           facets_em_reviewed,
+                           annotation_tsv,
+                           max_exac_af):
     # create output tsv dir if required
     if output_tsv_dir:
         mkdir_p(output_tsv_dir)
@@ -185,7 +186,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
     # create annotation df
     if annotation_tsv:
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,dbNSFP_ExAC_Adj_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
@@ -202,7 +203,8 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
                         add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
                         add_non_existent_columns(filter_annotations_with_impact(read_tsv(strelka_varscan_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
                         ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
-    add_columns_write_excel(mutsdf, writer, "MUTATION_SUMMARY", absdf,
+    exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
+    add_columns_write_excel(mutsdf[exac_af_sel], writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
         facetsdf=facetsdf, annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_high_moderate), "HIGH|MODERATE"),
@@ -248,6 +250,7 @@ def main():
     parser.add_argument("--output_tsv_dir", default=None, type=str, help="Output raw sheets as tsv in given directory")
     parser.add_argument("--facets_em_reviewed", default=None, type=str, help="Facets em reviewed values for LOH determination")
     parser.add_argument("--annotation_tsv", default=None, type=str, help="File with TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT, plus other columns of choice for annotation")
+    parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
     args = parser.parse_args()
     if args.absolute_somatic_txts and args.absolute_segments:
         absolute_somatic_txts = args.absolute_somatic_txts.split(",")
@@ -270,7 +273,8 @@ def main():
                            absolute_segments,
                            args.output_tsv_dir,
                            args.facets_em_reviewed,
-                           args.annotation_tsv)
+                           args.annotation_tsv,
+                           args.max_exac_af)
 
 if __name__ == "__main__":
     main()
