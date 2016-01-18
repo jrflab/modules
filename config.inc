@@ -113,7 +113,7 @@ EMBL_MYSQLDB_USER = embl
 EMBL_MYSQLDB_PW = embl
 EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
 
-INTEGRATE = $(HOME)/share/usr/Integrate_0.1e/bin/Integrate
+INTEGRATE = $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
 
 endif
 CONFIG_INC = true
