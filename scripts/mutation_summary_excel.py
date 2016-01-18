@@ -104,7 +104,7 @@ def add_likely_pathogenic_snv(df):
     rv = df.copy()
     chasm_score_columns = [c for c in df.columns if "chasm_score" in c]
     rv["likely_pathogenic"] = df.apply(lambda x: "true" if x["fathmm_pred"] == "CANCER" or
-                                       bool(sum([x[c] > 0.3 for c in chasm_score_columns])) else ".",
+                                       bool(sum([x[c] < 0.3 for c in chasm_score_columns])) else ".",
                                        axis=1)
     return rv
 
