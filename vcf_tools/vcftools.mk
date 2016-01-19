@@ -364,6 +364,16 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 %.vcf.gz.tbi : %.vcf.gz
 	$(call LSCRIPT_MEM,3G,5G,"$(VT) index $<")
 
+ifdef SAMPLE_PAIRS
+ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
+define annotate-facets-pair
+vcf/$1_$2.%.facets.vcf : vcf/$1_$2.%.vcf facets/$1_$2.cncf.txt
+	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@ $$<")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
+endif
+
+
 endif
 VCFTOOLS_MK = true
 
