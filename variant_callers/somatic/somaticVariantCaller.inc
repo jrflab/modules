@@ -3,6 +3,7 @@ DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
+ANN_FACETS ?= false
 
 SOMATIC_VALIDATION_ANNS := dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
