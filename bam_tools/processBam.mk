@@ -87,6 +87,9 @@ endif
 %.recal_report.grp : %.bam %.bai
 	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $< -o $@")
 
+%.sorted.bam : %.bam
+	$(call LSCRIPT_PARALLEL_MEM,4,3G,3G,"$(SAMTOOLS2) sort -m 2.8G -o $@ -O bam --reference $(REF_FASTA) -@ 4 $<")
+
 #sort only if necessary
 #%.sorted.bam : %.bam
 #	 if ! $(SAMTOOLS) view -H $< | grep -q 'SO:coordinate' -; then $(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G) I=$< O=$@ SO=coordinate"); else cp $< $@ && ln -v $< $@; fi && $(RM) $<
