@@ -360,4 +360,9 @@ TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
+# annotate external vcfs
+TARGETS += ann_ext_vcf
+ann_ext_vcf: 
+	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+
 .PHONY : $(TARGETS)
