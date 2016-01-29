@@ -3,6 +3,7 @@ DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
+ANN_FACETS ?= false
 
 SOMATIC_VALIDATION_ANNS := dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
@@ -11,6 +12,10 @@ SOMATIC_INDEL_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
 SOMATIC_SNV_ANNS := $(SOMATIC_INDEL_ANNS) \
     $(if $(findstring b37,$(REF)),chasm fathmm)
+ifeq ($(ANN_FACETS),true)
+SOMATIC_INDEL_ANNS += facets
+SOMATIC_SNV_ANNS += facets
+endif
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka
 SOMATIC_FILTERS = dp_ft \

@@ -7,7 +7,6 @@ import pandas as pd
 import os
 import errno
 
-
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -81,39 +80,65 @@ def create_absolute_df(absolute_somatic_txts, absolute_segments):
 
 def add_maf(df):
     rv = df.copy()
+    def f(x):
+        if "," in x["TUMOR.AD"]:
+            return float(x["TUMOR.AD"].split(",")[1]) / x["TUMOR.DP"]
+        else:
+            return ""
+    def g(x):
+        if "," in x["NORMAL.AD"]:
+            return float(x["NORMAL.AD"].split(",")[1]) / x["NORMAL.DP"]
+        else:
+            return ""
     if len(df) > 0:
-        rv["TUMOR_MAF"] = df.apply(lambda x: float(x["TUMOR.AD"].split(",")[1]) / x["TUMOR.DP"], axis=1)
-        rv["NORMAL_MAF"] = df.apply(lambda x: float(x["NORMAL.AD"].split(",")[1]) / x["NORMAL.DP"], axis=1)
+        rv["TUMOR_MAF"] = df.apply(f, axis=1)
+        rv["NORMAL_MAF"] = df.apply(g, axis=1)
     else:
         rv["TUMOR_MAF"] = pd.Series()
         rv["NORMAL_MAF"] = pd.Series()
     return rv
 
 
-def add_loh(df, facetsdf):
+
+def add_pathogenicity(df):
     rv = df.copy()
-    rv["LOH"] = df.apply(lambda x: "true" if facetsdf[(facetsdf.chrom == x["CHROM"]) &
-                                            (facetsdf.start <= x["POS"]) &
-                                            (facetsdf.end >= x["POS"])]
-                         [x["TUMOR_SAMPLE"] + "_" + x["NORMAL_SAMPLE"] + "_EM"].mean() < 0 else ".",
-                         axis=1)
-    return rv
 
+    def classify_pathogenicity(x):
+        isLOH = x["facetsLCN_EM"] == 0
+        if any(c in x["ANN[*].EFFECT"] for c in ["frameshift", "splice_donor", "splice_acceptor", "stop_gained"]):
+            if (isLOH or x["hap_insuf"] == "true") and x["cancer_gene"] == "true":
+                return "pathogenic"
+            elif isLOH or x["hap_insuf"] == "true" or x["cancer_gene"] == "true":
+                return "potentially pathogenic"
+            else:
+                return "passenger"
+        elif "missense" in x["ANN[*].EFFECT"]:
+            chasm_score_columns = [c for c in df.columns if "chasm_score" in c]
+            csc = x[chasm_score_columns]
+            csc[csc == "."] = "NaN"
+            csc = csc.astype('float')
+            isChasmPathogenic = bool(sum(csc <= 0.3))
+            if (x["dbNSFP_MutationTaster_pred"] == "N" or x["dbNSFP_MutationTaster_pred"] == "P") and ~isChasmPathogenic:
+                return "passenger"
+            else:
+                if x["fathmm_pred"] == "CANCER" or isChasmPathogenic:
+                    return "pathogenic" if x["cancer_gene"] == "true" else "potentially pathogenic"
+                else:
+                    return "passenger"
+        elif "inframe" in x["ANN[*].EFFECT"]:  # not working properly since dbNSFP applies to SNVs only
+            if (x["dbNSFP_MutationTaster_pred"] == "N" or x["dbNSFP_MutationTaster_pred"] == "P") and x["dbNSFP_PROVEAN_pred"] == "N":
+                return "passenger"
+            else:
+                if (isLOH or x["hap_insuf"] == "true") and x["cancer_gene"] == "true":
+                    return "pathogenic"
+                elif isLOH or x["hap_insuf"] == "true" or x["cancer_gene"] == "true":
+                    return "potentially pathogenic"
+                else:
+                    return "passenger"
+        else:
+            return "."
 
-def add_likely_pathogenic_snv(df):
-    rv = df.copy()
-    chasm_score_columns = [c for c in df.columns if "chasm_score" in c]
-    rv["likely_pathogenic"] = df.apply(lambda x: "true" if x["fathmm_pred"] == "CANCER" or
-                                       bool(sum([x[c] < 0.3 for c in chasm_score_columns])) else ".",
-                                       axis=1)
-    return rv
-
-
-def add_likely_pathogenic_indel(df):
-    rv = df.copy()
-    rv["likely_pathogenic"] = df.apply(lambda x: "true" if x["dbNSFP_PROVEAN_pred"] == "D" or
-                                       x["dbNSFP_MutationTaster_pred"] == "D" else ".",
-                                       axis=1)
+    rv["pathogenicity"] = df.apply(classify_pathogenicity, axis=1)
     return rv
 
 
@@ -134,19 +159,16 @@ def add_non_existent_columns(df, columns, fill_value):
     return rv
 
 
-def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, facetsdf=None, annotdf=None):
-    df = add_maf(df)
+def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, annotdf=None):
+    if all([c in df.columns for c in "TUMOR.AD NORMAL.AD TUMOR.DP NORMAL.DP".split()]):
+        df = add_maf(df)
     if len(df > 0):
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
             df = add_cancer_gene(df)
-        if "fathmm_pred" in df.columns:
-            df = add_likely_pathogenic_snv(df)
-        if "dbNSFP_PROVEAN_pred" in df.columns:
-            df = add_likely_pathogenic_indel(df)
+        if all([c in df.columns for c in "dbNSFP_MutationTaster_pred dbNSFP_PROVEAN_pred hap_insuf facetsLCN_EM cancer_gene".split()]):
+            df = add_pathogenicity(df)
         if write_columns:
             df = df[[c for c in write_columns if c in df.columns]]
-        if facetsdf is not None:
-            df = add_loh(df, facetsdf)
         df = df.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split())
         if absdf is not None:
             df = df.join(absdf.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split()), how='left')
@@ -166,7 +188,6 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
                            absolute_somatic_txts,
                            absolute_segments,
                            output_tsv_dir,
-                           facets_em_reviewed,
                            annotation_tsv,
                            max_exac_af):
     # create output tsv dir if required
@@ -178,14 +199,11 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         absdf = create_absolute_df(absolute_somatic_txts, absolute_segments)
     else:
         absdf = None
-    # create facets df
-    if facets_em_reviewed:
-        facetsdf = pd.read_csv(facets_em_reviewed, sep="\t")
-    else:
-        facetsdf = None
     # create annotation df
     if annotation_tsv:
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
+    else:
+        annotdf = None
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
@@ -206,29 +224,29 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
     exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
     add_columns_write_excel(mutsdf[exac_af_sel], writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
-        facetsdf=facetsdf, annotdf=annotdf)
+        annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_high_moderate), "HIGH|MODERATE"),
-        writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
+        writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_nonsynonymous), "HIGH|MODERATE"),
-        writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
+        writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(strelka_varscan_high_moderate), "HIGH|MODERATE"),
-        writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
+        writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(strelka_varscan_nonsynonymous), "HIGH|MODERATE"),
-        writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
+        writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     # add raw files both as excel and tsv
-    add_columns_write_excel(read_tsv(mutect_high_moderate), writer, "mutect_high_moderate", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "mutect_low_modifier", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "mutect_synonymous", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_nonsynonymous), writer, "mutect_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_high_moderate), writer, "strelka_varscan_high_moderate", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "strelka_varscan_low_modifier", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "strelka_varscan_synonymous", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_nonsynonymous), writer, "strelka_varscan_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, facetsdf=facetsdf, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_high_moderate), writer, "mutect_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "mutect_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "mutect_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_nonsynonymous), writer, "mutect_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_high_moderate), writer, "strelka_varscan_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "strelka_varscan_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "strelka_varscan_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(strelka_varscan_nonsynonymous), writer, "strelka_varscan_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     writer.close()
 
@@ -248,7 +266,6 @@ def main():
     parser.add_argument("--absolute_somatic_txts", default=None, type=str, help="TSV comma separated list of somatic files of absolute input")
     parser.add_argument("--absolute_segments", default=None, type=str, help="TSV comma separated list of absolute mutations output")
     parser.add_argument("--output_tsv_dir", default=None, type=str, help="Output raw sheets as tsv in given directory")
-    parser.add_argument("--facets_em_reviewed", default=None, type=str, help="Facets em reviewed values for LOH determination")
     parser.add_argument("--annotation_tsv", default=None, type=str, help="File with TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT, plus other columns of choice for annotation")
     parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
     args = parser.parse_args()
@@ -272,7 +289,6 @@ def main():
                            absolute_somatic_txts,
                            absolute_segments,
                            args.output_tsv_dir,
-                           args.facets_em_reviewed,
                            args.annotation_tsv,
                            args.max_exac_af)
 
