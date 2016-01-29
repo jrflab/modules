@@ -50,9 +50,9 @@ $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call bam-header,$(sample),$(split_loo
 define merged-bam
 bwamem/bam/$1.bwamem.sorted.bam : bwamem/sam/$1.header.sam $$(foreach split,$2,bwamem/bam/$$(split).bwamem.sorted.bam)
 	if [ `echo "$$(filter %.bam,$$(^))" | wc -w` -gt 1 ]; then \
-		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@M) $$(filter %.bam,$$^) && $$(RM) $$^"); \
+		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$^) && $$(RM) $$^"); \
 	else \
-		ln -f $$(word 2,$$(^)) $$(@) \
+		ln -f $$(word 2,$$(^)) $$(@); \
 	fi
 endef
 $(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
