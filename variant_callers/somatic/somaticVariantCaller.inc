@@ -31,9 +31,9 @@ SOMATIC_FILTERS += $(if $(findstring indel,$1),\
 SOMATIC_ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(SOMATIC_VALIDATION_ANNS),\
 		   $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS)))
 
-SOMATIC_FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call SOMATIC_FILTERS,$1)))
-SOMATIC_ANN_SUFFIX = pass.$(subst $( ),.,$(strip $(call SOMATIC_ANNOTATIONS,$1)))
-SOMATIC_SUFFIX = $(SOMATIC_FILTER_SUFFIX).$(SOMATIC_ANN_SUFFIX)
+SOMATIC_FILTER_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_FILTERS,$1)))
+SOMATIC_ANN_SUFFIX = $(subst $( ),.,$(strip pass $(call SOMATIC_ANNOTATIONS,$1)))
+SOMATIC_SUFFIX = $(subst $( ),.,$(strip $1 $(SOMATIC_FILTER_SUFFIX) $(SOMATIC_ANN_SUFFIX)))
 
 SOMATIC_EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
