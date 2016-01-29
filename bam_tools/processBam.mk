@@ -87,8 +87,12 @@ endif
 %.recal_report.grp : %.bam %.bai
 	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BASE_RECAL_OPTS) -I $< -o $@")
 
+#%.sorted.bam : %.bam
+#	$(call LSCRIPT_PARALLEL_MEM,4,3G,3G,"$(SAMTOOLS2) sort -m 2.8G -o $@ -O bam --reference $(REF_FASTA) -@ 4 $<")
+
 %.sorted.bam : %.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,3G,3G,"$(SAMTOOLS2) sort -m 2.8G -o $@ -O bam --reference $(REF_FASTA) -@ 4 $<")
+	$(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=coordinate VERBOSITY=ERROR && $(RM) $<")
+
 
 #sort only if necessary
 #%.sorted.bam : %.bam
