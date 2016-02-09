@@ -36,7 +36,7 @@ RSCRIPT = $(MY_RSCRIPT)
 # General python 2.7 environment
 ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 # SUFAM python environment
-SUFAM_ENV = /home/debruiji/share/usr/anaconda-envs/sufam-0.4.1
+SUFAM_ENV = /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 
 JARDIR := $(HOME)/share/usr/lib/java
 
