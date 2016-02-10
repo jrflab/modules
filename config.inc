@@ -40,17 +40,20 @@ SUFAM_ENV = /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 
 JARDIR := $(HOME)/share/usr/lib/java
 
+# jrflab modules environment
+JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.1
+
 ### Applications
 UNZIP = /usr/bin/unzip
 FASTQC = $(PERL) $(HOME)/share/usr/FastQC/fastqc
 MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
 BOWTIE = $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
-BWA = $(HOME)/share/usr/bin/bwa-0.7.10
+BWA = bwa
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
 #GSNAP = $(HOME)/share/usr/bin/gsnap
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
-SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
+SAMTOOLS = samtools
 SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.3
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.2
@@ -94,8 +97,8 @@ NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF = $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
 #JAVA_TMP := $(HOME)/tmp
-JAVA_BIN = /usr/lib/jvm/jre-1.6.0/bin/java
-JAVA7_BIN = /usr/bin/java
+JAVA_BIN = java
+JAVA7_BIN = java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
