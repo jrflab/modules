@@ -10,7 +10,9 @@ NUM_ATTEMPTS ?= 20
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
+ifeq ($(USE_CLUSTER),true)
 MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
+endif
 NUM_JOBS ?= 100
 
 PHRED64 ?= false

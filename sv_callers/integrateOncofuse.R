@@ -55,12 +55,22 @@ if (is.null(opt$breakpointsFile)) {
 } 
 
 breakpoints <- read.delim(opt$breakpointsFile, as.is = T, check.names = F)
+summ <- read.delim(opt$sumFile, as.is = T, check.names = F)
+exons <- read.delim(opt$exonsFile, as.is = T, check.names = F)
+if (nrow(breakpoints) == 0 || nrow(summ) == 0 || nrow(exons) == 0) {
+    fn <- str_c(opt$outPrefix, ".oncofuse.txt")
+    x <- unlist(strsplit('x3p x5p chr1 rna_bk1 exon_bk1 chr2 rna_bk2 exon_bk2 wgs_bk1 wgs_bk2 fusion_candidate reciprocal tier type en_rna sp_rna splicings id x5p_transcript x5p_exon x5p_exon_strand x5p_exon_chr x5p_exon_start x5p_exon_end x5p_exon_seq x5p_exon_150 x3p_transcript x3p_exon x3p_exon_strand x3p_exon_chr x3p_exon_start x3p_exon_end x3p_exon_seq x3p_exon_150 x5p_strand x5p_start x5p_end x3p_strand x3p_start x3p_end FUSION_ID TISSUE SPANNING_READS ENCOMPASSING_READS X5_FPG_GENE_NAME X5_IN_CDS. X5_SEGMENT_TYPE X5_SEGMENT_ID X5_COORD_IN_SEGMENT X5_FULL_AA X5_FRAME X3_FPG_GENE_NAME X3_IN_CDS. X3_SEGMENT_TYPE X3_SEGMENT_ID X3_COORD_IN_SEGMENT X3_FULL_AA X3_FRAME FPG_FRAME_DIFFERENCE P_VAL_CORR DRIVER_PROB EXPRESSION_GAIN X5_DOMAINS_RETAINED X3_DOMAINS_RETAINED X5_DOMAINS_BROKEN X3_DOMAINS_BROKEN X5_PII_RETAINED X3_PII_RETAINED CTF G H K P TF', ' '))
+    fc <- file(fn)
+    writeLines(paste(x, collapse = '\t'), fc)
+    close(fc)
+    quit('no', 0)
+}
+
 colnames(breakpoints)[1:2] <- c('x5p','x3p')
 colnames(breakpoints) <- tolower(colnames(breakpoints))
-summ <- read.delim(opt$sumFile, as.is = T, check.names = F)
 colnames(summ)[2:3] <- c('x5p','x3p')
 colnames(summ) <- tolower(colnames(summ))
-exons <- read.delim(opt$exonsFile, as.is = T, check.names = F) %>%
+exons %<>%
     setNames(c("id", "x5p", "x3p",
                "x5p_transcript", "x5p_exon", "x5p_exon_strand", "x5p_exon_chr", "x5p_exon_start", "x5p_exon_end",
                "x5p_exon_seq", "x5p_exon_150",
