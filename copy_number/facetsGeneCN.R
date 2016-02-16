@@ -4,19 +4,17 @@
 ## where ploidy= mode of TCN
 ### some variant of the below, also need one for the breast panel, IMPACT310 and exome
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("GenomicRanges"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("facets"));
-suppressPackageStartupMessages(library("foreach"));
-suppressPackageStartupMessages(library("Cairo"));
-suppressPackageStartupMessages(library("RMySQL"))
-suppressPackageStartupMessages(library("rtracklayer"))
+#---------------
+# initialization
+#---------------
+
+# load base libraries
+suppressMessages(pacman::p_load(optparse,RColorBrewer,GenomicRanges,plyr,dplyr,readr,stringr,tidyr,purrr,magrittr,crayon,foreach,Cairo,RMySQL,rtracklayer))
+suppressPackageStartupMessages(library("facets",lib.loc="/home/bermans/R-dev/"));
+
+#--------------
+# parse options
+#--------------
 
 optList <- list(
                 make_option("--outFile", default = NULL, help = "output file"),
@@ -131,5 +129,94 @@ for (f in facetsFiles) {
 
 mm <- left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>% arrange(as.integer(chrom), start, end)
 write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
+
+#----------------
+# fix facets file
+#----------------
+
+chrom <- suppressWarnings(as.numeric(mm$chrom))
+chrom[which(is.na(chrom))] <- 23
+mm[is.na(mm)] <- 3    # replace NA with numeric for use in rle function
+breaks <- c(0,cumsum(table(chrom)[chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
+
+for (samplename in grep("threshold",names(mm),value=TRUE)){
+
+    cat(blue("\n*") %+% " sample: " %+% samplename)
+
+    #loop over chromosomes in junction table
+    for(chromosome in 1:23){
+
+        cat("\n   chr",formatC(chromosome, width=2, flag="0"),": ",sep="")
+        start<-breaks[chromosome]+1
+        end<-breaks[chromosome+1]
+        chbit <- rle(mm[start:end,samplename])
+
+        # replace an entirely empty chromosome with calls of 0
+        if((chbit$lengths %>% length)==1){
+            mm[start:end,samplename] <- 0
+        }else{
+            # extend chromosome start calls from nearest integer on same chromosome
+            if(mm[start,samplename]==3){
+                cat("start..")
+                NAbottom <- min(which(chbit$values==3))
+                Ibottom <- start + cumsum(chbit$lengths)[NAbottom]
+                mm[start:(Ibottom-1),samplename] <- mm[Ibottom,samplename]
+            }
+            # extend chromosome end calls from nearest integer on same chromosome
+            if(mm[end,samplename]==3){
+                cat("end..")
+                NAtop <- min(which(rev(chbit$values==3)))
+                Itop <- end - cumsum(rev(chbit$lengths))[NAtop]
+                mm[(Itop+1):end,samplename] <- mm[Itop,samplename]
+            }
+        }
+
+        nav <- which(chbit$values[-c(1,length(chbit$values))]==3)+1
+        if(length(nav>0)){
+            cat("gaps..")
+            # find nearest neighbors of inner-chromosome gaps
+            gstarts <- cumsum(chbit$lengths)[nav-1]+start
+            glengths <- chbit$lengths[nav]
+            map2(gstarts,glengths, ~ .x:(.x+.y-1)) %>%
+                unlist ->
+                nrows
+            nrows %>%
+                slice(mm,.) %>%
+                mutate(mid=rowMeans(.[,c("start","end")])) %>%
+                select(chrom,mid,hgnc) %>%
+                rowwise %>%
+                inner_join(mm %>%
+                    mutate(qmid=rowMeans(.[,c("start","end")])) %>% 
+                    select(chrom,qmid,get(samplename)),by="chrom") %>%
+                ungroup %>%
+                filter_(str_c(samplename,"!=3")) %>%
+                group_by(hgnc) %>%
+                arrange_(str_c("desc(",samplename,")")) %>%
+                slice(which.min(abs(mid-qmid))) %>%
+                ungroup %>%
+                select_(samplename) %>%
+                unlist ->
+                nfills
+            # write neighbor calls to master table
+            if(length(nfills)>0){
+                mm[nrows,samplename] <- nfills
+            }else{
+                mm[nrows,samplename] <- NA
+            }
+        }
+    }
+    cat("\n")
+}
+
+#-----------
+# finalizing
+#-----------
+
+# write updated table
+write_tsv(mm,"facets/geneCN_fill.txt")
+
+cat(green("\n  [done]\n\n"))
+
+
 
 
