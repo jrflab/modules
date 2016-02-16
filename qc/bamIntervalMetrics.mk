@@ -8,7 +8,7 @@ include modules/variant_callers/gatk.inc
 
 VPATH ?= bam
 
-LOGDIR = log/metrics.$(NOW)
+LOGDIR ?= log/metrics.$(NOW)
 
 EXOME ?= false
 
@@ -21,9 +21,9 @@ NON_REF_FREQ_BIN_SIZE = 0.01
 
 .SECONDARY: 
 
-.PHONY: all hs_metrics amplicon_metrics report non_ref_metrics
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics
 
-all : hs_metrics report non_ref_metrics
+bam_interval_metrics : hs_metrics interval_report non_ref_metrics
 
 non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.txt)
 
@@ -31,17 +31,17 @@ hs_metrics : metrics/hs_metrics.txt metrics/interval_hs_metrics.txt
 
 amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metrics.txt)
 
-report : metrics/interval_report/index.html
+interval_report : metrics/interval_report/index.html
 
 
 # interval metrics per sample
-metrics/%.hs_metrics.txt metrics/%.interval_hs_metrics.txt : %.bam %.bam.bai
+metrics/%.hs_metrics.txt metrics/%.interval_hs_metrics.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,10G,20G,"TMP=`mktemp`.intervals; \
 	$(SAMTOOLS) view -H $< | grep '^@SQ' > \$$TMP &&  grep -P \"\t\" $(TARGETS_FILE) | awk 'BEGIN {OFS = \"\t\"} { print \$$1$(,)\$$2+1$(,)\$$3$(,)\"+\"$(,)NR }' >> \$$TMP; \
 	$(CALC_HS_METRICS) INPUT=$< OUTPUT=metrics/$*.hs_metrics.txt METRIC_ACCUMULATION_LEVEL=ALL_READS REFERENCE_SEQUENCE=$(REF_FASTA) PER_TARGET_COVERAGE=metrics/$*.interval_hs_metrics.txt TARGET_INTERVALS=\$$TMP BAIT_SET_NAME=hs BAIT_INTERVALS=\$$TMP")
 
 # not sure how this differs from above, see picard doc
-metrics/%.amplicon_metrics.txt metrics/%.interval_amplicon_metrics.txt : %.bam %.bam.bai
+metrics/%.amplicon_metrics.txt metrics/%.interval_amplicon_metrics.txt : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,10G,20G,"TMP=`mktemp`.intervals; \
 	$(SAMTOOLS) view -H $< | grep '^@SQ' > \$$TMP && grep -P \"\t\"  $(TARGETS_FILE) | awk 'BEGIN {OFS = \"\t\"} { print \$$1$(,)\$$2+1$(,)\$$3$(,)\"+\"$(,)NR }' >> \$$TMP; \
 	$(COLLECT_TARGETED_METRICS) INPUT=$< REFERENCE_SEQUENCE=$(REF_FASTA) OUTPUT=$@ AMPLICON_INTERVALS=\$$TMP TARGET_INTERVALS=\$$TMP METRIC_ACCUMULATION_LEVEL=ALL_READS PER_TARGET_COVERAGE=metrics/$*.interval_amplicon_metrics.txt")
@@ -74,7 +74,7 @@ metrics/interval_hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).
 metrics/interval_report/index.html : metrics/hs_metrics.txt
 	$(call LSCRIPT_MEM,7G,10G,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
 
-metrics/%.interval_nonref_freq.txt : %.bam
+metrics/%.interval_nonref_freq.txt : bam/%.bam
 	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
 

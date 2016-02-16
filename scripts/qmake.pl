@@ -6,9 +6,9 @@ use warnings;
 use Cwd;
 
 my $cwd = getcwd;
-my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com";
-my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
-my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
+#my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com";
+#my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
+#my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
 
 my $curl = "curl";
 my $default_curl = "/home/limr/share/usr/anaconda/bin/curl";
@@ -131,23 +131,23 @@ do {
         if ($opt{m} && ($n == 0 || $n == 1 || $n + 1 == $attempts)) {
             my $mail_subject = "$name: job started ($cwd)";
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
-            open(MAIL, "| mail -s '$mail_subject' $start_email_addrs");
-            print MAIL "$mail_msg";
-            close MAIL;
+            #open(MAIL, "| mail -s '$mail_subject' $start_email_addrs");
+            #print MAIL "$mail_msg";
+            #close MAIL;
         }
         waitpid(-1, 0);
         $retcode = $? >> 8; # shift bits to get the real return code
         if ($opt{m} && ($retcode == 0 || $n == 0 || $n == 1 || $n + 1 == $attempts)) {
-            my $addrs = ($retcode > 0)? $err_email_addrs : $fin_email_addrs;
+            #my $addrs = ($retcode > 0)? $err_email_addrs : $fin_email_addrs;
             my $mail_subject = "[$retcode] $name: job finished ($cwd)";
             if ($n + 1 == $attempts) {
                 $mail_subject = "**FINAL** $mail_subject";
             }
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
-            open(MAIL, "| mail -s '$mail_subject' $addrs");
-            print MAIL "Return code: $retcode\n";
-            print MAIL "$mail_msg";
-            close MAIL;
+            #open(MAIL, "| mail -s '$mail_subject' $addrs");
+            #print MAIL "Return code: $retcode\n";
+            #print MAIL "$mail_msg";
+            #close MAIL;
         }
 
         my $slack_msg = "\@${slackname} $project_name";

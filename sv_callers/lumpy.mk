@@ -33,12 +33,14 @@ LUMPY_SUFFIX = sv_som_ft.pass.$(ANNOVAR_REF)_multianno
 .DELETE_ON_ERROR:
 
 
+PHONY += lumpy lumpy_vcf lumpy_tables
+lumpy : lumpy_vcf lumpy_tables
 ifdef SAMPLE_PAIRS
-PHONY += lumpyTN
-lumpyTN : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).lumpy.$(LUMPY_SUFFIX).vcf)
+lumpy_vcf : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).lumpy.$(LUMPY_SUFFIX).vcf)
+lumpy_tables : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).lumpy.$(LUMPY_SUFFIX).tab.txt) alltables/allTN.lumpy.$(LUMPY_SUFFIX).tab.txt
 else
-PHONY += lumpy
-lumpy : $(foreach sample,$(SAMPLES),vcf/$(sample).lumpy.$(LUMPY_SUFFIX).vcf)
+lumpy_vcf : $(foreach sample,$(SAMPLES),vcf/$(sample).lumpy.$(LUMPY_SUFFIX).vcf)
+lumpy_tables : $(foreach sample,$(SAMPLES),vcf/$(sample).lumpy.$(LUMPY_SUFFIX).tab.txt) alltables/all.lumpy.$(LUMPY_SUFFIX).tab.txt
 endif
 
 lumpy/bam/%.split.bam : bam/%.bam

@@ -3,9 +3,7 @@
 # 
 
 ##### DEFAULTS ######
-LOGDIR = log/gatk.$(NOW)
-
-VCF_GEN_IDS = GT AD GQ PL
+LOGDIR ?= log/gatk.$(NOW)
 
 ##### OPTIONS ######
 # HARD_FILTER_SNPS = true/false (default: true)
@@ -19,6 +17,7 @@ VCF_GEN_IDS = GT AD GQ PL
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
+include modules/variant_callers/variantCaller.inc
 
 VPATH ?= bam
 
@@ -43,41 +42,17 @@ VPATH ?= bam
 # create novel indel/snp tables
 
 ##### MAIN TARGETS ######
-EFF_TYPES = low_modifier high_moderate synonymous nonsynonymous
 VARIANT_TYPES = gatk_snps gatk_indels
-
-VALIDATION ?= false
-
-FILTERS = dp_ft \
-	$(if $(NORMAL_VCF),nft) \
-	$(if $(TARGETS_FILE),target_ft) \
-	pass eff \
-	$(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-	$(if $(findstring b37,$(REF)),cosmic nsfp clinvar exac_nontcga \
-		$(if $(and $(findstring snps,$1),$(findstring false,$(VALIDATION))),chasm fathmm))
-
-FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(FILTERS)))
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(call FILTER_SUFFIX,$(type)))
-TABLE_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(call FILTER_SUFFIX,$(type)).tab \
-				 $(call FILTER_SUFFIX,$(type)).tab.novel \
-				 $(foreach eff,$(EFF_TYPES),$(call FILTER_SUFFIX,$(type)).tab.$(eff).novel \
-				 	$(call FILTER_SUFFIX,$(type)).tab.$(eff)))
-
-VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
-TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-TABLES += $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
-
 
 PHONY += gatk gatk_vcfs gatk_tables gatk_reports
 
 gatk : gatk_vcfs gatk_tables # reports
 
-gatk_vcfs : $(VCFS) $(addsuffix .idx,$(VCFS))
+gatk_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)) $(addsuffix .idx,$(call VCFS,$(type))))
 
-gatk_tables : $(TABLES)
+gatk_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
 
 gatk_reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
-
 
 include modules/variant_callers/gatk.mk
 

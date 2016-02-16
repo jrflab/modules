@@ -33,20 +33,28 @@ MY_RSCRIPT = $(HOME)/share/usr/bin/Rscript-3.1.2
 RSCRIPT = $(MY_RSCRIPT)
 #RSCRIPT = $(HOME)/usr/bin/Rscript
 
+# General python 2.7 environment
+ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+# SUFAM python environment
+SUFAM_ENV = /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
+
 JARDIR := $(HOME)/share/usr/lib/java
+
+# jrflab modules environment
+JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.1
 
 ### Applications
 UNZIP = /usr/bin/unzip
 FASTQC = $(PERL) $(HOME)/share/usr/FastQC/fastqc
 MUTECT_JAR := $(JARDIR)/muTect-1.1.4.jar
 BOWTIE = $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
-BWA = $(HOME)/share/usr/bin/bwa-0.7.10
+BWA = bwa
 #PBWA = mpiexec $(HOME)/share/usr/bin/pBWA
 #GSNAP = $(HOME)/share/usr/bin/gsnap
 #GSNAP_REF = $(HOME)/share/references/gmapdb/
 #GSNAP_MAPS = $(GSNAP_REF)/$(REF)/$(REF).maps
-SAMTOOLS = $(HOME)/share/usr/bin/samtools-0.1.19
-SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.2
+SAMTOOLS = samtools
+SAMTOOLS2 = $(HOME)/share/usr/bin/samtools-1.3
 VCFUTILS = $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS2 = $(HOME)/share/usr/bin/bcftools-1.2
 BCFTOOLS = $(HOME)/share/usr/bin/bcftools-0.1.19
@@ -89,16 +97,32 @@ NORMAL_FILTER = $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF = $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
 #JAVA_TMP := $(HOME)/tmp
-JAVA_BIN = /usr/lib/jvm/jre-1.6.0/bin/java
-JAVA7_BIN = /usr/bin/java
+JAVA_BIN = java
+JAVA7_BIN = java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE = $(HOME)/share/usr/bin/getInsertSize.py
 
-ANACONDA_27_ENV = /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
-
 #GATK
 GATK_JAR = $(JARDIR)/GenomeAnalysisTK.jar
 GATK_JAR2 = $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
+
+VT = $(HOME)/share/usr/bin/vt
+TABIX = $(HOME)/share/usr/bin/tabix
+
+EMBL_MYSQLDB_HOST = 10.0.200.71
+EMBL_MYSQLDB_PORT = 38493
+EMBL_MYSQLDB_USER = embl
+EMBL_MYSQLDB_PW = embl
+EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
+
+INTEGRATE = $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
+
+VCF2MAF = $(PERL) $(HOME)/share/usr/vcf2maf.pl
+MAF2MAF = $(PERL) $(HOME)/share/usr/maf2maf.pl
+MAF2VCF = $(PERL) $(HOME)/share/usr/maf2vcf.pl
+VEP_PATH = /opt/common/CentOS_6/vep/v82
+VEP_DATA = /opt/common/CentOS_6/vep/v82
+
 endif
 CONFIG_INC = true

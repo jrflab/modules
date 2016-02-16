@@ -16,7 +16,6 @@ optList <- list(
 parser <- OptionParser(usage = "%prog [options]", option_list = optList);
 arguments <- parse_args(parser, positional_arguments = T, args = args);
 opt <- arguments$options;
-
 if (length(args) < 1) {
     cat("Need mutect results table\n");
     print_help(parser);
@@ -103,9 +102,11 @@ for (sn in names(Data)) {
         contextSplit <- t(sapply(context, function(x) unlist(strsplit(x, ''))))
         for (rnge in smallRnges) {
             rngName <- paste(rnge, collapse = ",")
-            tab <- table(as.factor(apply(contextSplit[,rnge], 1, paste, collapse = "")))
-            if (any(tab > length(tab) / 3)) {
-                barplot(tab, horiz = T, las = 2, main = paste(sn, ' ', mut, ' ', rngName, ' (n = ', sum(tab), ')', sep = ''))
+            if (!is.null(dim(contextSplit[,rnge]))) {
+              tab <- table(as.factor(apply(contextSplit[,rnge], 1, paste, collapse = "")))
+              if (any(tab > length(tab) / 3)) {
+                  barplot(tab, horiz = T, las = 2, main = paste(sn, ' ', mut, ' ', rngName, ' (n = ', sum(tab), ')', sep = ''))
+              }
             }
         }
     }
@@ -121,10 +122,12 @@ for (sn in names(Data)) {
         contextSplit <- t(sapply(context, function(x) unlist(strsplit(x, ''))))
         for (rnge in largeRnges) {
             rngName <- paste(rnge, collapse = ",")
-            tab <- table(as.factor(apply(contextSplit[,rnge], 1, paste, collapse = "")))
-            if (any(tab > length(tab) / 3)) {
-                barplot(tab, horiz = T, las = 2, main = paste(sn, ' ', mut, ' ', rngName, ' (n = ', sum(tab), ')', sep = ''), yaxt = 'n')
-                axis(2, cex.axis = 0.8)
+            if (!is.null(dim(contextSplit[,rnge]))) {
+              tab <- table(as.factor(apply(contextSplit[,rnge], 1, paste, collapse = "")))
+              if (any(tab > length(tab) / 3)) {
+                  barplot(tab, horiz = T, las = 2, main = paste(sn, ' ', mut, ' ', rngName, ' (n = ', sum(tab), ')', sep = ''), yaxt = 'n')
+                  axis(2, cex.axis = 0.8)
+              }
             }
         }
     }

@@ -1,3 +1,4 @@
+
 # common GATK steps for variant calling
 # Author: Raymond Lim <raylim@mm.st> & Fong Chun Chan <fongchunchan@gmail.com>
 #
@@ -8,6 +9,8 @@
 # 		   POOL_SNP_RECAL = true/false (default: false)
 # 		   SPLIT_CHR = true/false (default: true)
 #
+
+ifndef GATK_MK
 
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
@@ -180,3 +183,6 @@ reports/%/index.html : reports/%.dp_ft.grp metrics/hs_metrics.txt
 # merge variants 
 include modules/bam_tools/processBam.mk
 include modules/vcf_tools/vcftools.mk
+
+endif
+GATK_MK = true

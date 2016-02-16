@@ -2,12 +2,11 @@
 # Detect point mutations
 ##### DEFAULTS ######
 
-LOGDIR = log/varscan.$(NOW)
+LOGDIR ?= log/varscanTN.$(NOW)
 
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
-include modules/mut_sigs/mutSigReport.mk
 
 IGNORE_FP_FILTER ?= true
 
@@ -27,11 +26,9 @@ VPATH ?= bam
 VARIANT_TYPES = varscan_indels varscan_snps
 
 PHONY += varscan varscan_vcfs varscan_tables
-varscan : varscan_vcfs varscan_tables $(if $(findstring false,$(VALIDATION)),varscan_snps_mutsig_report)
-varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)))
-varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call TABLES,$(type)))
-
-$(eval $(call mutsig-report-name-vcfs,varscan_snps,$(call VCFS,varscan_snps)))
+varscan : varscan_vcfs varscan_tables
+varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
+varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
 
 
 %.Somatic.txt : %.txt

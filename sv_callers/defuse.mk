@@ -50,8 +50,8 @@ endif
 all : $(ALLTABLE) $(ALL)
 
 
-defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : fastq/%.1.fastq.gz.md5 fastq/%.2.fastq.gz.md5
-	$(INIT) $(CHECK_MD5) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$(^M)) -2 $(word 2,$(^M)) -o defuse/$* $(DEFUSE_OPTS) &> $(LOG) && \
+defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$(^M)) -2 $(word 2,$(^M)) -o defuse/$* $(DEFUSE_OPTS) &> $(LOG) && \
 	$(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > defuse/tables/$*.defuse_ft.txt 2>> $(LOG) && \
 	$(DEFUSE_FILTER) defuse/$*/results.tsv > defuse/tables/$*.defuse.txt 2>> $(LOG) \
 	&& $(RMR) defuse/$*

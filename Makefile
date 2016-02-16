@@ -10,7 +10,9 @@ NUM_ATTEMPTS ?= 20
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
+ifeq ($(USE_CLUSTER),true)
 MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
+endif
 NUM_JOBS ?= 100
 
 PHRED64 ?= false
@@ -337,7 +339,7 @@ norm_copynum :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/excel/mutationSummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 
 TARGETS += recurrent_mutations
 recurrent_mutations :
@@ -351,5 +353,18 @@ TARGETS += brass
 brass :
 	$(call RUN_MAKE,modules/sv_callers/brass.mk)
 
+TARGETS += mutsig_report
+mutsig_report :
+	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
+
+# standalone bam file merger
+TARGETS += merge_bam
+merge_bam :
+	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+
+# annotate external vcfs
+TARGETS += ann_ext_vcf
+ann_ext_vcf: 
+	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
 .PHONY : $(TARGETS)
