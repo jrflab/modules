@@ -8,7 +8,7 @@ LOGDIR = log/mutsig_report.$(NOW)
 
 MUTSIG_REPORT = modules/mut_sigs/mutSigReport.Rmd
 KNIT = $(RSCRIPT) modules/scripts/knit.R
-ALEXANDROV_DATA = $(HOME)/share/reference/Alexandrov_NMF_signatures.txt
+ALEXANDROV_DATA = $(HOME)/share/reference/sanger_30_mutsig_prob.txt
 
 mutect_mutsig_reports : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/mutect/$(pair)_mutsig_report.timestamp)
 
