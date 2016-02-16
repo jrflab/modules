@@ -118,5 +118,11 @@ EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
 
 INTEGRATE = $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
 
+VCF2MAF = $(PERL) $(HOME)/share/usr/vcf2maf.pl
+MAF2MAF = $(PERL) $(HOME)/share/usr/maf2maf.pl
+MAF2VCF = $(PERL) $(HOME)/share/usr/maf2vcf.pl
+VEP_PATH = /opt/common/CentOS_6/vep/v82
+VEP_DATA = /opt/common/CentOS_6/vep/v82
+
 endif
 CONFIG_INC = true

@@ -367,12 +367,39 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 ifdef SAMPLE_PAIRS
 ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
 define annotate-facets-pair
-vcf/$1_$2.%.facets.vcf : vcf/$1_$2.%.vcf facets/$1_$2.cncf.txt
+vcf/$1.%.facets.vcf : vcf/$1.%.vcf facets/$1.cncf.txt
 	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@ $$<")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
 endif
 
+ifdef SAMPLE_PAIRS
+define vcf2maf-tumor-normal
+maf/$1_$2.%.maf : vcf/$1_$2.%.vcf
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --tumor-id $1 --normal-id $2 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call vcf2maf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
+allmaf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
+	$(INIT) \
+	{ \
+	head -2 $< \
+	sed 1,2d $^ \
+	} > $@
+endif
+
+define vcf2maf-sample
+maf/$1.%.maf : vcf/$1.%.vcf
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --tumor-id $1 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA)")
+endef
+$(foreach sample,$(SAMPLES),$(eval $(call vcf2maf-sample,$(sample))))
+
+allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
+	$(INIT) \
+	{ \
+	head -2 $< \
+	sed 1,2d $^ \
+	} > $@
 
 endif
 VCFTOOLS_MK = true
