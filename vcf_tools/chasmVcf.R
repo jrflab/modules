@@ -4,7 +4,9 @@
 suppressPackageStartupMessages(library("optparse"));
 suppressPackageStartupMessages(library("VariantAnnotation"));
 
-options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+}
 #options(error = recover)
 #options(error = quote(dump.frames("testdump", TRUE)))
 
@@ -64,7 +66,7 @@ idx <- indexTabix(temp, "vcf")
 tab <- TabixFile(zipped, idx, yieldSize = 8000)
 open(tab)
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
-    exptData(vcf)$header <- newVcfHeader
+    metadata(vcf)$header <- newVcfHeader
 
     oldwd <- getwd()
 
