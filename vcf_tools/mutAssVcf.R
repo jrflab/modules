@@ -61,9 +61,9 @@ hlist$INFO <- hinfoprime
 exptData(vcf)$header <- new("VCFHeader", samples = header(vcf)@samples, header = hlist)
 
 
-n <- sapply(rowData(vcf)$ALT, length)
-chr <- factor(rep(as.character(seqnames(rowData(vcf))), n))
-x <- data.frame(rowId = rep(1:nrow(vcf), n), mutAssId = paste(rep('hg19', sum(n)), rep(as.character(seqnames(rowData(vcf))), n), rep(start(rowData(vcf)), n), rep(rowData(vcf)$REF, n), unlist(rowData(vcf)$ALT), sep = ','), stringsAsFactors = F)
+n <- sapply(rowRanges(vcf)$ALT, length)
+chr <- factor(rep(as.character(seqnames(rowRanges(vcf))), n))
+x <- data.frame(rowId = rep(1:nrow(vcf), n), mutAssId = paste(rep('hg19', sum(n)), rep(as.character(seqnames(rowRanges(vcf))), n), rep(start(rowRanges(vcf)), n), rep(rowRanges(vcf)$REF, n), unlist(rowRanges(vcf)$ALT), sep = ','), stringsAsFactors = F)
 x <- split(x, chr)
 
 for (ch in names(x)) {

@@ -68,13 +68,13 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
 
     oldwd <- getwd()
 
-    if (sum(rowData(vcf)$FILTER == "PASS") > 0) {
+    if (sum(rowRanges(vcf)$FILTER == "PASS") > 0) {
         # convert vcf to chasm input
-        al <- sapply(rowData(vcf)$ALT, length)
-        X <- data.frame(id = 1:nrow(vcf), seq = as.character(seqnames(rowData(vcf))), zero = as.integer(start(rowData(vcf)) - 1), one = as.integer(start(rowData(vcf))), strand = rep('+', nrow(vcf)), ref = as.character(rowData(vcf)$REF), filt = rowData(vcf)$FILTER, stringsAsFactors = F)
+        al <- sapply(rowRanges(vcf)$ALT, length)
+        X <- data.frame(id = 1:nrow(vcf), seq = as.character(seqnames(rowRanges(vcf))), zero = as.integer(start(rowRanges(vcf)) - 1), one = as.integer(start(rowRanges(vcf))), strand = rep('+', nrow(vcf)), ref = as.character(rowRanges(vcf)$REF), filt = rowRanges(vcf)$FILTER, stringsAsFactors = F)
         re <- rep.int(X$id, times = al)
         X <- X[re, ,drop = F]
-        X$alt <- as.character(unlist(rowData(vcf)$ALT))
+        X$alt <- as.character(unlist(rowRanges(vcf)$ALT))
         X <- subset(X, sapply(alt, nchar) == 1 & sapply(ref, nchar) == 1 & filt == "PASS")
         X <- X[,-which(colnames(X) == 'filt')]
         X$seq <- sub('^', 'chr', X$seq)

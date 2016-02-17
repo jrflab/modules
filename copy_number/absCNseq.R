@@ -57,7 +57,7 @@ if (grepl('\\.txt$', snvFile, perl = T)) {
 } else if (grepl('\\.vcf$', snvFile, perl = T)) {
     vcf <- readVcf(snvFile, opt$genome)
     vaf <- sapply(geno(vcf)$AD[,tumor], function (x) x[2] / sum(x))
-    absSnvData <- data.frame(chrom = as.vector(seqnames(vcf)), position = start(rowData(vcf)), tumor_var_freq = vaf)
+    absSnvData <- data.frame(chrom = as.vector(seqnames(vcf)), position = start(rowRanges(vcf)), tumor_var_freq = vaf)
     absSnvData <- subset(absSnvData, !is.na(tumor_var_freq))
 } else {
     cat("snv format unreadable\n")
