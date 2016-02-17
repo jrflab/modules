@@ -56,9 +56,9 @@ hinfoprime <- rbind(hinfoprime, mut_ass_uniprot_var = c("A", "String", "Mutation
 hinfoprime <- rbind(hinfoprime, mut_ass_impact = c("A", "String", "Mutation assessor functional impact"))
 hinfoprime <- rbind(hinfoprime, mut_ass_score = c("A", "Float", "Mutation assessor score"))
 hinfoprime <- DataFrame(hinfoprime, row.names = rownames(hinfoprime))
-hlist <- header(exptData(vcf)$header)
+hlist <- header(metadata(vcf)$header)
 hlist$INFO <- hinfoprime
-exptData(vcf)$header <- new("VCFHeader", samples = header(vcf)@samples, header = hlist)
+metadata(vcf)$header <- new("VCFHeader", samples = header(vcf)@samples, header = hlist)
 
 
 n <- sapply(rowRanges(vcf)$ALT, length)

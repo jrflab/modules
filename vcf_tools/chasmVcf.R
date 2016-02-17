@@ -64,7 +64,7 @@ idx <- indexTabix(temp, "vcf")
 tab <- TabixFile(zipped, idx, yieldSize = 8000)
 open(tab)
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
-    exptData(vcf)$header <- newVcfHeader
+    metadata(vcf)$header <- newVcfHeader
 
     oldwd <- getwd()
 

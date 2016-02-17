@@ -109,7 +109,7 @@ i <- 1
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     oldwd <- getwd()
     # replace header
-    exptData(vcf)$header <- newVcfHeader
+    metadata(vcf)$header <- newVcfHeader
     # pre-populate new info fields with NAs
     #infodprime <- info(vcf)
     #infodprime[,"fathmm_query"] <- rep(NA, nrow(infodprime))
