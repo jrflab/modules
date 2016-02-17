@@ -54,7 +54,7 @@ i <- 1
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     oldwd <- getwd()
     # replace header
-    exptData(vcf)$header <- newVcfHeader
+    metadata(vcf)$header <- newVcfHeader
     # pre-populate new info fields with NAs
     newGeno <- geno(vcf)
     newGeno$AD <- aperm(apply(geno(vcf)$DP4, c(1,2), function(x) c(x[1] + x[2], x[3] + x[4])), c(2, 3, 1))
