@@ -98,6 +98,7 @@ SOMATIC_FILTER_VCF = $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
 #JAVA_TMP := $(HOME)/tmp
 JAVA_BIN = java
+JAVA6_BIN = /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
 JAVA7_BIN = java
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 

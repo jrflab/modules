@@ -134,6 +134,7 @@ COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc 
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
 JAVA := $(JAVA_BIN) $(JAVA_ARGS)
+JAVA6 := $(JAVA6_BIN) $(JAVA_ARGS)
 JAVA7 := $(JAVA7_BIN) $(JAVA_ARGS)
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
