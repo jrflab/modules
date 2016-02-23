@@ -31,7 +31,7 @@ facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt) facets/geneCN.t
 facets/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -u -a $(DBSNP) -b $< | gzip -c > $@
 
-facets/base_count/%.bc.gz : bam/%.bam $(FACETS_SNP_VCF)
+facets/base_count/%.bc.gz : bam/%.bam $(FACETS_SNP_VCF) bam/%.bam.bai
 	$(call LSCRIPT_CHECK_MEM,8G,13G,"$(GET_BASE_COUNTS) $(GET_BASE_COUNTS_OPTS) --bam $< --vcf $(<<) --out >( gzip -c > $@)")
 
 define base-count-tumor-normal
@@ -45,3 +45,5 @@ facets/%.cncf.txt : facets/base_count/%.bc.gz
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+
+include modules/bam_tools/processBam.mk
