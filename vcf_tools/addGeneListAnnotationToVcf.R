@@ -70,7 +70,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     for (n in names(beds)) {
         newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
         info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
-        ol <- findOverlaps(rowData(vcf), geneLists[[n]], select = 'first')
+        ol <- findOverlaps(rowRanges(vcf), geneLists[[n]], select = 'first')
         info(vcf)[,n] <- !is.na(ol)
     }
 

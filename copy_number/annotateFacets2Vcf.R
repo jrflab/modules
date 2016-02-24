@@ -62,7 +62,7 @@ while(nrow(vcf <- readVcf(tab, 'hg19'))) {
   info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets lesser copy number (EM)", row.names = "facetsLCN_EM"))
 
   seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
-  ol <- findOverlaps(rowData(vcf), facetsGr, select = 'first')
+  ol <- findOverlaps(rowRanges(vcf), facetsGr, select = 'first')
   if (sum(!is.na(ol)) > 0) {
     info(vcf)$facetsCF[!is.na(ol)] <- facetsGr$CF[ol[!is.na(ol)]]
     info(vcf)$facetsTCN[!is.na(ol)] <- facetsGr$TCN[ol[!is.na(ol)]]

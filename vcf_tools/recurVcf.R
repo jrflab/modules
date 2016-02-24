@@ -39,7 +39,7 @@ for (f in files) {
     vcfs <- append(vcfs, vcf)
 }
 
-all <- do.call('rbind', lapply(vcfs, function(x) as.data.frame(subset(rowData(x), FILTER == "PASS"))))
+all <- do.call('rbind', lapply(vcfs, function(x) as.data.frame(subset(rowRanges(x), FILTER == "PASS"))))
 all <- all[, c("seqnames", "start", "end")]
 cnt <- ddply(all, .(seqnames, start, end), nrow)
 

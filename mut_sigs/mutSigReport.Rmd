@@ -110,26 +110,26 @@ for (vcfFile in vcfFiles) {
     }
     if (nrow(vcf) > 0) {
         seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
-        vcf <- vcf[sapply(rowData(vcf)$ALT, length) == 1]
-        rowData(vcf)$MUT <- paste(rowData(vcf)$REF, unlist(rowData(vcf)$ALT), sep = ">")
+        vcf <- vcf[sapply(rowRanges(vcf)$ALT, length) == 1]
+        rowRanges(vcf)$MUT <- paste(rowRanges(vcf)$REF, unlist(rowRanges(vcf)$ALT), sep = ">")
         # query transcript ids
-        ol <- findOverlaps(rowData(vcf), txByGenes)
+        ol <- findOverlaps(rowRanges(vcf), txByGenes)
         subjectStrands <- sapply(txByGenes[subjectHits(ol)], function(x) paste(unique(as.character(strand(x))), collapse = ','))
         queryStrands <- tapply(subjectStrands, queryHits(ol), function(x) paste(unique(x), collapse = ","))
         info(vcf)$strand <- NA
         info(vcf)$strand[as.integer(names(queryStrands))] <- queryStrands
         info(vcf)$transcribed <- F
         info(vcf)$transcribed[is.na(info(vcf)$strand)] <- NA
-        info(vcf)$transcribed[rowData(vcf)$MUT %in% c("G>A", "G>C", "G>T", "A>C", "A>G", "A>T") & grepl('\\+', info(vcf)$strand)] <- T
-        info(vcf)$transcribed[rowData(vcf)$MUT %in% c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G") & grepl('-', info(vcf)$strand)] <- T
+        info(vcf)$transcribed[rowRanges(vcf)$MUT %in% c("G>A", "G>C", "G>T", "A>C", "A>G", "A>T") & grepl('\\+', info(vcf)$strand)] <- T
+        info(vcf)$transcribed[rowRanges(vcf)$MUT %in% c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G") & grepl('-', info(vcf)$strand)] <- T
 
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>T"] <- "C>A"
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>C"] <- "C>G"
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "G>A"] <- "C>T"
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>T"] <- "T>A"
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>G"] <- "T>C"
-        rowData(vcf)$MUT[rowData(vcf)$MUT == "A>C"] <- "T>G"
-        rowData(vcf)$MUT <- factor(rowData(vcf)$MUT, levels = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G"))
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "G>T"] <- "C>A"
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "G>C"] <- "C>G"
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "G>A"] <- "C>T"
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "A>T"] <- "T>A"
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "A>G"] <- "T>C"
+        rowRanges(vcf)$MUT[rowRanges(vcf)$MUT == "A>C"] <- "T>G"
+        rowRanges(vcf)$MUT <- factor(rowRanges(vcf)$MUT, levels = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G"))
         vcfs[[s]] <- vcf
     }
 }
@@ -139,13 +139,13 @@ for (vcfFile in vcfFiles) {
 for (s in names(vcfs)) {
     vcf <- vcfs[[s]]
     cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
-    main <- paste(s, " (n=", length(rowData(vcf)), ")", sep = '')
-    pie(table(rowData(vcf)$MUT), col = cols, main = main)
+    main <- paste(s, " (n=", length(rowRanges(vcf)), ")", sep = '')
+    pie(table(rowRanges(vcf)$MUT), col = cols, main = main)
     if (sum(info(vcf)$transcribed, na.rm = T) > 0 && sum(!info(vcf)$transcribed, na.rm = T) > 0) {
         main <- paste('transcribed', s, " (n=", sum(info(vcf)$transcribed, na.rm = T), ")", sep = '')
-        pie(table(rowData(subset(vcf, info(vcf)$transcribed))$MUT), col = cols, main = main)
+        pie(table(rowRanges(subset(vcf, info(vcf)$transcribed))$MUT), col = cols, main = main)
         main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed, na.rm = T), ")", sep = '')
-        pie(table(rowData(subset(vcf, !info(vcf)$transcribed))$MUT), col = cols, main = paste('untranscribed', main))
+        pie(table(rowRanges(subset(vcf, !info(vcf)$transcribed))$MUT), col = cols, main = paste('untranscribed', main))
     }
 }
 ```
@@ -181,7 +181,7 @@ plotMutPiechart <- function(X) {
 }
 
 createMutationTable <- function(vcf) {
-    svcf <- split(rowData(vcf), rowData(vcf)$MUT)
+    svcf <- split(rowRanges(vcf), rowRanges(vcf)$MUT)
     tabs <- list()
     for (mut in names(svcf)) {
         if (length(svcf[[mut]]) > 0) {

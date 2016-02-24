@@ -45,7 +45,7 @@ facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz : $(foreach p
 facets/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -u -a $(DBSNP) -b $< | gzip -c > $@
 
-facets/base_count/%.bc.gz : bam/%.bam $(FACETS_SNP_VCF)
+facets/base_count/%.bc.gz : bam/%.bam $(FACETS_SNP_VCF) bam/%.bam.bai
 	$(call LSCRIPT_CHECK_MEM,8G,13G,"$(GET_BASE_COUNTS) $(GET_BASE_COUNTS_OPTS) --bam $< --vcf $(<<) --out >( gzip -c > $@)")
 
 define base-count-tumor-normal
@@ -58,4 +58,10 @@ facets/%.cncf.txt : facets/base_count/%.bc.gz
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix facets/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt)
+<<<<<<< HEAD
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+=======
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+
+include modules/bam_tools/processBam.mk
+>>>>>>> 040e878b42bc99d7dc8f72f8dd34d9a9fd9e59c9

@@ -73,9 +73,9 @@ hinfoprime <- rbind(hinfoprime, transficSIFT_pred = c("A", "String", "transfic S
 hinfoprime <- rbind(hinfoprime, transficPolyphen2_HVAR_pred = c("A", "String", "transfic polyphen2 SIFT prediction"))
 hinfoprime <- rbind(hinfoprime, transficMutationAssessor_pred = c("A", "String", "MutationAssessor prediction"))
 hinfoprime <- DataFrame(hinfoprime, row.names = rownames(hinfoprime))
-hlist <- header(exptData(vcf)$header)
+hlist <- header(metadata(vcf)$header)
 hlist$INFO <- hinfoprime
-exptData(vcf)$header <- new("VCFHeader", samples = header(vcf)@samples, header = hlist)
+metadata(vcf)$header <- new("VCFHeader", samples = header(vcf)@samples, header = hlist)
 
 newScores <- c('transficSIFT_score', 'transficPolyphen2_HVAR_score', 'transficMutationAssessor_score')
 newPreds <- c('transficSIFT_pred', 'transficPolyphen2_HVAR_pred', 'transficMutationAssessor_pred')

@@ -109,7 +109,7 @@ i <- 1
 while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
     oldwd <- getwd()
     # replace header
-    exptData(vcf)$header <- newVcfHeader
+    metadata(vcf)$header <- newVcfHeader
     # pre-populate new info fields with NAs
     #infodprime <- info(vcf)
     #infodprime[,"fathmm_query"] <- rep(NA, nrow(infodprime))
@@ -119,7 +119,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
 
     cat(paste('Chunk', i, "\n"))
     i <- i + 1
-    passIds <- which(rowData(vcf)$FILTER == "PASS" & seqnames(rowData(vcf)) %in% c(1:22, "X", "Y"))
+    passIds <- which(rowRanges(vcf)$FILTER == "PASS" & seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y"))
     if (length(passIds) == 0) {
         cat("No unfiltered variants\n")
     } else {

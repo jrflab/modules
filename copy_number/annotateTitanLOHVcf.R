@@ -73,7 +73,7 @@ while(nrow(vcf <- readVcf(tab, opt$genome))) {
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "String", Description = "Titan transcript median logR", row.names = "titanMedianLogR"))
 
     seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
-    ol <- findOverlaps(rowData(vcf), titanTx, select = 'first')
+    ol <- findOverlaps(rowRanges(vcf), titanTx, select = 'first')
     info(vcf)$titanCN[!is.na(ol)] <- titanTx$CN[ol[!is.na(ol)]]
     info(vcf)$titanMinorCN[!is.na(ol)] <- titanTx$minorCN[ol[!is.na(ol)]]
     info(vcf)$titanMajorCN[!is.na(ol)] <- titanTx$majorCN[ol[!is.na(ol)]]

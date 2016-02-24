@@ -134,6 +134,7 @@ COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc 
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
 JAVA := $(JAVA_BIN) $(JAVA_ARGS)
+JAVA6 := $(JAVA6_BIN) $(JAVA_ARGS)
 JAVA7 := $(JAVA7_BIN) $(JAVA_ARGS)
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
@@ -181,6 +182,7 @@ REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
 UMASK = 002
 ACTIVATE_JRFLAB_MODULES_ENV = source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
 INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; echo $(ACTIVATE_JRFLAB_MODULES_ENV);
+INIT_NOCLUSTER = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);";
 # $(call INIT_MEM,mem_free,h_vmem)
 INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2);
 # $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
@@ -218,9 +220,9 @@ QSUB_CHECK_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- -q $1
 
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
-LSCRIPT = ($(INIT) echo "umask $(UMASK);" $1) | $(SHELL) > $(LOG).o 2> $(LOG).e
-LSCRIPT_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(SHELL) > $(LOG).o 2> $(LOG).e
-LSCRIPT_MEM = ($(INIT) echo "umask $(UMASK);" $3) | $(SHELL) > $(LOG).o 2> $(LOG).e
+LSCRIPT = $(MKDIRS); ($(INIT_NOCLUSTER) echo $1) | $(SHELL) >& $(LOG)
+LSCRIPT_PARALLEL_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $4) | $(SHELL) >& $(LOG)
+LSCRIPT_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $3) | $(SHELL) >& $(LOG)
 
 LSCRIPT_NET = $(LSCRIPT)
 LSCRIPT_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
