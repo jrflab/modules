@@ -13,12 +13,18 @@ FACETS_PRE_CVAL ?= 50
 FACETS_CVAL1 ?= 150
 FACETS_CVAL2 ?= 50
 FACETS_MIN_NHET ?= 25
+FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) --min_nhet $(FACETS_MIN_NHET) --pre_cval $(FACETS_PRE_CVAL)
 
 GET_BASE_COUNTS = /ifs/e63data/reis-filho/usr/bin/GetBaseCounts
 GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --cov 0 --fasta $(REF_FASTA)
 
+
+ifeq ($(FACETS_GATK_VARIANTS),true)
+FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/gatk_variant_input/all.variants.dbsnp.vcf.gz)
+else
 FACETS_SNP_VCF = $(if $(TARGETS_FILE),facets/targets_dbsnp.vcf.gz,$(DBSNP))
+endif
 
 MERGE_TN = $(PYTHON) /ifs/e63data/reis-filho/usr/bin/FACETS.app/mergeTN.py
 
@@ -28,6 +34,14 @@ FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt) facets/geneCN.txt
 
+# FACETS_GATK_VARIANTS taget definitions
+facets/gatk_variant_input/all.variants.dbsnp.vcf.gz : facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz
+	$(INIT) $(BEDTOOLS) intersect -u -a $< -b $(DBSNP) | gzip -c > $@
+
+facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz : $(foreach pair,$(SAMPLE_PAIRS),gatk/vcf/$(pair).variants.snps.filtered.vcf)
+	$(RSCRIPT) modules/scripts/facets_gatk_variants.R
+
+# no flag target definitions
 facets/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -u -a $(DBSNP) -b $< | gzip -c > $@
 
