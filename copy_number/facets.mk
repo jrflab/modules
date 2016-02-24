@@ -52,6 +52,7 @@ define base-count-tumor-normal
 facets/base_count/$1_$2.bc.gz : facets/base_count/$1.bc.gz facets/base_count/$2.bc.gz
 	$$(call LSCRIPT_CHECK_MEM,8G,30G,"$$(MERGE_TN) $$^ | gzip -c > $$@")
 endef
+
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call base-count-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 facets/%.cncf.txt : facets/base_count/%.bc.gz
@@ -59,3 +60,5 @@ facets/%.cncf.txt : facets/base_count/%.bc.gz
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+
+include modules/bam_tools/processBam.mk
