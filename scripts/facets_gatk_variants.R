@@ -25,7 +25,7 @@ samples <-
 #-------------------------
 
 vcf.paths <-
-	samples$tumor %>% unlist %>% str_c("gatk/vcf/",.,".variants.snps.filtered.vcf")
+	samples %>% unlist %>% str_c("gatk/vcf/",.,".variants.snps.filtered.vcf")
 
 system("mkdir -p facets/gatk_variant_input &>/dev/null")
 
