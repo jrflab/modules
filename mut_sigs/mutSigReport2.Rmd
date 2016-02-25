@@ -204,7 +204,7 @@ solveNMF <- function(x, inmatrix){
     coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
     return(coef_x_scaled)
 }
-nmfCoefs <- solveNMF(as.matrix(alexandrovM), as.matrix(mmNorm))
+nmfCoefs <- solveNMF(as.matrix(alexandrovM), as.matrix(mm))
 
 if (!is.null(opt$outDir)) {
     fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
