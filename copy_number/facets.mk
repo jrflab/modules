@@ -38,7 +38,7 @@ facets : $(foreach pair,$(SAMPLE_PAIRS),facets/$(pair).cncf.txt) facets/geneCN.t
 facets/gatk_variant_input/all.variants.dbsnp.vcf.gz : facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz
 	$(INIT) $(BEDTOOLS) intersect -u -a $< -b $(DBSNP) | gzip -c > $@
 
-facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz : $(foreach pair,$(SAMPLE_PAIRS),gatk/vcf/$(pair).variants.snps.filtered.vcf)
+facets/gatk_variant_input/all.variants.snps.filtered.recode.vcf.gz : $(foreach sample,$(UNMATCHED_SAMPLES),gatk/vcf/$(sample).variants.snps.filtered.vcf)
 	$(RSCRIPT) modules/scripts/facets_gatk_variants.R
 
 # no flag target definitions
