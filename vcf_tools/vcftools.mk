@@ -155,7 +155,7 @@ endif
 
 ifdef SAMPLE_PAIRS
 # ff normal filter :
-# filter if normal depth > 20 and normal variant depth > 1/5 * tumor variant depth
+# filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF
 # or normal variant depth greater than 1
 # ffpe normal filter :
 # filter if normal depth > 20 and normal variant depth > 1/3 * tumor variant depth
@@ -376,29 +376,29 @@ endif
 ifdef SAMPLE_PAIRS
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf/$1_$2.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --tumor-id $1 --normal-id $2 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA)")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call vcf2maf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 allmaf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
 	$(INIT) \
 	{ \
-	head -2 $< \
-	sed 1,2d $^ \
+	grep -v '^#' $< | sed -n 1p; \
+	for x in $^; do grep -v '^#' $$x | sed 1d; done \
 	} > $@
 endif
 
 define vcf2maf-sample
 maf/$1.%.maf : vcf/$1.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --tumor-id $1 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA)")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call vcf2maf-sample,$(sample))))
 
 allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 	$(INIT) \
 	{ \
-	head -2 $< \
-	sed 1,2d $^ \
+	sed -n 2p $<; \
+	sed 1,2d $^; \
 	} > $@
 
 endif

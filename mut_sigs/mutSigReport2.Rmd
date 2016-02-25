@@ -1,0 +1,261 @@
+```{r setup, include=F}
+library("optparse");
+library("VariantAnnotation");
+library("BSgenome.Hsapiens.UCSC.hg19");
+library("BSgenome.Mmusculus.UCSC.mm10");
+library("TxDb.Hsapiens.UCSC.hg19.knownGene")
+library("TxDb.Mmusculus.UCSC.mm10.knownGene")
+library("reshape")
+library("boot")
+library("plyr")
+library("dplyr")
+library("ggplot2")
+library("RColorBrewer")
+library("reshape2")
+library("SomaticSignatures")
+library("doMC")
+library("foreach")
+library("NMF")
+library("gridExtra")
+library("gplots")
+library("magrittr")
+
+
+optList <- list(
+                make_option("--name", default = '', type = "character", action = "store", help = "report name"),
+                make_option("--ncores", default = 4, type = "integer", action = "store", help = "number of cores"),
+                make_option("--alexandrovData", default = '~/share/reference/Alexandrov_NMF_signatures.txt', type = "character", action = "store", help = "alexandrov nmf signatures"),
+                make_option("--genome", default = 'b37', help = "reference genome"),
+                make_option("--outDir", default = NULL, type = "character", action = "store", help = "output directory"),
+                make_option("--targetBed", default = NULL, type = "character", action = "store", help = "target intervals in bed format"))
+
+parser <- OptionParser(usage = "%prog [options] [VRange file(s)]", option_list = optList);
+arguments <- parse_args(parser, positional_arguments = T, args = args);
+opt <- arguments$options;
+
+if (length(arguments$args) < 1) {
+    cat("Need VRange file(s)\n");
+    print_help(parser);
+    stop();
+}
+
+vrFiles <- arguments$args
+outFile <- opt$outFile
+if (opt$genome == "b37" || opt$genome == "hg19") {
+    genome <- BSgenome.Hsapiens.UCSC.hg19
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+    genomeName <- 'hg19'
+} else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
+    genome <- BSgenome.Mmusculus.UCSC.mm10
+    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
+    genomeName <- 'mm10'
+}
+
+txdb <- renameSeqlevels(txdb, sub('chr', '', seqlevels(txdb)))
+txByGenes <- transcriptsBy(txdb, 'gene')
+bases <- c("A", "C", "G", "T")
+
+if (!is.null(opt$targetBed)) {
+    bed <- ucsc(import(opt$targetBed))
+    k3t <- kmerFrequency(genome, 1e5, 3, bed)
+    k3wg <- kmerFrequency(genome, 1e5, 3)
+    norms <- k3wg[names(k3t)] / k3t
+}
+
+registerDoMC(opt$ncores)
+
+theme_set(theme_bw(base_size = 18))
+```
+
+# `r opt$name` Mutational Signature Report
+---
+### Raymond Lim
+
+```{r createMotifMatrices, include=F, cache=F}
+vrs <- list()
+mm <- list()
+mmNorm <- list()
+mmTranscribed <- list()
+mmUntranscribed <- list()
+for (vrFile in vrFiles) {
+    s <- sub('\\..*', '', vrFile)
+    s <- sub('.*/', '', s)
+    load(vrFile)
+    vrs[[s]] <- vr
+}
+vrs <- VRangesList(vrs)
+allVr <- unlist(vrs)
+
+mm <- motifMatrix(allVr, normalize = F)
+mmNorm <- motifMatrix(allVr, normalize = T)
+mmTranscribed <- motifMatrix(subset(allVr, allVr$transcribed), normalize = T)
+mmUntranscribed <- motifMatrix(subset(allVr, !allVr$transcribed), normalize = T)
+if (!is.null(opt$targetBed)) {
+    mmNorm <- normalizeMotifs(mmNorm, norms)
+    mmTranscribed <- normalizeMotifs(mmTranscribed, norms)
+    mmUntranscribed <- normalizeMotifs(mmUntranscribed, norms)
+}
+```
+
+```{r loadAlexandrovData}
+alexandrov <- read.table(opt$alexandrovData, sep = '\t', header = T, as.is = T)
+rownames(alexandrov) <- paste(sub('>', '', as.character(alexandrov$Substitution.Type)),
+                              ' ', subseq(as.character(alexandrov$Trinucleotide), 1, 1), '.',
+                              subseq(as.character(alexandrov$Trinucleotide), 3, 3), sep = '')
+
+alexandrovM <- alexandrov[rownames(mm), grepl('Signature', colnames(alexandrov))]
+
+rownames(Y) <- paste(sub('>', '', as.character(Y$Substitution.Type)),
+                              ' ', subseq(as.character(Y$Trinucleotide), 1, 1), '.',
+                              subseq(as.character(Y$Trinucleotide), 3, 3), sep = '')
+
+```
+
+
+```{r pie, eval = F, echo = F}
+for (s in names(vrs)) {
+    vr <- vrs[[s]]
+    cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    main <- paste(s, " (n=", length(vr), ")", sep = '')
+    pie(table(vr$alteration), col = cols, main = main)
+    if (sum(vr$transcribed, na.rm = T) > 0 && sum(!vr$transcribed, na.rm = T) > 0) {
+        main <- paste('transcribed', s, " (n=", sum(vr$transcribed, na.rm = T), ")", sep = '')
+        pie(table(subset(vr, vr$transcribed)$alteration), col = cols, main = main)
+        main <- paste('untranscribed', s, " (n=", sum(!info(vcf)$transcribed, na.rm = T), ")", sep = '')
+        pie(table(subset(vr, !vr$transcribed)$alteration), col = cols, main = paste('untranscribed', main))
+    }
+}
+```
+
+
+```{r mutCountPlots, fig.height = 7, fig.width=28}
+plotMutBarplot <- function(samp, mm) {
+    cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    mdf <- melt(mm, varnames = c('motif', 'sample'))
+    mdf$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2",
+                          mdf$motif)
+    mdf$context = sub("[ACGTN][ACGTN] (.+)", "\\1", mdf$motif)
+    tit <- paste(samp, ' (n = ', sum(mdf %>% filter(sample == samp) %$% value, na.rm = T), ")", sep = '')
+    mdf %>% filter(sample == samp) %>%
+        ggplot(aes(x = context, y = value, fill = alteration)) +
+        geom_bar(stat = 'identity') + facet_grid(~ alteration, scales = 'free_x') +
+        xlab("") + ylab("") + ggtitle(tit) +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
+        scale_fill_manual(values = cols)
+}
+
+plotMutBarplotStranded <- function(samp, mmTranscribed, mmUntranscribed) {
+    mdfTranscribed <- melt(mmTranscribed, varnames = c('motif', 'sample'))
+    mdfTranscribed$transcribed <- T
+    mdfUntranscribed <- melt(mmUntranscribed, varnames = c('motif', 'sample'))
+    mdfUntranscribed$transcribed <- F
+    mdf <- rbind(mdfTranscribed, mdfUntranscribed)
+    mdf$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2",
+                          mdf$motif)
+    mdf$context = sub("[ACGTN][ACGTN] (.+)", "\\1", mdf$motif)
+    tit <- paste(samp, ' (n = ', sum(mdf %>% filter(sample == samp) %$% value, na.rm = T), ")", sep = '')
+    mdf %>% filter(sample == samp) %>%
+        ggplot(aes(x = context, y = value, fill = transcribed)) +
+        geom_bar(stat = 'identity', position = 'dodge') + facet_grid(~ alteration, scales = 'free_x') +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+        scale_fill_manual(name = "", values = c('blue', 'red'), labels = c("Transcribed strand", 'Untranscribed strand')) + 
+        xlab("") + ylab("") + ggtitle(tit)
+}
+
+plotMutPiechart <- function(samp, mm) {
+    mdf <- melt(mm, varnames = c('motif', 'sample'))
+    mdf$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2",
+                          mdf$motif)
+    mdf$context = sub("[ACGTN][ACGTN] (.+)", "\\1", mdf$motif)
+    cols <- c("C>A" = "lightblue", "C>G" = "black", "C>T" = "red", "T>A" = "grey", "T>C" = "lightgreen",  "T>G" = "pink")
+    mdf %>% filter(sample == samp) %>% group_by(alteration) %>% summarise(value = sum(value)) %>%
+        ggplot(aes(x = "", y = value, fill = alteration)) +
+        geom_bar(width = 1, stat = 'identity') + scale_fill_manual(values = cols) + 
+        coord_polar("y") + xlab("") + ylab("")
+}
+
+for (s in colnames(mm)) {
+    p1 <- plotMutBarplot(s, mm)
+    p2 <- plotMutPiechart(s, mm)
+    grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
+
+    p1 <- plotMutBarplot(s, mmNorm)
+    p2 <- plotMutPiechart(s, mmNorm)
+    grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
+}
+
+for (s in names(vrs)) {
+    vr <- vrs[[s]]
+    if (sum(vr$transcribed, na.rm = T) > 0 && sum(!vr$transcribed, na.rm = T) > 0) {
+        p1 <- plotMutBarplotStranded(s, mmTranscribed, mmUntranscribed)
+        p2 <- plotMutPiechart(s, mmTranscribed)
+        p3 <- plotMutPiechart(s, mmUntranscribed)
+        lom <- matrix(c(1,1, 2,3), nrow = 2, ncol = 2)
+        grid.arrange(p1, p2, p3, layout_matrix = lom,  widths = c(4, 2))
+    }
+}
+
+```
+
+```{r nmf, fig.width = 10, fig.height = 10}
+solveNMF <- function(x, inmatrix){
+    coef <- fcnnls(x, inmatrix[rownames(x),, drop = F]) # reorder the rownames of the in matrix 
+    colsum <- apply(coef$x, 2, sum)
+    coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
+    return(coef_x_scaled)
+}
+nmfCoefs <- solveNMF(as.matrix(alexandrovM), as.matrix(mmNorm))
+
+if (!is.null(opt$outDir)) {
+    fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
+    write.table(nmfCoefs, file = fn, quote = F, sep = '\t')
+}
+
+cols <- brewer.pal(9, 'Blues')
+if (ncol(nmfCoefs) > 2) {
+    heatmap.2(nmfCoefs, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
+}
+
+par(mar = c(10,5,5,5))
+for (s in colnames(nmfCoefs)) {
+    barplot(nmfCoefs[,s], main = s, las = 2)
+}
+```
+
+```{r bootPlot, fig.width=12}
+bootFun <- function(x) {
+    baseMotif = subseq(as.character(x$motif), 4, 6)
+    subseq(baseMotif, 2, 2) = subseq(as.character(x$motif), 1, 1)
+    nval <- x$value * norms[baseMotif]
+    nval <- nval / sum(nval)
+    apply(alexandrovM, 2, function(y) cor(nval, y))
+}
+
+ranFun <- function(p, d) {
+    # create a vector of same # of mutations using original context probabilities
+    s <- sample.int(nrow(p), size = sum(p$value), replace = T, prob = p$value / sum(p$value))
+    pp <- p
+    tab <- table(p[s, "motif"])
+    pp[match(names(tab), pp$motif), "value"] <- tab
+    pp
+}
+
+mm <- motifMatrix(allVr, normalize = F)
+for (s in colnames(mm)) {
+    mdf <- melt(mm[, s, drop = F], varnames = c('motif', 'sample'))
+    mdf$alteration = sub("([ACGTN])([ACGTN]) .+", "\\1>\\2",
+                          mdf$motif)
+    mdf$context = sub("[ACGTN][ACGTN] (.+)", "\\1", mdf$motif)
+    boots <- boot(mdf, bootFun, R = 1000, ran.gen = ranFun, sim = 'parametric', parallel = 'multicore')
+    boots.sd <- apply(boots$t, 2, sd)
+    ci <- norm.ci(boots, index = 1:ncol(alexandrovM))
+    cols <- ifelse(boots$t0 > ci[,2] & boots$t0 < ci[,3], 'grey', 'red')
+    n <- sub('Signature.', '', colnames(alexandrovM))
+    par(mfrow = c(2,1), mar = c(3,5,3,3))
+    barCenters <- barplot(boots$t0, ylim = c(min(boots$t - boots.sd), max(boots$t + boots.sd)), names.arg = n, col = cols, main = s, ylab = 'Correlation')
+    segments(barCenters, boots$t0 - boots.sd, barCenters, boots$t0+boots.sd, lwd = 1)
+    # vote barplot
+    barplot(table(factor(n[apply(boots$t, 1, which.max)], levels = n)), ylab = '# Votes')
+}
+```
+
