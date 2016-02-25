@@ -32,6 +32,10 @@ def split_multi_value_columns_to_records(df, columns, separator):
 
 def filter_annotations_with_impact(df, impact, effect=".*"):
     """Get only annotations with given impact"""
+    # check if df is empty
+    if len(df) == 0:
+        return df
+
     def merge_impact(muts, sep):
         return pd.Series({"ANN[*].EFFECT_MERGE": sep.join(muts["ANN[*].EFFECT_SPLIT"]),
                              "ANN[*].IMPACT_MERGE": sep.join(muts["ANN[*].IMPACT_SPLIT"]),
