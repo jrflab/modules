@@ -54,7 +54,7 @@ open(tab)
 
 vcf <- readVcf(tab, genomeName)
 passIds <- which(rowRanges(vcf)$FILTER == "PASS" & seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y"))
-if (nrow(vcf) > 0 length(passIds) > 0) {
+if (nrow(vcf) > 0 && length(passIds) > 0) {
     vcf <- vcf[passIds, ]
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
