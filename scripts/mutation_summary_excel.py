@@ -180,7 +180,7 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
             df = df.join(annotdf.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split()), how='left')
         df.reset_index().to_excel(writer, sheetname, index=False)
         if output_tsv_dir:
-            df.to_csv(output_tsv_dir + "/" + sheetname.lower() + ".tsv", sep="\t", index=(absdf is not None))
+            df.to_csv(output_tsv_dir + "/" + sheetname.lower() + ".tsv", sep="\t", index=True)
 
 
 def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
