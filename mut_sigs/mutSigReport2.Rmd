@@ -105,10 +105,6 @@ rownames(alexandrov) <- paste(sub('>', '', as.character(alexandrov$Substitution.
 
 alexandrovM <- alexandrov[rownames(mm), grepl('Signature', colnames(alexandrov))]
 
-rownames(Y) <- paste(sub('>', '', as.character(Y$Substitution.Type)),
-                              ' ', subseq(as.character(Y$Trinucleotide), 1, 1), '.',
-                              subseq(as.character(Y$Trinucleotide), 3, 3), sep = '')
-
 ```
 
 
