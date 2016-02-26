@@ -23,6 +23,8 @@ DUP_TYPE = markdup
 EXOME = true
 CHR1_BASE_RECAL = true
 
+POST_ANN_FILTER_EXPRESSION = ExAC_AF > 0.05
+
 # gatk options
 HARD_FILTER_SNPS = true
 

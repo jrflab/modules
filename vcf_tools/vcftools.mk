@@ -86,6 +86,11 @@ endif
 %.exac_nontcga.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) -info ExAC_AF $(EXAC_NONTCGA) $< > $@ && $(RM) $^"))
 
+# post-annotation filter
+POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
+%.cft.vcf : %.vcf
+	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression '$(POST_ANN_FILTER_EXPRESSION)' --filterName customFilter && $(RM) $<")
+
 
 # apply overall depth filter
 %.dp_ft.vcf : %.vcf
@@ -99,6 +104,10 @@ endif
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'HRun > $(HRUN_FILTER)' --filterName HRun && $(RM) $< $<.idx")
 
 %.pass.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter $(SNP_SIFT_OPTS) -f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@"))
+
+# workaround to do a double pass
+%.pass2.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,2G,5G,"$(call SNP_SIFT_MEM,2G) filter $(SNP_SIFT_OPTS) -f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@"))
 
 # apply dp filter for somatic sniper
