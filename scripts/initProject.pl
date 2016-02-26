@@ -15,20 +15,31 @@ system "git remote add origin git\@bitbucket.org:jrflab/$repoName.git";
 
 
 my $CONFIG = <<ENDL;
-export REF = b37
-DUP_TYPE = markdup
+---
+ref: b37
 
-#TARGETS_FILE = intervals.bed
-#GENES_FILE = genes.txt
-EXOME = true
-CHR1_BASE_RECAL = true
+aligner: bwamem #tophat hisat bwa bowtie tmap
+bam_chr1_base_recal: true
+bam_dup_type: markdup
+bam_no_filter: false
+bam_no_recal: false
+bam_no_realn: false
+bam_no_sort: false
+bam_fix_rg: false
+bam_phred64: false
+bam_reprocess: false
 
-POST_ANN_FILTER_EXPRESSION = ExAC_AF > 0.05
+vcf_post_ann_filter_expression: ExAC_AF > 0.05
+
+# targets_file: intervals.bed
+exome: true
 
 # gatk options
-HARD_FILTER_SNPS = true
+gatk_hard_filter_snps: true
+gatk_pool_snp_recal: false
 
-QSUB_PRIORITY = -800
+qsub_priority: -800
+...
 ENDL
 
 my $MAKEFILE = <<ENDL;
@@ -45,12 +56,12 @@ unless (-e "Makefile") {
 }
 close OUT;
 unless (-e "config.inc") {
-    open OUT, ">config.inc";
+    open OUT, ">config.yaml";
     print OUT $CONFIG;
 }
 close OUT;
 system "git add Makefile";
-system "git add config.inc";
-system "git commit -m 'makefile, config.inc'";
+system "git add config.yaml";
+system "git commit -m 'makefile, config.yaml'";
 system "git push --set-upstream origin master";
 

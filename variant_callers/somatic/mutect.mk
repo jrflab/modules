@@ -11,9 +11,8 @@ mutect/chr_vcf/$1_$2.$3.mutect%vcf mutect/chr_tables/$1_$2.$3.mutect%txt : bam/$
 	$$(MKDIR) mutect/chr_tables mutect/chr_vcf; $$(call LSCRIPT_CHECK_MEM,12G,16G,"$$(MUTECT) --enable_extended_output --intervals $3 --reference_sequence $$(REF_FASTA) --dbsnp $$(DBSNP1PC) --input_file:tumor $$< --input_file:normal $$(word 2,$$^) -vcf mutect/chr_vcf/$1_$2.$3.mutect.vcf --out mutect/chr_tables/$1_$2.$3.mutect.txt")
 endef
 $(foreach chr,$(CHROMOSOMES), \
-	$(foreach i,$(SETS_SEQ), \
-		$(foreach tumor,$(call get_tumors,$(set.$i)), \
-			$(eval $(call mutect-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
+	$(foreach pair,$(SAMPLE_PAIRS), \
+			$(eval $(call mutect-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
 
 # merge variant tables 
 define ext-mutect-tumor-normal
@@ -37,9 +36,8 @@ define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
 	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call mutect-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 include modules/vcf_tools/vcftools.mk
 

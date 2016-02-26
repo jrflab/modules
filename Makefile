@@ -16,9 +16,6 @@ MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
 endif
 NUM_JOBS ?= 100
 
-PHRED64 ?= false
-HARD_FILTER_SNPS ?= true
-
 define RUN_MAKE_J
 $(MAKE) -e -f $1 -j $2 $(TARGET) && \
 	mkdir -p completed_tasks && \

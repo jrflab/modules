@@ -2,7 +2,7 @@
 # BWA alignment of short reads
 # OPTIONS: NO_MARKDUP = true/false (default: false)
 # 		   EXTRACT_FASTQ = true/false (default: false)
-# 		   NO_RECAL = true/false (default: false)
+# 		   BAM_NO_RECAL = true/false (default: false)
 
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
@@ -26,13 +26,12 @@ BWA_ALN_OPTS ?=
 
 .SECONDARY:
 .DELETE_ON_ERROR: 
-.PHONY: bwa splits
+.PHONY: bwa
 ..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwa.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwa.txt )
 
 
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 bwa : $(addsuffix ,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
-splits : $(foreach sample,$(SPLIT_SAMPLES),$(foreach split,$(split_lookup.$(sample)),bwa/bam/$(split).bwa.sorted.bam))
 
 bam/%.bam : bwa/bam/%.bwa.$(BAM_SUFFIX)
 	$(call LSCRIPT,"ln -f $(<) $(@) ")
@@ -49,7 +48,7 @@ bwa/bam/$1.bwa.sorted.bam : bwa/bam/$1.header.sam $$(foreach split,$2,bwa/bam/$$
 	if [ `echo "$$(filter %.bam,$$(^))" | wc -w` -gt 1 ]; then \
 		$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$(^))  && $$(RM) $$^"); \
 	else \
-		ln -f $$(word 2,$$(^)) $$(@) \
+		ln -f $$(word 2,$$(^)) $$(@); \
 	fi
 endif
 ifeq ($(shell echo "$(words $2) == 1" | bc),1)
@@ -57,20 +56,34 @@ bwa/bam/$1.bwa.bam : bwa/bam/$2.bwa.bam
 	$$(INIT) mv $$(<) $$(@) 
 endif
 endef
-$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
+$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split.$(sample)))))
+
+.SECONDEXPANSION:
+define sai-split-fastq-pair
+bwa/sai/$1.$3.sai : $2
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$$(BWA) aln $$(BWA_ALN_OPTS) -t 8 $$(REF_FASTA) $$(<) > $$(@)")
+endef
+$(foreach ss,$(SPLIT_SAMPLES), \
+	$(foreach i,1 2,\
+	$(eval $(call sai-split-fastq-pair,$(ss),$(word $i,$(fq.$(ss))),$i))))
+
+define align-split-fastq
+bwa/bam/$2.bwa.bam : bwa/sai/$2.1.sai bwa/sai/$2.2.sai $3
+	$$(call LSCRIPT_MEM,4G,10G,"$$(BWA) sampe -P -r \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
+endef
+$(foreach ss,$(SPLIT_SAMPLES),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss)))))
 endif
-
-
-fastq/%.fastq.gz : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $< ")
 
 bwa/sai/%.sai : fastq/%.fastq.gz
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<) > $(@) ")
-#echo "$(BWA) aln -t 8 $(REF_FASTA) $(<:=) > $(@:=) 2> $(LOG) " | $(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G)
 
 bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
 	$(call LSCRIPT_MEM,4G,10G,"$(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^) | $(SAMTOOLS) view -bhS - > $(@) ")
+
+fastq/%.fastq.gz : fastq/%.fastq
+	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $< ")
+
 
 include modules/bam_tools/processBam.mk
 include modules/fastq_tools/fastq.mk

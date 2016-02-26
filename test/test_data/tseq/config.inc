@@ -1,7 +1,7 @@
 export REF = b37
 
 ALIGNER = bwamem
-DUP_TYPE = markdup
+BAM_DUP_TYPE = markdup
 
 TARGETS_FILE = test.bed
 EXOME = true

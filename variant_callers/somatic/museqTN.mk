@@ -47,9 +47,8 @@ museq/chr_vcf/$1_$2.$3.museq.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.b
 endef
 #$(foreach chr,$(CHROMOSOMES),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call museq-tumor-normal-chr,$(tumor),$(normal_lookup.$(tumor)),$(chr)))))
 $(foreach chr,$(CHROMOSOMES), \
-	$(foreach i,$(SETS_SEQ), \
-		$(foreach tumor,$(call get_tumors,$(set.$i)), \
-			$(eval $(call museq-tumor-normal-chr,$(tumor),$(call get_normal,$(set.$i)),$(chr))))))
+	$(foreach pair,$(SAMPLE_PAIRS), \
+	$(eval $(call museq-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair))))))
 
 
 # merge museq chunks
@@ -57,9 +56,8 @@ define museq-tumor-normal
 museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.vcf)
 	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
-$(foreach i,$(SETS_SEQ), \
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call museq-tumor-normal,$(tumor),$(call get_normal,$(set.$i)),$(chr)))))
+$(foreach pair,$(SAMPLE_PAIRS), \
+		$(eval $(call museq-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 vcf/%.museq.vcf : museq/vcf/%.museq.vcf
 	$(INIT) $(FIX_MUSEQ_VCF) -R $(REF_FASTA) $< > $@ 2> $(LOG)

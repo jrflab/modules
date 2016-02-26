@@ -42,9 +42,8 @@ define somsniper-tumor-normal
 som_sniper/vcf/$1_$2.som_sniper.vcf : bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_MEM,4G,8G,"$$(SOMATIC_SNIPER) $$(SOMATIC_SNIPER_OPTS) -F vcf -f $$(REF_FASTA) $$< $$(word 2,$$^) $$@")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call somsniper-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(eval $(call somsniper-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 # add pedigree info
 # $(eval $(call pedigree-tumor-normal,tumor,normal))
@@ -53,9 +52,8 @@ define pedigree-tumor-normal
 vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fp.fixAD.vcf
 	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call pedigree-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(eval $(call pedigree-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 %.fixAD.vcf : %.vcf
 	$(INIT) $(FIX_AD) --genome $(REF) --outFile $@ $<

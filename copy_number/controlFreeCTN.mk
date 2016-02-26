@@ -86,10 +86,8 @@ define freec-config-tumor-normal
 freec/config/$1_$2.config.txt : $1.bam $2.bam
 	$$(INIT) echo -e "$$(call FREEC_CONFIG,$$<,$$(word 2,$$^),freec/$1_$2)" | sed 's/ //' >  $$@
 endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-config-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call freec-config-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),
+		$(eval $(call freec-config-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define freec-tumor-normal
 freec/$1_$2/$1.bam_ratio.txt : freec/config/$1_$2.config.txt
@@ -97,10 +95,8 @@ freec/$1_$2/$1.bam_ratio.txt : freec/config/$1_$2.config.txt
 	
 freec/$1_$2/$1.bam_CNVs : freec/$1_$2/$1.bam_ratio.txt
 endef
-#$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call freec-tumor-normal,$(tumor),$(normal_lookup.$(tumor)))))
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call freec-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),
+		$(eval $(call freec-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 
 freec/%.bam_ratio.png : freec/%.bam_ratio.txt

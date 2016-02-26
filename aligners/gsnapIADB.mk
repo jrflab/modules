@@ -2,7 +2,7 @@
 include modules/Makefile.inc
 
 OPTS = -d IADB -D ${GSNAP_REF} -B 4 -t 4 -A sam --novelsplicing=1 --pairexpect=200 -n 1 --quiet-if-excessive --nofails
-ifeq ($(PHRED64),true)
+ifeq ($(BAM_PHRED64),true)
 	OPTS += -J 64 -j -31
 endif
 GSNAP_SGE_RREQ = $(call MEM_FREE,2G,4G) -q all.q -pe $(PARALLEL_ENV) 4 -now n

@@ -55,17 +55,15 @@ define hapseg-tumor-normal
 hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
 	$$(call LSCRIPT_MEM,8G,10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersFile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) --outFile $$(@F) $1 $2")
 endef
-$(foreach i,$(SETS_SEQ), \
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call hapseg-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(eval $(call hapseg-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define absolute-tumor-normal
 absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
 	$$(call LSCRIPT_MEM,8G,10G,"$$(ABSOLUTE) --tumour $1 --outPrefix segdat --resultsDir $$(@D) $$< && touch $$@")
 endef
-$(foreach i,$(SETS_SEQ), \
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call absolute-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(eval $(call absolute-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 else
 .PHONY: absolute
 absolute : $(foreach sample,$(SAMPLES),absolute/$(sample).timestamp)

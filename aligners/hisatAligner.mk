@@ -2,17 +2,16 @@
 # input: $(SAMPLES) 
 include modules/Makefile.inc
 
-NO_REALN = true
-NO_RECAL = true
-NO_FILTER = true
-DUP_TYPE = none
+BAM_NO_REALN = true
+BAM_NO_RECAL = true
+BAM_NO_FILTER = true
+BAM_DUP_TYPE = none
 include modules/aligners/align.inc
 
 LOGDIR = log/hisat.$(NOW)
 
-NUM_CORES ?= 8
-
-HISAT_OPTS = -q -p $(NUM_CORES) -x $(HISAT_REF)
+HISAT_NUM_CORES ?= 8
+HISAT_OPTS = -q -p $(HISAT_NUM_CORES) -x $(HISAT_REF)
 
 SEQ_PLATFORM ?= illumina
 ifeq ($(SEQ_PLATFORM),true)
@@ -46,7 +45,6 @@ hisat/bam/%.hisat.bam hisat/unmapped_bam/%.hisat_unmapped.bam : fastq/%.1.fastq.
 
 ifdef SPLIT_SAMPLES
 define merged-bam
-ifeq ($(shell echo "$(words $2) > 1" | bc),1)
 hisat/bam/$1.header.sam : $$(foreach split,$2,hisat/bam/$$(split).hisat.sorted.bam)
 	$$(INIT) $$(SAMTOOLS) view -H $$(<) | grep -v '^@RG' > $$@.tmp; \
 	for bam in $$(^); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
@@ -54,13 +52,22 @@ hisat/bam/$1.header.sam : $$(foreach split,$2,hisat/bam/$$(split).hisat.sorted.b
 
 hisat/bam/$1.hisat.sorted.bam : hisat/bam/$1.header.sam $$(foreach split,$2,hisat/bam/$$(split).hisat.sorted.bam)
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$(^))  && $$(RM) $$(^)")
-endif
-ifeq ($(shell echo "$(words $2) == 1" | bc),1)
-hisat/bam/$1.hisat.sorted.bam : hisat/bam/$2.hisat.sorted.bam
-	$$(INIT) mv $$(<) $$(@) 
-endif
 endef
-$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split_lookup.$(sample)))))
+$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split.$(sample)))))
+
+# usage $(eval $(call align-merged-split-fastq,merged-sample,split,fastq(s)))
+define align-merged-split-fastq
+hisat/bam/$2.hisat.bam : $3
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_hisat,8,1G,1.5G,"mkdir -p hisat/bam hisat/unmapped_bam; \
+		$$(HISAT) $$(HISAT_OPTS) \
+		--rg-id $2 --rg \"SM:$1\" \
+		--rg PL:$${SEQ_PLATFORM} --rg \"LB:\$1\" \
+		-S >($$(SAMTOOLS2) view -bh - > hisat/bam/$2.hisat.bam) \
+		--un >($$(SAMTOOLS2) view -bh - > hisat/unmapped_bam/$2.hisat_unmapped.bam) \
+		$$(if $$(<<),-1 $$(<) -2 $$(<<),-U $$(<))")
+hisat/unmapped_bam/$2.hisat_unmapped.bam : hisat/bam/$2.hisat.bam
+endef
+$(foreach ss,$(SPLIT_SAMPLES),$(eval $(call align-merged-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss)))))
 endif
 
 

@@ -5,8 +5,8 @@
 # GATK needs sorted, properly ordered bams
 # INPUTS: sample bams
 # OUTPUTS: vcf file for SNPs and indels
-# OPTIONS: HARD_FILTER_SNPS = true/false (default: true)
-# 		   POOL_SNP_RECAL = true/false (default: false)
+# OPTIONS: GATK_HARD_FILTER_SNPS = true/false (default: true)
+# 		   GATK_POOL_SNP_RECAL = true/false (default: false)
 # 		   SPLIT_CHR = true/false (default: true)
 #
 
@@ -15,8 +15,8 @@ ifndef GATK_MK
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-HARD_FILTER_SNPS ?= true
-POOL_SNP_RECAL ?= false
+GATK_HARD_FILTER_SNPS ?= true
+GATK_POOL_SNP_RECAL ?= false
 SPLIT_CHR ?= true
 
 VARIANT_EVAL_GATK_REPORT = $(RSCRIPT) modules/variant_callers/variantEvalGatkReport.R
@@ -125,14 +125,14 @@ $(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -T ApplyRecalibration  -R $
 endef
 
 # apply variant recal %=sample
-ifeq ($(HARD_FILTER_SNPS),true)
+ifeq ($(GATK_HARD_FILTER_SNPS),true)
 gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.vcf.idx
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) $(SNP_FILTERS) -o $@ \
 	--variant $<")
 else 
 
 # pool sample vcfs for recalibration
-ifeq ($(POOL_SNP_RECAL),true)
+ifeq ($(GATK_POOL_SNP_RECAL),true)
 gatk/vcf/samples.snps.recal.vcf : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.vcf) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.vcf.idx)
 	$(call VARIANT_RECAL,$@,$^)
 define sample-apply-recal

@@ -1,6 +1,6 @@
 # gsnap alignment makefile
 # input: $(SAMPLES)
-# Options: PHRED64 = true/false
+# Options: BAM_PHRED64 = true/false
 
 include modules/Makefile.inc
 include modules/hg19.inc
@@ -9,7 +9,7 @@ SNP = snp135
 NPARTS = 5 
 SEQ = $(shell seq 0 $(shell expr $(NPARTS) \- 1))
 OPTS = -d $(REF) -D ${GSNAP_REF_DIR} -B 4 -t 3 -A sam --novelsplicing=1 --pairexpect=150 -v $(SNP) -s $(REF).splicesites.iit -n 1 --quiet-if-excessive --nofails --gunzip
-ifeq ($(PHRED64),true)
+ifeq ($(BAM_PHRED64),true)
 	OPTS += -J 64 -j -31
 endif
 # note: GSNAP actually uses 2 + number of specified threads
@@ -23,9 +23,9 @@ VPATH ?= unprocessed_bam
 
 # Indicates how PCR-duplicates should be handled
 # Options: rmdup, markdup, none
-DUP_TYPE ?= rmdup
-NO_RECAL ?= false
-NO_REALN ?= false
+BAM_DUP_TYPE ?= rmdup
+BAM_NO_RECAL ?= false
+BAM_NO_REALN ?= false
 
 GSNAP_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
@@ -50,13 +50,13 @@ $(foreach sample,$(SAMPLES),$(eval $(foreach i,$(SEQ),$(eval $(call gsnap-part,$
 gsnap/bam/%.gsnap.bam : $(foreach i,$(SEQ),gsnap/bam/%.gsnap.$i.bam)
 	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,2G,3G)" $(SAMTOOLS) merge $@ $^ && rm -f $^
 
-ifeq ($(DUP_TYPE),rmdup)
+ifeq ($(BAM_DUP_TYPE),rmdup)
 bam/%.bam : gsnap/bam/%.gsnap.sorted.filtered.rmdup.bam
 	$(INIT) ln -f $< $@
-else ifeq ($(DUP_TYPE),markdup) 
+else ifeq ($(BAM_DUP_TYPE),markdup) 
 bam/%.bam : gsnap/bam/%.gsnap.sorted.filtered.markdup.bam
 	$(INIT) ln -f $< $@
-else ifeq ($(DUP_TYPE),none)
+else ifeq ($(BAM_DUP_TYPE),none)
 bam/%.bam : gsnap/bam/%.gsnap.sorted.filtered.bam
 	$(INIT) ln -f $< $@
 endif
@@ -66,17 +66,17 @@ bam/%.readtrim.bam : gsnap/bam/%.readtrim.gsnap.sorted.filtered.markdup.bam
 
 BAM_SUFFIX := gsnap.sorted.filtered
 
-ifeq ($(DUP_TYPE),rmdup)
+ifeq ($(BAM_DUP_TYPE),rmdup)
 BAM_SUFFIX := $(BAM_SUFFIX).rmdup
-else ifeq ($(DUP_TYPE),markdup) 
+else ifeq ($(BAM_DUP_TYPE),markdup) 
 BAM_SUFFIX := $(BAM_SUFFIX).markdup
 endif
 
-ifeq ($(NO_RECAL),false)
+ifeq ($(BAM_NO_RECAL),false)
 BAM_SUFFIX := $(BAM_SUFFIX).recal
 endif
 
-ifeq ($(NO_REALN),false)
+ifeq ($(BAM_NO_REALN),false)
 BAM_SUFFIX := $(BAM_SUFFIX).realn
 endif
 

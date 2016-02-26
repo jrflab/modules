@@ -1,6 +1,6 @@
 # This module is used for running cufflinks
 # input: $(SAMPLES) 
-# Options: PHRED64 = true/false
+# Options: BAM_PHRED64 = true/false
 # Authors: Fong Chun Chan <fongchunchan@gmail.com>
 #
 include modules/Makefile.inc

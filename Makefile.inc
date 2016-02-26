@@ -74,7 +74,7 @@ endif
 ifneq ($(wildcard $(SAMPLE_SPLIT_FILE)),)
   A = $(shell cut -f1 $(SAMPLE_SPLIT_FILE))
   B = $(shell cut -f2 $(SAMPLE_SPLIT_FILE))
-  $(foreach i,$(shell seq 1 $(words $(A))),$(eval split_lookup.$(word $i,$(A)) += $(word $i,$(B))))
+  $(foreach i,$(shell seq 1 $(words $(A))),$(eval split.$(word $i,$(A)) += $(word $i,$(B))))
   UNSPLIT_SAMPLES = $(B)
   SPLIT_SAMPLES = $(shell cut -f1 $(SAMPLE_SPLIT_FILE) | sort | uniq)
 endif
@@ -120,6 +120,8 @@ ADD_RG = $(call ADD_RG_MEM,$(PICARD_MEM))
 ADD_RG_MEM = $(JAVA) -Xmx$(1) -jar $(PICARD_DIR)/AddOrReplaceReadGroups.jar $(PICARD_OPTS)
 VALIDATE_SAM = $(JAVA) -Xmx$(PICARD_MEM) -jar $(PICARD_DIR)/ValidateSamFile.jar $(PICARD_OPTS)
 
+PICARD = $(JAVA8) -Xmx$2 -jar $(PICARD2_JAR) $1 $(PICARD_OPTS)
+
 # SNP EFF
 SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
 SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR)
@@ -136,6 +138,7 @@ JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 JAVA := $(JAVA_BIN) $(JAVA_ARGS)
 JAVA6 := $(JAVA6_BIN) $(JAVA_ARGS)
 JAVA7 := $(JAVA7_BIN) $(JAVA_ARGS)
+JAVA8 := $(JAVA8_BIN) $(JAVA_ARGS)
 #JAVA = /usr/bin/java $(JAVA_ARGS)
 
 NO_RM ?= false
@@ -302,5 +305,24 @@ define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
+
+##Set environment variables
+export TMPDIR := $(HOME)/share/tmp
+PATH := $(HOME)/share/usr/bin:$(PATH)
+PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
+export PATH
+export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
+
+LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
+export LD_LIBRARY_PATH
+
+PERL5LIB := $(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
+PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-compara/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-variation/modules
+PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-funcgen/modules
+export PERL5LIB
+
 endif
 MAKEFILE_INC = true
