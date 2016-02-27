@@ -1,0 +1,27 @@
+language: python
+python:
+  - "2.7"
+sudo: false
+install:
+  - case "$TRAVIS_PYTHON_VERSION" in
+    2*)
+      wget http://repo.continuum.io/miniconda/Miniconda-3.4.2-Linux-x86_64.sh -O miniconda.sh;
+      PYTHON="python"
+      ;;
+    3*)
+      wget http://repo.continuum.io/miniconda/Miniconda3-3.4.2-Linux-x86_64.sh -O miniconda.sh;
+      PYTHON="python3"
+      ;;
+    esac
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda config --add channels r
+  - conda config --add channels bioconda 
+  - conda create -q -n r-env --file conda_env/R3.2.2.txt
+  - source activate r-env
+script:
+  - bash -x test/copy_number/test_copynumber_heatmap.sh

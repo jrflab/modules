@@ -6,6 +6,10 @@
 ## Local test
 - Mount saba over sshfs
 - create symbolic link from local ~/share to sshfs mounted share dir
+- add bioconda channel
+    ```
+    conda config --add channels bioconda
+    ```
 - create anaconda environment
     ```
     conda create -p test-env --file ../conda_env/jrflab_modules_env.txt
