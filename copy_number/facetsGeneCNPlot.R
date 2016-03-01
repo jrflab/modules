@@ -12,7 +12,9 @@ suppressMessages(library(optparse))
 # parse options
 #--------------
 
-parser <- OptionParser(usage = "%prog [geneCN file] [output_plot_file]");
+optList <- list(
+                make_option("--includeChrY", action="store_true", default=F, help="Include Chromosome Y (drop by default)"));
+parser <- OptionParser(usage = "%prog [geneCN file] [output_plot_file]", option_list=optList);
 
 arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;
@@ -25,6 +27,7 @@ if (length(arguments$args) != 2) {
     geneCN <- arguments$args[1]
     outFile <- arguments$args[2]
 }
+
 
 plot_heatmap <- function(facets_tab, plot_file, sample_names=NULL, col=c("red", "darksalmon", "white", "lightblue", "blue"), zlim=c(-2,2)) {
     mm <- facets_tab
@@ -47,4 +50,8 @@ plot_heatmap <- function(facets_tab, plot_file, sample_names=NULL, col=c("red", 
     dev.off()
 }
 
-plot_heatmap(read.table(geneCN, sep="\t", header=T, stringsAsFactors=F), outFile)
+geneCN_tab <- read.table(geneCN, sep="\t", header=T, stringsAsFactors=F)
+if (!opt$includeChrY) {
+    geneCN_tab <- geneCN_tab[geneCN_tab$chrom != "Y",]
+}
+plot_heatmap(geneCN_tab, outFile)
