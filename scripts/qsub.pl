@@ -22,7 +22,8 @@ ENDL
 
 sub check_file {
     my ($cwd, $file) = @_;
-    my @nodes = qw/e01 e02 e03 e04 e05 e06/;
+    #my @nodes = qw/e01 e02 e03 e04 e05 e06/;
+    my @nodes = qw/e01 e02 e04 e05 e06/;
     my $fileSize = `stat -c\%s $cwd/$file`;
     chomp $fileSize;
     #print "checking $cwd/$file on nodes ($fileSize)\n";
