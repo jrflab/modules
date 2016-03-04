@@ -37,10 +37,12 @@ if (opt$genome == "b37" || opt$genome == "hg19") {
     genome <- BSgenome.Hsapiens.UCSC.hg19
     txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
     genomeName <- 'hg19'
+    chromosomes <- c(1:22, "X", "Y")
 } else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
     genome <- BSgenome.Mmusculus.UCSC.mm10
     txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
     genomeName <- 'mm10'
+    chromosomes <- c(1:19, "X", "Y")
 }
 
 txByGenes <- transcriptsBy(txdb, 'gene')
@@ -55,7 +57,9 @@ open(tab)
 
 vcf <- readVcf(tab, genomeName)
 passIds <- which(rowRanges(vcf)$FILTER == "PASS")
-if (nrow(vcf) > 0 && (opt$ignoreFilter | length(passIds) > 0)) {
+if (nrow(vcf) > 0 && sum(seqnames(vcf) %in% chromosomes) > 0 &&
+    sum(isSNV(vcf)) > 0 && (opt$ignoreFilter | length(passIds) > 0)) {
+    vcf <- vcf[isSNV(vcf) & seqnames(vcf) %in% chromosomes]
     if (!opt$ignoreFilter) {
         vcf <- vcf[passIds, ]
     }
@@ -66,7 +70,9 @@ if (nrow(vcf) > 0 && (opt$ignoreFilter | length(passIds) > 0)) {
             ref = as.character(ref(vcf)),
             alt = sapply(alt(vcf), function(x) as.character(x[1])),
             sampleNames = s)
-    vr <- mutationContext(ucsc(vr), genome, unify = T)
+    seqlevels(vr) <- sub('^M$', 'MT', seqlevels(vr))
+    vr <- ucsc(vr)
+    vr <- mutationContext(vr, genome, unify = T)
     vr$refalt <- paste(ref(vr), alt(vr), sep = '')
 
     # query transcript ids
