@@ -18,6 +18,7 @@ library("foreach")
 
 optList <- list(
                 make_option("--genome", default = 'b37', help = "reference genome"),
+                make_option("--ignoreFilter", default = F, action = 'store_true', help = "ignore the filter column for vcf files"),
                 make_option("--outFile", default = NULL, type = "character", action = "store", help = "output directory"))
 
 parser <- OptionParser(usage = "%prog [options] [vcf file(s)]", option_list = optList);
@@ -53,9 +54,11 @@ tab <- TabixFile(zipped, idx)
 open(tab)
 
 vcf <- readVcf(tab, genomeName)
-passIds <- which(rowRanges(vcf)$FILTER == "PASS" & seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y"))
-if (nrow(vcf) > 0 && length(passIds) > 0) {
-    vcf <- vcf[passIds, ]
+passIds <- which(rowRanges(vcf)$FILTER == "PASS")
+if (nrow(vcf) > 0 && (opt$ignoreFilter | length(passIds) > 0)) {
+    if (!opt$ignoreFilter) {
+        vcf <- vcf[passIds, ]
+    }
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
     vr <- VRanges(seqnames = seqnames(vcf),
@@ -78,5 +81,6 @@ if (nrow(vcf) > 0 && length(passIds) > 0) {
     vr$transcribed[vr$refalt %in% c("CA", "CG", "CT", "TA", "TC", "TG") & grepl('-', vr$txStrand)] <- T
     save(vr, file = opt$outFile)
 } else {
-    save(NULL, file = opt$outFile)
+    vr <- NULL
+    save(vr, file = opt$outFile)
 }
