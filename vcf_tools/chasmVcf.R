@@ -47,11 +47,12 @@ vcfHeader <- scanVcfHeader(fn)
 hinfoprime <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
 rownames(hinfoprime) <- rownames(info(vcfHeader))
 for (cl in classifiers) {
-    X <- rbind(chasm_mut = c("A", "String", paste(cl, "CHASM mutation")),
-               chasm_pval = c("A", "Float", paste(cl, "CHASM p-value")),
-               chasm_score = c("A", "Float", paste(cl, "CHASM score")),
-               chasm_fdr = c("A", "Float", paste(cl, "CHASM B-H FDR")))
-    rownames(X) <- paste(cl, rownames(X), sep = "_")
+    cln <- gsub('-', '_', cl)
+    X <- rbind(chasm_mut = c("A", "String", paste(cln, "CHASM mutation")),
+               chasm_pval = c("A", "Float", paste(cln, "CHASM p-value")),
+               chasm_score = c("A", "Float", paste(cln, "CHASM score")),
+               chasm_fdr = c("A", "Float", paste(cln, "CHASM B-H FDR")))
+    rownames(X) <- paste(cln, rownames(X), sep = "_")
     hinfoprime <- rbind(hinfoprime, X)
 }
 hinfoprime <- DataFrame(hinfoprime, row.names = rownames(hinfoprime))
@@ -85,17 +86,18 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
         tmp <- tempfile()
         write.table(X, file = tmp, quote = F, sep = '\t', row.names = F, col.names = F)
         for (cl in classifiers) {
+            cln <- gsub('-', '_', cl)
             cmd <- paste("CHASMDIR=", opt$chasmDir, " ", opt$python, ' ./RunChasm ', cl, ' ', tmp, ' -g' ,sep = '')
             #cat(cmd)
             system(cmd, ignore.stdout = T)
             results <- read.table(file = paste(tmp, cl, '.output', sep = ''), sep = '\t', header = T, as.is = T)
             if (nrow(results) > 1) {
                 infoprime <- info(vcf)
-                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_mut", sep = "_")] <- as.character(results$Mutation)
-                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_score", sep = "_")] <- results$CHASM
-                infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_pval", sep = "_")] <- results$PValue
+                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_mut", sep = "_")] <- as.character(results$Mutation)
+                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_score", sep = "_")] <- results$CHASM
+                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pval", sep = "_")] <- results$PValue
                 if (nrow(results) > 10) {
-                    infoprime[as.integer(as.character(results$MutationID)), paste(cl, "chasm_fdr", sep = "_")] <- results$BHFDR
+                    infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_fdr", sep = "_")] <- results$BHFDR
                 }
                 info(vcf) <- infoprime
             }
