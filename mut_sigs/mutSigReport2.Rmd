@@ -101,6 +101,19 @@ if (!is.null(opt$targetBed)) {
 }
 ```
 
+```{r writeMotifMatrices}
+if (!is.null(opt$outDir)) {
+    fn <- paste(opt$outDir, "/mm.txt", sep = "")
+    write.table(mm, file = fn, quote = F, sep = '\t')
+    fn <- paste(opt$outDir, "/mm_transcribed.txt", sep = "")
+    write.table(mmTranscribed, file = fn, quote = F, sep = '\t')
+    fn <- paste(opt$outDir, "/mm_untranscribed.txt", sep = "")
+    write.table(mmUntranscribed, file = fn, quote = F, sep = '\t')
+    fn <- paste(opt$outDir, "/mm_norm.txt", sep = "")
+    write.table(mmNorm, file = fn, quote = F, sep = '\t')
+}
+```
+
 ```{r loadAlexandrovData}
 alexandrov <- read.table(opt$alexandrovData, sep = '\t', header = T, as.is = T)
 rownames(alexandrov) <- paste(sub('>', '', as.character(alexandrov$Substitution.Type)),
@@ -109,6 +122,31 @@ rownames(alexandrov) <- paste(sub('>', '', as.character(alexandrov$Substitution.
 
 alexandrovM <- alexandrov[rownames(mm), grepl('Signature', colnames(alexandrov))]
 
+```
+
+```{r nmf, fig.width = 10, fig.height = 10}
+solveNMF <- function(x, inmatrix){
+    coef <- fcnnls(x, inmatrix[rownames(x),, drop = F]) # reorder the rownames of the in matrix 
+    colsum <- apply(coef$x, 2, sum)
+    coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
+    return(coef_x_scaled)
+}
+nmfCoefs <- solveNMF(as.matrix(alexandrovM), as.matrix(mm))
+
+if (!is.null(opt$outDir)) {
+    fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
+    write.table(nmfCoefs, file = fn, quote = F, sep = '\t')
+}
+
+cols <- brewer.pal(9, 'Blues')
+if (ncol(nmfCoefs) > 2) {
+    heatmap.2(nmfCoefs, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
+}
+
+par(mar = c(10,5,5,5))
+for (s in colnames(nmfCoefs)) {
+    barplot(nmfCoefs[,s], main = s, las = 2)
+}
 ```
 
 
@@ -197,30 +235,6 @@ for (s in names(vrs)) {
 
 ```
 
-```{r nmf, fig.width = 10, fig.height = 10}
-solveNMF <- function(x, inmatrix){
-    coef <- fcnnls(x, inmatrix[rownames(x),, drop = F]) # reorder the rownames of the in matrix 
-    colsum <- apply(coef$x, 2, sum)
-    coef_x_scaled <- scale(coef$x, center=F, scale=colsum)
-    return(coef_x_scaled)
-}
-nmfCoefs <- solveNMF(as.matrix(alexandrovM), as.matrix(mm))
-
-if (!is.null(opt$outDir)) {
-    fn <- paste(opt$outDir, "/nmf_mutsig.txt", sep = "")
-    write.table(nmfCoefs, file = fn, quote = F, sep = '\t')
-}
-
-cols <- brewer.pal(9, 'Blues')
-if (ncol(nmfCoefs) > 2) {
-    heatmap.2(nmfCoefs, trace = 'none', margins = c(13, 8), cexCol = 0.8, col = cols, Rowv = F, Colv = F, dendrogram = 'none')
-}
-
-par(mar = c(10,5,5,5))
-for (s in colnames(nmfCoefs)) {
-    barplot(nmfCoefs[,s], main = s, las = 2)
-}
-```
 
 ```{r bootPlot, fig.width=12}
 bootFun <- function(x) {
