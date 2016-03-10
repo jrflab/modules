@@ -222,7 +222,7 @@ for (s in colnames(mm)) {
     grid.arrange(p1, p2, ncol = 2, widths = c(4, 2))
 }
 
-for (s in names(vrs)) {
+for (s in colnames(mm)) {
     vr <- vrs[[s]]
     if (sum(vr$transcribed, na.rm = T) > 0 && sum(!vr$transcribed, na.rm = T) > 0) {
         p1 <- plotMutBarplotStranded(s, mmTranscribed, mmUntranscribed)
@@ -240,7 +240,11 @@ for (s in names(vrs)) {
 bootFun <- function(x) {
     baseMotif = subseq(as.character(x$motif), 4, 6)
     subseq(baseMotif, 2, 2) = subseq(as.character(x$motif), 1, 1)
-    nval <- x$value * norms[baseMotif]
+    if (!is.null(opt$targetBed)) {
+        nval <- x$value * norms[baseMotif]
+    } else {
+        nval <- x$value
+    }
     nval <- nval / sum(nval)
     apply(alexandrovM, 2, function(y) cor(nval, y))
 }
