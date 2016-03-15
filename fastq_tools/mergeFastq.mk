@@ -27,9 +27,10 @@ merged_bam/%.1.bam merged_bam/%.2.bam : $(ALIGNER)/bam/%.$(ALIGNER).$(BAM_SUFFIX
 	ln -f bam/$*.bam merged_bam/$*.2.bam
 
 merged_bam/%.header.sam : merged_bam/%.1.bam merged_bam/%.2.bam
-	$(INIT) $(SAMTOOLS) view -H $(<M) | grep -v '^@RG' > $@.tmp; \
-	for bam in $(^); do $(SAMTOOLS) view -H $$bam | grep '^@RG' >> $@.tmp; done; \
-	uniq $@.tmp > $@ && $(RM) $@.tmp
+	$(INIT) { $(SAMTOOLS) view -H $(<M) | grep -v '^@RG'; \
+	for bam in $(^); do \
+	$(SAMTOOLS) view -H $$bam | grep '^@RG'; \
+	done | sort | uniq; } > $@
 
 merged_bam/%.bam : merged_bam/%.header.sam merged_bam/%.1.bam merged_bam/%.2.bam
 	$(call LSCRIPT_MEM,12G,15G,"$(SAMTOOLS) merge -f -h $< $(@) $(filter %.bam,$(^))")
