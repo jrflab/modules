@@ -10,6 +10,8 @@ use Cwd qw/ realpath /;
 use Cwd;
 use Getopt::Std;
 use Scalar::Util qw(looks_like_number);
+use POSIX qw(strftime);
+use Sys::Hostname;
 
 my %opt;
 getopts('hco:', \%opt);
@@ -20,26 +22,37 @@ Usage: perl qsub.pl -h -- [qsub args]
     -c: check file across nodes for same file size
 ENDL
 
+my $host = hostname;
+
 sub check_file {
     my ($cwd, $file) = @_;
     #my @nodes = qw/e01 e02 e03 e04 e05 e06/;
     my @nodes = qw/e01 e02 e04 e05 e06/;
+    my $maxConnectionFails = 1;
     my $fileSize = `stat -c\%s $cwd/$file`;
+    my $nowString = strftime "%a %b %e %H:%M:%S %Y", localtime;
+    print "[$host $nowString] failed local file size check\n" and return 0 if $?;
     chomp $fileSize;
     #print "checking $cwd/$file on nodes ($fileSize)\n";
+    my $fails = 0;
     for my $node (@nodes) {
-        my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file`;
+        my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file 2>&1`;
         chomp $nodeFileSize;
-        if ($nodeFileSize =~ /^stat/ || $nodeFileSize =~ /^ssh/ || !looks_like_number($nodeFileSize)) {
-            print "$nodeFileSize\n";
-            return 0;
+        if ($? || $nodeFileSize =~ /^stat/ || $nodeFileSize =~ /^ssh/ || !looks_like_number($nodeFileSize)) {
+            print "[$node $nowString] failed remote file size check: $nodeFileSize\n";
+            $connectionFails++;
         } elsif ($fileSize != $nodeFileSize) {
-            #print "$node: file size does not match: $fileSize != $nodeFileSize\n";
+            print "[$node $nowString] file size does not match: $fileSize != $nodeFileSize\n";
             return 0;
         }
     }
     #print "$cwd/$file: all file sizes match\n";
-    return 1;
+    if ($connectionFails > $maxConnectionFails) {
+        print "[$host $nowString] too many connection failures\n";
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 sub HELP_MESSAGE {
@@ -113,13 +126,15 @@ if ($exitCodes == 0) {
     if ($opt{o} && $opt{o} ne "NULL") {
         my $i = 0;
         while (!check_file(getcwd(), $opt{o})) {
-            if ($i++ > 30) {
+            if ($i++ > 50) {
                 if (!-e $opt{o}) {
                     $fileStatus = 66;
-                    print STDERR "ERROR $opt{o}: file does not exist\n";
+                    my $nowString = strftime "%a %b %e %H:%M:%S %Y", localtime;
+                    print STDERR "[$host $nowString] ERROR $opt{o}: file does not exist\n";
                 } else {
                     $fileStatus = 77;
-                    print STDERR "ERROR $opt{o}: file sizes do not match across nodes\n";
+                    my $nowString = strftime "%a %b %e %H:%M:%S %Y", localtime;
+                    print STDERR "[$host $nowString] ERROR $opt{o}: file sizes do not match across nodes\n";
                     system("rm $opt{o}");
                 }
                 last;
