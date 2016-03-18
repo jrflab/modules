@@ -125,5 +125,7 @@ MAF2VCF = $(PERL) $(HOME)/share/usr/vcf2maf/maf2vcf.pl
 VEP_PATH = /opt/common/CentOS_6/vep/v82
 VEP_DATA = /opt/common/CentOS_6/vep/v82
 
+HISAT = $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
+
 endif
 CONFIG_INC = true

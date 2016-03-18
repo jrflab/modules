@@ -87,6 +87,8 @@ ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
 
 ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 
+HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
+
 endif
 B37_INC = true
 
