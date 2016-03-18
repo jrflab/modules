@@ -34,7 +34,7 @@ sub check_file {
     print "[$host $nowString] failed local file size check\n" and return 0 if $?;
     chomp $fileSize;
     #print "checking $cwd/$file on nodes ($fileSize)\n";
-    my $fails = 0;
+    my $connectionFails = 0;
     for my $node (@nodes) {
         my $nodeFileSize = `ssh -x $node stat -c\%s $cwd/$file 2>&1`;
         chomp $nodeFileSize;
