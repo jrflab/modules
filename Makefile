@@ -63,6 +63,10 @@ TARGETS += tophat
 tophat : 
 	$(call RUN_MAKE,modules/aligners/tophatAligner.mk)
 
+TARGETS += hisat
+hisat : 
+	$(call RUN_MAKE,modules/aligners/hisatAligner.mk)
+
 TARGETS += cufflinks
 cufflinks : 
 	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
