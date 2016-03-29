@@ -410,6 +410,20 @@ allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 	sed 1,2d $^; \
 	} > $@
 
+MUTATION_TASTER = modules/vcf_tools/mutationTasterVcf.R
+%.mut_taste.vcf : %.vcf
+	$(INIT) $(MUTATION_TASTER) $< $@
+
+PROVEAN = $(RSCRIPT) modules/vcf_tools/provean.vcf
+AA_TABLE = $(HOME)/share/reference/aa_table.tsv
+
+PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXDB) --mysqlHost $(EMBL_MYSQLDB_HOST) \
+			   --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
+			   --mysqlDb $(EMBL_MYSQLDB_DB) --numThreads 8 --memPerThread 1G --queue $(QUEUE)
+%.provean.vcf : %.vcf
+	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
+
+
 endif
 VCFTOOLS_MK = true
 

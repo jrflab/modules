@@ -7,10 +7,12 @@ ANN_FACETS ?= false
 
 SOMATIC_VALIDATION_ANNS := dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
-SOMATIC_INDEL_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
+SOMATIC_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
-SOMATIC_SNV_ANNS := $(SOMATIC_INDEL_ANNS) \
+SOMATIC_INDEL_ANNS := $(SOMATIC_ANNS) \
+    $(if $(findstring b37,$(REF)),mut_taste provean)
+SOMATIC_SNV_ANNS := $(SOMATIC_ANNS) \
     $(if $(findstring b37,$(REF)),chasm fathmm)
 ifeq ($(ANN_FACETS),true)
 SOMATIC_INDEL_ANNS += facets
