@@ -37,7 +37,7 @@ if ("showtext" %in% rownames(installed.packages())) {
     showtext.auto()
     fontfamily <- "DejaVuSansMono"
 } else {
-    fontfamily <- "sans"
+    fontfamily <- "serif"
 }
 
 plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamily, sample_names=NULL, col=c("red", "darksalmon", "white", "lightblue", "blue"), zlim=c(-2,2)) {

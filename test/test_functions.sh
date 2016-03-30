@@ -13,6 +13,16 @@ compare_files() {
         || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }
 
+compare_images() {
+    # first argument will be uploaded if different, so 2nd argument should be
+    # the test image
+    diff -q <(${STAT} -c %s $1) <(${STAT} -c %s $2) > /dev/null \
+        && echo "success, images the same: ${1} ${2}" \
+        || (echo "failed, images differ: ${1} ${2}" &&
+            curl -F "clbin=@$1" https://clbin.com &&
+            exit 1)
+}
+
 compare_bams() {
     (
         diff -q <(samtools view $1) <(samtools view $2) > /dev/null && \
