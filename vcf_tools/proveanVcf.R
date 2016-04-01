@@ -30,9 +30,11 @@ optList <- list(
         make_option("--mysqlUser", default='embl', help="MySQL server username [default %default]"),
         make_option("--mysqlPassword", default='embl', help="MySQL server password [default %default]"),
         make_option("--mysqlDb", default='homo_sapiens_core_75_37', help="MySQL server database [default %default]"),
+        make_option("--provean", default='provean.sh', help="provean script [default %default]"),
         make_option("--numThreads", default=4, help="Number of provean threads [default %default]"),
         make_option("--memPerThread", default='1G', help="Amount of memory per thread [default %default]"),
         make_option("--qsub", default='modules/scripts/qsub.pl', help="qsub perl script [default %default]"),
+        make_option("--qsubPriority", default=-800, help="qsub priority [default %default]"),
         make_option("--queue", default='jrf.q', help="qsub queue [default %default]"),
         make_option("--outFile", default=NULL, help="vcf output file [default %default]")
         )
@@ -89,6 +91,8 @@ cat('Reading vcf header ... ')
 vcfHeader <- scanVcfHeader(fn)
 hinfo <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
 rownames(hinfo) <- rownames(info(vcfHeader))
+hinfo <- rbind(hinfo, provean_embl_id=c("A", "String", "provean query embl ID"))
+hinfo <- rbind(hinfo, provean_hgvsp=c("A", "String", "provean query HGVSp"))
 hinfo <- rbind(hinfo, provean_score=c("A", "Float", "provean score"))
 hinfo <- DataFrame(hinfo, row.names=rownames(hinfo))
 hlist <- header(vcfHeader)
@@ -111,17 +115,14 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
     oldwd <- getwd()
     # replace header
     metadata(vcf)$header <- newVcfHeader
-    annDesc <- info(header(vcf))["ANN", "Description"]
-    annDesc <- sub(".*: '", "", annDesc)
-    annDesc <- sub("'", "", annDesc)
-    annNames <- unlist(strsplit(annDesc, ' \\| '))
-    annNames <- annNames[-length(annNames)]
 
     cat(paste('Chunk', i, "\n"))
     i <- i + 1
+    passIds <- which(rowRanges(vcf)$FILTER == "PASS" & seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y"))
     if (length(passIds) == 0) {
         cat("No unfiltered variants\n")
     } else {
+        vcf <- vcf[passIds, ]
         cat("Predicting coding from reference...\n")
         if (any(!seqlevels(vcf) %in% seqlevels(txdb))) {
             seqlevels(vcf, force=T) <- seqlevels(vcf)[-which(!seqlevels(vcf) %in% seqlevels(txdb))]
@@ -138,16 +139,18 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
         Df <- data.frame(rowId=rowIds, refseqId=ids, HGVSp=hgvsp, stringsAsFactors=F)
         Df <- Df %>% filter(HGVSp != "" & !grepl('fs', HGVSp))
 
-        if (sum(hgvsp == "") == 0) {
-            cat("No HGVSp variants\n")
+        if (sum(Df$HGVSp == "") == 0) {
+            cat("No variants to query\n")
         } else {
             query <- paste("SELECT X.display_label AS refseqId, T.stable_id as emblId FROM object_xref as O JOIN xref as X ON O.xref_id=X.xref_id JOIN transcript as T ON O.ensembl_id=T.transcript_id WHERE X.display_label IN (", paste(sQuote(Df$refseqId), collapse=','), ");")
             cat(paste(query, "\n", sep=""));
-            cat("Looking up ensembl peptide IDs ...\n")
+            cat("Looking up ensembl transcript IDs ...\n")
             repeat {
-                rs <- try(dbSendQuery(mydb, query), silent=T)
+                rs <- try(dbSendQuery(mydb, query), silent=F)
                 if (is(rs, "try-error")) {
+                    dbDisconnect(mydb)
                     cat("Lost connection to mysql db ... ")
+                    Sys.sleep(10)
                     mydb <- connect()
                     cat("reconnected\n")
                 } else {
@@ -155,6 +158,7 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
                 }
             }
             results <- fetch(rs, -1)
+            dbDisconnect(mydb)
             cat(paste("Found", nrow(results), "records\n"))
             if (nrow(results) > 0 && ncol(results) > 0) {
                 Df <- right_join(Df, results)
@@ -166,19 +170,18 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
                 proveanOutputs <- foreach(i=1:length(sDf)) %dopar% {
                     tmpFasta <- tempfile()
                     tmpVar <- tempfile()
-                    out <- tempfile()
+                    pout <- tempfile()
                     writeXStringSet(protSeqs[names(sDf)[i]], tmpFasta)
                     write(sDf[[i]][, "HGVSp"], file=tmpVar)
                     cmd <- paste('echo "', opt$provean, ' ', proveanOpts, ' -q ', tmpFasta, ' -v ', tmpVar,
-                                 ' | sed \\"1,/PROVEAN scores/d\\" > ', out, '" | ', opt$qsub,
-                                 ' -- -b n -o /dev/null -p -900 -j y -q ', opt$queue,
+                                 ' | sed \\"1,/PROVEAN scores/d\\" > ', pout, '" | ', opt$qsub,
+                                 ' -- -V -b n -o /dev/null -p ', opt$qsubPriority, ' -j y -q ', opt$queue,
                                  ' -pe smp ', opt$numThreads, ' -l h_vmem=', opt$memPerThread, sep='')
                     cat("Running:", cmd, "\n")
                     system(cmd)
-                    X <- read.table(out, sep = '\t', stringsAsFactors=F)
-                    if (nrow(X) > 0) {
-                        colnames(X) <- c('HGVSp', 'proveanScore')
-                        proveanOutput <- rbind(proveanOutput, X)
+                    if (file.exists(pout) && length(readLines(pout)) > 0) {
+                        proveanOutput <- read.table(pout, sep = '\t', stringsAsFactors=F)
+                        colnames(proveanOutput) <- c('HGVSp', 'proveanScore')
                         proveanOutput$refseqId <- names(protSeqs)[i]
                         proveanOutput
                     } else {
@@ -186,8 +189,12 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
                     }
                 }
                 proveanOutputs <- proveanOutputs[!is.na(proveanOutputs)]
-                X <- do.call('rbind', proveanOutputs)
-                Df <- left_join(Df, X)
+                if (length(proveanOutputs) > 0) {
+                    X <- do.call('rbind', proveanOutputs)
+                    Df <- left_join(Df, X)
+                } else {
+                    Df$proveanScore <- NA
+                }
             } else {
                 Df$proveanScore <- NA
             }
@@ -195,6 +202,8 @@ while(nrow(vcf <- readVcf(tab, genome=opt$genome))) {
                 cat("Merging provean results ... ")
                 infodf <- info(vcf)
                 infodf[Df$rowId,"provean_score"] <- Df$proveanScore
+                infodf[Df$rowId,"provean_hgvsp"] <- Df$HGVSp
+                infodf[Df$rowId,"provean_embl_id"] <- Df$emblId
                 info(vcf) <- infodf
                 cat("done\n")
             } else {
