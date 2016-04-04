@@ -72,7 +72,7 @@ genes <- dbFetch(rs, -1)
 cat(paste("Found", nrow(genes), "records\n"))
 
 genes %<>% filter(chrom %in% as.character(c(1:22, "X", "Y"))) %>%
-    distinct(hgnc) %>%
+    filter(!duplicated(hgnc)) %>% 
     arrange(as.integer(chrom), start, end)
 
 if (!is.null(opt$genesFile)) {
@@ -124,7 +124,7 @@ mm <- lapply(facetsFiles, function(f) {
     df$GL2[df$cnlr.median > median(lrr)+(2*sd(lrr))] <- 1
     df$GL2[df$cnlr.median > median(lrr)+(6*sd(lrr))] <- 2
 
-    df %>% select(hgnc, GL, GL2)
+    df %>% select(hgnc, GL, GL2) %>% ungroup
 })
 names(mm) <- facetsFiles
 for (f in facetsFiles) {
