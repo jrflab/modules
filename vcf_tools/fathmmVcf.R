@@ -156,7 +156,9 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
             repeat {
                 rs <- try(dbSendQuery(mydb, query), silent = T)
                 if (is(rs, "try-error")) {
+                    dbDisconnect(mydb)
                     cat("Lost connection to mysql db ... ")
+                    Sys.sleep(10)
                     mydb <- connect()
                     cat("reconnected\n")
                 } else {
@@ -164,6 +166,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                 }
             }
             ids <- fetch(rs, -1)
+            dbDisconnect(mydb)
             cat(paste("Found", nrow(ids), "records\n"))
             #ids <- getBM(filters = 'ensembl_transcript_id', attributes = c('ensembl_transcript_id', 'ensembl_peptide_id'), values = enstIds, mart = ensembl)
             if (nrow(ids) > 0 && ncol(ids) > 0) {
