@@ -11,7 +11,7 @@ SOMATIC_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
 SOMATIC_INDEL_ANNS := $(SOMATIC_ANNS) \
-    $(if $(findstring b37,$(REF)),mut_taste provean)
+    $(if $(findstring b37,$(REF)),mut_taste)
 SOMATIC_SNV_ANNS := $(SOMATIC_ANNS) \
     $(if $(findstring b37,$(REF)),chasm fathmm)
 ifeq ($(ANN_FACETS),true)
