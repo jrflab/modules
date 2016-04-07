@@ -54,6 +54,8 @@ def filter_annotations_with_impact(df, impact, effect=".*"):
     df_split = df_split[df_split["ANN[*].IMPACT_SPLIT"].str.match(impact) & df_split["ANN[*].EFFECT_SPLIT"].str.match(effect)]
     # merge remaining variants back to | separated values
     imp_sel = df_split.groupby("TUMOR_SAMPLE CHROM POS REF ALT".split()).apply(lambda x: merge_impact(x, "|"))
+    if imp_sel.empty:
+        return imp_sel
     rv = df.set_index("TUMOR_SAMPLE CHROM POS REF ALT".split()).join(imp_sel,
         how="inner")
     for c in "ANN[*].GENE ANN[*].HGVS_P ANN[*].HGVS_C ANN[*].EFFECT ANN[*].IMPACT".split():
