@@ -176,9 +176,17 @@ plotMutBarplot <- function(samp, mm) {
     tit <- paste(samp, ' (n = ', sum(mdf %>% filter(sample == samp) %$% value, na.rm = T), ")", sep = '')
     mdf %>% filter(sample == samp) %>%
         ggplot(aes(x = context, y = value, fill = alteration)) +
-        geom_bar(stat = 'identity') + facet_grid(~ alteration, scales = 'free_x') +
+        geom_bar(stat = 'identity') +
+        facet_grid(~ alteration, scales = 'free_x', switch = 'x') +
         xlab("") + ylab("") + ggtitle(tit) +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position = 'none') +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1),
+              legend.position = 'none',
+              panel.border = element_blank(),
+              axis.line.x = element_line(color = 'black', size = 1),
+              axis.line.y = element_line(color = 'black', size = 1),
+              panel.grid = element_blank(),
+              strip.background = element_blank(),
+              strip.text.x = element_text(size = 20)) +
         scale_fill_manual(values = cols)
 }
 
@@ -194,9 +202,18 @@ plotMutBarplotStranded <- function(samp, mmTranscribed, mmUntranscribed) {
     tit <- paste(samp, ' (n = ', sum(mdf %>% filter(sample == samp) %$% value, na.rm = T), ")", sep = '')
     mdf %>% filter(sample == samp) %>%
         ggplot(aes(x = context, y = value, fill = transcribed)) +
-        geom_bar(stat = 'identity', position = 'dodge') + facet_grid(~ alteration, scales = 'free_x') +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-        scale_fill_manual(name = "", values = c('blue', 'red'), labels = c("Transcribed strand", 'Untranscribed strand')) + 
+        geom_bar(stat = 'identity', position = 'dodge') +
+        facet_grid(~ alteration, scales = 'free_x', switch = 'x') +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1),
+              panel.border = element_blank(),
+              axis.line.x = element_line(color = 'black', size = 1),
+              axis.line.y = element_line(color = 'black', size = 1),
+              panel.grid = element_blank(),
+              strip.background = element_blank(),
+              strip.text.x = element_text(size = 20)) +
+        scale_fill_manual(name = "", values = c('blue', 'red'),
+                          labels = c("Transcribed strand",
+                                     'Untranscribed strand')) + 
         xlab("") + ylab("") + ggtitle(tit)
 }
 
