@@ -21,12 +21,6 @@ ifneq ($(ABSOLUTE_SOMATIC_TXTS)$(ABSOLUTE_SEGMENTS),)
 EXCEL_ABSOLUTE_PARAMS = --absolute_segments $(subst $(space),$(,),$(strip $(ABSOLUTE_SEGMENTS))) --absolute_somatic_txts $(subst $(space),$(,),$(strip $(ABSOLUTE_SOMATIC_TXTS)))
 endif
 
-# Add optional facets LOH to excel
-EXCEL_FACETS_LOH ?= $(wildcard facets/geneCN.em.reviewed.txt)
-ifneq ($(EXCEL_FACETS_LOH),)
-EXCEL_FACETS_LOH_PARAMS = --facets_em_reviewed $(EXCEL_FACETS_LOH)
-endif
-
 # Add optional annotations file to excel, used to add any other desired columns
 # to the excel file inner merge on TUMOR_SAMPLE CHROM POS REF ALT
 EXCEL_ANNOTATION ?= $(wildcard summary/annotation.tsv)

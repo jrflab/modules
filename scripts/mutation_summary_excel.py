@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import errno
 
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -78,8 +79,22 @@ def create_absolute_df(absolute_somatic_txts, absolute_segments):
     assert(len(absdf) == len(absegdf))
     for c in abscolumns:
         absdf[c] = absegdf[c]
+    absdf["clonality"] = absdf.apply(lambda x: "clonal" if x.Pr_somatic_clonal >= .5 or x.ccf_CI95_low >= .9 else "subclonal", axis=1)
 
     return absdf
+
+
+def add_loh(df):
+    rv = df.copy()
+    if len(df) > 0:
+        if "facetsLCN_EM" in df.columns:
+            rv["LOH"] = df.facetsLCN_EM.apply(lambda x: "true" if x == 0 or x =="0" else ".")
+        else:
+            rv["LOH"] = pd.Series(["N/A"] * len(df))
+    else:
+        rv["LOH"] = pd.Series()
+
+    return rv
 
 
 def add_maf(df):
@@ -108,7 +123,7 @@ def add_pathogenicity(df):
     rv = df.copy()
 
     def classify_pathogenicity(x):
-        isLOH = x["facetsLCN_EM"] == 0
+        isLOH = pd.to_numeric(x["facetsLCN_EM"], errors='coerse') == 0
         if any(c in x["ANN[*].EFFECT"] for c in ["frameshift", "splice_donor", "splice_acceptor", "stop_gained"]):
             if (isLOH or x["hap_insuf"] == "true") and x["cancer_gene"] == "true":
                 return "pathogenic"
@@ -142,7 +157,14 @@ def add_pathogenicity(df):
         else:
             return "."
 
-    rv["pathogenicity"] = df.apply(classify_pathogenicity, axis=1)
+    if len(df) > 0:
+        if all([c in df.columns for c in "dbNSFP_MutationTaster_pred dbNSFP_PROVEAN_pred hap_insuf facetsLCN_EM cancer_gene".split()]):
+            rv["pathogenicity"] = df.apply(classify_pathogenicity, axis=1)
+        else:
+            rv["pathogenicity"] = pd.Series(["N/A"] * len(df))
+    else:
+        rv["pathogenicity"] = pd.Series()
+
     return rv
 
 
@@ -169,8 +191,8 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
     if len(df > 0):
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
             df = add_cancer_gene(df)
-        if all([c in df.columns for c in "dbNSFP_MutationTaster_pred dbNSFP_PROVEAN_pred hap_insuf facetsLCN_EM cancer_gene".split()]):
-            df = add_pathogenicity(df)
+        df = add_loh(df)
+        df = add_pathogenicity(df)
         if write_columns:
             df = df[[c for c in write_columns if c in df.columns]]
         df = df.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split())
@@ -208,7 +230,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
@@ -220,7 +242,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         return pd.read_csv(tsv, sep="\t", dtype={"CHROM": str})
 
     # add summaries
-    required_columns = summary_columns + "NORMAL.AD TUMOR.AD".split()
+    required_columns = summary_columns + "NORMAL.AD TUMOR.AD facetsLCN_EM".split()
     mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
                         add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
                         add_non_existent_columns(filter_annotations_with_impact(read_tsv(strelka_varscan_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
