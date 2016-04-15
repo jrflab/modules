@@ -54,7 +54,11 @@ def split_multi_value_columns_to_records(df, columns, separator):
     return df_split
 
 
-class HandlerRectangle(HandlerPatch):
+class LOHLegend(mpatches.Rectangle):
+    pass
+
+
+class HandlerLOHLegend(HandlerPatch):
     """Handler for drawing strike through rectangle in legend"""
     def create_artists(self, legend, orig_handle,
                        xdescent, ydescent, width, height, fontsize, trans):
@@ -131,7 +135,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
             f.savefig(outdir + "/recurrent_mutations_ccf.pdf")
 
     # output nonsilent mutations plot using ccf
-    if all([c in muts.columns for c in "cancer_gene likely_pathogenic LOH".split()]):
+    if all([c in muts.columns for c in "cancer_gene pathogenicity LOH clonality".split()]):
         mut_ccf = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                             (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
             .drop_duplicates(subset="TUMOR_SAMPLE CHROM POS REF ALT".split())\
@@ -140,7 +144,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
         # mutation annotations
         annotations = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                             (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
-            .groupby(["ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT"])["cancer_gene likely_pathogenic LOH".split()].first()
+            .groupby(["ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT"])["cancer_gene pathogenicity LOH clonality".split()].first()
 
         sns.set_context(context="poster", font_scale=0.2)
         sns.set_style("whitegrid")
@@ -171,7 +175,9 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
 
                 # Add annotations
                 for i, x in enumerate(heatmap.xaxis.get_ticklocs()):
-                    if annotations.ix[sample_muts.index[i]].likely_pathogenic == "true":
+                    if annotations.ix[sample_muts.index[i]].clonality == "clonal":
+                        heatmap.add_patch(plt.Rectangle((x-.5, 0), 1, 1, fill=False, edgecolor='blue', linewidth=2, clip_on=False))
+                    if annotations.ix[sample_muts.index[i]].pathogenicity == "pathogenic":
                         heatmap.add_artist(plt.Circle((x, -1), 0.1, color='r', clip_on=False))
                     if annotations.ix[sample_muts.index[i]].cancer_gene == "true":
                         heatmap.add_artist(plt.Circle((x, -2), 0.1, color='k', clip_on=False))
@@ -182,14 +188,15 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
                 # make room
                 box = ax.get_position()
                 ax.set_position([box.x0, box.y0, box.width * 0.7, box.height])
-                cg = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="r")
-                lp = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="k")
-                loh = mpatches.Rectangle((1, 1), 1, 1, facecolor="w", edgecolor="k", linewidth=0.1)
+                pa = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="r")
+                cg = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="k")
+                loh = LOHLegend((1, 1), 1, 1, facecolor="w", edgecolor="k", linewidth=0.1)
+                clonal = mpatches.Rectangle((1, 1), 1, 1, facecolor="w", edgecolor="blue", linewidth=2)
                 ccf = mpatches.Patch(facecolor="w", edgecolor="w")
-                legend = legend_ax.legend([cg, lp, loh, ccf],
-                    ["Cancer gene", "Likely pathogenic", "LOH", "CCF"],
+                legend = legend_ax.legend([cg, pa, loh, clonal, ccf],
+                    ["Cancer gene", "Pathogenic", "LOH", "Clonal", "CCF"],
                     handlelength=0.8, loc='lower left',
-                    handler_map={mpatches.Rectangle: HandlerRectangle()})
+                    handler_map={LOHLegend: HandlerLOHLegend()})
                 for t in legend.get_texts():
                     t.set_ha("left")
 
