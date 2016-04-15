@@ -22,7 +22,7 @@ strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
 
 #$$(INIT) qmake -inherit -q jrf.q -- -j 20 -C $$< > $$(LOG) && touch $$@
 strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,12,1G,1.5G,"make -j 12 -C $$(<D)")
+	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,10,1G,1.5G,"make -j 10 -C $$(<D)")
 
 vcf/$1_$2.%.vcf : strelka/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<
