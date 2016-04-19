@@ -19,7 +19,11 @@ optList <- list(
 				make_option("--mutationSummary", default = NULL, help = "mutation summary table"),
 				make_option("--geneCN", default = NULL, help = "filled geneCN file"),
 				make_option("--mutOutFile", default = NULL, help = "mutation output file"),
-				make_option("--cnOutFile", default = NULL, help = "copy number output file") )
+				make_option("--mutRecurrentOutFile", default = NULL, help = "recurrent mutation output file"),
+				make_option("--cnOutFile", default = NULL, help = "copy number output file"),
+				make_option("--cnRecurrentOutFile", default = NULL, help = "recurrent copy number output file"),
+				make_option("--cnAmpDelOutFile", default = NULL, help = "amp del table")
+				)
 
 parser <- OptionParser(usage = "%prog [options] [mutation summary file]", option_list = optList);
 
@@ -34,15 +38,33 @@ else if (is.null(opt$mutationSummary)) {
 	cat("Need mutation summary file\n")
 	print_help(parser);
 	stop();
-} else if (is.null(opt$outFile)) {
-	cat("Need output file\n")
+} else if (is.null(opt$mutOutFile)) {
+	cat("Need mut output file\n")
+	print_help(parser);
+	stop();
+} else if (is.null(opt$mutRecurrentOutFile)) {
+	cat("Need mut recurrent output file\n")
+	print_help(parser);
+	stop();
+} else if (is.null(opt$cnOutFile)) {
+	cat("Need cn output file\n")
+	print_help(parser);
+	stop();
+} else if (is.null(opt$cnRecurrentOutFile)) {
+	cat("Need cn recurrent output file\n")
+	print_help(parser);
+	stop();
+} else if (is.null(opt$cnAmpDeltOutFile)) {
+	cat("Need cn amp del output file\n")
 	print_help(parser);
 	stop();
 } else {
 	muts.file <- opt$mutationSummary
 	cn.file <- opt$geneCN
 	muts.out.file <- opt$mutOutFile
+	muts.recurrent.out.file <- opt$mutRecurrentOutFile
 	cn.out.file <- opt$cnOutFile
+	cn.recurrent.out.file <- opt$cnRecurrentOutFile
 }
 
 # set graphics device
@@ -55,8 +77,11 @@ options(device=pdf)
 
 if(!exists('muts.file')){muts.file = 'summary/mutation_summary.xlsx'}
 if(!exists('muts.out.file')){muts.out.file = 'summary/mutation_heatmap.pdf'}
+if(!exists('muts.recurrent.out.file')){muts.out.file = 'summary/mutation_heatmap_recurrent.pdf'}
 if(!exists('cn.file')){cn.file = 'facets/geneCN_fill.txt'}
 if(!exists('cn.out.file')){cn.out.file = 'summary/cn_heatmap.pdf'}
+if(!exists('cn.recurrent.out.file')){cn.out.file = 'summary/cn_heatmap_recurrent.pdf'}
+if(!exists('cn.amp.del.out')){cn.amp.del.out = 'summary/cn_amp_del.tsv'}
 
 include.silent = TRUE
 dist.method    = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'     | see ?dist for details [hamming method implemented manually]
@@ -110,25 +135,26 @@ FormatMuts <- function(muts) {
 	name.key <- c( 'sample'='sample', 'Sample'='sample', 'Tumor_Sample_Barcode'='sample', 'TUMOR_SAMPLE'='sample',
 				   'gene'='gene', 'Gene'='gene', 'Hugo_Symbol'='gene', 'GENE'='gene', 'hgnc'='gene', 'ANN....GENE'='gene', 'ANN[*].GENE'='gene',
 				   'effect'='effect', 'Effect'='effect', 'Variant_Classification'='effect', 'ANN....EFFECT'='effect', 'ANN[*].EFFECT'='effect',
-				   'ccf'='ccf', 'CCF'='ccf', 'cancer_cell_frac'='ccf',
-				   'loh'='loh', 'LOH'='loh',
 				   'pheno'='pheno', 'pheno.bar'='pheno',
 				   'chrom'='chrom','Chrom'='chrom','Chromosome'='chrom','CHROM'='chrom',
-				   'start'='start', 'loc.start'='start',
+				   'start'='start', 'loc.start'='start', 'Start_position'='start',
 				   'end'='end', 'loc.end'='end', 'end'='stop',
 				   'POS'='pos', 'pos'='pos',
-				   'pathogenic'='pathogenic', 'Pathogenic'='pathogenic',
 				   'band'='band', 'Band'='band',
-				   'clonality'='clonality', 'Clonality'='clonality' )
+				   'ccf'='ccf', 'CCF'='ccf', 'cancer_cell_frac'='ccf',
+				   'loh'='loh', 'LOH'='loh',
+				   'Pr_somatic_clonal'='pr.somatic.clonal', 'pr.somatic.clonal'='pr.somatic.clonal',
+				   'ccf_CI95_low'='ci95.low', 'ci95.low'='ci95.low',
+				   'clonality'='clonality', 'Clonality'='clonality',
+				   'pathogenic'='pathogenic', 'Pathogenic'='pathogenic',
+				   'ref'='ref', 'REF'='ref',
+				   'alt'='alt', 'ALT'='alt',
+				   'purity'='purity'
+				    )
 
-	# rename columns
-	names(muts) <- name.key[names(muts)]
 
-	# df typing
-	muts %<>% as.data.frame
-
+	# function to dummy column if absent
 	DummyCol <- function(muts, col.name) {
-		# add dummy ccf column if absent
 		if(!col.name %in% colnames(muts)) {
 			message(green(str_c('adding dummy column: ',col.name)))
 			muts.names <- colnames(muts) %>% replace(which(is.na(.)),'empty') %>% list.filter(.!='add.col')
@@ -138,8 +164,16 @@ FormatMuts <- function(muts) {
 		return(muts)
 	}
 
+	# rename columns
+	names(muts) <- name.key[names(muts)]
+
+	# df typing
+	muts %<>% as.data.frame
+
+	# add columns if absent
+	muts %<>% DummyCol('sample')
 	muts %<>% DummyCol('gene')
-	muts %<>% DummyCol('ccf')
+	muts %<>% DummyCol('effect')
 	muts %<>% DummyCol('loh')
 	muts %<>% DummyCol('pheno')
 	muts %<>% DummyCol('chrom')
@@ -147,11 +181,23 @@ FormatMuts <- function(muts) {
 	muts %<>% DummyCol('start')
 	muts %<>% DummyCol('end')
 	muts %<>% DummyCol('pos')
-	muts %<>% DummyCol('pathogenic')
+	muts %<>% DummyCol('ccf')
+	muts %<>% DummyCol('pr.somatic.clonal')
+	muts %<>% DummyCol('ci95.low')
 	muts %<>% DummyCol('clonality')
+	muts %<>% DummyCol('pathogenic')
+	muts %<>% DummyCol('ref')
+	muts %<>% DummyCol('alt')
+	muts %<>% DummyCol('purity')
+
+	# dummy pheno string if absent
+	if(all(is.na(muts$pheno))){
+		muts$pheno <- 'Mutations'
+		message(yellow("warning: empty pheno column, replaced with 'Mutations'"))
+	}
 
 	# select columns
-	muts <- muts[c('sample','gene','effect','ccf','loh','pheno','chrom','start','end','pos','band','pathogenic','clonality')]
+	muts <- muts[c('sample','gene','effect','ccf','loh','pheno','chrom','start','end','pos','band','pathogenic','clonality','ci95.low','pr.somatic.clonal', 'ref', 'alt','purity')]
 
 	# column typing
 	muts %<>% mutate(sample=as.character(sample), gene=as.character(gene), effect=as.character(effect))
@@ -159,7 +205,9 @@ FormatMuts <- function(muts) {
 	# rename variant classifications & remove unmutated LOH if present
 	muts %<>%
 		tbl_df %>%
-		filter(!is.na(effect)) %>%
+		{ muts <- .
+			if(!all(is.na(muts$effect))){ filter(muts,!is.na(effect)) }
+			muts } %>%
 		unique %>%
 		mutate(effect=
 			ifelse(effect%in%c('STOP_GAINED','Nonsense_Mutation','stop_gained&splice_region_variant','stop_gained','Nonsense_Mutation','Stop_Codon_Ins','nonsense','truncating snv','Truncating snv','Truncating snv','Truncating SNV'),'Truncating SNV',
@@ -176,7 +224,14 @@ FormatMuts <- function(muts) {
 		mutate(loh=ifelse(loh%in%c('LOH','loh','Loss of heterozygosity') & !is.na(effect),'LOH',NA))
 
 	# warn on unknown effects
-	if(muts %>% filter(is.na(effect)) %>% nrow > 0){ message(yellow('warning: some variants not accounted for')) }
+	if(all(is.na(muts$effect))){
+		message(yellow('warning: empty effect column, left as NA'))
+	} else if(muts %>% filter(is.na(effect)) %>% nrow > 0){
+		message(yellow('warning: some variants not accounted for'))
+	}
+
+	# convert chromosome enumeration
+	muts %<>% mutate(chrom=as.numeric(ifelse(chrom=='X'|chrom=='Y',23,chrom)))
 
 	return(muts)
 }
@@ -185,7 +240,7 @@ FormatMuts <- function(muts) {
 # prepare muts table for plotting
 OrgMuts <- function(muts, dend, recurrent) {
 
-# sort: default, ordinal
+	# function to add column if absent
 	DummyCol <- function(muts, col.name) {
 		# add dummy ccf column if absent
 		if(!col.name %in% colnames(muts)) {
@@ -201,6 +256,7 @@ OrgMuts <- function(muts, dend, recurrent) {
 	muts %<>% DummyCol('end')
 	muts %<>% DummyCol('chrom')
 	muts %<>% DummyCol('pos')
+	muts %<>% DummyCol('ccf')
 	muts %<>% DummyCol('cn')
 
 	muts %>%
@@ -261,7 +317,7 @@ OrgMuts <- function(muts, dend, recurrent) {
 	mutate(band=factor(band, levels=filter(.,!is.na(effect)) %>% .$band %>% unique)) %>%
 	select(-order) %>%
 	mutate(sample=factor(sample,levels=labels(dend))) %>%
-	mutate(clonality=ifelse(clonality=='Clonal',clonality,NA))
+	mutate(clonality=ifelse(clonality=='clonal','Clonal',NA))
 }
 
 
@@ -385,7 +441,7 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 # random color selection
 set.seed(color.seed)
 color.palette <- grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)]
-#color.palette <- colorRampPalette(c('#2d4be0', '#20e6ae', '#ccb625', '#969696'))(100)  # static palette
+# color.palette <- colorRampPalette(c('#2d4be0', '#20e6ae', '#ccb625', '#969696'))(100)  # static palette
 color.palette %<>% sample(.,length(.))
 
 if(length(grep('xlsx',muts.file))){
@@ -408,7 +464,7 @@ if(include.silent!=TRUE){
 # recode table values as colors
 event.recode <-
 	muts %>%
-	select(-sample, -gene, -effect, -ccf, -loh, -chrom, -pos, -start, -end, -band, -pathogenic, -clonality) %>%
+	select(-sample, -gene, -effect, -ccf, -loh, -chrom, -pos, -start, -end, -band, -pathogenic, -clonality, -ci95.low, -pr.somatic.clonal, -ref, -alt, -purity) %>%
 	rename(pheno.color=pheno) %>%
 	mutate(pheno.color=ifelse(all(is.na(pheno.color)), 'Mutations', pheno.color)) %>%
 	mutate_each(funs(as.character)) %>%
@@ -465,14 +521,16 @@ dend <- tree.dend <- reorder(dend, dist)
 # FORMAT COPY NUMBER INFORMATION
 #-------------------------------
 
+# select threshold columns
 gene.cn <-
 	read.delim(cn.file, sep='\t',stringsAsFactors=FALSE) %>%
 	tbl_df %>%
 	select(gene=hgnc,chrom,start,end,band,matches('threshold'))
 
+# sample name vector
 cn.sample.names <- grep('threshold',colnames(gene.cn), value=TRUE)
 
-
+# subset amp / del rows
 cnas <-
 	gene.cn %>%
 	mutate(amp=rowSums(.[cn.sample.names]==2)) %>%
@@ -490,12 +548,13 @@ cnas <-
 	unique %>%
 	FormatMuts
 
+# write CNA file
 cnas %>%
 select(sample,band,effect) %>%
 spread(sample,effect) %>%
-write_tsv('summary/cn_amp_del.tsv')
+write_tsv(cn.amp.del.out)
 
-
+# build color tables
 cna.event.recode <-
 	event.recode %>%
 	select(sample,pheno,pheno.color) %>%
@@ -503,6 +562,85 @@ cna.event.recode <-
 	right_join(cnas %>% select(-pheno)) %>%
 	mutate(exists=1) %>%
 	select(sample, band, exists, pheno, pheno.color)
+
+
+#-------------------
+# ABSOLUTE CCF CALLS
+#-------------------
+
+abs.ccf <-
+	list.files('absolute/reviewed/SEG_MAF', pattern='_ABS_MAF.txt', full.names=TRUE) %>%
+	map(~ { read.delim(.x, sep='\t',stringsAsFactors=FALSE) %>% tbl_df }) %>%
+	bind_rows %>%
+	separate(sample, into=c('sample','normal'), sep='_') %>%
+	rename(pos=Start_position, alt.dept=alt) %>%
+	FormatMuts %>%
+	mutate(clonality=ifelse(pr.somatic.clonal>=0.5 | ci95.low >=0.9, 'clonal', 'subclonal')) %>%
+	select(sample,gene,pos,ccf,clonality,purity)
+
+
+
+#----------
+# LOH CALLS
+#----------
+
+# read cnf & make calls
+cncf.loh <-
+	list.files('facets',pattern='.cncf.txt',full.names=TRUE) %>%
+	map(~ {
+		cncf <-
+			read.delim(.x,stringsAsFactors=FALSE,sep="\t") %>%
+			tbl_df %>%
+			separate(ID, into=c('sample','normal'), sep='_') %>%
+			# loh calclulation
+			mutate(loh=
+				ifelse(lcn.em==0,'LOH',
+				ifelse(lcn.em>0,'.',
+				ifelse(lcn==0,'LOH',
+				ifelse(lcn>0,'.',
+				ifelse(!is.na(lcn.em) & !is.na(lcn), '.',
+				NA)))))) %>%
+			mutate(loh=ifelse(lcn==0 & cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
+			mutate(loc.mid=(loc.start+loc.end)/2) %>%
+			mutate(id=row_number())
+
+		cncf %<>%
+			group_by(id) %>%
+			full_join(
+				cncf %>% filter(!is.na(loh)) %>%
+				select(chrom, loc.mid.adj=loc.mid, cnlr.median.clust.adj=cnlr.median.clust, adj.lcn.em=lcn.em, adj.lcn=lcn, adj.loh=loh) %>%
+				bind_rows(data_frame(chrom=1:max(cncf$chrom), loc.mid.adj=-Inf, cnlr.median.clust.adj=1, adj.lcn.em=1, adj.lcn=1, adj.loh='.')),
+			by='chrom') %>%
+			slice(which.min(abs(loc.mid-loc.mid.adj))) %>%
+			ungroup %>%
+			mutate(loh=ifelse(is.na(loh), adj.loh, loh)) %>%
+			mutate(loh=ifelse(cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
+			mutate(loh=ifelse(loh=='.',NA,loh)) %>%
+			select(sample,chrom,loc.start,loc.mid,loc.end,loh,lcn.em,lcn,tcn.em,tcn,mafR,cnlr.median,cnlr.median.clust,cf,seg,num.mark)
+		return(cncf)
+	}) %>%
+	bind_rows %>%
+	select(sample, chrom, loc.start, loc.mid, loc.end, loh)
+
+
+#-----------------------
+# COMBINE MUTS, CCF, LOH
+#-----------------------
+
+muts <-
+	muts %>%
+	select(-ccf,-loh,-clonality, -purity) %>%
+	left_join(abs.ccf, by=c('sample','gene','pos')) %>%
+	mutate(id=row_number()) %>%
+	group_by(id) %>%
+	full_join(cncf.loh, by=c('sample','chrom')) %>%
+	mutate(in.seg=(loc.start<=pos & pos<=loc.end)) %>%
+	filter(in.seg==TRUE | sum(in.seg)==0) %>%
+	slice(which.min(abs(pos-loc.mid))) %>%
+	ungroup %>%
+	mutate(loh=ifelse(in.seg==FALSE,NA,loh)) %>%
+	select(-in.seg)
+
 
 #--------------------------
 # BUILD VARIANT & CCF PLOTS
@@ -512,22 +650,22 @@ cna.event.recode <-
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Variants by type',pheno)) %>%
-PlotVariants('summary/mutation_heatmap.variant.pdf', event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('summary/mutation_heatmap_variant.pdf', event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 muts %>%
 OrgMuts(dend, recurrent=TRUE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Recurrent variants by type',pheno)) %>%
-PlotVariants('summary/mutation_heatmap_recurrent.variant.pdf', event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('summary/mutation_heatmap_variant_recurrent.pdf', event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Variant CCF',pheno)) %>%
-PlotVariants('analysis/mutation_heatmap.ccf.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('analysis/mutation_heatmap_ccf.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 muts %>%
 OrgMuts(dend, recurrent=TRUE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Recurrent variant CCF',pheno)) %>%
-PlotVariants('analysis/mutation_heatmap_recurrent.ccf.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('analysis/mutation_heatmap_ccf_recurrent.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 
 #-----------
@@ -557,9 +695,8 @@ if(color.clusters == TRUE) {
 	#cluster palette
 	cluster.palette <- colorRampPalette(brewer.pal(8,'Dark2'))(n.cluster)
 
-# color branches according to cluster
-tree.dend %<>% branches_attr_by_clusters(clusters, values=cluster.palette)
-
+	# color branches according to cluster
+	tree.dend %<>% branches_attr_by_clusters(clusters, values=cluster.palette)
 }
 
 
@@ -569,7 +706,8 @@ if(tree.labels == FALSE){
 }
 
 
-pdf('tree.test.ladder2.pdf',140,38)
+# 
+pdf('summary/tree_ladder.pdf',140,38)
 	par(mar = c(65,40,10,20))   # bottom, left, top, right
 	layout(matrix(c(1,2),nrow=1), widths=c(10,1))
 	plot(dend, cex.axis=6)
@@ -589,7 +727,7 @@ pdf('tree.test.ladder2.pdf',140,38)
 dev.off()
 
 
-pdf('tree.charlotte.test.pdf',60,25)
+pdf('summary/tree_charlotte_test.pdf',60,25)
 	heatmap.2(
 		event.matrix,
 		trace='none',
@@ -603,7 +741,7 @@ pdf('tree.charlotte.test.pdf',60,25)
 dev.off()
 
 
-pdf('heat.all.test2.pdf',60,25)
+pdf('summary/heat.all.test2.pdf',60,25)
 	heatmap.2(
 		t(event.matrix),
 		trace='none',
@@ -651,21 +789,21 @@ colnames(mutation_heatmap) <- mutation_genes
 # Make sure the sample and mutations are both in the list of gene mutations and gene samples
 if (!TCGA) { smallmaf <- muts[which(muts$Gene %in% unlist(mutation_genes) & muts$Sample.ID %in% unlist(sample_names)),]
 }else {
-        muts$id <- unlist(lapply(muts$Sample.ID, function(x){substr(x, 1, 12)}))
-        print(head(muts$id))
-        print(head(unlist(sample_names)))
-        smallmaf <- muts[which(muts$Hugo_Symbol %in% unlist(mutation_genes) & muts$id %in% unlist(sample_names)),]
+		muts$id <- unlist(lapply(muts$Sample.ID, function(x){substr(x, 1, 12)}))
+		print(head(muts$id))
+		print(head(unlist(sample_names)))
+		smallmaf <- muts[which(muts$Hugo_Symbol %in% unlist(mutation_genes) & muts$id %in% unlist(sample_names)),]
 }
 
 # For each row read the Effect and create the type based on which category it fits in
 for (i in 1:nrow(smallmaf)) {
-        if(!TCGA) { type = smallmaf$CCF[i] } else { type = smallmaf$Variant_Classification[i] }
-        print(paste(i,type,sep="_"))
+		if(!TCGA) { type = smallmaf$CCF[i] } else { type = smallmaf$Variant_Classification[i] }
+		print(paste(i,type,sep="_"))
 
-        if (!TCGA) {
-        if (mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] < type) {
-                mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] <- type}
-        } else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$Hugo[i])] <- type }
+		if (!TCGA) {
+		if (mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] < type) {
+			mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] <- type}
+		} else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$Hugo[i])] <- type }
 }
 
 smalltab = t(mutation_heatmap)
@@ -673,6 +811,7 @@ smalltab = smalltab>0
 
 smalltab = cbind(smalltab, FALSE)
 colnames(smalltab)[ncol(smalltab)] = "Parental"
+
 # smalltab = cbind(smalltab, FALSE)
 # colnames(smalltab)[ncol(smalltab)] = "Test"
 
@@ -683,7 +822,7 @@ treeRatchet <- pratchet(pd, start=tree)
 treeRatchet <- acctran(treeRatchet, pd)
 rt <- root(treeRatchet, "Parental")
 
-pdf("analysis/phylo_tree.pdf")
+pdf("summary/phylo.pdf")
 	plot(rt)
 dev.off()
 
