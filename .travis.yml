@@ -21,7 +21,10 @@ install:
   - conda info -a
   - conda config --add channels r
   - conda config --add channels bioconda 
+  - conda create -q -n jrflab --file conda_env/jrflab_modules_env.txt
   - conda create -q -n r-env --file conda_env/R3.2.2.txt
-  - source activate r-env
 script:
+  - source activate r-env
   - bash -x test/copy_number/test_copynumber_heatmap.sh
+  - source activate jrflab
+  - bash -x test/vcf_tools/test_common_filter.sh

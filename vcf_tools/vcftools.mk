@@ -71,17 +71,22 @@ endif
 
 # snp sift using GMAF > 1% filtered dbsnp 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(DBSNP1PC) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate \
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && $(RM) $^"))
 
 # mouse genome project dbsnp
 %.mgp_dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
+		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
 
 %.cosmic.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(COSMIC) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(COSMIC) $< > $@ && $(RM) $^"))
 
 %.clinvar.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(CLINVAR) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(CLINVAR) $< > $@ && $(RM) $^"))
 
 %.exac_nontcga.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) -info ExAC_AF $(EXAC_NONTCGA) $< > $@ && $(RM) $^"))
@@ -313,10 +318,9 @@ tables/%.opl_tab.txt : vcf/%.vcf
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
-%.novel.txt : %.txt
-	$(INIT) id=`head -1 $< | tr '\t' '\n' | grep -n "^ID$$" | sed 's/:.*//'`; \
-	gmaf=`head -1 $< | tr '\t' '\n' | grep -n "^GMAF$$" | sed 's/:.*//'`; \
-	awk -v id=$$id -v gmaf=$$gmaf 'NR == 1 || length($$id) == 1 || $$gmaf < 0.01 { print }' $< > $@ || true
+COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
+%.common.vcf : %.vcf
+	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< $@")
 
 FALSE_POSITIVE_BED = $(HOME)/share/reference/fuentes_blacklist.include_cosmic.hg19.bed
 %.fp_ft.vcf : %.vcf
