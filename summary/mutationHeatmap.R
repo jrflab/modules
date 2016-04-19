@@ -253,11 +253,11 @@ OrgMuts <- function(muts, dend, recurrent) {
 	}
 
 	muts %<>% DummyCol('start')
-	muts %<>% DummyCol('end')
 	muts %<>% DummyCol('chrom')
-	muts %<>% DummyCol('pos')
 	muts %<>% DummyCol('ccf')
 	muts %<>% DummyCol('cn')
+
+	muts %<>% select(sample,chrom,start,gene,band,ccf,cn,pheno,effect,loh,clonality)
 
 	muts %>%
 	unique %>%
@@ -300,7 +300,7 @@ OrgMuts <- function(muts, dend, recurrent) {
 	# fill empty tiles
 	group_by(pheno) %>%
 	spread(gene,effect) %>%
-	gather(gene,effect,-matches(paste(c('^n.gene$|^precedence$|^n.band$|^order',names(muts),'$'),collapse='$|^'))) %>%
+	gather(gene,effect,-matches(paste(c('^order',names(muts),'n.gene','precedence','n.band$'),collapse='$|^'))) %>%
 	#filter(!is.na(effect)) %>%
 	ungroup %>%
 	select(-precedence) %>%
@@ -317,7 +317,16 @@ OrgMuts <- function(muts, dend, recurrent) {
 	mutate(band=factor(band, levels=filter(.,!is.na(effect)) %>% .$band %>% unique)) %>%
 	select(-order) %>%
 	mutate(sample=factor(sample,levels=labels(dend))) %>%
-	mutate(clonality=ifelse(clonality=='clonal','Clonal',NA))
+	mutate(ccf=
+		ifelse(ccf==0,               'CCF = 0%',
+		ifelse(ccf>0.00 & ccf<=0.05, '0% < CCF ≤ 5%',
+		ifelse(ccf>0.05 & ccf<=0.20, '5% < CCF ≤ 20%',
+		ifelse(ccf>0.20 & ccf<=0.40, '20% < CCF ≤ 40%',
+		ifelse(ccf>0.40 & ccf<=0.06, '40% < CCF ≤ 60%',
+		ifelse(ccf>0.60 & ccf<=0.08, '60% < CCF ≤ 80%',
+		ifelse(ccf>0.80,             '80% < CCF ≤ 100%',
+		NA)))))))) %>%
+	mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF ≤ 5%','5% < CCF ≤ 20%','20% < CCF ≤ 40%','40% < CCF ≤ 60%','60% < CCF ≤ 80%','80% < CCF ≤ 100%')))
 }
 
 
@@ -328,15 +337,23 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 
 	# plot aesthetic definitions
 	palette  <- c(
-		`Truncating SNV`='#C84DDD',
-		`Frameshift In-Del`='#C17200',
-		`Missense SNV`='#00A5A8',
-		`Inframe indel`='#E44988',
-		`Splice site variant`='#008AE9',
-		`Upstream, start/stop, or de novo modification`='#749000',
-		`Silent`='#666666',
-		`Amplification`='#333399',
-		`Deletion`='#e60000')
+		'Truncating SNV'='#C84DDD',
+		'Frameshift In-Del'='#C17200',
+		'Missense SNV'='#00A5A8',
+		'Inframe indel'='#E44988',
+		'Splice site variant'='#008AE9',
+		'Upstream, start/stop, or de novo modification'='#749000',
+		'Silent'='#666666',
+		'Amplification'='#333399',
+		'Deletion'='#e60000',
+		'CCF = 0%'='#e5e5e5',
+		'0% < CCF ≤ 5%'='#c7dbee',
+		'5% < CCF ≤ 20%'='#a0cae0',
+		'20% < CCF ≤ 40%'='#6eaed4',
+		'40% < CCF ≤ 60%'='#2772b3',
+		'60% < CCF ≤ 80%'='#10539a',
+		'80% < CCF ≤ 100%'='#0b3269')
+
 
 	geometry <- c(`LOH`=3)
 
@@ -348,13 +365,16 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 	}
 
 	if(ccf==TRUE & cn!=TRUE ){  # CCF coloring
-		hp <- hp + geom_tile(data=muts, aes(fill=CCF), colour='white') +
-		scale_fill_gradient(low='#b3d9ff', high='#000066') +
-		geom_tile(data=muts %>% filter(!is.na(clonality)), aes(color=clonality, stroke=1.5), size=2, fill=NA)
+		hp <- hp +
+		geom_tile(data=muts,aes(fill=CCF),colour='white') +
+		scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90', drop=FALSE)
+		#hp <- hp + geom_tile(data=muts, aes(fill=CCF), colour='white') +
+		#scale_fill_gradient(low='#b3d9ff', high='#000066') +
+		#geom_tile(data=muts %>% filter(!is.na(clonality)), aes(color=clonality, stroke=1.5), size=2, fill=NA)
 	} else {  # draw tiles and color
 		hp <- hp +
 		geom_tile(data=muts,aes(fill=Effect),colour='white') +
-		scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90')
+		scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90', drop=FALSE)
 	}
 
 	# add loh as +
@@ -387,7 +407,7 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 			axis.ticks.y		= element_blank(),
 			legend.key			= element_rect(colour='black', fill=NULL, size=1),
 			legend.key.size		= unit(1.8, 'lines'),
-			legend.background	= element_rect(colour='black', fill=NULL, size=1),
+			#legend.background	= element_rect(colour='black', fill=NULL, size=1),
 			legend.text			= element_text(size=text.size),
 			strip.background	= element_rect(fill='white'),
 			strip.text.x		= element_text(colour='white', size=text.size*1.2),
@@ -575,9 +595,8 @@ abs.ccf <-
 	separate(sample, into=c('sample','normal'), sep='_') %>%
 	rename(pos=Start_position, alt.dept=alt) %>%
 	FormatMuts %>%
-	mutate(clonality=ifelse(pr.somatic.clonal>=0.5 | ci95.low >=0.9, 'clonal', 'subclonal')) %>%
+	mutate(clonality=ifelse(pr.somatic.clonal>=0.5 | ci95.low >=0.9, 'Clonal', 'Subclonal')) %>%
 	select(sample,gene,pos,ccf,clonality,purity)
-
 
 
 #----------
@@ -627,6 +646,8 @@ cncf.loh <-
 # COMBINE MUTS, CCF, LOH
 #-----------------------
 
+# muts0
+
 muts <-
 	muts %>%
 	select(-ccf,-loh,-clonality, -purity) %>%
@@ -641,11 +662,11 @@ muts <-
 	mutate(loh=ifelse(in.seg==FALSE,NA,loh)) %>%
 	select(-in.seg)
 
+# muts1
 
 #--------------------------
 # BUILD VARIANT & CCF PLOTS
 #--------------------------
-
 
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
@@ -660,12 +681,12 @@ PlotVariants('summary/mutation_heatmap_variant_recurrent.pdf', event.recode, ccf
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Variant CCF',pheno)) %>%
-PlotVariants('analysis/mutation_heatmap_ccf.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('summary/mutation_heatmap_ccf.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 muts %>%
 OrgMuts(dend, recurrent=TRUE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Recurrent variant CCF',pheno)) %>%
-PlotVariants('analysis/mutation_heatmap_ccf_recurrent.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+PlotVariants('summary/mutation_heatmap_ccf_recurrent.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
 
 #-----------
