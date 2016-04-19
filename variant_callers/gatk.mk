@@ -74,7 +74,7 @@ endif
 define hapcall-vcf
 gatk/vcf/$1.variants.vcf : bam/$1.bam bam/$1.bai
 	$$(call LSCRIPT_CHECK_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
-	-I $$< --dbsnp $$(DBSNP1PC) -o $$@  -rf BadCigar \
+	-I $$< --dbsnp $$(DBSNP) -o $$@  -rf BadCigar \
 	-stand_call_conf $$(VARIANT_CALL_THRESHOLD) -stand_emit_conf $$(VARIANT_EMIT_THRESHOLD) -R $$(REF_FASTA)")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call hapcall-vcf,$(sample))))

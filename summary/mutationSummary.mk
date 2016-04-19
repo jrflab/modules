@@ -4,14 +4,14 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 LOGDIR = log/summary.$(NOW)
 
 
-ALLTABLES_HIGH_MODERATE_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.high_moderate.novel.txt
-ALLTABLES_LOW_MODIFIER_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.low_modifier.novel.txt
-ALLTABLES_SYNONYMOUS_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.synonymous.novel.txt
-ALLTABLES_NONSYNONYMOUS_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.nonsynonymous.novel.txt
-ALLTABLES_HIGH_MODERATE_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.high_moderate.novel.txt
-ALLTABLES_LOW_MODIFIER_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.low_modifier.novel.txt
-ALLTABLES_SYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.synonymous.novel.txt
-ALLTABLES_NONSYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.nonsynonymous.novel.txt
+ALLTABLES_HIGH_MODERATE_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.high_moderate.txt
+ALLTABLES_LOW_MODIFIER_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.low_modifier.txt
+ALLTABLES_SYNONYMOUS_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.synonymous.txt
+ALLTABLES_NONSYNONYMOUS_MUTECT = alltables/allTN.$(call SOMATIC_VCF_SUFFIXES,mutect).tab.nonsynonymous.txt
+ALLTABLES_HIGH_MODERATE_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.high_moderate.txt
+ALLTABLES_LOW_MODIFIER_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.low_modifier.txt
+ALLTABLES_SYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.synonymous.txt
+ALLTABLES_NONSYNONYMOUS_STRELKA_VARSCAN = alltables/allTN.strelka_varscan_indels.tab.nonsynonymous.txt
 
 # Add optional absolute results to excel
 # the $(wildcard x) syntax is used to check for existence of file

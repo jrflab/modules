@@ -19,6 +19,8 @@ FILTERS += $(if $(TARGETS_FILE),target_ft)
 # hrun filter
 FILTERS += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun hrun_ft))
+POSTANN_FILTERS += cft common
+
 
 # indel/snv annotations
 ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_ANNS),\
@@ -26,13 +28,14 @@ ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_ANNS),\
 
 FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call FILTERS,$1)))
 ANN_SUFFIX = pass.$(subst $( ),.,$(strip $(call ANNOTATIONS,$1)))
-SUFFIX = $(FILTER_SUFFIX).$(ANN_SUFFIX)
+POSTANN_SUFFIX = $(subst $( ),.,$(strip $(call POSTANN_FILTERS,$1))).pass2
+SUFFIX = $(FILTER_SUFFIX).$(ANN_SUFFIX).$(POSTANN_SUFFIX)
 
 EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
 VCF_SUFFIXES = $(foreach type,$1,$(call SUFFIX,$(type)))
 
-TABLE_EXTENSIONS = tab tab.novel $(foreach eff,$(EFF_TYPES),tab.$(eff) tab.$(eff).novel)
+TABLE_EXTENSIONS = tab $(foreach eff,$(EFF_TYPES),tab.$(eff))
 
 TABLE_SUFFIXES = $(foreach suff,$(call VCF_SUFFIXES,$1),\
 				 $(foreach ext,$(TABLE_EXTENSIONS),$(suff).$(ext)))
