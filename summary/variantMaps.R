@@ -8,7 +8,7 @@
 suppressMessages(pacman::p_load( dplyr,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx, # base
 				crayon,colorspace,RColorBrewer, # coloring
 				ggplot2,grid,gridExtra,gplots, # plot layout
-				dendextend,dendextendRcpp,dynamicTreeCut,gclus, # dentrogram
+				dendextend,dendextendRcpp,dynamicTreeCut,gclus,phangorn, # dentrogram
 				digest )) # hashing
 
 #--------
@@ -69,6 +69,48 @@ else if (is.null(opt$mutationSummary)) {
 
 # set graphics device
 options(device=pdf)
+#options(encoding='ISOLatin2.enc')
+#pdf.options(encoding='ISOLatin2.enc')
+
+
+#------
+# input
+#------
+
+# read samples file
+samples <-
+	read.delim("sample_sets.txt",sep=" ",stringsAsFactors=FALSE,header=FALSE) %>%
+	filter(!grepl("#",V1)) %>%
+	(function(sets){
+		tumor <-
+			apply(sets,1, function(row) row %>% list.filter (.!="") %>% head(-1)) %>% unlist
+		normal <-
+			apply(sets,1, function(row) row %>% list.filter (.!="") %>% tail(1)) %>%
+			rep(apply(sets,1,function(row) row %>% list.filter(.!="") %>% length-1))
+		data.frame(normal,tumor,stringsAsFactors=FALSE) %>%
+		tbl_df
+	})
+
+# read subsets file
+if('subsets.yaml' %>% file.exists){
+	subsets <- list.load('subsets.yaml')
+}
+
+# read keys file
+if('keys.yaml' %>% file.exists){
+	keys <- list.load('keys.yaml') %>% unlist
+	values <- names(keys) %>% setNames(keys)
+}
+
+# filter samples as those in subsets
+samples %<>% filter(tumor %in% unlist(subsets))
+
+#-------------------------
+# DISPLAY SUBSETS METADATA
+#-------------------------
+
+message(green("-samples")) ; print(samples %>% as.data.frame,row.names=FALSE,right=FALSE)
+message(green("-subsets")) ; print(subsets)
 
 
 #-------------
@@ -83,16 +125,17 @@ if(!exists('cn.out.file')){cn.out.file = 'summary/cn_heatmap.pdf'}
 if(!exists('cn.recurrent.out.file')){cn.out.file = 'summary/cn_heatmap_recurrent.pdf'}
 if(!exists('cn.amp.del.out')){cn.amp.del.out = 'summary/cn_amp_del.tsv'}
 
-include.silent = TRUE
+include.silent = FALSE
 dist.method    = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'     | see ?dist for details [hamming method implemented manually]
 clust.method   = 'complete' # 'complete', ward', 'single', 'complete', 'average', 'mcquitty', 'median', 'centroid' | see ?hclust for details
 exclude.values = c('', '.', 'Normal', 'Not Performed', 'Performed but Not Available', FALSE)
-tree.sort      = 'ladderize' #'distance'  # ladder
+tree.sort      = 'distance'  # ladder 'ladderize'
 tree.labels    = TRUE
 pheno          = NULL
 color.seed     = 3
 color.clusters = TRUE
 min.cluster    = 3
+random.pheno.color   = TRUE
 
 #----------
 # FUNCTIONS
@@ -132,24 +175,25 @@ hash <- function(x) {
 FormatMuts <- function(muts) {
 
 	# lookup table
-	name.key <- c( 'sample'='sample', 'Sample'='sample', 'Tumor_Sample_Barcode'='sample', 'TUMOR_SAMPLE'='sample',
-				   'gene'='gene', 'Gene'='gene', 'Hugo_Symbol'='gene', 'GENE'='gene', 'hgnc'='gene', 'ANN....GENE'='gene', 'ANN[*].GENE'='gene',
+	name.key <- c( 'sample'='sample', 'Sample'='sample', 'Tumor_Sample_Barcode'='sample', 'TUMOR_SAMPLE'='sample', 'Sample.ID'='sample',
+				   'gene'='gene', 'Gene'='gene', 'Hugo_Symbol'='gene', 'GENE'='gene', 'hgnc'='gene', 'ANN....GENE'='gene', 'ANN[*].GENE'='gene', 'Gene.symbol'='gene',
 				   'effect'='effect', 'Effect'='effect', 'Variant_Classification'='effect', 'ANN....EFFECT'='effect', 'ANN[*].EFFECT'='effect',
 				   'pheno'='pheno', 'pheno.bar'='pheno',
 				   'chrom'='chrom','Chrom'='chrom','Chromosome'='chrom','CHROM'='chrom',
 				   'start'='start', 'loc.start'='start', 'Start_position'='start',
 				   'end'='end', 'loc.end'='end', 'end'='stop',
-				   'POS'='pos', 'pos'='pos',
+				   'POS'='pos', 'pos'='pos', 'Position'='pos',
 				   'band'='band', 'Band'='band',
 				   'ccf'='ccf', 'CCF'='ccf', 'cancer_cell_frac'='ccf',
-				   'loh'='loh', 'LOH'='loh',
+				   'loh'='loh', 'LOH'='loh', 'Loss.of.heterozygocity.(LOH)'='loh',
 				   'Pr_somatic_clonal'='pr.somatic.clonal', 'pr.somatic.clonal'='pr.somatic.clonal',
 				   'ccf_CI95_low'='ci95.low', 'ci95.low'='ci95.low',
 				   'clonality'='clonality', 'Clonality'='clonality',
 				   'pathogenic'='pathogenic', 'Pathogenic'='pathogenic',
-				   'ref'='ref', 'REF'='ref',
-				   'alt'='alt', 'ALT'='alt',
-				   'purity'='purity'
+				   'ref'='ref', 'REF'='ref', 'Reference.allele'='ref',
+				   'alt'='alt', 'ALT'='alt', 'Alternate.allele'='alt',
+				   'purity'='purity',
+				   'cn'='cn','CN'='cn'
 				    )
 
 
@@ -189,6 +233,7 @@ FormatMuts <- function(muts) {
 	muts %<>% DummyCol('ref')
 	muts %<>% DummyCol('alt')
 	muts %<>% DummyCol('purity')
+	muts %<>% DummyCol('cn')
 
 	# dummy pheno string if absent
 	if(all(is.na(muts$pheno))){
@@ -197,7 +242,7 @@ FormatMuts <- function(muts) {
 	}
 
 	# select columns
-	muts <- muts[c('sample','gene','effect','ccf','loh','pheno','chrom','start','end','pos','band','pathogenic','clonality','ci95.low','pr.somatic.clonal', 'ref', 'alt','purity')]
+	muts <- muts[c('sample','gene','effect','ccf','loh','pheno','chrom','start','end','pos','band','pathogenic','clonality','ci95.low','pr.somatic.clonal', 'ref', 'alt','purity', 'cn')]
 
 	# column typing
 	muts %<>% mutate(sample=as.character(sample), gene=as.character(gene), effect=as.character(effect))
@@ -211,12 +256,12 @@ FormatMuts <- function(muts) {
 		unique %>%
 		mutate(effect=
 			ifelse(effect%in%c('STOP_GAINED','Nonsense_Mutation','stop_gained&splice_region_variant','stop_gained','Nonsense_Mutation','Stop_Codon_Ins','nonsense','truncating snv','Truncating snv','Truncating snv','Truncating SNV'),'Truncating SNV',
-			ifelse(effect%in%c('FRAME_SHIFT','FRAME_SHIFT','Frame_Shift_Del','Frame_Shift_Ins','frameshift_variant','frameshift_variant&stop_gained','frameshift_variant&splice_region_variant','frameshift_variant&splice_acceptor_variant&splice_region_variant&splice_region_variant&intron_variant','Frame_Shift_Del','Frame_Shift_Ins','frame_shift_del','frame_shift_ins','frameshift indel','Frameshift indel','Frameshift In-Del'),'Frameshift In-Del',
+			ifelse(effect%in%c('FRAME_SHIFT','FRAME_SHIFT','Frame_Shift_Del','Frame_Shift_Ins','frameshift_variant','frameshift_variant&stop_gained','frameshift_variant&splice_region_variant','frameshift_variant&splice_acceptor_variant&splice_region_variant&splice_region_variant&intron_variant','Frame_Shift_Del','Frame_Shift_Ins','frame_shift_del','frame_shift_ins','frameshift indel','Frameshift indel','Frameshift In-Del','frameshift_variant'),'Frameshift In-Del',
 			ifelse(effect%in%c('NON_SYNONYMOUS_CODING','STOP_LOST','Missense_Mutation','missense_variant','missense_variant&splice_region_variant','missense_variant|missense_variant','Missense_Mutation','missense','missense snv','Missense snv','Missense SNV'),'Missense SNV',
 			ifelse(effect%in%c('CODON_CHANGE_PLUS_CODON_DELETION','CODON_DELETION','CODON_INSERTION','In_Frame_Ins','In_Frame_Del','disruptive_inframe_deletion','disruptive_inframe_insertion','inframe_deletion','inframe_insertion','disruptive_inframe_deletion&splice_region_variant','inframe_deletion&splice_region_variant','In_Frame_Del','In_Frame_Ins','in_frame_del','in_frame_ins','inframe indel','Inframe indel','Inframe In-Del'),'Inframe In-Del',
-			ifelse(effect%in%c('SPLICE_SITE_DONOR','SPLICE_SITE_ACCEPTOR','SPLICE_SITE_REGION','Splice_Site','splice_donor_variant&intron_variant','splice_acceptor_variant&intron_variant','splicing','splice_donor_variant&splice_region_variant&intron_variant','splice_donor_variant&disruptive_inframe_deletion&splice_region_variant&splice_region_variant&intron_variant','Splice_Site','splice','splice site variant','Splice site variant'),'Splice site variant',
+			ifelse(effect%in%c('SPLICE_SITE_DONOR','SPLICE_SITE_ACCEPTOR','SPLICE_SITE_REGION','Splice_Site','splice_donor_variant&intron_variant','splice_acceptor_variant&intron_variant','splicing','splice_donor_variant&splice_region_variant&intron_variant','splice_donor_variant&disruptive_inframe_deletion&splice_region_variant&splice_region_variant&intron_variant','Splice_Site','splice','splice site variant','Splice site variant','missense_variant & splice_region_variant'),'Splice site variant',
 			ifelse(effect%in%c('STOP_LOST','START_LOST','START_GAINED','UTR_5_PRIME','start_lost','stop_lost',"5'UTR","5'Flank",'De_novo_Start_InFrame','De_novo_Start_OutOfFrame','Stop_Codon_Del','Start_Codon_SNP','Start_Codon_Ins','Start_Codon_Del','Nonstop_Mutation','nonstop','upstream, start/stop, or de novo modification','Upstream, start/stop, or de novo modification'),'Upstream, start/stop, or de novo modification',
-			ifelse(effect%in%c('synonymous_variant','splice_region_variant&synonymous_variant','non_coding_exon_variant','upstream_gene_variant','downstream_gene_variant','intron_variant','frameshift_variant&splice_donor_variant&splice_region_variant&splice_region_variant&intron_variant','non_coding_exon_variant|synonymous_variant','SYNONYMOUS_CODING','synonymous_variant|synonymous_variant','splice_region_variant&synonymous_variant|splice_region_variant&non_coding_exon_variant','intragenic_variant',"3'UTR",'IGR','lincRNA','RNA','Intron','silent','intron_exon','silent','Silent'),'Silent',
+			ifelse(effect%in%c('synonymous_variant','splice_region_variant&synonymous_variant','non_coding_exon_variant','upstream_gene_variant','downstream_gene_variant','intron_variant','frameshift_variant&splice_donor_variant&splice_region_variant&splice_region_variant&intron_variant','non_coding_exon_variant|synonymous_variant','SYNONYMOUS_CODING','synonymous_variant|synonymous_variant','splice_region_variant&synonymous_variant|splice_region_variant&non_coding_exon_variant','splice_acceptor_variant & intron_variant','intragenic_variant',"3'UTR",'IGR','lincRNA','RNA','Intron','silent','intron_exon','silent','Silent','intron_variant & missense_variant'),'Silent',
 			ifelse(effect%in%c('Amplification','amplification','amp','2'),'Amplification',
 			ifelse(effect%in%c('Deletion','deletion','del','-2'),'Deletion',
 			ifelse(is.na(effect),NA,
@@ -257,76 +302,96 @@ OrgMuts <- function(muts, dend, recurrent) {
 	muts %<>% DummyCol('ccf')
 	muts %<>% DummyCol('cn')
 
-	muts %<>% select(sample,chrom,start,gene,band,ccf,cn,pheno,effect,loh,clonality)
+	muts %<>%
+		select(sample,chrom,start,gene,band,ccf,cn,pheno,effect,loh,clonality) %>%
+		unique %>%
+		filter(!is.na(effect)) %>%
+		# variant importance for plot overlay
+		mutate(precedence=
+			ifelse(effect=='Deletion',1,
+			ifelse(effect=='Amplification',2,
+			ifelse(effect=='Truncating SNV',3,
+			ifelse(effect=='Frameshift In-Del',4,
+			ifelse(effect=='Missense SNV',5,
+			ifelse(effect=='Inframe In-Del',6,
+			ifelse(effect=='Splice site variant',7,
+			ifelse(effect=='Upstreop, or de novo modification',8,
+			ifelse(effect=='Silent',9,
+			NA)))))))))) %>%
+		# remove genes with lower prescedence
+		group_by(sample,gene) %>%
+		arrange(gene,precedence) %>%
+		slice(rank(precedence, ties.method="first")==1) %>%
+		# number of variants per gene
+		unique %>%
+		group_by(gene) %>%
+		mutate(n.gene=n()) %>%
+		ungroup %>%
+		{ muts <- .
+			if(recurrent==TRUE) {muts %<>% filter(n.gene>1)}
+			muts
+		} %>%
+		# number of variants per band
+		unique %>%
+		group_by(band) %>%
+		mutate(n.band=n()) %>%
+		ungroup %>%
+		# define plot gene order
+		arrange(desc(n.gene),sample,desc(ccf),precedence,gene) %>%
+		mutate(order=row_number()) %>%
+		ungroup %>%
+		select(-precedence) %>%
+		unique
+
+	# fill empty tiles
+	if(cn!=TRUE) {
+		muts.fill <-
+			muts %>%
+			select(sample,gene,effect,pheno) %>%
+			group_by(pheno) %>%
+			spread(gene,effect) %>%
+			gather(gene,effect,-pheno,-sample) %>%
+			filter(is.na(effect)) %>%
+			ungroup
+	} else {
+		muts.fill <-
+			muts %>%
+			select(sample,gene,band,pheno) %>%
+			group_by(pheno) %>%
+			spread(gene,band) %>%
+			gather(gene,band,-pheno,-sample) %>%
+			filter(is.na(band)) %>%
+			ungroup
+	}
 
 	muts %>%
-	unique %>%
-	filter(!is.na(effect)) %>%
-	# variant importance for plot overlay
-	mutate(precedence=
-		ifelse(effect=='Deletion',1,
-		ifelse(effect=='Amplification',2,
-		ifelse(effect=='Truncating SNV',3,
-		ifelse(effect=='Frameshift In-Del',4,
-		ifelse(effect=='Missense SNV',5,
-		ifelse(effect=='Inframe In-Del',6,
-		ifelse(effect=='Splice site variant',7,
-		ifelse(effect=='Upstreop, or de novo modification',8,
-		ifelse(effect=='Silent',9,
-		NA)))))))))) %>%
-	# remove genes with lower prescedence
-	group_by(sample,gene) %>%
-	arrange(gene,precedence) %>%
-	slice(rank(precedence, ties.method="first")==1) %>%
-	# number of variants per gene
-	unique %>%
-	group_by(gene) %>%
-	mutate(n.gene=n()) %>%
-	ungroup %>%
-	{ muts <- .
-		if(recurrent==TRUE) {muts %<>% filter(n.gene>1)}
-		muts
-	} %>%
-	# number of variants per band
-	unique %>%
-	group_by(band) %>%
-	mutate(n.band=n()) %>%
-	ungroup %>%
-	# define plot gene order
-	arrange(desc(n.gene),sample,desc(ccf),precedence,gene) %>%
-	mutate(order=row_number()) %>%
-	ungroup %>%
-	unique %>%
-	# fill empty tiles
-	group_by(pheno) %>%
-	spread(gene,effect) %>%
-	gather(gene,effect,-matches(paste(c('^order',names(muts),'n.gene','precedence','n.band$'),collapse='$|^'))) %>%
-	#filter(!is.na(effect)) %>%
-	ungroup %>%
-	select(-precedence) %>%
-	mutate(order=ifelse(is.na(effect),-Inf,order)) %>%
-	unique %>%
-	# fix plot ordering
-	arrange(!is.na(effect),desc(order)) %>%
-	mutate(gene=factor(gene,levels=filter(.,!is.na(effect)) %>% .$gene %>% unique)) %>%
-	mutate(chrom.num=as.numeric(ifelse(chrom=='X'|chrom=='Y',23,chrom))) %>%
-	arrange(!is.na(effect),!is.na(band),n.band, sample, desc(chrom), desc(start)) %>%
-	rowwise %>%
-	mutate(band=str_c('chr',chrom,': ',band)) %>%
-	ungroup %>%
-	mutate(band=factor(band, levels=filter(.,!is.na(effect)) %>% .$band %>% unique)) %>%
-	select(-order) %>%
-	mutate(sample=factor(sample,levels=labels(dend))) %>%
-	mutate(ccf=
-		ifelse(ccf==0,               'CCF = 0%',
-		ifelse(ccf>0.00 & ccf<=0.05, '0% < CCF ≤ 5%',
-		ifelse(ccf>0.05 & ccf<=0.20, '5% < CCF ≤ 20%',
-		ifelse(ccf>0.20 & ccf<=0.40, '20% < CCF ≤ 40%',
-		ifelse(ccf>0.40 & ccf<=0.06, '40% < CCF ≤ 60%',
-		ifelse(ccf>0.60 & ccf<=0.08, '60% < CCF ≤ 80%',
-		ifelse(ccf>0.80,             '80% < CCF ≤ 100%',
-		NA)))))))) %>%
-	mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF ≤ 5%','5% < CCF ≤ 20%','20% < CCF ≤ 40%','40% < CCF ≤ 60%','60% < CCF ≤ 80%','80% < CCF ≤ 100%')))
+		full_join(muts.fill) %>%
+		#gather(gene,effect,-matches(paste(c('^order',names(muts),'n.gene','precedence','n.band$'),collapse='$|^'))) %>%
+		#ungroup %>%
+		mutate(order=ifelse(is.na(effect),-Inf,order)) %>%
+		unique %>%
+		# fix plot ordering
+		arrange(!is.na(effect),desc(order)) %>%
+		mutate(gene=factor(gene,levels=filter(.,!is.na(effect)) %>% .$gene %>% unique)) %>%
+		mutate(ccf=
+			ifelse(ccf==0,               'CCF = 0%',
+			ifelse(ccf>0.00 & ccf<=0.05, '0% < CCF ≤ 5%',
+			ifelse(ccf>0.05 & ccf<=0.20, '5% < CCF ≤ 20%',
+			ifelse(ccf>0.20 & ccf<=0.40, '20% < CCF ≤ 40%',
+			ifelse(ccf>0.40 & ccf<=0.06, '40% < CCF ≤ 60%',
+			ifelse(ccf>0.60 & ccf<=0.08, '60% < CCF ≤ 80%',
+			ifelse(ccf>0.80,             '80% < CCF ≤ 100%',
+			NA)))))))) %>%
+		mutate(ccf=ifelse(is.na(effect),NA,ccf)) %>%
+		mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF ≤ 5%','5% < CCF ≤ 20%','20% < CCF ≤ 40%','40% < CCF ≤ 60%','60% < CCF ≤ 80%','80% < CCF ≤ 100%'))) %>%
+		mutate(chrom.num=as.numeric(ifelse(chrom=='X'|chrom=='Y',23,chrom))) %>%
+		arrange(!is.na(effect),!is.na(band),n.band, sample, desc(chrom), desc(start)) %>%
+		rowwise %>%
+		mutate(band=str_c('chr',chrom,': ',band)) %>%
+		ungroup %>%
+		mutate(band=factor(band, levels=filter(.,!is.na(effect)) %>% .$band %>% unique)) %>%
+		select(-order) %>%
+		mutate(sample=factor(sample,levels=labels(dend)))
 }
 
 
@@ -347,12 +412,12 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 		'Amplification'='#333399',
 		'Deletion'='#e60000',
 		'CCF = 0%'='#e5e5e5',
-		'0% < CCF ≤ 5%'='#c7dbee',
-		'5% < CCF ≤ 20%'='#a0cae0',
-		'20% < CCF ≤ 40%'='#6eaed4',
-		'40% < CCF ≤ 60%'='#2772b3',
-		'60% < CCF ≤ 80%'='#10539a',
-		'80% < CCF ≤ 100%'='#0b3269')
+		`0% < CCF ≤ 5%`='#c7dbee',
+		`5% < CCF ≤ 20%`='#a0cae0',
+		`20% < CCF ≤ 40%`='#6eaed4',
+		`40% < CCF ≤ 60%`='#2772b3',
+		`60% < CCF ≤ 80%`='#10539a',
+		`80% < CCF ≤ 100%`='#0b3269')
 
 
 	geometry <- c(`LOH`=3)
@@ -398,8 +463,8 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 			panel.grid.major	= element_blank(),
 			panel.grid.minor	= element_blank(),
 			text				= element_text(size=18),
-			axis.title.x		= element_blank(), #element_text(vjust=7),
-			axis.title.y		= element_blank(), #element_text(vjust=1),
+			axis.title.x		= element_blank(),
+			axis.title.y		= element_blank(),
 			axis.text.x			= element_text(angle=90, vjust=0.5, hjust=1),
 			axis.text.y			= element_text(face='italic', hjust=1),
 			axis.text			= element_text(size=text.size),
@@ -407,7 +472,6 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 			axis.ticks.y		= element_blank(),
 			legend.key			= element_rect(colour='black', fill=NULL, size=1),
 			legend.key.size		= unit(1.8, 'lines'),
-			#legend.background	= element_rect(colour='black', fill=NULL, size=1),
 			legend.text			= element_text(size=text.size),
 			strip.background	= element_rect(fill='white'),
 			strip.text.x		= element_text(colour='white', size=text.size*1.2),
@@ -460,14 +524,22 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 
 # random color selection
 set.seed(color.seed)
-color.palette <- grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)]
-# color.palette <- colorRampPalette(c('#2d4be0', '#20e6ae', '#ccb625', '#969696'))(100)  # static palette
-color.palette %<>% sample(.,length(.))
-
-if(length(grep('xlsx',muts.file))){
-	muts <- read.xlsx(muts.file, 'MUTATION_SUMMARY') %>% tbl_df
+if(random.pheno.color==TRUE){
+	color.palette <- grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)]
+	color.palette %<>% sample(.,length(.))
 } else {
-	read.delim(muts.file, sep='\t', stringsAsFactors=FALSE) %>% tbl_df
+	color.palette <- colorRampPalette(c('#2d4be0', '#20e6ae', '#ccb625', '#969696'))(length(subsets))  # static palette
+}
+
+
+# read mutations file
+if(length(grep('xlsx',muts.file))){
+	muts <- tryCatch({
+		read.xlsx(muts.file, 'MUTATION_SUMMARY') %>% tbl_df},
+		error=function(e){read.xlsx(muts.file) %>% tbl_df
+	})
+} else {
+	muts <- read.delim(muts.file, sep='\t', stringsAsFactors=FALSE) %>% tbl_df
 }
 
 
@@ -481,10 +553,17 @@ if(include.silent!=TRUE){
 }
 
 
+pheno.tables <- map2(subsets ,names(subsets), ~ { data_frame(.x) %>% mutate(key=keys[.x]) %>% setNames(c(.y, 'sample')) })
+for(table in 1:length(pheno.tables)){
+	muts <<- left_join(muts, pheno.tables[[table]], by='sample', copy=TRUE)
+}
+
+
+
 # recode table values as colors
 event.recode <-
 	muts %>%
-	select(-sample, -gene, -effect, -ccf, -loh, -chrom, -pos, -start, -end, -band, -pathogenic, -clonality, -ci95.low, -pr.somatic.clonal, -ref, -alt, -purity) %>%
+	select(-sample, -gene, -effect, -ccf, -loh, -chrom, -pos, -start, -end, -band, -pathogenic, -clonality, -ci95.low, -pr.somatic.clonal, -ref, -alt, -purity, -cn) %>%
 	rename(pheno.color=pheno) %>%
 	mutate(pheno.color=ifelse(all(is.na(pheno.color)), 'Mutations', pheno.color)) %>%
 	mutate_each(funs(as.character)) %>%
@@ -646,8 +725,6 @@ cncf.loh <-
 # COMBINE MUTS, CCF, LOH
 #-----------------------
 
-# muts0
-
 muts <-
 	muts %>%
 	select(-ccf,-loh,-clonality, -purity) %>%
@@ -655,6 +732,7 @@ muts <-
 	mutate(id=row_number()) %>%
 	group_by(id) %>%
 	full_join(cncf.loh, by=c('sample','chrom')) %>%
+	select(loc.start,loc.end,pos,everything()) %>%
 	mutate(in.seg=(loc.start<=pos & pos<=loc.end)) %>%
 	filter(in.seg==TRUE | sum(in.seg)==0) %>%
 	slice(which.min(abs(pos-loc.mid))) %>%
@@ -662,7 +740,6 @@ muts <-
 	mutate(loh=ifelse(in.seg==FALSE,NA,loh)) %>%
 	select(-in.seg)
 
-# muts1
 
 #--------------------------
 # BUILD VARIANT & CCF PLOTS
@@ -796,9 +873,6 @@ rownames(muts) = 1:nrow(muts)
 TCGA=FALSE
 
 
-
-
-library(phangorn)
 
 
 # Make a matrix of "blank" values the with nrow= #mutations and ncol=#samples
