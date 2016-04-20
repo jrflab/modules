@@ -77,20 +77,6 @@ options(device=pdf)
 # input
 #------
 
-# read samples file
-samples <-
-	read.delim("sample_sets.txt",sep=" ",stringsAsFactors=FALSE,header=FALSE) %>%
-	filter(!grepl("#",V1)) %>%
-	(function(sets){
-		tumor <-
-			apply(sets,1, function(row) row %>% list.filter (.!="") %>% head(-1)) %>% unlist
-		normal <-
-			apply(sets,1, function(row) row %>% list.filter (.!="") %>% tail(1)) %>%
-			rep(apply(sets,1,function(row) row %>% list.filter(.!="") %>% length-1))
-		data.frame(normal,tumor,stringsAsFactors=FALSE) %>%
-		tbl_df
-	})
-
 # read subsets file
 if('subsets.yaml' %>% file.exists){
 	subsets <- list.load('subsets.yaml')
@@ -102,16 +88,10 @@ if('keys.yaml' %>% file.exists){
 	values <- names(keys) %>% setNames(keys)
 }
 
-# filter samples as those in subsets
-samples %<>% filter(tumor %in% unlist(subsets))
-
-#-------------------------
-# DISPLAY SUBSETS METADATA
-#-------------------------
-
-message(green("-samples")) ; print(samples %>% as.data.frame,row.names=FALSE,right=FALSE)
-message(green("-subsets")) ; print(subsets)
-
+# read subset_groups.yaml file
+if('subset_groups.yaml' %>% file.exists){
+	subset.groups <- list.load('subset_groups.yaml')
+}
 
 #-------------
 # INPUT PARAMS
@@ -180,8 +160,8 @@ FormatMuts <- function(muts) {
 				   'effect'='effect', 'Effect'='effect', 'Variant_Classification'='effect', 'ANN....EFFECT'='effect', 'ANN[*].EFFECT'='effect',
 				   'pheno'='pheno', 'pheno.bar'='pheno',
 				   'chrom'='chrom','Chrom'='chrom','Chromosome'='chrom','CHROM'='chrom',
-				   'start'='start', 'loc.start'='start', 'Start_position'='start',
-				   'end'='end', 'loc.end'='end', 'end'='stop',
+				   'start'='start', 'Start_position'='start',
+				   'end'='end', 'end'='stop',
 				   'POS'='pos', 'pos'='pos', 'Position'='pos',
 				   'band'='band', 'Band'='band',
 				   'ccf'='ccf', 'CCF'='ccf', 'cancer_cell_frac'='ccf',
@@ -378,8 +358,8 @@ OrgMuts <- function(muts, dend, recurrent) {
 			ifelse(ccf>0.00 & ccf<=0.05, '0% < CCF ≤ 5%',
 			ifelse(ccf>0.05 & ccf<=0.20, '5% < CCF ≤ 20%',
 			ifelse(ccf>0.20 & ccf<=0.40, '20% < CCF ≤ 40%',
-			ifelse(ccf>0.40 & ccf<=0.06, '40% < CCF ≤ 60%',
-			ifelse(ccf>0.60 & ccf<=0.08, '60% < CCF ≤ 80%',
+			ifelse(ccf>0.40 & ccf<=0.60, '40% < CCF ≤ 60%',
+			ifelse(ccf>0.60 & ccf<=0.80, '60% < CCF ≤ 80%',
 			ifelse(ccf>0.80,             '80% < CCF ≤ 100%',
 			NA)))))))) %>%
 		mutate(ccf=ifelse(is.na(effect),NA,ccf)) %>%
@@ -418,7 +398,6 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 		`40% < CCF ≤ 60%`='#2772b3',
 		`60% < CCF ≤ 80%`='#10539a',
 		`80% < CCF ≤ 100%`='#0b3269')
-
 
 	geometry <- c(`LOH`=3)
 
@@ -518,9 +497,11 @@ PlotVariants <- function(muts, output.file, event.recode=NULL, ccf=FALSE, loh=TR
 }
 
 
-#----------------
-# data processing
-#----------------
+#-----------------#
+#-----------------#
+# DATA PROCESSING #
+#-----------------#
+#-----------------#
 
 # random color selection
 set.seed(color.seed)
@@ -552,17 +533,16 @@ if(include.silent!=TRUE){
 	muts %<>% filter(effect!='silent')
 }
 
-
-pheno.tables <- map2(subsets ,names(subsets), ~ { data_frame(.x) %>% mutate(key=keys[.x]) %>% setNames(c(.y, 'sample')) })
+# build pheno bar lookup tables
+event.recode <- muts
+pheno.tables <- map2(subsets ,names(subsets), ~ { data_frame(.x) %>% mutate(key=keys[.x]) %>% setNames(c(.y, 'sample')) %>% mutate(pheno=.y) })
 for(table in 1:length(pheno.tables)){
-	muts <<- left_join(muts, pheno.tables[[table]], by='sample', copy=TRUE)
+	event.recode <<- left_join(event.recode, pheno.tables[[table]] %>% select(-pheno), by='sample', copy=TRUE)
 }
 
 
-
 # recode table values as colors
-event.recode <-
-	muts %>%
+event.recode %<>%
 	select(-sample, -gene, -effect, -ccf, -loh, -chrom, -pos, -start, -end, -band, -pathogenic, -clonality, -ci95.low, -pr.somatic.clonal, -ref, -alt, -purity, -cn) %>%
 	rename(pheno.color=pheno) %>%
 	mutate(pheno.color=ifelse(all(is.na(pheno.color)), 'Mutations', pheno.color)) %>%
@@ -667,7 +647,7 @@ cna.event.recode <-
 # ABSOLUTE CCF CALLS
 #-------------------
 
-abs.ccf <-
+abs.maf <-
 	list.files('absolute/reviewed/SEG_MAF', pattern='_ABS_MAF.txt', full.names=TRUE) %>%
 	map(~ { read.delim(.x, sep='\t',stringsAsFactors=FALSE) %>% tbl_df }) %>%
 	bind_rows %>%
@@ -677,6 +657,13 @@ abs.ccf <-
 	mutate(clonality=ifelse(pr.somatic.clonal>=0.5 | ci95.low >=0.9, 'Clonal', 'Subclonal')) %>%
 	select(sample,gene,pos,ccf,clonality,purity)
 
+abs.pos <-
+	list.files('absolute/tables', pattern='.somatic.txt', full.names=TRUE) %>%
+	map(~ { read.delim(.x, sep='\t',stringsAsFactors=FALSE) %>% tbl_df %>% select(sample=Sample, gene=Gene, pos=Position, alt=Alt, type=Type)}) %>%
+	bind_rows %>%
+	separate(sample, into=c('sample','normal'), sep='_')
+
+abs.ccf <- left_join(abs.maf, abs.pos)
 
 #----------
 # LOH CALLS
@@ -714,25 +701,30 @@ cncf.loh <-
 			mutate(loh=ifelse(is.na(loh), adj.loh, loh)) %>%
 			mutate(loh=ifelse(cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
 			mutate(loh=ifelse(loh=='.',NA,loh)) %>%
-			select(sample,chrom,loc.start,loc.mid,loc.end,loh,lcn.em,lcn,tcn.em,tcn,mafR,cnlr.median,cnlr.median.clust,cf,seg,num.mark)
+			select(sample,chrom,loc.start,loc.mid,loc.end,loh,lcn.em,lcn,tcn.em,tcn,mafR,cnlr.median,cnlr.median.clust,cf,seg,num.mark,cf)
 		return(cncf)
 	}) %>%
 	bind_rows %>%
-	select(sample, chrom, loc.start, loc.mid, loc.end, loh)
+	select(sample, chrom, loc.start, loc.mid, loc.end, loh, cf)
 
 
 #-----------------------
 # COMBINE MUTS, CCF, LOH
 #-----------------------
 
+
+muts %<>% mutate(sample=values[sample]) %>%
+	filter(!is.na(sample))
+
+muts0 <- muts
+
 muts <-
 	muts %>%
 	select(-ccf,-loh,-clonality, -purity) %>%
-	left_join(abs.ccf, by=c('sample','gene','pos')) %>%
+	left_join(abs.ccf, by=c('sample','gene','pos','alt')) %>%
 	mutate(id=row_number()) %>%
 	group_by(id) %>%
 	full_join(cncf.loh, by=c('sample','chrom')) %>%
-	select(loc.start,loc.end,pos,everything()) %>%
 	mutate(in.seg=(loc.start<=pos & pos<=loc.end)) %>%
 	filter(in.seg==TRUE | sum(in.seg)==0) %>%
 	slice(which.min(abs(pos-loc.mid))) %>%
@@ -740,11 +732,16 @@ muts <-
 	mutate(loh=ifelse(in.seg==FALSE,NA,loh)) %>%
 	select(-in.seg)
 
+muts %<>% mutate(ccf=ifelse(is.na(ccf),cf,ccf))
+
+muts %<>% mutate(sample=keys[sample])
+
 
 #--------------------------
 # BUILD VARIANT & CCF PLOTS
 #--------------------------
 
+# variant plots
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Variants by type',pheno)) %>%
@@ -755,6 +752,7 @@ OrgMuts(dend, recurrent=TRUE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Recurrent variants by type',pheno)) %>%
 PlotVariants('summary/mutation_heatmap_variant_recurrent.pdf', event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
 
+# ccf plots
 muts %>%
 OrgMuts(dend, recurrent=FALSE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Variant CCF',pheno)) %>%
@@ -764,6 +762,50 @@ muts %>%
 OrgMuts(dend, recurrent=TRUE) %>%
 mutate(pheno=ifelse(all(is.na(pheno)),'Recurrent variant CCF',pheno)) %>%
 PlotVariants('summary/mutation_heatmap_ccf_recurrent.pdf', event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+
+
+# subset comparison plots
+system("mkdir summary/subsets &>/dev/null")
+
+pheno.tables.strip <- pheno.tables %>% map(~ { .x %>% setNames(c('sample.id','sample','pheno')) })
+
+map2(subset.groups, names(subset.groups), ~ {
+
+	muts <- 
+		pheno.tables.strip[x] %>%
+		bind_rows %>%
+		left_join(muts %>% select(-pheno), .)
+
+	subgroup.ext <- gsub(' ', '_', .y)
+
+	# variant plots
+	muts %>%
+	OrgMuts(dend, recurrent=FALSE) %>%
+	PlotVariants(str_c('summary/subsets/mutation_heatmap_variant.',subgroup.ext,'.pdf'), event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+
+	muts %>%
+	OrgMuts(dend, recurrent=TRUE) %>%
+	PlotVariants(str_c('summary/subsets/mutation_heatmap_variant_recurrent.',subgroup.ext,'.pdf'), event.recode, ccf=FALSE, loh=FALSE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+
+	# ccf plots
+	muts %>%
+	OrgMuts(dend, recurrent=FALSE) %>%
+	PlotVariants(str_c('summary/subsets/mutation_heatmap_ccf.',subgroup.ext,'.pdf'), event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+
+	muts %>%
+	OrgMuts(dend, recurrent=TRUE) %>%
+	PlotVariants(str_c('summary/subsets/mutation_heatmap_ccf_recurrent.',subgroup.ext,'.pdf'), event.recode, ccf=TRUE, loh=TRUE, cn=FALSE, width=length(unique(.$sample))+10, height=(length(unique(.$gene))/3)+10, text.size=20)
+})
+
+# subsets plot dir
+combn.subsets <-
+	expand.grid(a=names(subsets), b=names(subsets), stringsAsFactors=0) %>%
+	rowwise %>%
+	filter(intersect(unlist(subsets[a]), unlist(subsets[b])) %>% length == 0)
+
+
+
+
 
 
 #-----------
@@ -804,28 +846,30 @@ if(tree.labels == FALSE){
 }
 
 
-# 
-pdf('summary/tree_ladder.pdf',140,38)
-	par(mar = c(65,40,10,20))   # bottom, left, top, right
+#----------------
+# TREE GENERATION
+#----------------
+
+# distance tree
+pdf('summary/genomic_distance_tree_ladder.pdf',140,38)
+	par(mar = c(10,10,10,10))  # bottom, left, top, right
 	layout(matrix(c(1,2),nrow=1), widths=c(10,1))
 	plot(dend, cex.axis=6)
-	colored_bars( colors = pheno,
+	colored_bars( colors = event.recode %>% select(-sample, -gene, -exists, -pheno),
 				  dend = dend,
 				  sort_by_labels_order = FALSE,
 				  add = TRUE,
-				  rowLabels = pheno,
+				  rowLabels = event.recode$sample,
 				  y_scale = 10,
 				  cex.rowLabels = 5.8 )
-	legend.num = 0
-	event.recode %>% select(-sample, -gene, -exists) %>% map(~ {
-		legend.num <<- legend.num + 1
-		print(legend.num)
-		legend(x=3, y=legend.num*5.5, legend=unique(names(.x)), fill=unique(.x), cex=4)
-	})
+	event.recode %>%
+	select(-sample, -gene, -exists) %>%
+	map(~ accumulate(., ~ legend(x=3, y=3, legend=unique(names(.x)), fill=unique(.x), cex=4) ))
+
 dev.off()
 
-
-pdf('summary/tree_charlotte_test.pdf',60,25)
+# weighted tree (charlotte's)
+pdf('summary/genomic_distance_tree_weighted.pdf',60,25)
 	heatmap.2(
 		event.matrix,
 		trace='none',
@@ -839,7 +883,7 @@ pdf('summary/tree_charlotte_test.pdf',60,25)
 dev.off()
 
 
-pdf('summary/heat.all.test2.pdf',60,25)
+pdf('summary/genomic_distance_tree_bw.pdf',60,25)
 	heatmap.2(
 		t(event.matrix),
 		trace='none',
@@ -851,9 +895,9 @@ pdf('summary/heat.all.test2.pdf',60,25)
 dev.off()
 
 
-#----------------
-# TREE GENERATION
-#----------------
+#-----------------------
+# LINEAGE MAP GENERATION
+#-----------------------
 
 plot_file          = 'summary/tree.pdf'
 #colnames(muts)[1]  = 'Sample.ID'
@@ -873,8 +917,6 @@ rownames(muts) = 1:nrow(muts)
 TCGA=FALSE
 
 
-
-
 # Make a matrix of "blank" values the with nrow= #mutations and ncol=#samples
 mutation_heatmap <- matrix(0, nrow=sum(unlist(lapply(sample_names, length))), ncol=sum(unlist(lapply(mutation_genes, length))))
 rownames(mutation_heatmap) <- unlist(sample_names)
@@ -890,7 +932,7 @@ if (!TCGA) { smallmaf <- muts[which(muts$Gene %in% unlist(mutation_genes) & muts
 		smallmaf <- muts[which(muts$Hugo_Symbol %in% unlist(mutation_genes) & muts$id %in% unlist(sample_names)),]
 }
 
-# For each row read the Effect and create the type based on which category it fits in
+# for each row read the Effect and create the type based on which category it fits in
 for (i in 1:nrow(smallmaf)) {
 		if(!TCGA) { type = smallmaf$CCF[i] } else { type = smallmaf$Variant_Classification[i] }
 		print(paste(i,type,sep="_"))
@@ -915,10 +957,10 @@ dm <- dist.hagene.cning(pd)
 tree <- njs(dm)
 treeRatchet <- pratchet(pd, start=tree)
 treeRatchet <- acctran(treeRatchet, pd)
-rt <- root(treeRatchet, "Parental")
+lineage.map <- root(treeRatchet, "Parental")
 
-pdf("summary/phylo.pdf")
-	plot(rt)
+pdf("summary/lineage_map.pdf")
+	plot(lineage.map)
 dev.off()
 
 
