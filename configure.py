@@ -6,15 +6,15 @@ import argparse
 parser = argparse.ArgumentParser(prog='configure',
                                  description='Convert project YAML file to Make')
 parser.add_argument('--project_config_file', type=file, help='project yaml config file',
-                    default='config.yaml')
+                    default='project_config.yaml')
 parser.add_argument('--config_file', type=file, help='modules yaml config file',
                     default='modules/config.yaml')
 parser.add_argument('--samples_file', type=file, help='yaml samples file', default='samples.yaml')
 parser.add_argument('--sample_fastq_file', help='yaml sample fastq file mappings', type=file,
                     default='sample.fastq.yaml')
 parser.add_argument('--sample_merge_file', help='yaml sample merge mappings', type=file)
-parser.add_argument('--outFile', help='yaml output file', type=argparse.FileType('w', 0), nargs='?',
-                    default='config.inc')
+parser.add_argument('--outFile', help='project make include file', type=argparse.FileType('w', 0), nargs='?',
+                    default='project_config.inc')
 args = parser.parse_args()
 
 
@@ -84,7 +84,7 @@ for k, v in tumor_normal.iteritems():
     print("set.{}_{} = {} {}".format(k, v, " ".join(normal_tumors[v]), v), file=of)
 
 if args.sample_fastq_file is not None:
-    print("\n# sample_fastq_file: {}".format(args.sample_fastq_file.name), file=of)
+    print("\n# sample_fastq_file", file=of)
     sample_fastq = yaml.load(args.sample_fastq_file)
     split_samples = set()
     for k, v in sample_fastq.iteritems():
@@ -101,13 +101,13 @@ if args.sample_fastq_file is not None:
     print("SPLIT_SAMPLES = {}".format(" ".join(split_samples)), file=of)
 
 if args.sample_merge_file is not None:
-    print("\n# sample_merge_file: {}".format(args.sample_merge_file.name), file=of)
+    print("\n# sample_merge_file", file=of)
     sample_merge = yaml.load(args.sample_merge_file)
     print("MERGE_SAMPLES = {}".format(" ".join(sample_merge.keys())), file=of)
     for k, v in sample_merge.iteritems():
         print("merge.{} = {}".format(k, " ".join(v)), file=of)
 
-print("\n# defaults: " + args.config_file.name, file=of)
+print("\n# defaults", file=of)
 config = yaml.load(args.config_file)
 for k, v in config.iteritems():
     print("{} ?= {}".format(k.upper(), lowerBool(v)), file=of)

@@ -28,3 +28,5 @@ script:
   - bash -x test/copy_number/test_copynumber_heatmap.sh
   - source activate jrflab
   - bash -x test/vcf_tools/test_common_filter.sh
+  - bash -x test/scripts/test_create_sample_yaml.sh
+  - bash -x test/scripts/test_configure.sh

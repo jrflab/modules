@@ -2,6 +2,9 @@
 ifneq ("$(wildcard config.inc)", "")
 include config.inc
 endif
+ifneq ("$(wildcard project_config.inc)", "")
+include project_config.inc
+endif
 include modules/config.inc
 
 # default reference: 

@@ -5,7 +5,7 @@ import yaml
 import argparse
 import re
 
-parser = argparse.ArgumentParser(prog='createSampleYAML',
+parser = argparse.ArgumentParser(prog='create_sample_yaml.py',
                                  description='Create samples.fastq.yaml and samples.yaml(best guess) from a rawdata \
                                  dir')
 parser.add_argument('fastq_dir')
