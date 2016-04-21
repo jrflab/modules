@@ -94,9 +94,10 @@ if args.sample_fastq_file is not None:
         for idx, fastq in enumerate(v):
             print("split.{}.{} = {}".format(k, idx, k), file=of)
             split_samples.add("{}.{}".format(k, idx))
-        print("split.{} = ".format(k), end="", file=of)
+        line = "split.{} = ".format(k)
         for idx, fastq in enumerate(v):
-            print("{}.{}".format(k, idx, " ".join(fastq)), end=" ", file=of)
+            line += "{}.{} ".format(k, idx)
+        print(line.strip(), file=of)
         print("", file=of)
     print("SPLIT_SAMPLES = {}".format(" ".join(split_samples)), file=of)
 

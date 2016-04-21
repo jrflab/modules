@@ -9,6 +9,8 @@ include modules/aligners/align.inc
 
 VPATH ?= unprocessed_bam
 
+ALIGNER := bowtie
+
 LOGDIR = log/bowtie.$(NOW)
 
 BOWTIE_OPTS = -x $(BOWTIE_REF) 
@@ -52,33 +54,16 @@ bowtie/bam/%.bwt.bam : fastq/%.fastq.gz
 bam/%.bam : bowtie/bam/%.bwt.$(BAM_SUFFIX)
 	$(call LSCRIPT,"ln -f $(<) $(@) ")
 
-ifdef SPLIT_SAMPLES
-define merged-bam
-ifeq ($(shell echo "$(words $2) > 1" | bc),1)
-bowtie/bam/$1.header.sam : $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam)
-	$$(INIT) $$(SAMTOOLS) view -H $$(<M) | grep -v '^@RG' > $$@.tmp; \
-	for bam in $$(^); do $$(SAMTOOLS) view -H $$$$bam | grep '^@RG' >> $$@.tmp; done; \
-	uniq $$@.tmp > $$@ && $$(RM) $$@.tmp
-
-bowtie/bam/$1.bwt.sorted.bam : bowtie/bam/$1.header.sam $$(foreach split,$2,bowtie/bam/$$(split).bwt.sorted.bam)
-	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$(^)) && $$(RM) $$(^)")
-endif
-ifeq ($(shell echo "$(words $2) == 1" | bc),1)
-bowtie/bam/$1.bwt.bam : bowtie/bam/$2.bwt.bam
-	$$(INIT) mv $$(<) $$(@) 
-endif
-endef
-$(foreach sample,$(SAMPLES),$(eval $(call merged-bam,$(sample),$(split.$(sample)))))
-
 define align-split-fastq
 bowtie/bam/$2.bwt.bam : $3
 	$$(call LSCRIPT_PARALLEL_MEM,4,1G,1.5G,"$$(BOWTIE) $$(BOWTIE_OPTS) \
 		--rg-id $2 --rg \"LB:$1\" --rg \"PL:$${SEQ_PLATFORM}\" --rg \"SM:$1\" \
 		-p $$(NUM_CORES) $$(if $$(<<),-1 $$(<) -2 $$(<<),-U $$<) | $$(SAMTOOLS) view -bhS - > $$(@)")
 endef
-$(foreach ss,$(SPLIT_SAMPLES),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss)))))
-endif
-
+$(foreach ss,$(SPLIT_SAMPLES),\
+	$(if $(fq.$(ss)),\
+	$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 include modules/fastq_tools/fastq.mk
 include modules/bam_tools/processBam.mk
+include modules/aligners/align.mk
