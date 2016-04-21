@@ -17,9 +17,9 @@ endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-fastq,$(sample),$(split.$(sample)))))
 
 define merged-fastq2
-fastq/$1.1.fastq.gz : $$(foreach split,$2,$(word 1, $(fq.$(split))))
+fastq/$1.1.fastq.gz : $$(foreach split,$2,$$(word 1, $$(fq.$$(split))))
 	$$(call LSCRIPT,"zcat $$(^) | gzip -c > $$(@)")
-fastq/$1.2.fastq.gz : $$(foreach split,$2,$(word 2, $(fq.$(split))))
+fastq/$1.2.fastq.gz : $$(foreach split,$2,$$(word 2, $$(fq.$$(split))))
 	$$(call LSCRIPT,"zcat $$(^) | gzip -c > $$(@)")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merged-fastq2,$(sample),$(split.$(sample)))))
