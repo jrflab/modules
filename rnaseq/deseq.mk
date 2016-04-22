@@ -6,8 +6,8 @@ LOGDIR = log/deseq.$(NOW)
 DESEQ_RNW = modules/rnaseq/deseq.Rnw
 SWEAVE = $(RSCRIPT) modules/scripts/Sweave.R
 
-CONDITION ?= condition
-REF_CONDITION ?= ref
+DESEQ_CONDITION ?= condition
+DESEQ_REF_CONDITION ?= ref
 
 # pheno file: sample\tpheno with header
 PHENO_FILE ?= pheno.txt
@@ -18,6 +18,6 @@ PHENO_FILE ?= pheno.txt
 .PHONY : all
 
 deseq_results.txt : sumreads/geneCounts.txt
-	mkdir -p graphics; $(SWEAVE) $(DESEQ_RNW) --condition $(CONDITION) --refCondition $(REF_CONDITION) --outFile $@ $< $(PHENO_FILE)
+	mkdir -p graphics; $(SWEAVE) $(DESEQ_RNW) --condition $(DESEQ_CONDITION) --refCondition $(DESEQ_REF_CONDITION) --outFile $@ $< $(PHENO_FILE)
 
 
