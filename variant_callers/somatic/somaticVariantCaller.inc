@@ -32,7 +32,7 @@ SOMATIC_FILTERS += $(if $(findstring indel,$1),\
 # indel/snv annotations
 SOMATIC_ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(SOMATIC_VALIDATION_ANNS),\
 		   $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS)))
-SOMATIC_POSTANN_FILTERS += cft
+SOMATIC_POSTANN_FILTERS += cft common
 SOMATIC_FILTER_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_FILTERS,$1)))
 SOMATIC_ANN_SUFFIX = $(subst $( ),.,$(strip pass $(call SOMATIC_ANNOTATIONS,$1)))
 SOMATIC_POSTANN_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_POSTANN_FILTERS,$1) pass2))
@@ -42,7 +42,7 @@ SOMATIC_EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
 SOMATIC_VCF_SUFFIXES = $(foreach type,$1,$(call SOMATIC_SUFFIX,$(type)))
 
-SOMATIC_TABLE_EXTENSIONS = tab tab.novel $(foreach eff,$(SOMATIC_EFF_TYPES),tab.$(eff) tab.$(eff).novel)
+SOMATIC_TABLE_EXTENSIONS = tab $(foreach eff,$(SOMATIC_EFF_TYPES),tab.$(eff))
 
 SOMATIC_TABLE_SUFFIXES = $(foreach suff,$(call SOMATIC_VCF_SUFFIXES,$1),\
 				 $(foreach ext,$(SOMATIC_TABLE_EXTENSIONS),$(suff).$(ext)))

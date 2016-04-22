@@ -1,0 +1,99 @@
+---
+tmpdir: $(HOME)/share/tmp
+    
+##Interpreters
+anaconda_python: $(HOME)/share/usr/anaconda/bin/python
+python: $(HOME)/share/usr/anaconda/bin/python
+perl: $(HOME)/share/usr/ActivePerl-5.18/bin/perl
+#rscript: /usr/bin/Rscript
+r: $(HOME)/share/usr/bin/R-3.1.2
+my_rscript: $(HOME)/share/usr/bin/Rscript-3.1.2
+rscript: $(HOME)/share/usr/bin/Rscript-3.1.2
+#rscript: $(HOME)/usr/bin/Rscript
+
+# General python 2.7 environment
+anaconda_27_env: /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+# SUFAM python environment
+sufam_env: /home/debruiji/share/usr/anaconda-envs/sufam-0.4.1
+
+jardir: $(HOME)/share/usr/lib/java
+
+### Applications
+unzip: /usr/bin/unzip
+fastqc: $(PERL) $(HOME)/share/usr/FastQC/fastqc
+mutect_jar: $(JARDIR)/muTect-1.1.4.jar
+bowtie: $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
+bwa: $(HOME)/share/usr/bin/bwa-0.7.10
+#pbwa: mpiexec $(HOME)/share/usr/bin/pBWA
+#gsnap: $(HOME)/share/usr/bin/gsnap
+#gsnap_ref: $(HOME)/share/references/gmapdb/
+#gsnap_maps: $(GSNAP_REF)/$(REF)/$(REF).maps
+samtools: $(HOME)/share/usr/bin/samtools-0.1.19
+samtools2: $(HOME)/share/usr/bin/samtools-1.2
+vcfutils: $(HOME)/share/usr/bin/vcfutils.pl
+bcftools2: $(HOME)/share/usr/bin/bcftools-1.2
+bcftools: $(HOME)/share/usr/bin/bcftools-0.1.19
+bedtools: $(HOME)/share/usr/bin/bedtools
+bgzip: $(HOME)/share/usr/bin/bgzip
+igvtools: $(HOME)/share/usr/IGVTools/igvtools
+vcftools: $(HOME)/share/usr/bin/vcftools-0.1.10
+vcf_sort: $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
+
+snp_eff_jar: $(JARDIR)/snpEff-4.1.jar
+snp_sift_jar: $(JARDIR)/snpSift-4.1.jar
+snp_eff_config: $(HOME)/share/usr/snpEff-4.1/snpEff.config
+#db_nsfp: $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
+db_nsfp: $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
+nsfp_fields: Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain
+
+cufflinks: $(HOME)/share/usr/bin/cufflinks-2.2.1
+cuffcmp: $(HOME)/share/usr/bin/cuffcompare-2.2.1
+#snvmix: $(HOME)/share/usr/bin/SNVMix2
+#bam2fastq: $(HOME)/share/usr/bin/bam2fastq
+#qualimap: $(HOME)/share/usr/qualimap/qualimap
+tophat: $(HOME)/share/usr/bin/tophat2-2.0.13
+defuse: $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
+
+#VARSCAN
+oncofuse_jar: $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
+varscan_jar: $(JARDIR)/VarScan.v2.3.9.jar
+
+# PICARD tools
+picard_dir: $(JARDIR)/picard-1.92
+picard_jar: $(JARDIR)/picard-tools-1.141/picard.jar
+picard2_jar: $(JARDIR)/picard-tools-2.1.1/picard.jar
+
+# scripts
+merge: modules/scripts/merge.R
+vcf_to_table: modules/scripts/vcfToTable.R
+intron_posn_lookup: modules/scripts/posnGeneLookup.pl
+rbind: modules/scripts/rbind.R
+normal_filter: $(PERL) modules/scripts/normalFilterVCF.pl
+somatic_filter_vcf: $(PERL) modules/scripts/somaticFilterVCF.pl
+
+#java_tmp: $(HOME)/tmp
+java_bin: /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
+java6_bin: /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
+java7_bin: /opt/common/CentOS_6/java/jdk1.7.0_75/bin/java
+java8_bin: $(HOME)/usr/jdk1.8.0_74/bin/java
+#java: /usr/bin/java $(JAVA_ARGS)
+
+get_insert_size: $(HOME)/share/usr/bin/getInsertSize.py
+
+#GATK
+gatk_jar: $(JARDIR)/GenomeAnalysisTK.jar
+gatk_jar2: $(JARDIR)/GenomeAnalysisTK-3.3-0.jar
+
+vt: $(HOME)/share/usr/bin/vt
+tabix: $(HOME)/share/usr/bin/tabix
+
+embl_mysqldb_host: 10.0.200.71
+embl_mysqldb_port: 38493
+embl_mysqldb_user: embl
+embl_mysqldb_pw: embl
+embl_mysqldb_db: homo_sapiens_core_75_37
+
+integrate: $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
+
+hisat: $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
+...

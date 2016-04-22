@@ -71,25 +71,30 @@ endif
 
 # snp sift using GMAF > 1% filtered dbsnp 
 %.dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(DBSNP1PC) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate \
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && $(RM) $^"))
 
 # mouse genome project dbsnp
 %.mgp_dbsnp.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate -tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
+		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
 
 %.cosmic.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(COSMIC) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(COSMIC) $< > $@ && $(RM) $^"))
 
 %.clinvar.vcf : %.vcf %.vcf.idx 
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) $(CLINVAR) $< > $@ && $(RM) $^"))
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(CLINVAR) $< > $@ && $(RM) $^"))
 
 %.exac_nontcga.vcf : %.vcf %.vcf.idx 
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) -info ExAC_AF $(EXAC_NONTCGA) $< > $@ && $(RM) $^"))
 
 # post-annotation filter
-POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
+VCF_POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
 %.cft.vcf : %.vcf
-	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression '$(POST_ANN_FILTER_EXPRESSION)' --filterName customFilter && $(RM) $<")
+	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression '$(VCF_POST_ANN_FILTER_EXPRESSION)' --filterName customFilter && $(RM) $<")
 
 
 # apply overall depth filter
@@ -211,17 +216,15 @@ define ad-tumor-normal
 vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call ad-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(eval $(call ad-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define annotate-tumor-normal
 vcf/$1_$2.%.ann.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
 	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) $$(foreach ann,$$(VCF_ANNOTATIONS),-A $$(ann) ) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$< && $$(RM) $$< $$<.idx")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call annotate-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call annotate-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define hrun-tumor-normal
 vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
@@ -315,10 +318,9 @@ tables/%.opl_tab.txt : vcf/%.vcf
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
-%.novel.txt : %.txt
-	$(INIT) id=`head -1 $< | tr '\t' '\n' | grep -n "^ID$$" | sed 's/:.*//'`; \
-	gmaf=`head -1 $< | tr '\t' '\n' | grep -n "^GMAF$$" | sed 's/:.*//'`; \
-	awk -v id=$$id -v gmaf=$$gmaf 'NR == 1 || length($$id) == 1 || $$gmaf < 0.01 { print }' $< > $@ || true
+COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
+%.common.vcf : %.vcf
+	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< $@")
 
 FALSE_POSITIVE_BED = $(HOME)/share/reference/fuentes_blacklist.include_cosmic.hg19.bed
 %.fp_ft.vcf : %.vcf

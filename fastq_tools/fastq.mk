@@ -36,22 +36,14 @@ fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_fastq/%.1.fastq.gz unprocess
 	$(INIT) ln $< fastq/$*.1.fastq.gz && ln $(word 2,$(^)) fastq/$*.2.fastq.gz && cp  $< fastq/$*.1.fastq.gz && cp $(word 2,$^) fastq/$*.2.fastq.gz
 endif
 
-ifeq (${EXTRACT_TOOL},picard)
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.bam
-	$(call LSCRIPT_MEM,22G,40G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
+fastq/%.1.fastq.gz fastq/%.2.fastq.gz : unprocessed_bam/%.nsorted.bam
+	$(call LSCRIPT_MEM,10G,15G,"TEMP=`mktemp`; mkfifo \$${TEMP}_1; mkfifo \$${TEMP}_2; \
 	gzip < \$${TEMP}_1 > fastq/$*.1.fastq.gz & \
 	gzip < \$${TEMP}_2 > fastq/$*.2.fastq.gz & \
-	$(call SAM_TO_FASTQ_MEM,21G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2")
-else ifeq ($(EXTRACT_TOOL),bam2fastx)
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.nsorted.bam
-	$(call LSCRIPT_MEM,12G,14G,"$(BAM2FASTX) --fastq --sam --all -o $@ -P -N $<")
-%.nsorted.bam : %.bam
-	$(call LSCRIPT_MEM,20G,25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=queryname")
-else
-fastq/%.1.fastq.gz fastq/%.2.fastq.gz : %.bam
-	$(call LSCRIPT_MEM,10G,40G,"$(BAM2FASTQ) -o fastq/$*#.fastq $< &> $(LOG).bam2fastq.log && gzip < fastq/$*_1.fastq > fastq/$*.1.fastq.gz && gzip < fastq/$*_2.fastq > fastq/$*.2.fastq.gz")
-endif
+	$(call PICARD,SamToFastq,9G) QUIET=true I=$< FASTQ=\$${TEMP}_1 SECOND_END_FASTQ=\$${TEMP}_2")
 
+%.nsorted.bam : %.bam
+	$(call LSCRIPT_MEM,20G,25G,"$(call PICARD,SortSam,19G) I=$< O=$@ SO=queryname")
 
 unprocessed_fastq/%.trim.fastq.gz : unprocessed_fastq/%.fastq.gz
 	$(call LSCRIPT_MEM,2G,3G,"zcat $< | $(FASTQ_TRIMMER) $(TRIM_OPTS) | gzip -c > $@ ")
@@ -74,5 +66,5 @@ unprocessed_fastq/$1.%.fastq.gz : $$(foreach split,$2,unprocessed_fastq/$$(split
 unprocessed_fastq/$1.%.fastq.gz : $$(foreach split,$2,unprocessed_fastq/$$(split).%.fastq)
 	$$(INIT) cat $$(^) | gzip > $$@ 2> $$(LOG)
 endef
-$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-fastq,$(sample),$(split_lookup.$(sample)))))
+$(foreach sample,$(SPLIT_SAMPLES),$(eval $(call merged-fastq,$(sample),$(split.$(sample)))))
 

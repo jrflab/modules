@@ -4,7 +4,7 @@ include modules/variant_callers/gatk.inc
 TOPHAT := $(HOME)/share/usr/bin/tophat2
 TOPHAT_OPTS := --no-coverage-search --fusion-ignore-chromosomes MT --fusion-search --keep-fasta-order
 
-ifeq ($(PHRED64),true)
+ifeq ($(BAM_PHRED64),true)
 	TOPHAT_OPTS += --solexa1.3-quals
 endif
 

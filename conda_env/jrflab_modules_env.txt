@@ -1,3 +1,6 @@
 samtools=0.1.19
 bwa=0.7.12
 java-jdk=7.0.91
+pyvcf=0.6.8
+pyyaml=3.11
+glob2=0.4.1

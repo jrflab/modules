@@ -47,9 +47,8 @@ define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(SAMTOOLS) mpileup $$(MPILEUP_OPTS) -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(eval $(call varscan-copynum-tumor-normal,$(tumor),$(call get_normal,$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call varscan-copynum-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \

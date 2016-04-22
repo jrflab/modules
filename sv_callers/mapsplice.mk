@@ -9,7 +9,7 @@ include modules/Makefile.inc
 MAPSPLICE = $(PYTHON) $(HOME)/share/usr/MapSplice-v2.1.7/mapsplice.py
 MAPSPLICE_OPTS = -c $(MAPSPLICE_REF_DIR) -x $(MAPSPLICE_REF_BASENAME) --bam
 
-ifeq ($(PHRED64),true)
+ifeq ($(BAM_PHRED64),true)
 MAPSPLICE_OPTS += --qual-scal phred64
 else
 MAPSPLICE_OPTS += --qual-scal phred33

@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use Cwd;
+use File::Copy;
 
 # create repo
 my $repoName = getcwd;
@@ -14,22 +15,6 @@ system "git init";
 system "git remote add origin git\@bitbucket.org:jrflab/$repoName.git";
 
 
-my $CONFIG = <<ENDL;
-export REF = b37
-DUP_TYPE = markdup
-
-#TARGETS_FILE = intervals.bed
-#GENES_FILE = genes.txt
-EXOME = true
-CHR1_BASE_RECAL = true
-
-POST_ANN_FILTER_EXPRESSION = ExAC_AF > 0.05
-
-# gatk options
-HARD_FILTER_SNPS = true
-
-QSUB_PRIORITY = -800
-ENDL
 
 my $MAKEFILE = <<ENDL;
 include modules/Makefile
@@ -44,13 +29,12 @@ unless (-e "Makefile") {
     print OUT $MAKEFILE;
 }
 close OUT;
-unless (-e "config.inc") {
-    open OUT, ">config.inc";
-    print OUT $CONFIG;
+unless (-e "project_config.yaml") {
+    copy("modules/default_project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
 }
 close OUT;
 system "git add Makefile";
-system "git add config.inc";
-system "git commit -m 'makefile, config.inc'";
+system "git add project_config.yaml";
+system "git commit -m 'makefile, project_config.yaml'";
 system "git push --set-upstream origin master";
 

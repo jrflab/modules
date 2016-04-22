@@ -25,10 +25,9 @@ exomecnv/baf/$1_$2.baf_timestamp : vcf/$(subst $( ),_,$3).gatk_snps.target_ft.dp
 exomecnv/baf/$1_$2.baf_1.txt : exomecnv/baf/$1_$2.baf_timestamp
 exomecnv/baf/$1_$2.baf_2.txt : exomecnv/baf/$1_$2.baf_timestamp
 endef
-$(foreach i,$(SETS_SEQ),\
-	$(foreach tumor,$(call get_tumors,$(set.$i)), \
-		$(foreach normal,$(call get_normal,$(set.$i)), \
-			$(eval $(call exomecnv-baf-tumor-normal-set,$(tumor),$(normal),$(set.$i))))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(eval $(call exomecnv-baf-tumor-normal-set,$(tumor.$(pair)),$(normal.$(pair)),$(set.$(pair)))))
+
 
 define exomecnv-loh-pair
 exomecnv/loh/$1.loh.txt : exomecnv/baf/$1.baf_1.txt exomecnv/baf/$1.baf_2.txt
