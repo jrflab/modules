@@ -79,8 +79,10 @@ NORMAL_FILTER ?= $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF ?= $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
 #JAVA_TMP := $(HOME)/tmp
-JAVA_BIN ?= java
-JAVA7_BIN ?= java
+JAVA_BIN ?=  /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
+JAVA6_BIN ?= /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
+JAVA7_BIN ?= /opt/common/CentOS_6/java/jdk1.7.0_75/bin/java
+JAVA8_BIN ?= $(HOME)/usr/jdk1.8.0_74/bin/java
 #JAVA ?= /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE ?= $(HOME)/share/usr/bin/getInsertSize.py
