@@ -18,3 +18,4 @@ summary/mutation_heatmap_variant.pdf summary/mutation_heatmap_variant_recurrent.
 	$(INIT) unset PYTHONPATH; \
 	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV); \
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(VARIANT_MAPS) --outFiles... $@ --inFiles... $<
+

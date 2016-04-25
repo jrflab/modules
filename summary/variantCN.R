@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.title.b, allosome='none', targets.file=NULL, suffix='', threshold.a=TRUE, threshold.b=FALSE, gene.names=TRUE) {
+GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.title.b, allosome='none', targets.file=NULL, suffix='', threshold.a=TRUE, threshold.b=TRUE, gene.names=TRUE) {
 
 #------
 # USAGE
@@ -32,7 +32,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 	#---------------
 
 	# libraries
-	suppressMessages(pacman::p_load(DescTools,dplyr,readr,stringr,tidyr,broom,purrr,magrittr,rlist,crayon,colorspace,ggplot2,grid,gridExtra,RColorBrewer))
+	pacman::p_load(DescTools,dplyr,readr,stringr,tidyr,broom,purrr,magrittr,rlist,crayon,colorspace,ggplot2,grid,gridExtra,RColorBrewer)
 
 	# create output directory
 	system("mkdir fishers_cn &>/dev/null")
@@ -42,6 +42,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 	# FUNCTIONS
 	#----------
 
+	message(blue('- initializing'))
 	# create gains prevalence object
 	GainPrevalence <- function(sample.stats, plot.title, gene.names) {
 
@@ -68,7 +69,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		if(gene.names==TRUE) {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
 				theme(	legend.title 		= element_blank(),
 						panel.grid.major 	= element_blank(),
 						panel.grid.minor    = element_blank(),
@@ -85,7 +86,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		} else {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
 			theme(	legend.title 		= element_blank(),
 					panel.grid.major 	= element_blank(),
 					panel.grid.minor    = element_blank(),
@@ -133,7 +134,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		if(gene.names==TRUE) {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
 				theme(	legend.title 		= element_blank(),
 						panel.grid.major 	= element_blank(),
 						panel.grid.minor    = element_blank(),
@@ -150,7 +151,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		} else {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
 				theme(	legend.title 		= element_blank(),
 						panel.grid.major 	= element_blank(),
 						panel.grid.minor    = element_blank(),
@@ -200,7 +201,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		if(gene.names==TRUE) {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
 				theme(	legend.title 		= element_blank(),
 						panel.grid.major 	= element_blank(),
 						panel.grid.minor    = element_blank(),
@@ -217,7 +218,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		} else {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
 			theme(	legend.title 		= element_blank(),
 					panel.grid.major 	= element_blank(),
 					panel.grid.minor    = element_blank(),
@@ -264,7 +265,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		if(gene.names==TRUE) {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=Inf, vjust=2, size=5) +	# chromosome enumeration (top)
 				theme(	legend.title 		= element_blank(),
 						panel.grid.major 	= element_blank(),
 						panel.grid.minor    = element_blank(),
@@ -281,7 +282,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 		} else {
 
-			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:22, y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
+			gg <- gg + annotate(geom='text', x=Midx(c(0,chrom.n$chrom.n))+0.5, label=1:max(as.numeric(chrom.n$chrom)), y=-Inf, vjust=2, size=5) +	# chromosome enumeration (bottom)
 			theme(	legend.title 		= element_blank(),
 					panel.grid.major 	= element_blank(),
 					panel.grid.minor    = element_blank(),
@@ -305,8 +306,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 		gt
 	}
 
-
-	# generate table of chromosome breaks
+	# convert chrom vector to desired format
 	ChromMod <- function(gene.cn, allosome){
 
 			if(allosome=='distinct') {
@@ -331,7 +331,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 		mutate(mid=(start+end)/2) %>%
 		rowwise %>%
 		mutate(in.target={  # check if gene exists in target file
-				any(targets[[chrom]]$start.target < mid & mid < targets[[chrom]]$end.target)
+				any(targets[[chrom]]$start.target <= mid & mid <= targets[[chrom]]$end.target)
 			}) %>%
 		filter(in.target==TRUE) %>%
 		select(-mid,-in.target) %>%
@@ -343,11 +343,9 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 	# calculate % of cases with CN status
 	SampleStats <- function(gene.cn, threshold) {
-		gene.cn %>%
-		arrange(chrom,start) %>%
-		select(-matches('chrom|start|end|band|mid|stop')) %>%
-		mutate(gene=factor(gene,levels=unique(gene))) %>%
-		gather(sample,copy.num,-gene) %>%
+		gene.cn.a %>%
+		select(-matches('band|mid|stop')) %>%
+		gather(sample,copy.num,-gene,-chrom,-start,-end) %>%
 		do({ if(threshold==TRUE){  # conditionally select threshold calls
 				filter(., grepl('threshold', sample))
 			} else { . } }) %>%
@@ -385,22 +383,6 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 	# DATA PROCESSING
 	#----------------
 
-	if(!is.null(targets.file)){
-		# read in target file, select coordinate columns & split
-		targets <-
-			read.delim(targets.file, sep='\t', header=FALSE) %>%
-			tbl_df %>% .[,1:3] %>%
-			setNames(c('chrom','start.target','end.target')) %>%
-			mutate(chrom=ifelse(chrom=='X',23,ifelse(chrom=='Y',24,chrom))) %>%
-			mutate(chrom=as.numeric(chrom)) %>%
-			split(.$chrom)
-
-		# subset genes in target file
-		gene.cn.a %<>% SubsetTargets(targets)
-		gene.cn.b %<>% SubsetTargets(targets)
-	}
-
-
 	# rename hgnc to gene if needed
 	if('hgnc' %in% names(gene.cn.a)){
 		gene.cn.a %<>% rename(gene=hgnc)
@@ -416,6 +398,24 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 		gene.cn.b %<>% rename(end=stop)
 	}
 
+	message(blue('- subsetting CN tables to target regions'))
+	if(!is.null(targets.file)){
+		# read in target file, select coordinate columns & split
+		targets <-
+			read.delim(targets.file, sep='\t', header=FALSE) %>%
+			tbl_df %>% .[,1:3] %>%
+			setNames(c('chrom','start.target','end.target')) %>%
+			mutate(chrom=as.numeric(ifelse(chrom=='X',23,ifelse(chrom=='Y',24,chrom)))) %>%
+			arrange(chrom,start.target) %>%
+			split(.$chrom)
+
+		# subset genes in target file doing this on one subset is sufficient due to intersection step below
+		if(nrow(gene.cn.a) <= nrow(gene.cn.b)) {
+			gene.cn.a %<>% SubsetTargets(targets)
+		} else {
+			gene.cn.b %<>% SubsetTargets(targets)
+		}
+	}
 
 	# format allosome & filter for overlapping genes
 	gene.cn.a %<>% ChromMod(allosome) %>% filter(gene %in% gene.cn.b$gene)
@@ -431,8 +431,12 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 
 
 	# calculate necessary statistics
+	message(blue('- calculating sample statistics'))
 	sample.stats <-
-		inner_join(SampleStats(gene.cn.a, threshold.a), SampleStats(gene.cn.b, threshold.b), by='gene', suffix=c('.a','.b')) %>%
+		inner_join(SampleStats(gene.cn.a, threshold.a), SampleStats(gene.cn.b, threshold.b) %>% select(-chrom,-start,-end), by='gene', suffix=c('.a','.b')) %>%
+		arrange(chrom, start) %>%
+		ungroup %>%
+		mutate(gene=factor(gene,levels=unique(gene))) %>%
 		rowwise %>%
 		# amplifications (+)
 		mutate(amp.pos.fisher  = fisher.test( data.frame( a = c(amp.gt.a,  amp.lt.eq.a),
@@ -460,14 +464,7 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 		mutate(amp.pos.fisher.adj.cut.log  = log10(amp.pos.fisher.adj.cut)) %>%
 		mutate(gain.pos.fisher.adj.cut.log = log10(gain.pos.fisher.adj.cut)) %>%
 		mutate(amp.neg.fisher.adj.cut.log  = log10(amp.neg.fisher.adj.cut)) %>%
-		mutate(gain.neg.fisher.adj.cut.log = log10(gain.neg.fisher.adj.cut)) %>%
-		# column arrangement
-		select(gene,n.samples.a,n.samples.b,amp.pct.a,amp.pct.b,gain.pct.a,gain.pct.b,loss.pct.a,loss.pct.b,del.pct.a,del.pct.b,
-		gain.gt.pct.a,gain.lt.pct.a,gain.gt.pct.b,gain.lt.pct.b,
-		amp.neg.fisher,amp.neg.fisher.adj,amp.neg.fisher.adj.cut,amp.neg.fisher.adj.cut.log,
-		amp.pos.fisher,amp.pos.fisher.adj,amp.pos.fisher.adj.cut,amp.pos.fisher.adj.cut.log,
-		gain.neg.fisher,gain.neg.fisher.adj,gain.neg.fisher.adj.cut,gain.neg.fisher.adj.cut.log,
-		gain.pos.fisher,gain.pos.fisher.adj,gain.pos.fisher.adj.cut,gain.pos.fisher.adj.cut.log)
+		mutate(gain.neg.fisher.adj.cut.log = log10(gain.neg.fisher.adj.cut))
 
 
 	# tables for plotting
@@ -499,22 +496,37 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 		mutate(above=ifelse(is.na(above),0,above))
 
 
+	# column selection & arrangement
+	sample.stats %<>%
+	select(gene,chrom,start,end,n.samples.a,n.samples.b,amp.pct.a,amp.pct.b,gain.pct.a,gain.pct.b,loss.pct.a,loss.pct.b,del.pct.a,del.pct.b,
+	gain.gt.pct.a,gain.lt.pct.a,gain.gt.pct.b,gain.lt.pct.b,
+	amp.neg.fisher,amp.neg.fisher.adj,amp.neg.fisher.adj.cut,amp.neg.fisher.adj.cut.log,
+	amp.pos.fisher,amp.pos.fisher.adj,amp.pos.fisher.adj.cut,amp.pos.fisher.adj.cut.log,
+	gain.neg.fisher,gain.neg.fisher.adj,gain.neg.fisher.adj.cut,gain.neg.fisher.adj.cut.log,
+	gain.pos.fisher,gain.pos.fisher.adj,gain.pos.fisher.adj.cut,gain.pos.fisher.adj.cut.log)
+
+
 	# write data summary
+	message(blue('- writing data summary'))
 	file.name <- str_c("fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
 	write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
-	#---------------
-	# FUNCTION CALLS
-	#---------------
+	#---------------------
+	# STATS FUNCTION CALLS
+	#---------------------
 
-	# call functions & add to list
+	message(blue('- building plots'))
+
+	options(device="pdf")
+
+	# call functions & add to plot list
 	gg.list <- list( GainPrevalence(sample.stats.gain.a, plot.title=str_c(plot.title.a, " Prevalance [Gains]"), gene.names),
 					 GainPrevalence(sample.stats.gain.b, plot.title=str_c(plot.title.b, " Prevalance [Gains]"), gene.names),
-					 GainFishers(sample.stats.gain.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact (log scale) [Gains]")),
+					 GainFishers(sample.stats.gain.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact [Gains]")),
 					 AmpPrevalence(sample.stats.amp.a, plot.title=str_c(plot.title.a, " Prevalance [Amplifications]")),
 					 AmpPrevalence(sample.stats.amp.b, plot.title=str_c(plot.title.b, " Prevalance [Amplifications]")),
-					 AmpFishers(sample.stats.amp.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact (log scale) [Amplifications]")) )
+					 AmpFishers(sample.stats.amp.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact [Amplifications]")) )
 
 
 	#---------
@@ -522,9 +534,9 @@ GenCN <- function(gene.cn.a, gene.cn.b, plot.title.main, plot.title.a, plot.titl
 	#---------
 
 	# plot to pdf
-	suppressWarnings(ggsave(str_c(file.name,'.pdf'), do.call(arrangeGrob, c(gg.list, ncol=1)), width=26, height=26))
+	suppressWarnings(ggsave(str_c(file.name,'.pdf'), do.call(arrangeGrob, c(gg.list, ncol=1)), device='pdf', width=26, height=26))
 
-	cat('done\n')
+	message(green('[ done ]'))
 
 }
 
