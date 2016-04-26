@@ -4,17 +4,17 @@
 import argparse
 import vcf
 import re
+import sys
 
 parser = argparse.ArgumentParser(prog='filter_dbsnp_gmaf.py',
                                  description='filter dbsnp gmaf (CAF info)')
 parser.add_argument('vcf_infile')
-parser.add_argument('vcf_outfile')
 
 args = parser.parse_args()
 
 vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 
-vcf_writer = vcf.Writer(open(args.vcf_outfile, 'w'), vcf_reader)
+vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
     if 'CAF' not in record.INFO:

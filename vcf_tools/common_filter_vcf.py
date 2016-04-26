@@ -4,11 +4,11 @@
 import argparse
 import vcf
 import re
+import sys
 
 parser = argparse.ArgumentParser(prog='common_filter_vcf.py',
                                  description='filter vcf file for novel variants (no rs-id/GMAF < 0.01 or cosmic id)')
 parser.add_argument('vcf_infile')
-parser.add_argument('vcf_outfile')
 
 args = parser.parse_args()
 
@@ -17,7 +17,7 @@ vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 vcf_reader.filters['Common'] = vcf.parser._Filter(id='common',
                                                   desc='no cosmic id, or has dbsnp ID and GMAF is > 0.01')
 
-vcf_writer = vcf.Writer(open(args.vcf_outfile, 'w'), vcf_reader)
+vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
     # ignore entries with cosmic IDs

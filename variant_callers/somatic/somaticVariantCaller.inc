@@ -9,7 +9,7 @@ SOMATIC_VALIDATION_ANNS := dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
 SOMATIC_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
-    $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
+    $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga, hotspot)
 SOMATIC_INDEL_ANNS := $(SOMATIC_ANNS) \
     $(if $(findstring b37,$(REF)),mut_taste)
 SOMATIC_SNV_ANNS := $(SOMATIC_ANNS) \
