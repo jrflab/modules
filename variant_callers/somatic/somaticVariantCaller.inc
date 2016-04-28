@@ -5,54 +5,69 @@ FFPE_NORMAL_FILTER ?= false
 VALIDATION ?= false
 ANN_FACETS ?= false
 
-SOMATIC_VALIDATION_ANNS := dbsnp eff \
+SOMATIC_VALIDATION_ANNS = dbsnp eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp)
-SOMATIC_ANNS := $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
+SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
-SOMATIC_INDEL_ANNS := $(SOMATIC_ANNS) \
-    $(if $(findstring b37,$(REF)),mut_taste)
-SOMATIC_SNV_ANNS := $(SOMATIC_ANNS) \
-    $(if $(findstring b37,$(REF)),chasm fathmm)
-ifeq ($(ANN_FACETS),true)
-SOMATIC_INDEL_ANNS += facets
-SOMATIC_SNV_ANNS += facets
-endif
+SOMATIC_INDEL_ANNS = $(if $(findstring b37,$(REF)),mut_taste)
+SOMATIC_SNV_ANNS = $(if $(findstring b37,$(REF)),chasm fathmm)
+# pass filter for faster annotations
+# indel/snv initial round of annotations
+SOMATIC_ANN2 += $(if $(findstring true,$(VALIDATION)),$(SOMATIC_VALIDATION_ANNS),\
+		   $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS)))
+SOMATIC_ANN2 += $(if $(findstring indel,$1),\
+            $(if $(findstring true,$(HRUN)),hrun))
+
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka
-SOMATIC_FILTERS = dp_ft \
-    $(if $(findstring varscan,$1)$(findstring mutect,$1),\
+SOMATIC_FILTER1 = $(if $(findstring varscan,$1)$(findstring mutect,$1),\
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))
 # target filter
-SOMATIC_FILTERS += $(if $(TARGETS_FILE),target_ft)
+SOMATIC_FILTER1 += $(if $(TARGETS_FILE),target_ft)
+
+# filters run after initial round of annotations (but before final annotations)
+SOMATIC_FILTER2 = cft common_ft
 # hrun filter
-SOMATIC_FILTERS += $(if $(findstring indel,$1),\
-            $(if $(findstring true,$(HRUN)),hrun hrun_ft))
-# pass filter for faster annotations
-# indel/snv annotations
-SOMATIC_ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(SOMATIC_VALIDATION_ANNS),\
-		   $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS)))
-SOMATIC_POSTANN_FILTERS += cft common
-SOMATIC_FILTER_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_FILTERS,$1)))
-SOMATIC_ANN_SUFFIX = $(subst $( ),.,$(strip pass $(call SOMATIC_ANNOTATIONS,$1)))
-SOMATIC_POSTANN_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_POSTANN_FILTERS,$1) pass2))
-SOMATIC_SUFFIX = $(subst $( ),.,$(strip $1 $(SOMATIC_FILTER_SUFFIX) $(SOMATIC_ANN_SUFFIX) $(SOMATIC_POSTANN_SUFFIX)))
+SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
+            $(if $(findstring true,$(HRUN)),hrun_ft))
 
-SOMATIC_EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
+# final annotations (run last)
+ifeq ($(ANN_FACETS),true)
+SOMATIC_ANN2 += facets
+SOMATIC_ANN3 += pathogen
+endif
 
-SOMATIC_VCF_SUFFIXES = $(foreach type,$1,$(call SOMATIC_SUFFIX,$(type)))
+MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
+MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
+define somatic-merged-vcf
+# first filter round
+vcf/ft/%.$1.ft.vcf : $$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/ft/$$(ft)/%.$1.$$(ft).vcf)
+	$$(MERGE_SCRIPT)
+# first annotation round
+vcf/ann/%.$1.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/ann/$$(ann)/%.$1.ft.$$(ann).vcf)
+	$$(MERGE_SCRIPT)
+# post-filter after first annotation round
+vcf/ft2/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/ft2/$$(ft)/%.$1.ann.$$(ft).vcf)
+	$$(MERGE_SCRIPT)
+# post-filter after first annotation round
+ifdef SOMATIC_ANN2
+vcf/ann2/%.$1.ann2.vcf : $$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/ann2/$$(ann)/%.$1.ft2.$$(ann).vcf)
+	$$(MERGE_SCRIPT)
+else
+vcf/ann2/%.$1.ann2.vcf : vcf/ft2/%.$1.ft2.pass.vcf
+	$$(INIT) cp $$< $$@
+endif
+ifdef SOMATIC_ANN3
+vcf_ann/%.$1.vcf : $$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/ann3/$$(ann)/%.$1.ann2.$$(ann).vcf)
+	$$(MERGE_SCRIPT)
+else
+vcf_ann/%.$1.vcf: vcf/ann2/%.$1.ann2.vcf
+	$$(INIT) cp $$< $$@
+endif
+endef
+SOMATIC_VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
+SOMATIC_MAFS = $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$1.maf)
 
-SOMATIC_TABLE_EXTENSIONS = tab $(foreach eff,$(SOMATIC_EFF_TYPES),tab.$(eff))
-
-SOMATIC_TABLE_SUFFIXES = $(foreach suff,$(call SOMATIC_VCF_SUFFIXES,$1),\
-				 $(foreach ext,$(SOMATIC_TABLE_EXTENSIONS),$(suff).$(ext)))
-
-SOMATIC_VCFS = $(foreach pair,$(SAMPLE_PAIRS),\
-    $(foreach suff,$(call SOMATIC_VCF_SUFFIXES,$1), \
-        vcf/$(pair).$(suff).vcf))
-
-SOMATIC_TABLES = $(foreach pair,$(SAMPLE_PAIRS),\
-    $(foreach suff,$(call SOMATIC_TABLE_SUFFIXES,$1),tables/$(pair).$(suff).txt))
-SOMATIC_TABLES += $(foreach suff,$(call SOMATIC_TABLE_SUFFIXES,$1),alltables/allTN.$(suff).txt)
 endif
 SOMATIC_VARIANT_CALLER_INC = true

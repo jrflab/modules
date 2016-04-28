@@ -19,30 +19,36 @@ FILTERS += $(if $(TARGETS_FILE),target_ft)
 # hrun filter
 FILTERS += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun hrun_ft))
-POSTANN_FILTERS += cft common
+POST_FILTERS += cft common_ft
 
 
 # indel/snv annotations
 ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_ANNS),\
 		   $(if $(findstring indel,$1),$(INDEL_ANNS),$(SNV_ANNS)))
 
-FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call FILTERS,$1)))
-ANN_SUFFIX = pass.$(subst $( ),.,$(strip $(call ANNOTATIONS,$1)))
-POSTANN_SUFFIX = $(subst $( ),.,$(strip $(call POSTANN_FILTERS,$1))).pass2
-SUFFIX = $(FILTER_SUFFIX).$(ANN_SUFFIX).$(POSTANN_SUFFIX)
-
-EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
-
-VCF_SUFFIXES = $(foreach type,$1,$(call SUFFIX,$(type)))
-
-TABLE_EXTENSIONS = tab $(foreach eff,$(EFF_TYPES),tab.$(eff))
-
-TABLE_SUFFIXES = $(foreach suff,$(call VCF_SUFFIXES,$1),\
-				 $(foreach ext,$(TABLE_EXTENSIONS),$(suff).$(ext)))
-
-VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(call VCF_SUFFIXES,$1),vcf/$(sample).$(suff).vcf))
-TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(call TABLE_SUFFIXES,$1),tables/$(sample).$(suff).txt))
-TABLES += $(foreach suff,$(call TABLE_SUFFIXES,$1),alltables/all.$(suff).txt)
+MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
+MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
+define merged-vcf
+# first filter round
+vcf/ft/%.$1.ft.vcf : $$(foreach ft,$$(call FILTERS,$1),vcf/ft/$$(ft)/%.$1.$$(ft).vcf)
+	$$(MERGE_SCRIPT)
+# first annotation round
+vcf/ann/%.$1.ann.vcf : $$(foreach ann,$$(call ANNOTATIONS,$1),vcf/ann/$$(ann)/%.$1.ft.$$(ann).vcf)
+	$$(MERGE_SCRIPT)
+# post-filter after first annotation round
+vcf/ft2/%.$1.ft2.vcf : $$(foreach ft,$$(call POST_FILTERS,$1),vcf/ft2/$$(ft)/%.$1.ann.$$(ft).vcf)
+	$$(MERGE_SCRIPT)
+# post-filter after first annotation round
+ifdef POST_ANNS
+vcf_ann/%.$1.vcf : $$(foreach ann,$$(call POST_ANNS,$1),vcf/ann2/$$(ann)/%.$1.ft2.$$(ann).vcf)
+	$$(MERGE_SCRIPT)
+else
+vcf_ann/%.$1.vcf: vcf/ft2/%.$1.ft2.pass.vcf
+	$$(INIT) cp $$< $$@
+endif
+endef
+VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
+MAFS = $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$1.maf)
 
 endif
 VARIANT_CALLER_INC = true

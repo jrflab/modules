@@ -40,25 +40,24 @@ for record in vcf_reader:
         url = "http://www.mutationtaster.org/cgi-bin/MutationTaster/MT_ChrPos.cgi" \
             "?chromosome={}&position={}&ref={}&alt={}".format(record.CHROM, record.POS, record.REF, record.ALT[0])
         print "Querying: ", url
-        # url = "http://www.mutationtaster.org/cgi-bin/MutationTaster/MT_ChrPos.cgi?chromosome=1&position=113244235" \
-            # "&ref=ACCTC&alt=A"
         dfs = pd.read_html(url)
         if (len(dfs) < 2):
-            continue
-        summary = dfs[1][1:]
-        summary.columns = dfs[1].iloc[0]
-        if ('prediction' not in summary.columns):
-            continue
-        pred_score = {}
-        for i, row in summary.iterrows():
-            if (not pred_score.has_key(row['prediction'])):
-                pred_score[row['prediction']] = []
-            pred_score[row['prediction']].append(float(row['probability']))
-        for p in prediction_priority:
-            if pred_score.has_key(p):
-                pred = p
-                score = max(pred_score[p])
-                break
+            print "query failed, skipping"
+        else:
+            # summary is the second dataframe
+            summary = dfs[1][1:]
+            summary.columns = dfs[1].iloc[0]
+            if ('prediction' in summary.columns):
+                pred_score = {}
+                for i, row in summary.iterrows():
+                    if (not pred_score.has_key(row['prediction'])):
+                        pred_score[row['prediction']] = []
+                    pred_score[row['prediction']].append(float(row['probability']))
+                for p in prediction_priority:
+                    if pred_score.has_key(p):
+                        pred = p
+                        score = max(pred_score[p])
+                        break
     if pred is not None and score is not None:
         record.INFO['MutationTaster_pred'] = [pred]
         record.INFO['MutationTaster_score'] = [score]

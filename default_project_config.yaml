@@ -17,6 +17,9 @@ vcf_post_ann_filter_expression: ExAC_AF > 0.05
 # targets_file: intervals.bed
 exome: true
 
+# add in facets annotations to vcf
+ann_facets: false
+
 # gatk options
 gatk_hard_filter_snps: true
 gatk_pool_snp_recal: false
