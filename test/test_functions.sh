@@ -13,6 +13,13 @@ compare_files() {
         || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }
 
+diff_files() {
+    diff -q $1 $2 > /dev/null \
+        && echo "success, files the same: ${1} ${2}" \
+        || (echo "failed, files differ: ${1} ${2}" && exit 1)
+}
+
+
 upload_image() {
     local image
 

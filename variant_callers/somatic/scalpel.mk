@@ -12,11 +12,14 @@ LOGDIR = log/scalpel.$(NOW)
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all scalpel_vcfs scalpel_tables
+.PHONY: all scalpel_vcfs scalpel_tables scalpel_mafs
 
-scalpel : scalpel_vcfs scalpel_tables
+scalpel : scalpel_vcfs scalpel_tables scalpel_mafs
+
+$(eval $(call somatic-merged-vcf,scalpel_indels))
 
 scalpel_vcfs : $(call SOMATIC_VCFS,scalpel_indels)
+scalpel_mafs : $(call SOMATIC_MAFS,scalpel_indels)
 scalpel_tables : $(call SOMATIC_TABLES,scalpel_indels)
 
 ifdef BED_FILES
