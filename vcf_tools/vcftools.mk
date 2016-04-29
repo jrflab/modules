@@ -182,7 +182,7 @@ vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { ( vc.getGenotype(\"$2\").getAD().1 * 1.0 / vc.getGenotype(\"$2\").getDP()) > ( vc.getGenotype(\"$1\").getAD().1 * 1.0 / vc.getGenotype(\"$1\").getDP()) / 5.0 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
 		--filterName somaticAlleleDepth \
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $$(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $$(DEPTH_FILTER)' \
-		--filterName depthFilter && $$(RM) $$< $$<.idx")
+		--filterName depthFilter && sed -i 's/getGenotype(\"\([^\"]*\)\")/getGenotype(\1)/g' $$@ && $$(RM) $$< $$<.idx")
 
 vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_CHECK_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ \
@@ -191,7 +191,7 @@ vcf/$1_$2.%.ffpe_som_ad_ft.vcf : vcf/$1_$2.%.vcf
 		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { ( vc.getGenotype(\"$2\").getAD().1 * 1.0 / vc.getGenotype(\"$2\").getDP()) > ( vc.getGenotype(\"$1\").getAD().1 * 1.0 / vc.getGenotype(\"$1\").getDP()) / 3.0 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \
 		--filterName somaticAlleleDepth \
 		--filterExpression 'vc.getGenotype(\"$1\").getDP() <= $$(DEPTH_FILTER) || vc.getGenotype(\"$2\").getDP() <= $$(DEPTH_FILTER)' \
-		--filterName depthFilter && $$(RM) $$< $$<.idx")
+		--filterName depthFilter && sed -i 's/getGenotype(\"\([^\"]*\)\")/getGenotype(\1)/g' $$@ && $$(RM) $$< $$<.idx")
 
 # somatic filter for structural variants
 vcf/$1_$2.%.sv_som_ft.vcf : vcf/$1_$2.%.vcf
@@ -200,7 +200,7 @@ vcf/$1_$2.%.sv_som_ft.vcf : vcf/$1_$2.%.vcf
 		--filterName svSupport \
 		--filterExpression 'vc.getGenotype(\"$1\").getAnyAttribute(\"SU\") < 5 * vc.getGenotype(\"$2\").getAnyAttribute(\"SU\")' \
 		--filterName somaticSvSupport \
-		&& $$(RM) $$< $$<.idx")
+		&& sed -i 's/getGenotype(\"\([^\"]*\)\")/getGenotype(\1)/g' $$@ && $$(RM) $$< $$<.idx")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call som-ad-ft-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
@@ -282,19 +282,6 @@ endif
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \
 	$(INIT) head -1 $< > $@ && awk -v col=$$col 'match($$col, /MODERATE/) || match($$col, /HIGH/)' $< >> $@
 
-# DEPRECATED
-#%.nonsilent.txt : %.txt
-#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_EFF), -e $(eff)) >> $@ || true
-#
-#%.nonsilent_cds.txt : %.txt
-#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep $(foreach eff,$(NON_SILENT_CODING_EFF), -e $(eff)) >> $@ || true
-#
-#%.missense.txt : %.txt
-#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e MISSENSE >> $@ || true
-#
-#%.silent.txt : %.txt
-#	$(INIT) head -1 $< > $@ && sed '1d' $< | grep -e SILENT >> $@ || true
-
 # extract vcf to table
 tables/%.opl_tab.txt : vcf/%.vcf
 	$(call LSCRIPT_CHECK_MEM,2G,5G,"format_fields=\$$(grep '^##FORMAT=<ID=' $< | sed 's/.*ID=//; s/,.*//;' | tr '\n' ' '); \
@@ -319,7 +306,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
 COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
-%.common.vcf : %.vcf
+%.common_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< > $@")
 
 FALSE_POSITIVE_BED = $(HOME)/share/reference/fuentes_blacklist.include_cosmic.hg19.bed
@@ -378,7 +365,7 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 ifdef SAMPLE_PAIRS
 ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
 define annotate-facets-pair
-vcf/$1.%.facets.vcf : vcf/$1.%.vcf facets/$1.cncf.txt
+vcf/$1.%.facets.vcf : vcf/$1.%.vcf facets/cncf/$1.cncf.txt
 	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@ $$<")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
@@ -416,10 +403,10 @@ MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
 	$(INIT) $(MUTATION_TASTER) $< > $@ &> $(LOG)
 
-CANCER_HOTSPOT_ANNOTATION_SCRIPT = $(PYTHON) modules/vcf_tools/hotspot_vcf.py
+CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
 CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
 %.hotspot.vcf : %.vcf
-	$(INIT) $(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@ &> $(LOG)
+	$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@")
 
 PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
 AA_TABLE = $(HOME)/share/reference/aa_table.tsv
@@ -430,6 +417,9 @@ PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXD
 %.provean.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
 
+CLASSIFY_PATHOGENICITY = $(PYTHON) modules/vcf_tools/classify_pathogenicity_vcf.py
+%.pathogen.vcf : %.vcf
+	$(INIT) $(CLASSIFY_PATHOGENICITY) $< $@
 
 endif
 VCFTOOLS_MK = true

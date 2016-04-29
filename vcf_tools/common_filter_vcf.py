@@ -20,13 +20,14 @@ vcf_reader.filters['Common'] = vcf.parser._Filter(id='common',
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
-    # ignore entries with cosmic IDs
-    cosm_match = re.search(r'COSM', record.ID)
-    if cosm_match is None:
-        # filter entries with dbsnp IDs unless GMAF > 0.01
-        rs_match = re.search(r'rs', record.ID)
-        if rs_match is not None and ('GMAF' not in record.INFO or record.INFO['GMAF'] > 0.01):
-            record.FILTER.append('Common')
+    if record.ID is not None:
+        # ignore entries with cosmic IDs
+        cosm_match = re.search(r'COSM', record.ID)
+        if cosm_match is None:
+            # filter entries with dbsnp IDs unless GMAF > 0.01
+            rs_match = re.search(r'rs', record.ID)
+            if rs_match is not None and ('GMAF' not in record.INFO or record.INFO['GMAF'] > 0.01):
+                record.FILTER.append('Common')
     vcf_writer.write_record(record)
 
 vcf_writer.close()
