@@ -121,55 +121,6 @@ def add_maf(df):
 
 
 
-def add_pathogenicity(df):
-    rv = df.copy()
-
-    def classify_pathogenicity(x):
-        isLOH = pd.to_numeric(x["facetsLCN_EM"], errors='coerse') == 0
-        if any(c in x["ANN[*].EFFECT"] for c in ["frameshift", "splice_donor", "splice_acceptor", "stop_gained"]):
-            if (isLOH or x["hap_insuf"] == "true") and x["cancer_gene"] == "true":
-                return "pathogenic"
-            elif isLOH or x["hap_insuf"] == "true" or x["cancer_gene"] == "true":
-                return "potentially pathogenic"
-            else:
-                return "passenger"
-        elif "missense" in x["ANN[*].EFFECT"]:
-            chasm_score_columns = [c for c in df.columns if "chasm_score" in c]
-            csc = x[chasm_score_columns]
-            csc[csc == "."] = "NaN"
-            csc = csc.astype('float')
-            isChasmPathogenic = bool(sum(csc <= 0.3))
-            if (x["dbNSFP_MutationTaster_pred"] == "N" or x["dbNSFP_MutationTaster_pred"] == "P") and ~isChasmPathogenic:
-                return "passenger"
-            else:
-                if x["fathmm_pred"] == "CANCER" or isChasmPathogenic:
-                    return "pathogenic" if x["cancer_gene"] == "true" else "potentially pathogenic"
-                else:
-                    return "passenger"
-        elif "inframe" in x["ANN[*].EFFECT"]:  # not working properly since dbNSFP applies to SNVs only
-            if (x["dbNSFP_MutationTaster_pred"] == "N" or x["dbNSFP_MutationTaster_pred"] == "P") and x["dbNSFP_PROVEAN_pred"] == "N":
-                return "passenger"
-            else:
-                if (isLOH or x["hap_insuf"] == "true") and x["cancer_gene"] == "true":
-                    return "pathogenic"
-                elif isLOH or x["hap_insuf"] == "true" or x["cancer_gene"] == "true":
-                    return "potentially pathogenic"
-                else:
-                    return "passenger"
-        else:
-            return "."
-
-    if len(df) > 0:
-        if all([c in df.columns for c in "dbNSFP_MutationTaster_pred dbNSFP_PROVEAN_pred hap_insuf facetsLCN_EM cancer_gene".split()]):
-            rv["pathogenicity"] = df.apply(classify_pathogenicity, axis=1)
-        else:
-            rv["pathogenicity"] = pd.Series(["N/A"] * len(df))
-    else:
-        rv["pathogenicity"] = pd.Series()
-
-    return rv
-
-
 def add_cancer_gene(df):
     rv = df.copy()
     rv["cancer_gene"] = df.apply(lambda x: "true" if x["cancer_gene_census"] == "true" or
@@ -194,7 +145,6 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
             df = add_cancer_gene(df)
         df = add_loh(df)
-        df = add_pathogenicity(df)
         if write_columns:
             df = df[[c for c in write_columns if c in df.columns]]
         df = df.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split())
