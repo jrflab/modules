@@ -669,8 +669,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 	} else {
 
 		sample.stats <-
-			inner_join( CNSampleStats(gene.matrix.a, threshold.a), CNSampleStats(gene.matrix.b, threshold.b) %>%
-			select(-chrom,), by='gene', suffix=c('.a','.b') ) %>%
+			inner_join( CNSampleStats(gene.matrix.a, threshold.a), CNSampleStats(gene.matrix.b, threshold.b) %>% select(-chrom, -start), by='gene', suffix=c('.a','.b') ) %>%
 			arrange(chrom, start) %>%
 			ungroup %>%
 			mutate(gene=factor(gene,levels=unique(gene))) %>%
