@@ -4,3 +4,5 @@ java-jdk=7.0.91
 pyvcf=0.6.8
 pyyaml=3.11
 glob2=0.4.1
+beautiful-soup=4.3.2
+bencpeters/mechanize=0.2.5
