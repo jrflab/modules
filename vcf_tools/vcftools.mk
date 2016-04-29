@@ -320,7 +320,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 
 COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
 %.common.vcf : %.vcf
-	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< $@")
+	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< > $@")
 
 FALSE_POSITIVE_BED = $(HOME)/share/reference/fuentes_blacklist.include_cosmic.hg19.bed
 %.fp_ft.vcf : %.vcf
@@ -414,7 +414,12 @@ allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 
 MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
-	$(INIT) $(MUTATION_TASTER) $< $@ &> $(LOG)
+	$(INIT) $(MUTATION_TASTER) $< > $@ &> $(LOG)
+
+CANCER_HOTSPOT_ANNOTATION_SCRIPT = $(PYTHON) modules/vcf_tools/hotspot_vcf.py
+CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
+%.hotspot.vcf : %.vcf
+	$(INIT) $(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@ &> $(LOG)
 
 PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
 AA_TABLE = $(HOME)/share/reference/aa_table.tsv

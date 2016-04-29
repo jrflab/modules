@@ -4,11 +4,11 @@
 import argparse
 import vcf
 import re
+import sys
 
 parser = argparse.ArgumentParser(prog='add_dbsnp_gmaf.py',
                                  description='add GMAF field to dbsnp using CAF field')
 parser.add_argument('vcf_infile')
-parser.add_argument('vcf_outfile')
 
 args = parser.parse_args()
 
@@ -19,7 +19,7 @@ vcf_reader.infos['GMAF'] = vcf.parser._Info(id='GMAF', num=1, type='Float',
                                             source=None, version=None)
 
 
-vcf_writer = vcf.Writer(open(args.vcf_outfile, 'w'), vcf_reader)
+vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
     if 'CAF' in record.INFO:
