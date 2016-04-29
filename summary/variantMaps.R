@@ -511,7 +511,7 @@ OrgEvents <- function(events, sample.order, pheno.order=NULL, subsets.pheno, rec
 
     if(length(missing.samples) > 0){
 
-        message(yellow(str_c('missing specified samples: ',missing.samples)))
+        message(yellow(str_c('missing specified samples: ',missing.samples,'\n')))
 
         missing.fill <-
             subsets.pheno %>%
@@ -530,8 +530,8 @@ OrgEvents <- function(events, sample.order, pheno.order=NULL, subsets.pheno, rec
 
     # facet ordering & color assignment
     if(!is.null(pheno.order)) {
-        cols <- pheno.order %>% map(~ events %>% select_(.x) %>% unlist %>% list.filter(!is.na(.)) %>% unique ) %>% unlist
-        events %<>% mutate_(pheno=paste(pheno.order)) %>% mutate(pheno=factor(pheno, levels=cols))
+        cols <- subsets.pheno %>% select(one_of(pheno.order)) %>% summarise_each(funs(max(.,na.rm=TRUE))) %>% unlist
+        events %<>% mutate(pheno=factor(pheno, levels=cols))
     } else if('pheno' %in% names(events)) {
         cols <- '#666666'
     } else {
@@ -1163,6 +1163,7 @@ subset.pairs %<>% filter(overlap==0)
 for (sub.num in 1:nrow(subset.pairs)) {
 
     # format file name
+    sub.name <- subset.pairs$pair.id[sub.num]
     sub.ext <- gsub(' ', '_', subset.pairs$pair.id[sub.num])
     sub.pair <- c(subset.pairs[sub.num,'a'], subset.pairs[sub.num,'b'])
 
@@ -1282,9 +1283,9 @@ for (sub.num in 1:nrow(subset.pairs)) {
                   text.size   = 30 )
 
 
-    #------------------------
-    # Fisher's exact plotting
-    #------------------------
+    #---------------------------
+    # Fisher's exact CN plotting
+    #---------------------------
 
     samples.a <- subsets[unlist(subset.pairs[sub.num,'a'])] %>% unlist
     samples.b <- subsets[unlist(subset.pairs[sub.num,'b'])] %>% unlist
@@ -1293,12 +1294,12 @@ for (sub.num in 1:nrow(subset.pairs)) {
     gene.cn.a <- gene.cn[c('gene', 'chrom', 'start', 'end', samples.a)]
     gene.cn.b <- gene.cn[c('gene', 'chrom', 'start', 'end', samples.b)]
 
-    Fisher( plot.type       = 'copy number',
+    Fisher( plot.type        = 'copy number',
              gene.matrix.a   = gene.cn.a,
              gene.matrix.b   = gene.cn.b,
-             plot.title.main = .y,
-             plot.title.a    = .x[1],
-             plot.title.b    = .x[2],
+             plot.title.main = sub.name,
+             plot.title.a    = sub.pair[1],
+             plot.title.b    = sub.pair[2],
              allosome        = allosome,
              targets.file    = NULL,
              suffix          = '',
@@ -1306,36 +1307,26 @@ for (sub.num in 1:nrow(subset.pairs)) {
              threshold.b     = FALSE,
              gene.names      = FALSE )
 
+    #---------------------------------
+    # Fisher's exact mutation plotting
+    #---------------------------------
+
     # mutation plotting
-    gene.muts.a <- muts.melt.fishers %>% filter(sample %in% samples.a) %>% spread(sample, effect, fill=0)
-    gene.muts.b <- muts.melt.fishers %>% filter(sample %in% samples.b) %>% spread(sample, effect, fill=0)
-    # mutation plotting
-    gene.muts.c <- muts.melt.fishers %>% filter(sample %in% samples.c) %>% spread(sample, effect, fill=0)
-    gene.muts.d <- muts.melt.fishers %>% filter(sample %in% samples.d) %>% spread(sample, effect, fill=0)
+    gene.muts.a <- sub.muts %>% filter(sample %in% samples.a) %>% spread(sample, effect, fill=0)
+    gene.muts.b <- sub.muts %>% filter(sample %in% samples.b) %>% spread(sample, effect, fill=0)
 
     Fisher( plot.type       = 'mutation',
              gene.matrix.a   = gene.muts.a,
              gene.matrix.b   = gene.muts.b,
-             plot.title.main = 'acc vs mga',
-             plot.title.a    = 'acc',
-             plot.title.b    = 'mga',
+             plot.title.main = sub.name,
+             plot.title.a    = sub.pair[1],
+             plot.title.b    = sub.pair[2],
              allosome        = allosome,
-             targets.file    = NULL,
+             targets.file    = targets.file,
              suffix          = '',
              gene.names      = FALSE )
 
-    Fisher( plot.type       = 'mutation',
-             gene.matrix.a   = gene.muts.c,
-             gene.matrix.b   = gene.muts.d,
-             plot.title.main = 'acinic vs nonacinic',
-             plot.title.a    = 'acinic',
-             plot.title.b    = 'non-acinic',
-             allosome        = allosome,
-             targets.file    = NULL,
-             suffix          = '',
-             gene.names      = FALSE )
-})
-
+}
 
 #------------#
 #            #
