@@ -403,7 +403,7 @@ MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
 	$(INIT) $(MUTATION_TASTER) $< > $@ &> $(LOG)
 
-CANCER_HOTSPOT_ANNOTATION_SCRIPT = $(PYTHON) modules/vcf_tools/hotspot_vcf.py
+CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
 CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
 %.hotspot.vcf : %.vcf
 	$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@")
