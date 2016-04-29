@@ -44,13 +44,16 @@ fq.GCT12T.0 = /home/limr/share/data/test/tseq/modules/test/scripts/test_data/raw
 fq.GCT12T.1 = /home/limr/share/data/test/tseq/modules/test/scripts/test_data/rawdata/Project_06575_C/Sample_GCT12_T_IGO_06575_C_5/GCT12_T_IGO_06575_C_5_S8_L002_R1_001.fastq.gz /home/limr/share/data/test/tseq/modules/test/scripts/test_data/rawdata/Project_06575_C/Sample_GCT12_T_IGO_06575_C_5/GCT12_T_IGO_06575_C_5_S8_L002_R2_001.fastq.gz
 split.GCT10T.0 = GCT10T
 split.GCT10T.1 = GCT10T
-split.GCT10T = GCT10T.0 GCT10T.1 
+split.GCT10T = GCT10T.0 GCT10T.1
+
 split.GCT11T.0 = GCT11T
 split.GCT11T.1 = GCT11T
-split.GCT11T = GCT11T.0 GCT11T.1 
+split.GCT11T = GCT11T.0 GCT11T.1
+
 split.GCT12T.0 = GCT12T
 split.GCT12T.1 = GCT12T
-split.GCT12T = GCT12T.0 GCT12T.1 
+split.GCT12T = GCT12T.0 GCT12T.1
+
 SPLIT_SAMPLES = GCT11T.0 GCT11T.1 GCT12T.1 GCT12T.0 GCT10T.1 GCT10T.0
 
 # defaults
@@ -81,7 +84,7 @@ VARSCAN_JAR ?= $(JARDIR)/VarScan.v2.3.9.jar
 BGZIP ?= $(HOME)/share/usr/bin/bgzip
 MUTECT_JAR ?= $(JARDIR)/muTect-1.1.4.jar
 INTEGRATE ?= $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
-JAVA_BIN ?= /usr/lib/jvm/jre-1.6.0/bin/java
+JAVA_BIN ?= /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
 PICARD2_JAR ?= $(JARDIR)/picard-tools-2.1.1/picard.jar
 SNP_EFF_CONFIG ?= $(HOME)/share/usr/snpEff-4.1/snpEff.config
 EMBL_MYSQLDB_DB ?= homo_sapiens_core_75_37
@@ -89,7 +92,7 @@ TABIX ?= $(HOME)/share/usr/bin/tabix
 ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 VCFTOOLS ?= $(HOME)/share/usr/bin/vcftools-0.1.10
 EMBL_MYSQLDB_HOST ?= 10.0.200.71
-JAVA6_BIN ?= /usr/lib/jvm/jre-1.6.0/bin/java
+JAVA6_BIN ?= /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
 BOWTIE ?= $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
 BWA ?= $(HOME)/share/usr/bin/bwa-0.7.10
 HISAT ?= $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
@@ -99,7 +102,7 @@ GET_INSERT_SIZE ?= $(HOME)/share/usr/bin/getInsertSize.py
 SNP_SIFT_JAR ?= $(JARDIR)/snpSift-4.1.jar
 CUFFLINKS ?= $(HOME)/share/usr/bin/cufflinks-2.2.1
 DB_NSFP ?= $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
-JAVA7_BIN ?= /usr/bin/java
+JAVA7_BIN ?= /opt/common/CentOS_6/java/jdk1.7.0_75/bin/java
 PICARD_DIR ?= $(JARDIR)/picard-1.92
 PICARD_JAR ?= $(JARDIR)/picard-tools-1.141/picard.jar
 DEFUSE ?= $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
