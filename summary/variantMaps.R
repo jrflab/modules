@@ -14,6 +14,8 @@ pacman::p_load( dplyr,lazyeval,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx
                 dendextend,dendextendRcpp,dynamicTreeCut,gclus,phangorn, # dentrogram
                 gtools,digest ) # permutation & hashing
 
+loadNamespace('plyr')
+
 source('modules/summary/variantFishers.R')
 
 #----------------#
@@ -104,6 +106,7 @@ use.keys             = FALSE
 loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
 muts.out             = 'summary/mutation_heatmap.tsv'
 
+
 #---------------------
 # assign config params
 #---------------------
@@ -122,30 +125,49 @@ if(use.keys !=FALSE){
 }
 
 # subset groups for pairwise comparisons
-if(!is.null(config$subset_pairs)) {
-    subset.pairs <-
-        config$subset_pairs %>%
-        list.map(as.list(.)) %>%
-        list.stack %>%
-        mutate(pair.id=names(config$subset_pairs)) %>%
-        set_names(c('a', 'b', 'pair.id')) %>%
-        select(pair.id, a, b) %>%
-        mutate(overlap=length(intersect(subsets[a], subsets[b])))
+if(!is.null(config$subset_groups)) {
+    subset.groups <-
+        config$subset_groups %>%
+        list.map(data_frame(.) %>% t %>% as_data_frame) %>%
+        plyr::rbind.fill %>%
+        set_names(letters[1:(config$subset_groups %>% list.mapv(length(.)) %>% max)]) %>%
+        tbl_df %>%
+        gather(col,subset) %>%
+        group_by(col) %>%
+        mutate(group.id=row_number()) %>%
+        ungroup %>%
+        group_by(group.id) %>%
+        mutate(subv=subsets[subset]) %>%
+        mutate(overlap=anyDuplicated(unlist(subv))) %>%
+        ungroup %>%
+        select(-subv) %>%
+        spread(col,subset)
+
+        if(any(subset.groups$overlap>0)){
+            message(red('warning: subset groups contain overlapping samples'))
+        }
+
 } else {
-    subset.pairs <-
+    subset.groups <-
         permutations(n=length(config$subsets), r=2, v=names(config$subsets)) %>%
         as_data_frame %>%
         set_names(c('a', 'b')) %>%
-        mutate(pair.id=row_number()) %>%
-        select(pair.id, a, b) %>%
-        mutate(overlap=length(intersect(subsets[a], subsets[b])))
+        mutate(group.id=row_number()) %>%
+        select(group.id, a, b) %>%
+        rowwise %>%
+        mutate(overlap=length(intersect(unlist(subsets[a]), unlist(subsets[b])))) %>%
+        ungroup
 }
 
 # stop if subset specifications absent
-if(subset.pairs %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE ) {
-    message('missing subsets specified in subset pairs')
-    stop()
+if(subset.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE) {
+    stop('missing subsets specified in subset groups')
+    print((subset.groups %>% select(a, b) %>% unlist)[!subset.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
 }
+
+subset.groups %<>%
+    filter(overlap==0) %>%
+    select(-overlap)
 
 # set detaults if not supplied (for interactive use)
 if(!exists('muts.file')){muts.file = 'summary/mutation_summary.xlsx'}
@@ -1158,14 +1180,12 @@ PlotVariants( output.file = 'summary/variant_heatmap_type.pdf',
 
 system("mkdir summary/subsets &>/dev/null")
 
-subset.pairs %<>% filter(overlap==0)
-
-for (sub.num in 1:nrow(subset.pairs)) {
+for (sub.num in 1:nrow(subset.groups)) {
 
     # format file name
-    sub.name <- subset.pairs$pair.id[sub.num]
-    sub.ext <- gsub(' ', '_', subset.pairs$pair.id[sub.num])
-    sub.pair <- c(subset.pairs[sub.num,'a'], subset.pairs[sub.num,'b'])
+    sub.name <- subset.groups$group.id[sub.num]
+    sub.ext <- gsub(' ', '_', subset.groups$group.id[sub.num])
+    sub.pair <- c(subset.groups[sub.num,'a'], subset.groups[sub.num,'b'])
 
     #-----------------
     # heatmap plotting
@@ -1287,8 +1307,8 @@ for (sub.num in 1:nrow(subset.pairs)) {
     # Fisher's exact CN plotting
     #---------------------------
 
-    samples.a <- subsets[unlist(subset.pairs[sub.num,'a'])] %>% unlist
-    samples.b <- subsets[unlist(subset.pairs[sub.num,'b'])] %>% unlist
+    samples.a <- subsets[unlist(subset.groups[sub.num,'a'])] %>% unlist
+    samples.b <- subsets[unlist(subset.groups[sub.num,'b'])] %>% unlist
 
     # copy number plotting
     gene.cn.a <- gene.cn[c('gene', 'chrom', 'start', 'end', samples.a)]
@@ -1325,164 +1345,135 @@ for (sub.num in 1:nrow(subset.pairs)) {
             targets.file    = targets.file,
             suffix          = '',
             gene.names      = FALSE )
+
+    #----------------
+    # TREE GENERATION
+    #----------------
+
+    system("mkdir summary/tree &>/dev/null")
+
+    # remove labels from tree
+    if(tree.labels == FALSE){
+        dend.tree %<>% set('labels', '')
+    }
+
+    # distance tree
+    pdf('summary/tree/genomic_distance_tree_ladder.pdf',140,38)
+        par(mar = c(10,10,10,10))  # bottom, left, top, right
+        layout(matrix(c(1,2),nrow=1), widths=c(10,1))
+        plot(muts.tree$, cex.axis=6)
+        colored_bars( colors = color.table %>% select(-sample, -gene, -exists, -pheno),
+                      dend = muts.tree$,
+                      sort_by_labels_order = FALSE,
+                      add = TRUE,
+                      rowLabels = color.table$sample,
+                      y_scale = 10,
+                      cex.rowLabels = 5.8 )
+        color.table %>%
+        select(-sample, -gene, -exists) %>%
+        map(~ accumulate(., ~ legend(x=3, y=3, legend=unique(names(.x)), fill=unique(.x), cex=4) ))
+
+    dev.off()
+
+    # weighted tree (charlotte's)
+    pdf('summary/genomic_distance_tree_weighted.pdf',60,25)
+        heatmap.2(
+            event.matrix,
+            trace='none',
+            Rowv=FALSE,
+            hclustfun=function(x){hclust(x, 'ward.D2')},
+            col=c('white','black'),
+            reorderfun=function(d,w) rev(reorder(d,w)),
+            distfun=function(x) as.dist(Hamming(x)),
+            key=FALSE
+                )
+    dev.off()
+
+
+    pdf('summary/genomic_distance_tree_bw.pdf',60,25)
+        heatmap.2(
+            t(event.matrix),
+            trace='none',
+            dendrogram='column',
+            Colv=rev(dend),
+            col=c('white','black'),
+            key=FALSE
+        )
+    dev.off()
+
+
+    #-----------------------
+    # LINEAGE MAP GENERATION
+    #-----------------------
+
+    plot_file          = 'summary/tree.pdf'
+    #colnames(muts)[1]  = 'Sample.ID'
+    colnames(muts)[7]  = 'Gene'
+    colnames(muts)[8]  = 'AA'
+    colnames(muts)[10] = 'Effect'
+    colnames(muts)[26] = 'CCF'
+    muts               = muts[!is.na(muts$ccf),]
+    tumor              = unique(muts$sample)
+
+
+    muts %<>% as.data.frame
+
+    sample_names   = as.list(sort(unique(muts$sample)))
+    mutation_genes = unique(muts$Gene)
+    rownames(muts) = 1:nrow(muts)
+    TCGA=FALSE
+
+
+    # Make a matrix of "blank" values the with nrow= #mutations and ncol=#samples
+    mutation_heatmap <- matrix(0, nrow=sum(unlist(lapply(sample_names, length))), ncol=sum(unlist(lapply(mutation_genes, length))))
+    rownames(mutation_heatmap) <- unlist(sample_names)
+    colnames(mutation_heatmap) <- mutation_genes
+
+
+    # Make sure the sample and mutations are both in the list of gene mutations and gene samples
+    if (!TCGA) { smallmaf <- muts[which(muts$Gene %in% unlist(mutation_genes) & muts$Sample.ID %in% unlist(sample_names)),]
+    }else {
+            muts$id <- unlist(lapply(muts$Sample.ID, function(x){substr(x, 1, 12)}))
+            print(head(muts$id))
+            print(head(unlist(sample_names)))
+            smallmaf <- muts[which(muts$Hugo_Symbol %in% unlist(mutation_genes) & muts$id %in% unlist(sample_names)),]
+    }
+
+    # for each row read the Effect and create the type based on which category it fits in
+    for (i in 1:nrow(smallmaf)) {
+            if(!TCGA) { type = smallmaf$CCF[i] } else { type = smallmaf$Variant_Classification[i] }
+            print(paste(i,type,sep="_"))
+
+            if (!TCGA) {
+            if (mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] < type) {
+                mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] <- type}
+            } else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$Hugo[i])] <- type }
+    }
+
+    smalltab = t(mutation_heatmap)
+    smalltab = smalltab>0
+
+    smalltab = cbind(smalltab, FALSE)
+    colnames(smalltab)[ncol(smalltab)] = "Parental"
+
+    # smalltab = cbind(smalltab, FALSE)
+    # colnames(smalltab)[ncol(smalltab)] = "Test"
+
+    pd <- phyDat(t(smalltab), type="USER", levels=c(FALSE, TRUE))
+    dm <- dist.hagene.cning(pd)
+    tree <- njs(dm)
+    treeRatchet <- pratchet(pd, start=tree)
+    treeRatchet <- acctran(treeRatchet, pd)
+    lineage.map <- root(treeRatchet, "Parental")
+
+    pdf("summary/lineage_map.pdf")
+        plot(lineage.map)
+    dev.off()
+
 }
 
-#------------#
-#            #
-# clustering #
-#            #
-#------------#
-
-# # adaptive branch pruning, order by ladderized tree layout
-# if(color.clusters == TRUE) {
-#     clusters <-
-#         cutreeDynamic(
-#             muts.tree$hc,
-#             minClusterSize = min.cluster,
-#             distM = muts.tree$event.marix,
-#             method = 'hybrid',
-#             deepSplit = 4,              # clustering sensitivity [1-4]
-#             maxCoreScatter = NULL,      # max scatter of the core for a branch to be a cluster given as absolute heights [0-1]
-#             minGap = NULL,              # min cluster gap given as fraction of the difference between ‘cutHeight’ and the 5th percentile of joining heights [0-1]
-#             maxAbsCoreScatter = NULL,   # max scatter of the core for a branch to be a cluster given as absolute heights
-#             minAbsGap = NULL            # min cluster gap given as absolute height difference
-#         ) %>%
-#         .[order.dendrogram(muts.tree$dend)]
-
-#     # cluster coloring
-#     cluster.v <- unique(clusters) %>% list.filter(.!=0)
-#     n.cluster <- length(cluster.v)
-
-#     #cluster palette
-#     cluster.palette <- colorRampPalette(brewer.pal(8,'Dark2'))(n.cluster)
-
-#     # color branches according to cluster
-#     tree.dend %<>% branches_attr_by_clusters(clusters, values=cluster.palette)
-# }
 
 
-# # remove labels from tree
-# if(tree.labels == FALSE){
-#     dend.tree %<>% set('labels', '')
-# }
-
-
-# #----------------
-# # TREE GENERATION
-# #----------------
-
-# # distance tree
-# pdf('summary/genomic_distance_tree_ladder.pdf',140,38)
-#     par(mar = c(10,10,10,10))  # bottom, left, top, right
-#     layout(matrix(c(1,2),nrow=1), widths=c(10,1))
-#     plot(dend, cex.axis=6)
-#     colored_bars( colors = color.table %>% select(-sample, -gene, -exists, -pheno),
-#                   dend = dend,
-#                   sort_by_labels_order = FALSE,
-#                   add = TRUE,
-#                   rowLabels = color.table$sample,
-#                   y_scale = 10,
-#                   cex.rowLabels = 5.8 )
-#     color.table %>%
-#     select(-sample, -gene, -exists) %>%
-#     map(~ accumulate(., ~ legend(x=3, y=3, legend=unique(names(.x)), fill=unique(.x), cex=4) ))
-
-# dev.off()
-
-# # weighted tree (charlotte's)
-# pdf('summary/genomic_distance_tree_weighted.pdf',60,25)
-#     heatmap.2(
-#         event.matrix,
-#         trace='none',
-#         Rowv=FALSE,
-#         hclustfun=function(x){hclust(x, 'ward.D2')},
-#         col=c('white','black'),
-#         reorderfun=function(d,w) rev(reorder(d,w)),
-#         distfun=function(x) as.dist(Hamming(x)),
-#         key=FALSE
-#             )
-# dev.off()
-
-
-# pdf('summary/genomic_distance_tree_bw.pdf',60,25)
-#     heatmap.2(
-#         t(event.matrix),
-#         trace='none',
-#         dendrogram='column',
-#         Colv=rev(dend),
-#         col=c('white','black'),
-#         key=FALSE
-#     )
-# dev.off()
-
-
-# #-----------------------
-# # LINEAGE MAP GENERATION
-# #-----------------------
-
-# plot_file          = 'summary/tree.pdf'
-# #colnames(muts)[1]  = 'Sample.ID'
-# colnames(muts)[7]  = 'Gene'
-# colnames(muts)[8]  = 'AA'
-# colnames(muts)[10] = 'Effect'
-# colnames(muts)[26] = 'CCF'
-# muts               = muts[!is.na(muts$ccf),]
-# tumor              = unique(muts$sample)
-
-
-# muts %<>% as.data.frame
-
-# sample_names   = as.list(sort(unique(muts$sample)))
-# mutation_genes = unique(muts$Gene)
-# rownames(muts) = 1:nrow(muts)
-# TCGA=FALSE
-
-
-# # Make a matrix of "blank" values the with nrow= #mutations and ncol=#samples
-# mutation_heatmap <- matrix(0, nrow=sum(unlist(lapply(sample_names, length))), ncol=sum(unlist(lapply(mutation_genes, length))))
-# rownames(mutation_heatmap) <- unlist(sample_names)
-# colnames(mutation_heatmap) <- mutation_genes
-
-
-# # Make sure the sample and mutations are both in the list of gene mutations and gene samples
-# if (!TCGA) { smallmaf <- muts[which(muts$Gene %in% unlist(mutation_genes) & muts$Sample.ID %in% unlist(sample_names)),]
-# }else {
-#         muts$id <- unlist(lapply(muts$Sample.ID, function(x){substr(x, 1, 12)}))
-#         print(head(muts$id))
-#         print(head(unlist(sample_names)))
-#         smallmaf <- muts[which(muts$Hugo_Symbol %in% unlist(mutation_genes) & muts$id %in% unlist(sample_names)),]
-# }
-
-# # for each row read the Effect and create the type based on which category it fits in
-# for (i in 1:nrow(smallmaf)) {
-#         if(!TCGA) { type = smallmaf$CCF[i] } else { type = smallmaf$Variant_Classification[i] }
-#         print(paste(i,type,sep="_"))
-
-#         if (!TCGA) {
-#         if (mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] < type) {
-#             mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$Sample.ID[i],), which(colnames(mutation_heatmap)==smallmaf$Gene[i])] <- type}
-#         } else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$Hugo[i])] <- type }
-# }
-
-# smalltab = t(mutation_heatmap)
-# smalltab = smalltab>0
-
-# smalltab = cbind(smalltab, FALSE)
-# colnames(smalltab)[ncol(smalltab)] = "Parental"
-
-# # smalltab = cbind(smalltab, FALSE)
-# # colnames(smalltab)[ncol(smalltab)] = "Test"
-
-# pd <- phyDat(t(smalltab), type="USER", levels=c(FALSE, TRUE))
-# dm <- dist.hagene.cning(pd)
-# tree <- njs(dm)
-# treeRatchet <- pratchet(pd, start=tree)
-# treeRatchet <- acctran(treeRatchet, pd)
-# lineage.map <- root(treeRatchet, "Parental")
-
-# pdf("summary/lineage_map.pdf")
-#     plot(lineage.map)
-# dev.off()
 
 
 

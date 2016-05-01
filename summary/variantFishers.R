@@ -602,7 +602,6 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         mutate(chrom.n=cumsum(chrom.n))
 
 
-
     # calculate necessary statistics
     message(blue('- calculating sample statistics'))
 
