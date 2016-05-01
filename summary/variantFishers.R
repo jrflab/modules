@@ -40,8 +40,8 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
     pacman::p_load(DescTools,dplyr,readr,stringr,tidyr,broom,purrr,magrittr,rlist,crayon,colorspace,ggplot2,grid,gridExtra,RColorBrewer)
 
     # create output directory
-    system("mkdir fishers_cn &>/dev/null")
-    system("mkdir fishers_mut &>/dev/null")
+    system("mkdir summary/fishers_cn &>/dev/null")
+    system("mkdir summary/fishers_mut &>/dev/null")
 
 
     #----------
@@ -648,7 +648,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("fishers_mut/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("summary/fishers_mut/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
@@ -743,7 +743,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("summary/fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 

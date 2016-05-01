@@ -105,6 +105,8 @@ cn.cols              = 'threshold'  # 'threshold' = reserved string for selectin
 use.keys             = FALSE
 loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
 muts.out             = 'summary/mutation_heatmap.tsv'
+muts.file            = 'summary/mutation_summary.xlsx'
+
 
 
 #---------------------
@@ -112,7 +114,7 @@ muts.out             = 'summary/mutation_heatmap.tsv'
 #---------------------
 
 # load config yaml file
-config <- list.load('config.yaml')
+config <- list.load('subsets_config.yaml')
 
 # sample key values
 keys <- config$keys %>% unlist
