@@ -12,7 +12,7 @@ pacman::p_load( dplyr,lazyeval,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx
                 crayon,colorspace,RColorBrewer, # coloring
                 ggplot2,grid,gridExtra,gplots, # plot layout
                 dendextend,dendextendRcpp,dynamicTreeCut,gclus,phangorn, # dentrogram
-                gtools,digest ) # permutation & hashing
+                gtools ) # permutation
 
 loadNamespace('plyr')
 
@@ -102,9 +102,9 @@ options(device=pdf)
 #------------
 
 include.silent       = FALSE
-dist.method          = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'     | see ?dist for details [hamming method implemented manually]
+dist.method          = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'    | see ?dist for details [hamming method implemented manually]
 clust.method         = 'complete' # 'complete', ward', 'single', 'complete', 'average', 'mcquitty', 'median', 'centroid' | see ?hclust for details
-exclude.values       = c('', '.', 'Normal', 'Not Performed', 'Performed but Not Available', FALSE)
+exclude.values       = c('', '.', 'Normal', 'Not Performed', 'Performed but Not Available', 'FALSE', FALSE)
 sort.method          = 'distance'  # for tree sorting: ladder 'ladderize'
 tree.labels          = TRUE
 pheno                = NULL
@@ -119,7 +119,6 @@ loh.closest          = TRUE  # should copy number / loh assignments be made acco
 call.loh             = TRUE
 call.abs             = TRUE
 muts.out             = 'summary/mutation_heatmap.tsv'
-# muts.file            = 'pub_table.tsv'
 
 
 #---------------------
@@ -127,7 +126,7 @@ muts.out             = 'summary/mutation_heatmap.tsv'
 #---------------------
 
 # load config yaml file
-config <- list.load('subsets_config.yaml')
+config <- list.load('subset_config.yaml')
 
 # sample key values
 keys <- config$keys %>% unlist
@@ -141,7 +140,7 @@ if(use.keys !=FALSE){
 
 # subset groups for pairwise comparisons
 if(!is.null(config$subset_groups)) {
-    subset.groups <-
+    sub.groups <-
         config$subset_groups %>%
         list.map(data_frame(.) %>% t %>% as_data_frame) %>%
         plyr::rbind.fill(.) %>%
@@ -159,10 +158,10 @@ if(!is.null(config$subset_groups)) {
         spread(col,subset) %>%
         mutate(comparison=names(config$subset_groups))
 
-        if(any(subset.groups$overlap>0)){ message(red('warning: subset groups contain overlapping samples')) }
+        if(any(sub.groups$overlap>0)){ message(red('warning: subset groups contain overlapping samples')) }
 
 } else if(length(subsets) > 1) {
-    subset.groups <-
+    sub.groups <-
         permutations(n=length(config$subsets), r=2, v=names(config$subsets)) %>%
         as_data_frame %>%
         set_names(c('a', 'b')) %>%
@@ -173,14 +172,14 @@ if(!is.null(config$subset_groups)) {
         ungroup %>%
         mutate(comparison=str_c(a, ' x ', b))
 } else if(length(subsets) == 1) {
-    subset.groups <- data_frame(overlap=NA, group.id=1, comparison=NA, a=names(config$subsets), b=NA)
+    sub.groups <- data_frame(overlap=NA, group.id=1, comparison=NA, a=names(config$subsets), b=NA)
 } else {
-    subset.groups <- data_frame(overlap=1, group.id=1, comparison=NA, a=NA, b=NA)
+    sub.groups <- data_frame(overlap=1, group.id=1, comparison=NA, a=NA, b=NA)
 }
 
 # stop if subset specifications absent
-if(subset.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE & length(subsets) > 1) {
-    print((subset.groups %>% select(a, b) %>% unlist)[!subset.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
+if(sub.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE & length(subsets) > 1) {
+    print((sub.groups %>% select(a, b) %>% unlist)[!sub.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
     stop('missing subsets specified in subset groups')
 }
 
@@ -190,11 +189,12 @@ samples <- list.load('samples.yaml') %>% list.stack %>% tbl_df
 # add all samples as subset
 subsets <- c(subsets, list(all=samples$tumor))
 
-subset.groups %<>%
+sub.groups %<>%
     filter(overlap==0) %>%
     select(-overlap) %>%
     bind_rows(data_frame(group.id=0, a='all'), .) %>%
-    select(group.id, comparison, everything())
+    mutate(comparison.ext=gsub(' ', '_', comparison)) %>%
+    select(group.id, comparison, comparison.ext, everything())
 
 
 #-----------#
@@ -210,16 +210,6 @@ subset.groups %<>%
 Hamming <- function(event.matrix) {
     D <- (1 - event.matrix) %*% t(event.matrix)
     D + t(D)
-}
-
-
-#------------------
-# character hashing
-#------------------
-
-hash <- function(x) {
-    hstr <- digest(x, algo='xxhash32')
-    as.numeric(paste0('0x', hstr)) %% 80
 }
 
 
@@ -926,6 +916,24 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
 
 }
 
+# soft sample name key:value modification
+KeyMod <- function(events, keys, force.keys=FALSE) {
+    keys.index <- which(events$sample %in% names(keys))
+    if(length(keys.index) == 0 & force.keys==FALSE) {
+        message(green('no keys to convert'))
+    } else if(force.keys==FALSE) {
+        conversions <- data.frame(pre=as.character(events$sample[keys.index]), post=keys[as.character(events$sample[keys.index])], row.names=NULL) %>% unique
+        message(green(str_c('key conversions: ',length(conversions$pre),'/',length(unique(events$sample)))))
+        print(conversions)
+        events %<>% mutate(sample=ifelse(row_number() %in% keys.index, keys[sample], sample))
+    } else {
+        conversions <- data.frame(pre=as.character(unique(events$sample)), post=keys[unique(as.character(events$sample))], in.keys=unique(as.character(events$sample)) %in% names(keys), row.names=NULL)
+        message(yellow('forcing key conversions'))
+        print(conversions)
+        events %<>% mutate(sample=keys[sample])
+    }
+    return(events)
+}
 
 #-----------------#
 #                 #
@@ -937,8 +945,7 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
 # choose colors for pheno palette
 #--------------------------------
 
-# random color selection
-set.seed(color.seed)
+# pheno color selection
 if(random.pheno.color==TRUE){
     pheno.palette <-
         grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] %>%
@@ -956,7 +963,7 @@ subsets.pheno <-
     plyr::join_all(by='sample', type='full', match='all') %>%
     plyr::rename(replace=names(pheno.palette) %>% set_names(pheno.palette)) %>%
     tbl_df %>%
-    mutate(sample=keys[sample])
+    KeyMod(keys)
 
 #---------------------
 # mutations processing
@@ -1111,10 +1118,6 @@ if(cn.cols=='threshold') {
 }
 
 
-s_distinct = function(.data, ...) {
-  eval.string.dplyr(.data,"distinct", ...)
-}
-
 # subset amp / del rows
 cnas <-
     gene.cn %>%
@@ -1123,10 +1126,20 @@ cnas <-
     filter(amp==TRUE|del==TRUE) %>%
     mutate_each(funs(ifelse(.==1,0,.)), one_of(cn.sample.keys)) %>%
     mutate_each(funs(ifelse(.==-1,0,.)), one_of(cn.sample.keys)) %>%
-    (function(d=., v=c("chrom", "band", unname(cn.sample.keys))){
-        distinct_(.data=d, .dots=v, .keep_all=TRUE)
+    unique %>%
+    arrange(chrom, start) %>%
+    group_by(chrom) %>%
+    mutate(max.end=max(end)) %>%
+    mutate(lag.end=lag(end)) %>%
+    (function(df=., col.v=c("chrom", "band", unname(cn.sample.keys))) {
+        DistinctCalls <- sapply(col.v, function(col) {
+            lazyeval::interp(~ col.name, col.name=as.name(col))
+        })
+        df %>% distinct_(.dots=DistinctCalls, .keep_all=TRUE)
     }) %>%
-    select(-gene, -amp, -del) %>%    
+    mutate(lead.lag.end=lead(lag.end)) %>%
+    mutate(end=ifelse(!is.na(lead.lag.end), lead.lag.end, max.end)) %>%
+    select(chrom, start, end, band, one_of(cn.sample.keys)) %>%
     gather(sample, effect, -band, -chrom, -start, -end) %>%
     filter(effect==2|effect==-2) %>%
     rowwise %>%
@@ -1135,6 +1148,7 @@ cnas <-
     unique %>%
     FormatEvents %>%
     select(sample, band, chrom, start, end, effect)
+
 
 # write CNA file
 cnas %>%
@@ -1266,12 +1280,16 @@ PlotVariants( output.file = 'summary/variant_heatmap_type.pdf',
 
 system("mkdir summary/subsets &>/dev/null")
 
-for (sub.num in 1:nrow(subset.groups)) {
+for (sub.group.num in 0:(nrow(sub.groups)-1)) {
 
-    # format file name
-    sub.name <- subset.groups$group.id[sub.num]
-    sub.ext <- gsub(' ', '_', subset.groups$group.id[sub.num])
-    sub.pair <- c(subset.groups[sub.num,'a'], subset.groups[sub.num,'b']) %>% unlist
+    # sub group setup
+    sub.group <- sub.groups %>% filter(group.id==sub.group.num)
+
+    sub.ext <- gsub(' ', '_', sub.groups$group.id[sub.group.num])
+
+    
+
+    sub.group <- c(sub.groups[sub.group.num,'a'], sub.groups[sub.group.num,'b']) %>% unlist
 
     #-----------------
     # heatmap plotting
@@ -1280,7 +1298,7 @@ for (sub.num in 1:nrow(subset.groups)) {
     # melted mutations table for subset pair
     sub.muts <-
         muts %>%
-        select(sample,chrom,pos,gene,effect,loh,ccf,clonal,one_of(sub.pair)) %>%
+        select(sample,chrom,pos,gene,effect,loh,ccf,clonal,one_of(sub.group)) %>%
         set_names(c('sample','chrom','pos','gene','effect','loh','ccf','clonal','a','b')) %>%
         mutate(pheno=ifelse(!is.na(a), a,
                      ifelse(!is.na(b), b, NA))) %>%
@@ -1292,7 +1310,7 @@ for (sub.num in 1:nrow(subset.groups)) {
     # melted cna table for subset pair
     sub.cnas <-
         cnas %>%
-        select(sample,band,chrom,start,end,effect,one_of(sub.pair)) %>%
+        select(sample,band,chrom,start,end,effect,one_of(sub.group)) %>%
         set_names(c('sample','band','chrom','start','end','effect','a','b')) %>%
         mutate(pheno=ifelse(!is.na(a), a,
                      ifelse(!is.na(b), b, NA))) %>%
@@ -1318,7 +1336,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # mutations (by type)
     sub.muts %>%
-    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
     PlotVariants( output.file = str_c('summary/mutation_heatmap_type',sub.ext,'.pdf'),
                   clonal      = FALSE,
                   pathogenic  = FALSE,
@@ -1331,7 +1349,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # mutations (by type)
     sub.muts %>%
-    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
     PlotVariants( output.file = str_c('summary/mutation_heatmap_type_recurrent',sub.ext,'.pdf'),
                   clonal      = FALSE,
                   pathogenic  = FALSE,
@@ -1344,7 +1362,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # mutations ccf
     sub.muts %>%
-    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
     PlotVariants( output.file = str_c('summary/mutation_heatmap_ccf',sub.ext,'.pdf'),
                   clonal      = TRUE,
                   pathogenic  = FALSE,
@@ -1357,7 +1375,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # mutations ccf [recurrent]
     sub.muts %>%
-    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+    OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
     PlotVariants( output.file = str_c('summary/mutation_heatmap_ccf_recurrent',sub.ext,'.pdf'),
                   clonal      = TRUE,
                   pathogenic  = FALSE,
@@ -1370,7 +1388,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # copy number
     sub.cnas %>%
-    OrgEvents(sample.order=labels(sub.cnas.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
+    OrgEvents(sample.order=labels(sub.cnas.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
     PlotVariants( output.file = str_c('summary/cna_heatmap',sub.ext,'.pdf'),
                   clonal      = FALSE,
                   pathogenic  = FALSE,
@@ -1383,7 +1401,7 @@ for (sub.num in 1:nrow(subset.groups)) {
 
     # all variants
     sub.variants %>%
-    OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.pair, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
+    OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
     PlotVariants( output.file = str_c('summary/variant_heatmap_type',sub.ext,'.pdf'),
                   clonal      = FALSE,
                   pathogenic  = FALSE,
@@ -1399,8 +1417,8 @@ for (sub.num in 1:nrow(subset.groups)) {
     # Fisher's exact CN plotting
     #---------------------------
 
-    samples.a <- subsets[unlist(subset.groups[sub.num,'a'])] %>% unlist
-    samples.b <- subsets[unlist(subset.groups[sub.num,'b'])] %>% unlist
+    samples.a <- subsets[sub.group$a] %>% unlist
+    samples.b <- subsets[sub.group$b] %>% unlist
 
     # copy number plotting
     gene.cn.a <- gene.cn[c('gene', 'chrom', 'start', 'end', samples.a)]
@@ -1409,9 +1427,10 @@ for (sub.num in 1:nrow(subset.groups)) {
     Fisher( plot.type        = 'copy number',
             gene.matrix.a   = gene.cn.a,
             gene.matrix.b   = gene.cn.b,
-            plot.title.main = sub.name,
-            plot.title.a    = sub.pair[1],
-            plot.title.b    = sub.pair[2],
+            #plot.title.main = sub.group$comparison,
+            plot.title.main = 'ACC vs MGA',
+            plot.title.a    = sub.group$a,
+            plot.title.b    = sub.group$b,
             allosome        = allosome,
             targets.file    = targets.file,
             suffix          = '',
@@ -1423,8 +1442,8 @@ for (sub.num in 1:nrow(subset.groups)) {
     # heatmap plotting
     #-----------------
 
-    gene.cn <- read.delim('summary/gene.cn.tsv', sep='\t', stringsAsFactors=FALSE) %>% tbl_df
-    PlotCNHeatmap(gene.cn, file.name='summary/cna_heatmap_test.pdf', threshold=FALSE)
+    #gene.cn <- read.delim('summary/gene.cn.tsv', sep='\t', stringsAsFactors=FALSE) %>% tbl_df
+    PlotCNHeatmap(gene.cn.c, file.name='summary/cna_heatmap_MGA_pure.pdf', threshold=FALSE)
 
 
     #---------------------------------
@@ -1435,12 +1454,13 @@ for (sub.num in 1:nrow(subset.groups)) {
     gene.muts.a <- sub.muts %>% select(sample, gene, chrom, pos, effect) %>% mutate(effect=1) %>% filter(sample %in% samples.a) %>% spread(sample, effect, fill=0)
     gene.muts.b <- sub.muts %>% select(sample, gene, chrom, pos, effect) %>% mutate(effect=1) %>% filter(sample %in% samples.b) %>% spread(sample, effect, fill=0)
 
+
     Fisher( plot.type       = 'mutation',
             gene.matrix.a   = gene.muts.a,
             gene.matrix.b   = gene.muts.b,
-            plot.title.main = sub.name,
-            plot.title.a    = sub.pair[1],
-            plot.title.b    = sub.pair[2],
+            plot.title.main = sub.group$comparison,
+            plot.title.a    = sub.group[1],
+            plot.title.b    = sub.group[2],
             allosome        = allosome,
             targets.file    = targets.file,
             suffix          = '',
