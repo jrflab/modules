@@ -40,8 +40,8 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
     pacman::p_load(DescTools,dplyr,readr,stringr,tidyr,broom,purrr,magrittr,rlist,crayon,colorspace,ggplot2,grid,gridExtra,RColorBrewer)
 
     # create output directory
-    system("mkdir summary/fishers_cn &>/dev/null")
-    system("mkdir summary/fishers_mut &>/dev/null")
+    system("mkdir fishers_cn &>/dev/null")
+    system("mkdir fishers_mut &>/dev/null")
 
 
     #----------
@@ -464,27 +464,6 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         }
     }
 
-    ChromFill <- function(event.melt, allosome) {
-        chrom.fill <- data_frame()
-        if(allosome=='none') {
-            missing.chrom <- which(!1:22 %in% event.melt$chrom)
-            if(length(missing.chrom > 0)) {
-                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
-            }
-        } else if(allosome=='merge') {
-            missing.chrom <- which(!1:23 %in% event.melt$chrom)
-            if(length(missing.chrom > 0)) {
-                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
-            }
-        } else if (allosome=='distinct') {
-            missing.chrom <- which(!1:24 %in% event.melt$chrom)
-            if(length(missing.chrom > 0)) {
-                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
-            }
-        }
-        event.melt %<>% bind_rows(chrom.fill) %>% arrange(chrom, start)
-        return(event.melt)
-    }
 
     # use targets file to select genes
     SubsetTargets <- function(gene.matrix, targets, plot.type) {
@@ -604,9 +583,9 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # subset genes in target file doing this on one subset is sufficient due to intersection step below
         if(nrow(gene.matrix.a) <= nrow(gene.matrix.b)) {
-            gene.matrix.a %<>% SubsetTargets(targets, plot.type)
+            gene.matrix.a %<>% SubsetTargets(targets)
         } else {
-            gene.matrix.b %<>% SubsetTargets(targets, plot.type)
+            gene.matrix.b %<>% SubsetTargets(targets)
         }
     }
 
@@ -618,7 +597,6 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
     # generate table of chromosome breaks
     chrom.n <-
         gene.matrix.a %>%
-        ChromFill(allosome=allosome) %>%
         group_by(chrom) %>%
         summarise(chrom.n=n()) %>%
         mutate(chrom.n=cumsum(chrom.n))
@@ -670,7 +648,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("summary/fishers_mut/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("fishers_mut/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
@@ -724,14 +702,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
             mutate(gain.neg.fisher.adj.cut.log = log10(gain.neg.fisher.adj.cut))
 
 
-        #--------------------
         # tables for plotting
-        #--------------------
-
-        # fill missing chromosomes for plotting
-        sample.stats %<>% ChromFill(allosome=allosome)
-
-        # select plot statistics
         sample.stats.gain.a <-
             sample.stats %>%
             select(gene, above=gain.gt.pct.a, below=gain.lt.pct.a)
@@ -772,7 +743,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("summary/fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
