@@ -464,6 +464,27 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         }
     }
 
+    ChromFill <- function(event.melt, allosome) {
+        chrom.fill <- data_frame()
+        if(allosome=='none') {
+            missing.chrom <- which(!1:22 %in% event.melt$chrom)
+            if(length(missing.chrom > 0)) {
+                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
+            }
+        } else if(allosome=='merge') {
+            missing.chrom <- which(!1:23 %in% event.melt$chrom)
+            if(length(missing.chrom > 0)) {
+                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
+            }
+        } else if (allosome=='distinct') {
+            missing.chrom <- which(!1:24 %in% event.melt$chrom)
+            if(length(missing.chrom > 0)) {
+                chrom.fill <- data_frame(chrom=missing.chrom, start=0, end=0)
+            }
+        }
+        event.melt %<>% bind_rows(chrom.fill) %>% arrange(chrom, start)
+        return(event.melt)
+    }
 
     # use targets file to select genes
     SubsetTargets <- function(gene.matrix, targets, plot.type) {
@@ -583,9 +604,9 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # subset genes in target file doing this on one subset is sufficient due to intersection step below
         if(nrow(gene.matrix.a) <= nrow(gene.matrix.b)) {
-            gene.matrix.a %<>% SubsetTargets(targets)
+            gene.matrix.a %<>% SubsetTargets(targets, plot.type)
         } else {
-            gene.matrix.b %<>% SubsetTargets(targets)
+            gene.matrix.b %<>% SubsetTargets(targets, plot.type)
         }
     }
 
@@ -597,6 +618,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
     # generate table of chromosome breaks
     chrom.n <-
         gene.matrix.a %>%
+        ChromFill(allosome=allosome) %>%
         group_by(chrom) %>%
         summarise(chrom.n=n()) %>%
         mutate(chrom.n=cumsum(chrom.n))
@@ -702,7 +724,14 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
             mutate(gain.neg.fisher.adj.cut.log = log10(gain.neg.fisher.adj.cut))
 
 
+        #--------------------
         # tables for plotting
+        #--------------------
+
+        # fill missing chromosomes for plotting
+        sample.stats %<>% ChromFill(allosome=allosome)
+
+        # select plot statistics
         sample.stats.gain.a <-
             sample.stats %>%
             select(gene, above=gain.gt.pct.a, below=gain.lt.pct.a)

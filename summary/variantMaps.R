@@ -105,8 +105,7 @@ cn.cols              = 'threshold'  # 'threshold' = reserved string for selectin
 use.keys             = FALSE
 loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
 muts.out             = 'summary/mutation_heatmap.tsv'
-muts.file            = 'summary/mutation_summary.xlsx'
-
+# muts.file            = 'pub_table.tsv'
 
 
 #---------------------
@@ -131,7 +130,7 @@ if(!is.null(config$subset_groups)) {
     subset.groups <-
         config$subset_groups %>%
         list.map(data_frame(.) %>% t %>% as_data_frame) %>%
-        plyr::rbind.fill %>%
+        plyr::rbind.fill(.) %>%
         set_names(letters[1:(config$subset_groups %>% list.mapv(length(.)) %>% max)]) %>%
         tbl_df %>%
         gather(col,subset) %>%
@@ -163,8 +162,8 @@ if(!is.null(config$subset_groups)) {
 
 # stop if subset specifications absent
 if(subset.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE) {
-    stop('missing subsets specified in subset groups')
     print((subset.groups %>% select(a, b) %>% unlist)[!subset.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
+    stop('missing subsets specified in subset groups')
 }
 
 subset.groups %<>%
@@ -1187,7 +1186,7 @@ for (sub.num in 1:nrow(subset.groups)) {
     # format file name
     sub.name <- subset.groups$group.id[sub.num]
     sub.ext <- gsub(' ', '_', subset.groups$group.id[sub.num])
-    sub.pair <- c(subset.groups[sub.num,'a'], subset.groups[sub.num,'b'])
+    sub.pair <- c(subset.groups[sub.num,'a'], subset.groups[sub.num,'b']) %>% unlist
 
     #-----------------
     # heatmap plotting
@@ -1317,17 +1316,17 @@ for (sub.num in 1:nrow(subset.groups)) {
     gene.cn.b <- gene.cn[c('gene', 'chrom', 'start', 'end', samples.b)]
 
     Fisher( plot.type        = 'copy number',
-             gene.matrix.a   = gene.cn.a,
-             gene.matrix.b   = gene.cn.b,
-             plot.title.main = sub.name,
-             plot.title.a    = sub.pair[1],
-             plot.title.b    = sub.pair[2],
-             allosome        = allosome,
-             targets.file    = NULL,
-             suffix          = '',
-             threshold.a     = FALSE,
-             threshold.b     = FALSE,
-             gene.names      = FALSE )
+            gene.matrix.a   = gene.cn.a,
+            gene.matrix.b   = gene.cn.b,
+            plot.title.main = sub.name,
+            plot.title.a    = sub.pair[1],
+            plot.title.b    = sub.pair[2],
+            allosome        = allosome,
+            targets.file    = targets.file,
+            suffix          = '',
+            threshold.a     = FALSE,
+            threshold.b     = FALSE,
+            gene.names      = FALSE )
 
     #---------------------------------
     # Fisher's exact mutation plotting
