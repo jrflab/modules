@@ -24,53 +24,66 @@ source('modules/summary/variantFishers.R')
 #                #
 #----------------#
 
-optList <- list( make_option("--mutationSummary", default = NULL, help = "mutation summary table"),
-                 make_option("--geneCN", default = NULL, help = "filled geneCN file"),
-                 make_option("--mutOutFile", default = NULL, help = "mutation output file"),
-                 make_option("--mutRecurrentOutFile", default = NULL, help = "recurrent mutation output file"),
-                 make_option("--cnOutFile", default = NULL, help = "copy number output file"),
-                 make_option("--cnRecurrentOutFile", default = NULL, help = "recurrent copy number output file"),
-                 make_option("--cnAmpDelOutFile", default = NULL, help = "amp del table") )
+if(!interactive()) {
+    message('TEST')
+    optList <- list( make_option("--mutationSummary", default = NULL, help = "mutation summary table"),
+                     make_option("--geneCN", default = NULL, help = "filled geneCN file"),
+                     make_option("--mutOutFile", default = NULL, help = "mutation output file"),
+                     make_option("--mutRecurrentOutFile", default = NULL, help = "recurrent mutation output file"),
+                     make_option("--cnOutFile", default = NULL, help = "copy number output file"),
+                     make_option("--cnRecurrentOutFile", default = NULL, help = "recurrent copy number output file"),
+                     make_option("--cnAmpDelOutFile", default = NULL, help = "amp del table") )
 
-parser <- OptionParser(usage = "%prog [options] [mutation summary file]", option_list = optList)
-arguments <- parse_args(parser, positional_arguments = T)
-opt <- arguments$options
+    parser <- OptionParser(usage = "%prog [options] [mutation summary file]", option_list = optList)
+    arguments <- parse_args(parser, positional_arguments = T)
+    opt <- arguments$options
 
-if (is.null(opt$geneCN)) {
-    message('Need geneCN file')
-    print_help(parser)
-    stop()
-else if (is.null(opt$mutationSummary)) {
-    message('Need mutation summary file')
-    print_help(parser)
-    stop()
-} else if (is.null(opt$mutOutFile)) {
-    message('Need mut output file')
-    print_help(parser)
-    stop()
-} else if (is.null(opt$mutRecurrentOutFile)) {
-    message('Need mut recurrent output file')
-    print_help(parser)
-    stop()
-} else if (is.null(opt$cnOutFile)) {
-    message('Need cn output file')
-    print_help(parser)
-    message()
-} else if (is.null(opt$cnRecurrentOutFile)) {
-    message('Need cn recurrent output file')
-    print_help(parser)
-    stop()
-} else if (is.null(opt$cnAmpDeltOutFile)) {
-    message('Need cn amp del output file')
-    print_help(parser)
-    stop()
+    if(is.null(opt$geneCN)) {
+        message('Need geneCN file')
+        print_help(parser)
+        stop()
+    } else if(is.null(opt$mutationSummary)) {
+        message('Need mutation summary file')
+        print_help(parser)
+        stop()
+    } else if(is.null(opt$mutOutFile)) {
+        message('Need mut output file')
+        print_help(parser)
+        stop()
+    } else if(is.null(opt$mutRecurrentOutFile)) {
+        message('Need mut recurrent output file')
+        print_help(parser)
+        stop()
+    } else if(is.null(opt$cnOutFile)) {
+        message('Need cn output file')
+        print_help(parser)
+        message()
+    } else if(is.null(opt$cnRecurrentOutFile)) {
+        message('Need cn recurrent output file')
+        print_help(parser)
+        stop()
+    } else if(is.null(opt$cnAmpDeltOutFile)) {
+        message('Need cn amp del output file')
+        print_help(parser)
+        stop()
+    } else {
+        muts.file <- opt$mutationSummary
+        cn.file <- opt$geneCN
+        muts.out.file <- opt$mutOutFile
+        muts.recurrent.out.file <- opt$mutRecurrentOutFile
+        cn.out.file <- opt$cnOutFile
+        cn.recurrent.out.file <- opt$cnRecurrentOutFile
+    }
+
 } else {
-    muts.file <- opt$mutationSummary
-    cn.file <- opt$geneCN
-    muts.out.file <- opt$mutOutFile
-    muts.recurrent.out.file <- opt$mutRecurrentOutFile
-    cn.out.file <- opt$cnOutFile
-    cn.recurrent.out.file <- opt$cnRecurrentOutFile
+    # set detaults for interactive use
+    if(!exists('muts.file')){muts.file = 'summary/mutation_summary.xlsx'}
+    if(!exists('muts.out.file')){muts.out.file = 'summary/mutation_heatmap.pdf'}
+    if(!exists('muts.recurrent.out.file')){muts.out.file = 'summary/mutation_heatmap_recurrent.pdf'}
+    if(!exists('cn.file')){cn.file = 'facets/geneCN_fill.txt'}
+    if(!exists('cn.out.file')){cn.out.file = 'summary/cn_heatmap.pdf'}
+    if(!exists('cn.recurrent.out.file')){cn.out.file = 'summary/cn_heatmap_recurrent.pdf'}
+    if(!exists('cn.amp.del.out')){cn.amp.del.out = 'summary/cn_amp_del.tsv'}
 }
 
 # set graphics device
@@ -142,13 +155,12 @@ if(!is.null(config$subset_groups)) {
         mutate(overlap=anyDuplicated(unlist(subv))) %>%
         ungroup %>%
         select(-subv) %>%
-        spread(col,subset)
+        spread(col,subset) %>%
+        mutate(comparison=names(config$subset_groups))
 
-        if(any(subset.groups$overlap>0)){
-            message(red('warning: subset groups contain overlapping samples'))
-        }
+        if(any(subset.groups$overlap>0)){ message(red('warning: subset groups contain overlapping samples')) }
 
-} else {
+} else if(length(subsets) > 1) {
     subset.groups <-
         permutations(n=length(config$subsets), r=2, v=names(config$subsets)) %>%
         as_data_frame %>%
@@ -157,27 +169,31 @@ if(!is.null(config$subset_groups)) {
         select(group.id, a, b) %>%
         rowwise %>%
         mutate(overlap=length(intersect(unlist(subsets[a]), unlist(subsets[b])))) %>%
-        ungroup
+        ungroup %>%
+        mutate(comparison=str_c(a, ' x ', b))
+} else if(length(subsets) == 1) {
+    subset.groups <- data_frame(overlap=NA, group.id=1, comparison=NA, a=names(config$subsets), b=NA)
+} else {
+    subset.groups <- data_frame(overlap=1, group.id=1, comparison=NA, a=NA, b=NA)
 }
 
 # stop if subset specifications absent
-if(subset.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE) {
+if(subset.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE & length(subsets) > 1) {
     print((subset.groups %>% select(a, b) %>% unlist)[!subset.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
     stop('missing subsets specified in subset groups')
 }
 
+# load sample list
+samples <- list.load('samples.yaml') %>% list.stack %>% tbl_df
+
+# add all samples as subset
+subsets <- c(subsets, list(all=samples$tumor))
+
 subset.groups %<>%
     filter(overlap==0) %>%
-    select(-overlap)
-
-# set detaults if not supplied (for interactive use)
-if(!exists('muts.file')){muts.file = 'summary/mutation_summary.xlsx'}
-if(!exists('muts.out.file')){muts.out.file = 'summary/mutation_heatmap.pdf'}
-if(!exists('muts.recurrent.out.file')){muts.out.file = 'summary/mutation_heatmap_recurrent.pdf'}
-if(!exists('cn.file')){cn.file = 'facets/geneCN_fill.txt'}
-if(!exists('cn.out.file')){cn.out.file = 'summary/cn_heatmap.pdf'}
-if(!exists('cn.recurrent.out.file')){cn.out.file = 'summary/cn_heatmap_recurrent.pdf'}
-if(!exists('cn.amp.del.out')){cn.amp.del.out = 'summary/cn_amp_del.tsv'}
+    select(-overlap) %>%
+    bind_rows(data_frame(group.id=0, a='all'), .) %>%
+    select(group.id, comparison, everything())
 
 
 #-----------#
@@ -1214,7 +1230,13 @@ for (sub.num in 1:nrow(subset.groups)) {
         filter(!is.na(pheno)) %>%
         select(-a, -b)
 
-    sub.cnas.tree <- sub.cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band')
+    sub.cnas.tree <-
+        tryCatch(
+            sub.cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band'),
+        warning = function(w) {
+            message(yellow('unable to build CNA tree'))
+            return(sub.cnas$sample)
+        })
 
     # melted variant table for subset pair
     sub.variants <-
@@ -1327,6 +1349,36 @@ for (sub.num in 1:nrow(subset.groups)) {
             threshold.a     = FALSE,
             threshold.b     = FALSE,
             gene.names      = FALSE )
+
+    #-----------------
+    # heatmap plotting
+    #-----------------
+
+    # plot_heatmap <- function(facets_tab, plot_file, sample_names=NULL, col=c("red", "darksalmon", "white", "lightblue", "blue"), zlim=c(-2,2)) {
+    #  mm <- facets_tab
+    #  if (is.null(sample_names)) { sample_names <- list(sort(colnames(mm)[sapply(colnames(mm), function(x) {grepl("MGA", x)})])) }
+    #  print(sample_names)
+    #  chrsep <- cumsum(rle(mm$chrom)$lengths)
+    #  chrmid <- c(0,chrsep[-length(chrsep)]) + (rle(mm$chrom)$lengths/2)
+    #  pdf(plot_file, width=12, height=5*length(sample_names))
+    #  par(mfrow=c(length(sample_names),1), mar=c(8,5,1,2))
+    #  lapply(sample_names, function(x, mm) {
+    #      mm2 <- mm[,rev(x)]; #for (i in 1:ncol(mm2)) { mm2[,i] <- as.numeric(mm2[,i]) }
+    #      print(colnames(mm2))
+    #      image(as.matrix(mm2), col=col, xaxt='n', yaxt='n', zlim=zlim)
+    #      box()
+    #      for (i in (chrsep*2)-1) { abline(v=i/((max(chrsep)-1)*2), col="grey") }
+    #      for (i in seq(-1, max(((2*(ncol(mm2)-1))+1),1), 2)) { abline(h=i/(2*(ncol(mm2)-1)), col="white", lwd=2)}
+    #  axis(1,at=chrmid/(max(chrsep)-1), label=rle(mm$chrom)$values, cex.axis=0.8, tick=F)
+    #  axis(2,at=seq(0,1,1/max((ncol(mm2)-1),1)), label=sub("T_.*", "", colnames(mm2)), las=2, cex.axis=1, tick=F)
+    #  }, mm)
+    #  legend("bottom", inset=c(0,-.4), legend=c("Homozygous deletion", "Loss", "Gain", "Amplification"),
+    #         fill=c("red", "darksalmon", "lightblue", "blue"), xpd=T, ncol=2)
+    #  dev.off()
+    # }
+
+    # plot_heatmap(read.table('fishers_cn/5b.tsv', sep="\t", header=T, stringsAsFactors=F), 'fishers_cn/bMGA')
+
 
     #---------------------------------
     # Fisher's exact mutation plotting
