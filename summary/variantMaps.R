@@ -91,112 +91,6 @@ options(device=pdf)
 #pdf.options(encoding='ISOLatin2.enc')
 
 
-#--------------------#
-#                    #
-# INPUT & PARAMETERS #
-#                    #
-#--------------------#
-
-#------------
-# run options
-#------------
-
-include.silent       = FALSE
-dist.method          = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'    | see ?dist for details [hamming method implemented manually]
-clust.method         = 'complete' # 'complete', ward', 'single', 'complete', 'average', 'mcquitty', 'median', 'centroid' | see ?hclust for details
-exclude.values       = c('', '.', 'Normal', 'Not Performed', 'Performed but Not Available', 'FALSE', FALSE)
-sort.method          = 'distance'  # for tree sorting: ladder 'ladderize'
-tree.labels          = TRUE
-pheno                = NULL
-color.seed           = 3
-color.clusters       = TRUE
-min.cluster          = 3
-random.pheno.color   = TRUE
-pheno.palette        = c('#2d4be0', '#20e6ae', '#ccb625', '#969696')
-cn.cols              = 'threshold'  # 'threshold' = reserved string for selecting columns with threshold sufix, 'all' = reserved string for using all columns, else a string specifing columns to use
-use.keys             = FALSE
-loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
-call.loh             = TRUE
-call.abs             = TRUE
-muts.out             = 'summary/mutation_heatmap.tsv'
-
-
-#---------------------
-# assign config params
-#---------------------
-
-# load config yaml file
-config <- list.load('subset_config.yaml')
-
-# sample key values
-keys <- config$keys %>% unlist
-
-# define subsets
-if(use.keys !=FALSE){
-    subsets <- config$subsets %>% map(~ { keys[.x]})
-} else {
-    subsets <- config$subsets
-}
-
-# subset groups for pairwise comparisons
-if(!is.null(config$subset_groups)) {
-    sub.groups <-
-        config$subset_groups %>%
-        list.map(data_frame(.) %>% t %>% as_data_frame) %>%
-        plyr::rbind.fill(.) %>%
-        set_names(letters[1:(config$subset_groups %>% list.mapv(length(.)) %>% max)]) %>%
-        tbl_df %>%
-        gather(col,subset) %>%
-        group_by(col) %>%
-        mutate(group.id=row_number()) %>%
-        ungroup %>%
-        group_by(group.id) %>%
-        mutate(subv=subsets[subset]) %>%
-        mutate(overlap=anyDuplicated(unlist(subv))) %>%
-        ungroup %>%
-        select(-subv) %>%
-        spread(col,subset) %>%
-        mutate(comparison=names(config$subset_groups))
-
-        if(any(sub.groups$overlap>0)){ message(red('warning: subset groups contain overlapping samples')) }
-
-} else if(length(subsets) > 1) {
-    sub.groups <-
-        permutations(n=length(config$subsets), r=2, v=names(config$subsets)) %>%
-        as_data_frame %>%
-        set_names(c('a', 'b')) %>%
-        mutate(group.id=row_number()) %>%
-        select(group.id, a, b) %>%
-        rowwise %>%
-        mutate(overlap=length(intersect(unlist(subsets[a]), unlist(subsets[b])))) %>%
-        ungroup %>%
-        mutate(comparison=str_c(a, ' x ', b))
-} else if(length(subsets) == 1) {
-    sub.groups <- data_frame(overlap=NA, group.id=1, comparison=NA, a=names(config$subsets), b=NA)
-} else {
-    sub.groups <- data_frame(overlap=1, group.id=1, comparison=NA, a=NA, b=NA)
-}
-
-# stop if subset specifications absent
-if(sub.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE & length(subsets) > 1) {
-    print((sub.groups %>% select(a, b) %>% unlist)[!sub.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
-    stop('missing subsets specified in subset groups')
-}
-
-# load sample list
-samples <- list.load('samples.yaml') %>% list.stack %>% tbl_df
-
-# add all samples as subset
-subsets <- c(subsets, list(all=samples$tumor))
-
-sub.groups %<>%
-    filter(overlap==0) %>%
-    select(-overlap) %>%
-    bind_rows(data_frame(group.id=0, a='all'), .) %>%
-    mutate(comparison.ext=gsub(' ', '_', comparison)) %>%
-    select(group.id, comparison, comparison.ext, everything())
-
-
 #-----------#
 #           #
 # FUNCTIONS #
@@ -212,6 +106,93 @@ Hamming <- function(event.matrix) {
     D + t(D)
 }
 
+
+#---------------------------
+# add dummy column if absent
+#---------------------------
+
+DummyCols <- function(events, col.names) {
+
+    for(col.name in col.names) {
+        if(!col.name %in% colnames(events)) {
+            message(green(str_c('adding dummy column: ', col.name)))
+            events.names <- colnames(events) %>% replace(which(is.na(.)),'empty') %>% list.filter(.!='add.col')
+            events$add.col <- NA
+            events %<>% setNames(c(events.names,col.name))
+        }
+    }
+    return(events)
+
+}
+
+
+#--------------------------
+# convert chromosome format
+#--------------------------
+
+ChromMod <- function(events, allosome){
+
+    if('X' %in% events$chrom) { message(yellow('X chromosome labelling converted to numeric')) }
+
+    if(allosome=='distinct') {
+            if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 24-based numeric')) }
+            events %>%
+            mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
+            mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
+    } else if(allosome =='merge') {
+            if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 23-based numeric')) }
+            events %>% 
+            mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
+    } else {
+            events %>%
+            filter(!chrom %in% c('X','Y'))
+    }
+}
+
+
+#-----------------------------------
+# soft sample key:value modification
+#-----------------------------------
+
+KeyMod <- function(events, keys, force.keys=FALSE) {
+
+    keys.index <- which(events$sample %in% names(keys))
+    if(length(keys.index) == 0 & force.keys==FALSE) {
+        message(green('no keys to convert'))
+    } else if(force.keys==FALSE) {
+        conversions <- data.frame(pre=as.character(events$sample[keys.index]), post=keys[as.character(events$sample[keys.index])], row.names=NULL) %>% unique
+        message(green(str_c('key conversions: ',length(conversions$pre),'/',length(unique(events$sample)))))
+        print(conversions)
+        events %<>% mutate(sample=ifelse(row_number() %in% keys.index, keys[sample], sample))
+    } else {
+        conversions <- data.frame(pre=as.character(unique(events$sample)), post=keys[unique(as.character(events$sample))], in.keys=unique(as.character(events$sample)) %in% names(keys), row.names=NULL)
+        message(yellow('forcing key conversions'))
+        print(conversions)
+        events %<>% mutate(sample=keys[sample])
+    }
+    return(events)
+
+}
+
+
+#-----------------------
+# coerce columns to type
+#-----------------------
+
+TypeCol <- function(events, columns, types) {
+    for (col in 1:length(columns)) {
+        if(columns[col] %in% colnames(events)) {
+            if(types[col] == 'char') {
+                events[,columns[col]] <- events[,columns[col]] %>% unlist %>% as.character
+            } else if(types[col] == 'num') {
+                events[,columns[col]] <- events[,columns[col]] %>% unlist %>%  ifelse(.=='.',NA,.) %>% as.numeric
+            } else if(types[col] == 'logic') {
+                events[,columns[col]] <- events[,columns[col]] == 'TRUE' %>% as.vector
+            }
+        }
+    }
+    return(events)
+}
 
 #-------------------------------------
 # melted event table into ordered tree
@@ -342,39 +323,6 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
                    'sample'='sample', 'Sample'='sample', 'Tumor_Sample_Barcode'='sample', 'TUMOR_SAMPLE'='sample', 'Sample.ID'='sample',
                    'start'='start', 'Start'='start', 'Start_position'='start' )
 
-    # function to dummy column if absent
-    DummyCols <- function(events, col.names) {
-        for(col.name in col.names) {
-            if(!col.name %in% colnames(events)) {
-                message(green(str_c('adding dummy column: ', col.name)))
-                events.names <- colnames(events) %>% replace(which(is.na(.)),'empty') %>% list.filter(.!='add.col')
-                events$add.col <- NA
-                events %<>% setNames(c(events.names,col.name))
-            }
-        }
-        return(events)
-    }
-
-    # convert chrom vector to desired format
-    ChromMod <- function(events, allosome){
-
-        if('X' %in% events$chrom) { message(yellow('X chromosome labelling converted to numeric')) }
-
-        if(allosome=='distinct') {
-                if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 24-based numeric')) }
-                events %>%
-                mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
-                mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
-        } else if(allosome =='merge') {
-                if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 23-based numeric')) }
-                events %>% 
-                mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
-        } else {
-                events %>%
-                filter(!chrom %in% c('X','Y'))
-        }
-    }
-
     # save column names to fill unhandled
     fallback.cols <- colnames(events)
 
@@ -391,22 +339,6 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
         col.names <- c( 'alt','band','cancer.gene','ccf','chasm','chrom','clonal','cn','ci95.low','effect',
                         'end','fathmm','gene','haploinsufficient','kandoth','lawrence','loh','maf','mut.taster',
                         'pathogenic','pheno','pos','pr.somatic.clonal','provean','purity','ref','sample','start' )
-    }
-
-    # re-type colummns
-    TypeCol <- function(events, columns, types) {
-        for (col in 1:length(columns)) {
-            if(columns[col] %in% colnames(events)) {
-                if(types[col] == 'char') {
-                    events[,columns[col]] <- events[,columns[col]] %>% unlist %>% as.character
-                } else if(types[col] == 'num') {
-                    events[,columns[col]] <- events[,columns[col]] %>% unlist %>%  ifelse(.=='.',NA,.) %>% as.numeric
-                } else if(types[col] == 'logic') {
-                    events[,columns[col]] <- events[,columns[col]] == 'TRUE' %>% as.vector
-                }
-            }
-        }
-        return(events)
     }
 
     # df typing to avoid row name conflicts
@@ -436,7 +368,7 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
             unique %>%
             mutate(effect=
                 ifelse(effect%in%c('STOP_GAINED','Nonsense_Mutation','stop_gained&splice_region_variant','stop_gained','Nonsense_Mutation','Stop_Codon_Ins','nonsense','truncating snv','Truncating snv','Truncating snv','Truncating SNV'),'Truncating SNV',
-                ifelse(effect%in%c('FRAME_SHIFT','FRAME_SHIFT','Frame_Shift_Del','Frame_Shift_Ins','frameshift_variant','frameshift_variant&stop_gained','frameshift_variant&splice_region_variant','frameshift_variant&splice_acceptor_variant&splice_region_variant&splice_region_variant&intron_variant','Frame_Shift_Del','Frame_Shift_Ins','frame_shift_del','frame_shift_ins','frameshift indel','Frameshift indel','Frameshift In-Del','frameshift_variant'),'Frameshift In-Del',
+                ifelse(effect%in%c('FRAME_SHIFT','FRAME_SHIFT','Frame_Shift_Del','Frame_Shift_Ins','frameshift_variant&splice_acceptor_variant&splice_region_variant&intron_variant','frameshift_variant','frameshift_variant&stop_gained','frameshift_variant&splice_region_variant','frameshift_variant&splice_acceptor_variant&splice_region_variant&splice_region_variant&intron_variant','Frame_Shift_Del','Frame_Shift_Ins','frame_shift_del','frame_shift_ins','frameshift indel','Frameshift indel','Frameshift In-Del','frameshift_variant'),'Frameshift In-Del',
                 ifelse(effect%in%c('NON_SYNONYMOUS_CODING','STOP_LOST','Missense_Mutation','missense_variant','missense_variant&splice_region_variant','missense_variant|missense_variant','Missense_Mutation','missense','missense snv','Missense snv','Missense SNV'),'Missense SNV',
                 ifelse(effect%in%c('CODON_CHANGE_PLUS_CODON_DELETION','CODON_DELETION','CODON_INSERTION','In_Frame_Ins','In_Frame_Del','disruptive_inframe_deletion','disruptive_inframe_insertion','inframe_deletion','inframe_insertion','disruptive_inframe_deletion&splice_region_variant','inframe_deletion&splice_region_variant','In_Frame_Del','In_Frame_Ins','in_frame_del','in_frame_ins','inframe indel','Inframe indel','Inframe In-Del'),'Inframe In-Del',
                 ifelse(effect%in%c('SPLICE_SITE_DONOR','SPLICE_SITE_ACCEPTOR','SPLICE_SITE_REGION','Splice_Site','splice_donor_variant&intron_variant','splice_acceptor_variant&intron_variant','splicing','splice_donor_variant&splice_region_variant&intron_variant','splice_donor_variant&disruptive_inframe_deletion&splice_region_variant&splice_region_variant&intron_variant','Splice_Site','splice','splice site variant','Splice site variant','missense_variant & splice_region_variant'),'Splice site variant',
@@ -444,8 +376,7 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
                 ifelse(effect%in%c('synonymous_variant','splice_region_variant&synonymous_variant','splice_region_variant&synonymous_variant','non_coding_exon_variant','upstream_gene_variant','downstream_gene_variant','intron_variant','frameshift_variant&splice_donor_variant&splice_region_variant&splice_region_variant&intron_variant','non_coding_exon_variant|synonymous_variant','SYNONYMOUS_CODING','synonymous_variant|synonymous_variant','splice_region_variant&synonymous_variant|splice_region_variant&non_coding_exon_variant','splice_acceptor_variant & intron_variant','intragenic_variant',"3'UTR",'IGR','lincRNA','RNA','Intron','silent','intron_exon','silent','Silent','intron_variant & missense_variant'),'Silent',
                 ifelse(effect%in%c('Amplification','amplification','amp','2'),'Amplification',
                 ifelse(effect%in%c('Deletion','deletion','del','-2'),'Deletion',
-                ifelse(is.na(effect),NA,
-            NA)))))))))))
+                ifelse(is.na(effect),NA,str_c('UNACCOUNTED: ', effect))))))))))))
 
         # warn on unknown effects
         if(all(is.na(events$effect))){
@@ -465,20 +396,7 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
     }
 
     if(!is.null(keys)) {
-        keys.index <- which(events$sample %in% names(keys))
-        if(length(keys.index) == 0) {
-            message(green('no keys to convert'))
-        } else if(force.keys==FALSE) {
-            conversions <- data.frame(pre=as.character(events$sample[keys.index]), post=keys[as.character(events$sample[keys.index])], row.names=NULL) %>% unique
-            message(green(str_c('key conversions: ',length(conversions$pre),'/',length(unique(events$sample)))))
-            print(conversions)
-            events %<>% mutate(sample=ifelse(row_number() %in% keys.index, keys[sample], sample))
-        } else {
-            conversions <- data.frame(pre=as.character(unique(events$sample)), post=keys[unique(as.character(events$sample))], in.keys=unique(as.character(events$sample)) %in% names(keys), row.names=NULL)
-            message(yellow('forcing key conversions'))
-            print(conversions)
-            events %<>% mutate(sample=keys[sample])
-        }
+        events %>% KeyMod(keys)
     }
 
     return(events)
@@ -504,38 +422,6 @@ OrgEvents <- function(events, sample.order, pheno.order=NULL, subsets.pheno, rec
 #   'merge'     = treat X & Y coordinates as homologous pair
 #   'distinct'  = treat X & Y as seperate, sequential chromosomes
 
-    # function to dummy column if absent
-    DummyCols <- function(events, col.names) {
-        for(col.name in col.names) {
-            if(!col.name %in% colnames(events)) {
-                message(green(str_c('adding dummy column: ', col.name)))
-                events.names <- colnames(events) %>% replace(which(is.na(.)),'empty') %>% list.filter(.!='add.col')
-                events$add.col <- NA
-                events %<>% set_names(c(events.names,col.name))
-            }
-        }
-        return(events)
-    }
-
-    # convert chrom vector to desired format
-    ChromMod <- function(events, allosome){
-
-        if('X' %in% events$chrom) { message(yellow('X chromosome labelling converted to numeric')) }
-
-        if(allosome=='distinct') {
-                if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 24-based numeric')) }
-                events %>%
-                mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
-                mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
-        } else if(allosome =='merge') {
-                if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 23-based numeric')) }
-                events %>% 
-                mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
-        } else {
-                events %>%
-                filter(!chrom %in% c('X','Y'))
-        }
-    }
 
     missing.samples <- sample.order[!sample.order %in% events$sample]
 
@@ -916,24 +802,112 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
 
 }
 
-# soft sample name key:value modification
-KeyMod <- function(events, keys, force.keys=FALSE) {
-    keys.index <- which(events$sample %in% names(keys))
-    if(length(keys.index) == 0 & force.keys==FALSE) {
-        message(green('no keys to convert'))
-    } else if(force.keys==FALSE) {
-        conversions <- data.frame(pre=as.character(events$sample[keys.index]), post=keys[as.character(events$sample[keys.index])], row.names=NULL) %>% unique
-        message(green(str_c('key conversions: ',length(conversions$pre),'/',length(unique(events$sample)))))
-        print(conversions)
-        events %<>% mutate(sample=ifelse(row_number() %in% keys.index, keys[sample], sample))
-    } else {
-        conversions <- data.frame(pre=as.character(unique(events$sample)), post=keys[unique(as.character(events$sample))], in.keys=unique(as.character(events$sample)) %in% names(keys), row.names=NULL)
-        message(yellow('forcing key conversions'))
-        print(conversions)
-        events %<>% mutate(sample=keys[sample])
-    }
-    return(events)
+
+#--------------------#
+#                    #
+# INPUT & PARAMETERS #
+#                    #
+#--------------------#
+
+#------------
+# run options
+#------------
+
+include.silent       = FALSE
+dist.method          = 'hamming'   # 'hamming', euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'    | see ?dist for details [hamming method implemented manually]
+clust.method         = 'complete' # 'complete', ward', 'single', 'complete', 'average', 'mcquitty', 'median', 'centroid' | see ?hclust for details
+exclude.values       = c('', '.', 'Normal', 'Not Performed', 'Performed but Not Available', 'FALSE', FALSE)
+sort.method          = 'distance'  # for tree sorting: ladder 'ladderize'
+tree.labels          = TRUE
+pheno                = NULL
+color.seed           = 3
+color.clusters       = TRUE
+min.cluster          = 3
+random.pheno.color   = TRUE
+pheno.palette        = c('#2d4be0', '#20e6ae', '#ccb625', '#969696')
+cn.cols              = 'threshold'  # 'threshold' = reserved string for selecting columns with threshold sufix, 'all' = reserved string for using all columns, else a string specifing columns to use
+use.keys             = FALSE
+loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
+call.loh             = TRUE
+call.abs             = TRUE
+muts.out             = 'summary/mutation_heatmap.tsv'
+
+
+#---------------------
+# assign config params
+#---------------------
+
+# load config yaml file
+config <- list.load('subset_config.yaml')
+
+# sample key values
+keys <- config$keys %>% unlist
+
+# define subsets
+if(use.keys !=FALSE){
+    subsets <- config$subsets %>% map(~ { keys[.x]})
+} else {
+    subsets <- config$subsets
 }
+
+# subset groups for pairwise comparisons
+if(!is.null(config$subset_groups)) {
+    sub.groups <-
+        config$subset_groups %>%
+        list.map(data_frame(.) %>% t %>% as_data_frame) %>%
+        plyr::rbind.fill(.) %>%
+        set_names(letters[1:(config$subset_groups %>% list.mapv(length(.)) %>% max)]) %>%
+        tbl_df %>%
+        gather(col,subset) %>%
+        group_by(col) %>%
+        mutate(group.id=row_number()) %>%
+        ungroup %>%
+        group_by(group.id) %>%
+        mutate(subv=subsets[subset]) %>%
+        mutate(overlap=anyDuplicated(unlist(subv))) %>%
+        ungroup %>%
+        select(-subv) %>%
+        spread(col,subset) %>%
+        mutate(comparison=names(config$subset_groups))
+
+        if(any(sub.groups$overlap>0)){ message(red('warning: subset groups contain overlapping samples')) }
+
+} else if(length(subsets) > 1) {
+    sub.groups <-
+        permutations(n=length(config$subsets), r=2, v=names(config$subsets)) %>%
+        as_data_frame %>%
+        set_names(c('a', 'b')) %>%
+        mutate(group.id=row_number()) %>%
+        select(group.id, a, b) %>%
+        rowwise %>%
+        mutate(overlap=length(intersect(unlist(subsets[a]), unlist(subsets[b])))) %>%
+        ungroup %>%
+        mutate(comparison=str_c(a, ' x ', b))
+} else if(length(subsets) == 1) {
+    sub.groups <- data_frame(overlap=NA, group.id=1, comparison=NA, a=names(config$subsets), b=NA)
+} else {
+    sub.groups <- data_frame(overlap=1, group.id=1, comparison=NA, a=NA, b=NA)
+}
+
+# stop if subset specifications absent
+if(sub.groups %>% select(a, b) %>% unlist %in% names(subsets) %>% all == FALSE & length(subsets) > 1) {
+    print((sub.groups %>% select(a, b) %>% unlist)[!sub.groups %>% select(a, b) %>% unlist %in% names(subsets)] %>% unname %>% unique)
+    stop('missing subsets specified in subset groups')
+}
+
+# load sample list
+samples <- list.load('samples.yaml') %>% list.stack %>% tbl_df
+
+# add all samples as subset
+subsets <- c(subsets, list(all=samples$tumor))
+
+sub.groups %<>%
+    filter(overlap==0) %>%
+    select(-overlap) %>%
+    bind_rows(data_frame(group.id=0, comparison='all', a='all'), .) %>%
+    mutate(extension=str_c(comparison, group.id, sep='_') %>% gsub(' ', '_', .)) %>%
+    select(group.id, comparison, extension, everything())
+
 
 #-----------------#
 #                 #
@@ -964,6 +938,7 @@ subsets.pheno <-
     plyr::rename(replace=names(pheno.palette) %>% set_names(pheno.palette)) %>%
     tbl_df %>%
     KeyMod(keys)
+
 
 #---------------------
 # mutations processing
@@ -1092,11 +1067,6 @@ if(call.loh == TRUE) {
 }
 
 
-#------------------------
-# construct mutation tree
-#------------------------
-
-muts.tree <- muts %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='gene')
 
 
 #----------------------------------------
@@ -1160,15 +1130,8 @@ write_tsv(cn.amp.del.out)
 cnas %<>% left_join(subsets.pheno)
 
 
-#--------------------------------
-# construct copy number event tree
-#--------------------------------
-
-cnas.tree <- cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band')
-
-
 #---------------------------
-# construct all-variant tree
+# combined muts / cnas table
 #---------------------------
 
 # all mutations and cnas
@@ -1176,120 +1139,19 @@ variants <-
     bind_rows( muts %>% select(sample, chrom, pos, span=gene, effect, ccf, loh, clonal),
                cnas %>% select(sample, chrom, pos=start, span=band, effect) )
 
-# all variants tree
-variants.tree <- variants %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='span')
 
-
-#---------------------------#
-#                           #
-# build variant & CCF plots #
-#                           #
-#---------------------------#
-
-# mutations (by type)
-muts %>%
-mutate(pheno='Mutations by type') %>%
-OrgEvents(sample.order=labels(muts.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
-mutate(ccf=0) %>%
-PlotVariants( output.file = 'summary/mutation_heatmap_type.pdf',
-              clonal      = FALSE,
-              pathogenic  = FALSE,
-              ccf         = FALSE,
-              loh         = FALSE,
-              event.type  = 'gene',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$gene))/3) + 10,
-              text.size   = 30 )
-
-# mutations (by type) [recurrent]
-muts %>%
-mutate(pheno='Recurrent mutations by type') %>%
-OrgEvents(sample.order=labels(muts.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
-PlotVariants( output.file = 'summary/mutation_heatmap_type_recurrent.pdf',
-              clonal      = FALSE,
-              pathogenic  = FALSE,
-              ccf         = FALSE,
-              loh         = FALSE,
-              event.type  = 'gene',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$gene))/3) + 10,
-              text.size   = 30 )
-
-# mutations ccf
-muts %>%
-mutate(pheno='Mutations CCF') %>%
-OrgEvents(sample.order=labels(muts.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
-PlotVariants( output.file = 'summary/mutation_heatmap_ccf.pdf',
-              clonal      = TRUE,
-              pathogenic  = FALSE,
-              ccf         = TRUE,
-              loh         = TRUE,
-              event.type  = 'gene',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$gene))/3) + 10,
-              text.size   = 30 )
-
-# mutations ccf [recurrent]
-muts %>%
-mutate(pheno='Recurrent mutations CCF') %>%
-OrgEvents(sample.order=labels(muts.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
-PlotVariants( output.file = 'summary/mutation_heatmap_ccf_recurrent.pdf',
-              clonal      = TRUE,
-              pathogenic  = FALSE,
-              ccf         = TRUE,
-              loh         = TRUE,
-              event.type  = 'gene',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$gene))/3) + 10,
-              text.size   = 30 )
-
-# copy number
-cnas %>%
-mutate(pheno='Copy number') %>%
-OrgEvents(sample.order=labels(cnas.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
-PlotVariants( output.file = 'summary/cna_heatmap.pdf',
-              clonal      = FALSE,
-              pathogenic  = FALSE,
-              ccf         = FALSE,
-              loh         = FALSE,
-              event.type  = 'band',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$band))/3) + 10,
-              text.size   = 30 )
-
-# all variants
-variants %>%
-mutate(pheno='Recurrent mutations CCF') %>%
-OrgEvents(sample.order=labels(variants.tree$dend), pheno.order=NULL, subsets.pheno=subsets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
-PlotVariants( output.file = 'summary/variant_heatmap_type.pdf',
-              clonal      = FALSE,
-              pathogenic  = FALSE,
-              ccf         = FALSE,
-              loh         = FALSE,
-              event.type  = 'span',
-              width       = length(unique(.$sample)) + 10,
-              height      = (length(unique(.$span))/3) + 10,
-              text.size   = 30 )
-
-
-#-------------------------#
-#                         #
-# subset comparison plots #
-#                         #
-#-------------------------#
+#-------------#
+#             #
+# subset loop #
+#             #
+#-------------#
 
 system("mkdir summary/subsets &>/dev/null")
 
-for (sub.group.num in 0:(nrow(sub.groups)-1)) {
+for (sub.num in 0:(nrow(sub.groups)-1)) {
 
     # sub group setup
-    sub.group <- sub.groups %>% filter(group.id==sub.group.num)
-
-    sub.ext <- gsub(' ', '_', sub.groups$group.id[sub.group.num])
-
-    
-
-    sub.group <- c(sub.groups[sub.group.num,'a'], sub.groups[sub.group.num,'b']) %>% unlist
+    sub.group <- sub.groups %>% filter(group.id==sub.num)
 
     #-----------------
     # heatmap plotting
