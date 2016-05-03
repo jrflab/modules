@@ -54,19 +54,19 @@ for (n in names(beds)) {
 cat('done\n')
 
 vcf <- readVcf(fn, genome = opt$genome)
-# replace header
-for (n in names(beds)) {
-    newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
-    info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
-    ol <- findOverlaps(rowRanges(vcf), geneLists[[n]], select = 'first')
-    info(vcf)[,n] <- !is.na(ol)
-}
+if (nrow(vcf) > 0) {
+    # replace header
+    for (n in names(beds)) {
+        newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
+        info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
+        ol <- findOverlaps(rowRanges(vcf), geneLists[[n]], select = 'first')
+        info(vcf)[,n] <- !is.na(ol)
+    }
 
-cat("Writing to", opt$outFile, "... ")
-writeVcf(vcf, out)
-cat("done\n")
-
-if (i == 1) {
+    cat("Writing to", opt$outFile, "... ")
+    writeVcf(vcf, out)
+    cat("done\n")
+} else {
     cat("No entries, creating empty vcf file\n")
     vcf <- readVcf(fn, genome = opt$genome)
     writeVcf(vcf, out)
@@ -74,5 +74,5 @@ if (i == 1) {
     cmd <- paste("sed -i '/^##contig/d'", outfn)
     system(cmd)
 }
-close(tab)
+
 close(out)
