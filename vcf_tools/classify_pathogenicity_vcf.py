@@ -2,6 +2,7 @@
 
 import argparse
 import vcf
+import urllib2
 from mechanize import Browser
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -35,34 +36,37 @@ assert "ANN" in vcf_reader.infos
 assert "kandoth" in vcf_reader.infos
 assert "lawrence" in vcf_reader.infos
 assert "facetsLCN_EM" in vcf_reader.infos
-assert "dbNSFP_MutationTaster_pred" in vcf_reader.infos
+assert any(["MutationTaster_pred" in x for x in vcf_reader.infos])
 
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
+
 
 def query_provean(record, max_retry):
     query = str(record.CHROM) + "," + str(record.POS) + "," + str(record.REF) + "," + str(record.ALT[0])
     br = Browser()
+    sys.stderr.write("Querying Provean: {}\n".format(query))
     br.open('http://provean.jcvi.org/genome_submit_2.php?species=human')
     br.form = list(br.forms())[1]  # select the chrpos form
     control = br.form.find_control("CHR")
     control.value = query
-    response = br.submit()
-    response_url = response.read()
-    link = None
-    retries = 0
-    while link is None:
-        soup = BeautifulSoup(response_url, 'html.parser')
-        link = soup.find('a', href=re.compile('one\.tsv'))
-        if link is None and retries > max_retry:
-            return None
-        if link is None:
-            retries += 1
+    for attempt in range(max_retry):
+        try:
+            br.submit()
+            page = urllib2.urlopen(br.geturl()).read()
+            soup = BeautifulSoup(page, 'html.parser')
+            link = soup.find('a', href=re.compile('one\.tsv'))
+            url = 'http://provean.jcvi.org/' + link.get('href')
+            df = pd.read_table(url)
+            return {'protein_id': list(df['PROTEIN_ID']),
+                    'score': list(df['SCORE']),
+                    'pred': list(df['PREDICTION (cutoff=-2.5)'])}
+        except:
+            sys.stderr.write("attempt {} failed...\n".format(attempt))
             time.sleep(30)
-    url = 'http://provean.jcvi.org/' + link.get('href')
-    df = pd.read_table(url)
-    return {'protein_id': list(df['PROTEIN_ID']),
-            'score': list(df['SCORE']),
-            'pred': list(df['PREDICTION (cutoff=-2.5)'])}
+        else:
+            sys.stderr.write('max attempts\n')
+            break
+    return None
 
 
 def classify_pathogenicity(record):
