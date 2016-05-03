@@ -41,10 +41,10 @@ if __name__ == "__main__":
         elif record.is_indel:
             url = "http://www.mutationtaster.org/cgi-bin/MutationTaster/MT_ChrPos.cgi" \
                 "?chromosome={}&position={}&ref={}&alt={}".format(record.CHROM, record.POS, record.REF, record.ALT[0])
-            print "Querying: ", url
+            sys.stderr.write("Querying: {}\n".format(url))
             dfs = pd.read_html(url)
             if (len(dfs) < 2):
-                print "query failed, skipping"
+                sys.stderr.write("query failed, skipping\n")
             else:
                 # summary is the second dataframe
                 summary = dfs[1][1:]

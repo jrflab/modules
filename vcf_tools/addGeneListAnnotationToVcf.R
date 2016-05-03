@@ -53,33 +53,18 @@ for (n in names(beds)) {
 }
 cat('done\n')
 
-cat('Indexing vcf ... ')
-temp <- tempfile()
-zipped <- bgzip(fn, temp)
-idx <- indexTabix(temp, "vcf")
-cat('done\n')
-
-tab <- TabixFile(zipped, idx, yieldSize = 2000)
-open(tab)
-
-browser()
-cat('Processing vcf by chunk\n')
-i <- 1
-while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
-    # replace header
-    for (n in names(beds)) {
-        newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
-        info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
-        ol <- findOverlaps(rowRanges(vcf), geneLists[[n]], select = 'first')
-        info(vcf)[,n] <- !is.na(ol)
-    }
-
-    cat(paste('Chunk', i, "\n"))
-    cat("Appending vcf chunk to", opt$outFile, "... ")
-    writeVcf(vcf, out)
-    cat("done\n")
-    i <- i + 1
+vcf <- readVcf(fn, genome = opt$genome)
+# replace header
+for (n in names(beds)) {
+    newInfo <- DataFrame(Number = 0, Type = "Flag", Description = paste(n, ": variant is in gene list", sep = ''), row.names = n)
+    info(header(vcf)) <- rbind(info(header(vcf)), newInfo)
+    ol <- findOverlaps(rowRanges(vcf), geneLists[[n]], select = 'first')
+    info(vcf)[,n] <- !is.na(ol)
 }
+
+cat("Writing to", opt$outFile, "... ")
+writeVcf(vcf, out)
+cat("done\n")
 
 if (i == 1) {
     cat("No entries, creating empty vcf file\n")

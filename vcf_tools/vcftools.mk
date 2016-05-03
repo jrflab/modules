@@ -401,12 +401,12 @@ allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 
 MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
-	$(INIT) $(MUTATION_TASTER) $< > $@ &> $(LOG)
+	$(INIT) $(call CHECK_VCF,$<,$@,$(MUTATION_TASTER) $< > $@ 2> $(LOG))
 
 CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
 CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
 %.hotspot.vcf : %.vcf
-	$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@"))
 
 PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
 AA_TABLE = $(HOME)/share/reference/aa_table.tsv
@@ -419,7 +419,7 @@ PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXD
 
 CLASSIFY_PATHOGENICITY = $(PYTHON) modules/vcf_tools/classify_pathogenicity_vcf.py
 %.pathogen.vcf : %.vcf
-	$(INIT) $(CLASSIFY_PATHOGENICITY) $< $@
+	$(INIT) $(call CHECK_VCF,$<,$@,$(CLASSIFY_PATHOGENICITY) $< > $@ 2> $(LOG))
 
 endif
 VCFTOOLS_MK = true

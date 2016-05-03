@@ -7,11 +7,11 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import time
+import sys
 
 parser = argparse.ArgumentParser(prog='classify_pathogenicity_vcf.py',
                                  description='Add pathogenicity to vcf file')
 parser.add_argument('vcf_infile')
-parser.add_argument('vcf_outfile')
 
 args = parser.parse_args()
 
@@ -37,11 +37,9 @@ assert "lawrence" in vcf_reader.infos
 assert "facetsLCN_EM" in vcf_reader.infos
 assert "dbNSFP_MutationTaster_pred" in vcf_reader.infos
 
-vcf_writer = vcf.Writer(open(args.vcf_outfile, 'w'), vcf_reader)
-
+vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 def query_provean(record, max_retry):
-    #pdb.set_trace()
     query = str(record.CHROM) + "," + str(record.POS) + "," + str(record.REF) + "," + str(record.ALT[0])
     br = Browser()
     br.open('http://provean.jcvi.org/genome_submit_2.php?species=human')
@@ -118,7 +116,8 @@ def classify_pathogenicity(record):
             else:
                 record.INFO["pathogenicity"] = "passenger"
 
-for record in vcf_reader:
-    classify_pathogenicity(record)
-    vcf_writer.write_record(record)
-vcf_writer.close()
+if __name__ == "__main__":
+    for record in vcf_reader:
+        classify_pathogenicity(record)
+        vcf_writer.write_record(record)
+    vcf_writer.close()
