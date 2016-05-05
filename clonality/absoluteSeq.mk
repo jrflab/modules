@@ -105,7 +105,7 @@ absolute/segment/%.seg.txt : oncoscan/%.probes.txt oncoscan/%.segments.txt
 	EOF')
 	q(status=r, save="no")
 else ifeq ($(USE_FACETS_COPYNUM),true)
-absolute/segment/%.seg.txt : facets/%.cncf.txt
+absolute/segment/%.seg.txt : facets/cncf/%.cncf.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	X <- read.table("$<", stringsAsFactors=F, header=T, sep="\t")
