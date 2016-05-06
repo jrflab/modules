@@ -3,13 +3,11 @@ DEPTH_FILTER ?= 5
 HRUN ?= false
 VALIDATION ?= false
 
-VALIDATION_ANNS := dbsnp eff \
-    $(if $(findstring b37,$(REF)),cosmic nsfp)
 INDEL_ANNS := $(if $(findstring GRCm38,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic nsfp gene_ann cn_reg clinvar exac_nontcga)
-SNV_ANNS := $(INDEL_ANNS) \
-    $(if $(findstring b37,$(REF)),chasm fathmm)
+#SNV_ANNS := $(INDEL_ANNS) \
+#    $(if $(findstring b37,$(REF)),chasm fathmm)
 
 FILTERS = dp_ft
 # filter out germline mutations if there's a NORMAL_VCF
@@ -19,17 +17,14 @@ FILTERS += $(if $(TARGETS_FILE),target_ft)
 # hrun filter
 FILTERS += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun hrun_ft))
-POSTANN_FILTERS += cft common
 
 
 # indel/snv annotations
-ANNOTATIONS += $(if $(findstring true,$(VALIDATION)),$(VALIDATION_ANNS),\
-		   $(if $(findstring indel,$1),$(INDEL_ANNS),$(SNV_ANNS)))
+ANNOTATIONS += $(if $(findstring indel,$1),$(INDEL_ANNS),$(SNV_ANNS))
 
-FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call FILTERS,$1)))
-ANN_SUFFIX = pass.$(subst $( ),.,$(strip $(call ANNOTATIONS,$1)))
-POSTANN_SUFFIX = $(subst $( ),.,$(strip $(call POSTANN_FILTERS,$1))).pass2
-SUFFIX = $(FILTER_SUFFIX).$(ANN_SUFFIX).$(POSTANN_SUFFIX)
+FILTER_SUFFIX = $1.$(subst $( ),.,$(strip $(call FILTERS,$1)) pass)
+ANN_SUFFIX = $(subst $( ),.,$(strip $(call ANNOTATIONS,$1)))
+SUFFIX = $(subst $( ),.,$(strip $(FILTER_SUFFIX) $(ANN_SUFFIX)))
 
 EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
