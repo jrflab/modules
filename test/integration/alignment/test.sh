@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source ${DIR}/test_functions.sh
+source ${DIR}/../test_functions.sh
 set -e
 
-echo "TEST TARGETED SEQUENCING test_data/tseq"
-cd ${DIR}/test_data/tseq
+echo "TEST ALIGNMENT TARGETED SEQUENCING test_data"
+cd ${DIR}/test_data
+# create project_config.inc
+python modules/configure.py
 echo "==bwamem=="
 echo "run"
 make bwamem && echo "success" || (echo "failed" && exit 1)
