@@ -40,8 +40,8 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
     pacman::p_load(DescTools,dplyr,readr,stringr,tidyr,broom,purrr,magrittr,rlist,crayon,colorspace,ggplot2,grid,gridExtra,RColorBrewer)
 
     # create output directory
-    system("mkdir fishers_cn &>/dev/null")
-    system("mkdir fishers_mut &>/dev/null")
+    system("mkdir summary/fishers_cn &>/dev/null")
+    system("mkdir summary/fishers_mut &>/dev/null")
 
 
     #----------
@@ -444,6 +444,11 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         gt
     }
 
+    # fix file names
+    FixName <- function(file.name) {
+        file.name %>% gsub('\\s', '_', .) %>% gsub('/', '-', .)
+    }
+
 
     # convert chrom vector to desired format
     ChromMod <- function(muts, allosome){
@@ -648,7 +653,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("fishers_mut/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("summary/fishers_mut/",FixName(plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
@@ -661,8 +666,8 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         options(device="pdf")
 
         # call functions & add to plot list
-        gg.list <- list( MutPrevalence(sample.stats.mut.a, plot.title=str_c(plot.title.a, " Prevalance [Mutations]"), gene.names=gene.names),
-                         MutPrevalence(sample.stats.mut.b, plot.title=str_c(plot.title.b, " Prevalance [Mutations]"), gene.names=gene.names),
+        gg.list <- list( MutPrevalence(sample.stats.mut.a, plot.title=str_c(plot.title.a, " Prevalence [Mutations]"), gene.names=gene.names),
+                         MutPrevalence(sample.stats.mut.b, plot.title=str_c(plot.title.b, " Prevalence [Mutations]"), gene.names=gene.names),
                          MutFishers(sample.stats.mut.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact [Mutations]"), gene.names=gene.names) )
 
     } else {
@@ -743,7 +748,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         # write data summary
         message(blue('- writing data summary'))
-        file.name <- str_c("fishers_cn/",gsub(" ","_",plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
+        file.name <- str_c("summary/fishers_cn/",FixName(plot.title.main),ifelse(suffix=='now', format(Sys.time(), '.%Y-%m-%d-%H-%M-%S'), ifelse(suffix=='', '', str_c('.',suffix))))
         write_tsv(sample.stats, str_c(file.name,'.txt'))
 
 
@@ -756,11 +761,11 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
         options(device="pdf")
 
         # call functions & add to plot list
-        gg.list <- list( GainPrevalence(sample.stats.gain.a, plot.title=str_c(plot.title.a, " Prevalance [Gains]"), gene.names=gene.names),
-                         GainPrevalence(sample.stats.gain.b, plot.title=str_c(plot.title.b, " Prevalance [Gains]"), gene.names=gene.names),
+        gg.list <- list( GainPrevalence(sample.stats.gain.a, plot.title=str_c(plot.title.a, " Prevalence [Gains]"), gene.names=gene.names),
+                         GainPrevalence(sample.stats.gain.b, plot.title=str_c(plot.title.b, " Prevalence [Gains]"), gene.names=gene.names),
                          GainFishers(sample.stats.gain.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact [Gains]"), gene.names=gene.names),
-                         AmpPrevalence(sample.stats.amp.a, plot.title=str_c(plot.title.a, " Prevalance [Amplifications]"), gene.names=gene.names),
-                         AmpPrevalence(sample.stats.amp.b, plot.title=str_c(plot.title.b, " Prevalance [Amplifications]"), gene.names=gene.names),
+                         AmpPrevalence(sample.stats.amp.a, plot.title=str_c(plot.title.a, " Prevalence [Amplifications]"), gene.names=gene.names),
+                         AmpPrevalence(sample.stats.amp.b, plot.title=str_c(plot.title.b, " Prevalence [Amplifications]"), gene.names=gene.names),
                          AmpFishers(sample.stats.amp.fishers, plot.title=str_c(plot.title.a, ' x ', plot.title.b, " Fisher's Exact [Amplifications]"), gene.names=gene.names) )
     }
 
