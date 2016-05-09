@@ -21,15 +21,10 @@ GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --
 
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf.gz,$(DBSNP))
 
-<<<<<<< HEAD
 # augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
 ifeq ($(FACETS_UNION_GATK_DBSNP),true)
 FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf.gz
-=======
-ifeq ($(FACETS_GATK_VARIANTS),true)
-FACETS_SNP_VCF = $(if $(TARGETS_FILE),gatk/dbsnp_gatk.vcf.gz)
->>>>>>> facets gatk work
 else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
