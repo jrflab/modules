@@ -43,29 +43,46 @@ vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 def query_provean(record, max_retry):
     query = str(record.CHROM) + "," + str(record.POS) + "," + str(record.REF) + "," + str(record.ALT[0])
-    br = Browser()
-    sys.stderr.write("Querying Provean: {}\n".format(query))
-    br.open('http://provean.jcvi.org/genome_submit_2.php?species=human')
-    br.form = list(br.forms())[1]  # select the chrpos form
-    control = br.form.find_control("CHR")
-    control.value = query
+    # get the job URL
+    job_url = None
     for attempt in range(max_retry):
         try:
+            br = Browser()
+            sys.stderr.write("Querying Provean: {}\n".format(query))
+            br.open('http://provean.jcvi.org/genome_submit_2.php?species=human')
+            br.form = list(br.forms())[1]  # select the chrpos form
+            control = br.form.find_control("CHR")
+            control.value = query
             br.submit()
-            page = urllib2.urlopen(br.geturl()).read()
-            soup = BeautifulSoup(page, 'html.parser')
-            link = soup.find('a', href=re.compile('one\.tsv'))
-            url = 'http://provean.jcvi.org/' + link.get('href')
-            df = pd.read_table(url)
-            return {'protein_id': list(df['PROTEIN_ID']),
-                    'score': list(df['SCORE']),
-                    'pred': list(df['PREDICTION (cutoff=-2.5)'])}
+            job_url = br.geturl()
+            sys.stderr.write("job url: {}\n".format(job_url))
+            if 'jobid' not in job_url:
+                raise Exception("jobid not in job url")
+            break
         except:
-            sys.stderr.write("attempt {} failed...\n".format(attempt))
+            sys.stderr.write("query attempt {} failed...\n".format(attempt))
             time.sleep(30)
         else:
-            sys.stderr.write('max attempts\n')
+            sys.stderr.write('max query attempts\n')
             break
+    # parse job result page
+    if job_url is not None:
+        for attempt in range(max_retry):
+            try:
+                page = urllib2.urlopen(job_url).read()
+                soup = BeautifulSoup(page, 'html.parser')
+                link = soup.find('a', href=re.compile('one\.tsv'))
+                url = 'http://provean.jcvi.org/' + link.get('href')
+                df = pd.read_table(url)
+                return {'protein_id': list(df['PROTEIN_ID']),
+                        'score': list(df['SCORE']),
+                        'pred': list(df['PREDICTION (cutoff=-2.5)'])}
+            except:
+                sys.stderr.write("attempt {} failed...\n".format(attempt))
+                time.sleep(30)
+            else:
+                sys.stderr.write('max attempts\n')
+                break
     return None
 
 
