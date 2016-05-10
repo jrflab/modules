@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source ${DIR}/../test_functions.sh
+source ${DIR}/../../test_functions.sh
 set -e
 
 echo "TEST ALIGNMENT TARGETED SEQUENCING test_data"
