@@ -4,6 +4,14 @@
 # Author: Raymond Lim <raylim@mm.st>
 #
 
+ifneq ("$(wildcard config.inc)", "")
+include config.inc
+endif
+ifneq ("$(wildcard project_config.inc)", "")
+include project_config.inc
+endif
+include modules/config.inc
+
 export
 
 NUM_ATTEMPTS ?= 20
@@ -12,7 +20,7 @@ MAKELOG = log/$(@).$(NOW).log
 
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),true)
-MAKE = modules/scripts/qmake.pl -n $@.$(NOW) -r $(NUM_ATTEMPTS) -m -s -- make
+MAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
 endif
 NUM_JOBS ?= 100
 

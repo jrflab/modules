@@ -21,5 +21,7 @@ exome: true
 gatk_hard_filter_snps: true
 gatk_pool_snp_recal: false
 
+# slack_channel: 
+
 qsub_priority: 0
 ...
