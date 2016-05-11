@@ -145,6 +145,9 @@ TARGETS += pyrohmm
 pyrohmm :
 	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
 
+TARGETS += variant_maps
+variant_maps :
+	        $(call RUN_MAKE,modules/summary/variantMaps.mk)
 
 TARGETS += compare_vcf
 compare_vcf :

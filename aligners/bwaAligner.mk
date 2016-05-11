@@ -36,8 +36,6 @@ bwa : $(addsuffix ,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 bam/%.bam : bwa/bam/%.bwa.$(BAM_SUFFIX)
 	$(call LSCRIPT,"ln -f $(<) $(@) ")
 
-ifdef SPLIT_SAMPLES
-
 .SECONDEXPANSION:
 define sai-split-fastq-pair
 bwa/sai/$1.$3.sai : $2
@@ -55,7 +53,6 @@ endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),\
 	$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
-endif
 
 bwa/sai/%.sai : fastq/%.fastq.gz
 	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<) > $(@) ")
