@@ -693,6 +693,7 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
         mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF <= 5%','5% < CCF <= 20%','20% < CCF <= 40%','40% < CCF <= 60%','60% < CCF <= 80%','80% < CCF <= 100%'))) %>%
         mutate(pathogenic=as.factor(ifelse(pathogenic=='Pathogenic', 'darkgoldenrod2', NA))) %>%
         mutate(clonal=ifelse(clonal=='Clonal',clonal,NA)) %>%
+        # mutate(clonal=as.factor(clonal) %>%
         select(-order) %>%
         mutate(sample=factor(sample, levels=sample.order))
 
@@ -764,7 +765,7 @@ PlotVariants <- function(events, output.file, clonal=FALSE, pathogenic=FALSE, cc
     # add loh as +
     if(loh==TRUE) {
         hp <- hp +
-        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2) +
+        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='white') +
         scale_shape_manual(values=geometry, guide=guide_legend(colour = 'white'))
     }
 
@@ -785,8 +786,8 @@ PlotVariants <- function(events, output.file, clonal=FALSE, pathogenic=FALSE, cc
 
     # tile groups
     facet_wrap(~pheno, nrow=1, scales='free_x') +
-    scale_x_discrete(expand=c(0.1, 0)) +
-    scale_y_discrete(expand=c(0.1, 0)) +
+    scale_x_discrete(expand=c(0, 0.5)) +
+    scale_y_discrete(expand=c(0, 0.5)) +
 
     # theme params
     theme(  legend.title        = element_blank(),
@@ -923,7 +924,7 @@ if(!interactive()) {
     config <- list.load(opts$project_config)
 
     # load sample list
-    samples <- list.load(opts$samples_config) %>% list.stack %>% tbl_df
+    samples <- list.load(opts$samples_config) %>% list.stack(fill=TRUE) %>% tbl_df
 
     # sample key values
     keys <- config$keys %>% unlist
@@ -934,14 +935,11 @@ if(!interactive()) {
     }
 
     # define sub.sets
-    if(use.keys !=FALSE){
-        sub.sets <- config$subsets %>% map(~ { keys[.x]})
-    } else {
-        sub.sets <- config$subsets
-    }
+    sub.sets <- config$subsets %>% map(~ { .x %>% KeyMod(keys)})
 
     # add all samples as sub.set
-    sub.sets <- c(sub.sets, list(all=samples$tumor), samples$tumor %>% as.list %>% set_names(samples$tumor %>% KeyMod(keys)))
+    sub.sets <- c( sub.sets %>% list.map(KeyMod(., keys)),
+                   list(all=samples$tumor %>% KeyMod(keys)) )
 
     # sub.set groups for pairwise comparisons
     if(!is.null(config$subset_groups)) {
@@ -992,10 +990,20 @@ if(!interactive()) {
     sub.groups %<>%
         filter(overlap==0 | is.na(overlap)) %>%
         select(-overlap) %>%
-        bind_rows(data_frame(group.id=0, extension='all', comparison=NA, a='all'), .) %>%
+        bind_rows(data_frame(extension=names(sub.sets) %>% FixName, comparison=NA, a=names(sub.sets) %>% FixName), .) %>%
         mutate(extension=ifelse(is.na(extension), str_c(comparison, sep='_') %>% FixName, extension)) %>%
-        select(group.id, extension, comparison, everything()) %>%
-        mutate(group.id=row_number()-1)
+        mutate(group.id=row_number()-1) %>%
+        rowwise %>%
+        do({ n.samples <- .[!names(.) %in% c('extension', 'comparison', 'group.id')] %>%
+            unlist %>%
+            sub.sets[.] %>%
+            unlist %>%
+            length
+            c(., n.samples=n.samples) %>% as_data_frame }) %>%
+        select(group.id, n.samples, extension, comparison, everything())
+
+    # add all samples as sub.set
+    sub.sets <- c( sub.sets, samples$tumor %>% KeyMod(keys) %>% set_names(KeyMod(., keys)) %>% as.list )
 
 
     #-----------------#
@@ -1184,7 +1192,7 @@ if(!interactive()) {
         cn.sample.keys <- colnames(gene.cn) %>% list.filter(!. %in% c('gene','hgnc','chrom','start','end','band'))
     }
 
-    gene.cn.cols <- sub.sets %>% unlist %>% KeyMod(keys) %>% unique
+    gene.cn.cols <- sub.sets %>% unlist %>% unique %>% unname %>% KeyMod(keys)
 
     # sub.set amp / del rows
     cnas <-
@@ -1285,7 +1293,7 @@ if(!interactive()) {
 
         # sub group setup
         sub.group <- sub.groups %>% filter(group.id == sub.num)
-        sub.group.sets <- sub.group[names(sub.group) %>% list.filter(!. %in% c('group.id', 'comparison', 'extension'))] %>% list.filter(!is.na(.)) %>% unlist
+        sub.group.sets <- sub.group[names(sub.group) %>% list.filter(!. %in% c('group.id', 'comparison', 'extension', 'n.samples'))] %>% list.filter(!is.na(.)) %>% unlist
         sub.group.samples <- sub.group.sets %>% list.map(sub.sets[.]) %>% unlist %>% unique %>% KeyMod(keys)
 
         print(sub.group)
@@ -1401,6 +1409,19 @@ if(!interactive()) {
         sub.variants %>%
         OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/variant_heatmap/variant_heatmap_type_', sub.group$extension, '.pdf'),
+                      clonal      = FALSE,
+                      pathogenic  = FALSE,
+                      ccf         = FALSE,
+                      loh         = FALSE,
+                      event.type  = 'span',
+                      width       = length(unique(.$sample)) + 10,
+                      height      = (length(unique(.$span))/3) + 10,
+                      text.size   = 30 )
+
+        # all variants
+        sub.variants %>%
+        OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span') %>%
+        PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/variant_heatmap/variant_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
                       ccf         = FALSE,
