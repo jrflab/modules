@@ -9,6 +9,8 @@ import pandas as pd
 import re
 import time
 import sys
+import requests
+import tempfile
 
 parser = argparse.ArgumentParser(prog='classify_pathogenicity_vcf.py',
                                  description='Add pathogenicity to vcf file')
@@ -40,9 +42,11 @@ assert any(["MutationTaster_pred" in x for x in vcf_reader.infos])
 
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
+def query_provean(records, max_retry):
+    query = ""
+    for record in records:
+        query += "{},{},{},{}\n".format(record.CHROM, record.POS, record.REF, record.ALT[0])
 
-def query_provean(record, max_retry):
-    query = str(record.CHROM) + "," + str(record.POS) + "," + str(record.REF) + "," + str(record.ALT[0])
     # get the job URL
     job_url = None
     for attempt in range(max_retry):
@@ -61,7 +65,7 @@ def query_provean(record, max_retry):
             break
         except:
             sys.stderr.write("query attempt {} failed...\n".format(attempt))
-            time.sleep(30)
+            time.sleep(10)
         else:
             sys.stderr.write('max query attempts\n')
             break
@@ -77,6 +81,10 @@ def query_provean(record, max_retry):
                 return {'protein_id': list(df['PROTEIN_ID']),
                         'score': list(df['SCORE']),
                         'pred': list(df['PREDICTION (cutoff=-2.5)'])}
+            else:
+                record.INFO['provean_protein_id'] = provean_res['protein_id']
+                record.INFO['provean_pred'] = provean_res['pred']
+                record.INFO['provean_score'] = provean_res['score']
             except:
                 sys.stderr.write("attempt {} failed...\n".format(attempt))
                 time.sleep(30)
@@ -84,6 +92,41 @@ def query_provean(record, max_retry):
                 sys.stderr.write('max attempts\n')
                 break
     return None
+
+def get_hgvsp(record):
+    server = 'http://grch37.rest.ensembl.org'
+    ext = '/vep/human/region/{}:{}-{}:{}/{}/?'.format(record.CHROM, record.POS,
+                                                     record.CHROM, record.POS + len(record.REF), record.ALT[0])
+    r = requests.get(server + ext, headers={"hgvs" : "1",
+                                            "Content-Type" : "application/json"})
+
+    if not r.ok:
+        r.raise_for_status()
+        sys.exit()
+
+    decoded = r.json()
+    hgvsp_decoded = filter(lambda x: 'hgvsp' in x, decoded[0]['transcript_consequences'])
+    hgvsp = map(lambda x: x['hgvsp'], hgvsp_decoded)
+
+def get_fasta(ensembl_id):
+    server = 'http://grch37.rest.ensembl.org'
+    ext = '/sequence/id/{}?'.format(ensembl_id)
+
+    r = requests.get(server + ext, headers={"Content-Type" : "text/x-fasta"})
+    if not r.ok:
+        r.raise_for_status()
+        sys.exit()
+    return r.text
+
+
+def launch_provean(record):
+    hgvsps = get_hgvsp(record)
+    for hgvsp in hgvsps:
+        ensembl_id = hgvsp.split(":")[0]
+        fasta = get_fasta(ensembl_id)
+        f = tempfile.TemporaryFile(mode='w')
+        f.write(fasta)
+        f.close()
 
 
 def classify_pathogenicity(record):
@@ -117,28 +160,47 @@ def classify_pathogenicity(record):
                 record.INFO["pathogenicity"] = "pathogenic" if is_cancer_gene else "potentially_pathogenic"
             else:
                 record.INFO["pathogenicity"] = "passenger"
-    elif any(["inframe" in ef for ef in ann_effect]):
-        if ~is_mt_pathogenic:
-            provean_res = query_provean(record, 500)
-            if provean_res is None:
-                record.INFO["pathogenicity"] = "unknown"
-            else:
-                is_provean_pathogenic = any([x == 'Deleterious' for x in provean_res['pred']])
-                record.INFO['provean_protein_id'] = provean_res['protein_id']
-                record.INFO['provean_pred'] = provean_res['pred']
-                record.INFO['provean_score'] = provean_res['score']
-        if ~is_mt_pathogenic and provean_res is not None and ~is_provean_pathogenic:
-            record.INFO["pathogenicity"] = "passenger"
+    elif is_provean_record(record):
+        if 'provean_pred' not in record.INFO:
+            record.INFO["pathogenicity"] = "unknown"
         else:
-            if (is_loh or hap_insuf) and is_cancer_gene:
-                record.INFO["pathogenicity"] = "pathogenic"
-            elif is_loh or hap_insuf or is_cancer_gene:
-                record.INFO["pathogenicity"] = "potentially_pathogenic"
-            else:
+            is_provean_pathogenic = any([x == 'Deleterious' for x in record.INFO['provean_pred'])
+            if ~is_mt_pathogenic and ~is_provean_pathogenic:
                 record.INFO["pathogenicity"] = "passenger"
+            else:
+                if (is_loh or hap_insuf) and is_cancer_gene:
+                    record.INFO["pathogenicity"] = "pathogenic"
+                elif is_loh or hap_insuf or is_cancer_gene:
+                    record.INFO["pathogenicity"] = "potentially_pathogenic"
+                else:
+                    record.INFO["pathogenicity"] = "passenger"
+
+def is_provean_record(record):
+    is_mt_pathogenic = False
+    ann_effect = [x.split('|')[1] for x in record.INFO['ANN']]
+    if 'MutationTaster_pred' in record.INFO:
+        is_mt_pathogenic = 'disease' in record.INFO['MutationTaster_pred']
+    elif 'dbNSFP_MutationTaster_pred' in record.INFO:
+        is_mt_pathogenic = record.INFO['dbNSFP_MutationTaster_pred'] == 'D' or \
+            record.INFO['dbNSFP_MutationTaster_pred'] == 'A'
+    if ~any([c in ef for ef in ann_effect for c in ["frameshift", "splice_donor", "splice_acceptor", "stop_gained"]]) \
+            and ~any(["missense_variant" in ef for ef in ann_effect]) \
+            and any(["inframe" in ef for ef in ann_effect]) \
+            and ~is_mt_pathogenic:
+        return True
+    return False
+
 
 if __name__ == "__main__":
+    records = list()
+    provean_records = list()
     for record in vcf_reader:
+        if is_provean_record(record):
+            provean_records.append(record)
+        records.append(record)
+    query_provean(records, 30)
+
+    for record in records:
         classify_pathogenicity(record)
         vcf_writer.write_record(record)
     vcf_writer.close()

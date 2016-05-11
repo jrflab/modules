@@ -87,7 +87,7 @@ ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
 SHELL = /bin/bash
 
-export TMPDIR := $(HOME)/share/tmp
+export TMPDIR := $(HOME)/share/tmp2
 
 #VARSCAN
 VARSCAN_MEM = $(JAVA) -Xmx$1 -jar $(VARSCAN_JAR)

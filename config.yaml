@@ -1,5 +1,5 @@
 ---
-tmpdir: $(HOME)/share/tmp
+tmpdir: $(HOME)/share/tmp2
     
 ##Interpreters
 anaconda_python: $(HOME)/share/usr/anaconda/bin/python
