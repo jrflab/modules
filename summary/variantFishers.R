@@ -108,7 +108,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
     }
@@ -176,7 +176,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
 
@@ -242,7 +242,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
     }
@@ -306,7 +306,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
     }
@@ -374,7 +374,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
     }
@@ -439,7 +439,7 @@ Fisher <- function(plot.type='mutation', gene.matrix.a, gene.matrix.b, plot.titl
 
         }
 
-        gt <- ggplot_gtable(ggplot_build(gg))
+        gt <- suppressMessages(ggplot_gtable(ggplot_build(gg)))
         gt$layout$clip[gt$layout$name=='panel'] <- 'off'
         gt
     }
