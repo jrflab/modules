@@ -10,11 +10,8 @@ my $cwd = getcwd;
 #my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
 #my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
 
-my $curl = "curl";
-my $default_curl = "/home/limr/share/usr/anaconda/bin/curl";
-$curl = $default_curl if (-x $default_curl);
-my $err_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_error'";
-my $fin_slack = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23pipeline_finished'";
+my $err_slack = "pipeline_error";
+my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
     limr => "raylim",
@@ -23,7 +20,8 @@ my %slack_map = (
     ngk1 => "charlottekyng",
     debruiji => "debruiji",
     defilipm => "maria",
-    bermans => "hxrts"
+    bermans => "hxrts",
+    gularter => "rjgularte"
 );
 
 
@@ -31,10 +29,17 @@ sub HELP_MESSAGE {
     print "Usage: qmake.pl -n [name] -m -r [numAttempts]\n";
     print "-m: e-mail notifications\n";
     print "-s: slack notifications\n";
+    print "-c: slack channel\n";
     print "-r: number of attempts (default: 1)\n";
     print "-l: parent log dir (default: log)\n";
     print "-n: job name\n";
     exit(1);
+}
+
+sub slack {
+    my ($slack_channel, $slack_message) = @_;
+    my $slack_url = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23$slack_channel'";
+    system "curl --data ' $slack_message' $slack_url &> /dev/null";
 }
 
 
@@ -46,7 +51,7 @@ use Getopt::Std;
 
 my %opt;
 
-getopts('n:smr:l:', \%opt);
+getopts('n:smr:l:c:', \%opt);
 
 my $username = $ENV{LOGNAME} || $ENV{USER} || getpwuid($<);
 my $slackname = $slack_map{$username} || $username;
@@ -150,20 +155,22 @@ do {
             #close MAIL;
         }
 
-        my $slack_msg = "\@${slackname} $project_name";
+        my $pipeline_channel_msg = "\@${slackname} $project_name :";
         if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
-            if ($n + 1 == $attempts) {
-                # final attempt
-                $slack_msg = ":finnadie: $slack_msg";
-            }
             if ($retcode == 0) {
                 # op success
-                $slack_msg = "*COMPLETE* $slack_msg : $name";
-                system "$curl --data '$slack_msg' $fin_slack &> /dev/null";
+                my $slack_msg = "*COMPLETE* $name :metal:";
+                &slack($fin_slack, "$pipeline_channel_msg $slack_msg");
+                &slack($opt{c}, $slack_msg) if $opt{c};
             } else {
                 # op failure
-                $slack_msg = "*FAILURE* $slack_msg : $cwd/$logfile";
-                system "$curl --data '$slack_msg' $err_slack &> /dev/null";
+                my $slack_msg = "*FAILURE* $cwd/$logfile";
+                if ($n + 1 == $attempts) {
+                    # final attempt
+                    $slack_msg = ":finnadie: $slack_msg";
+                    &slack($opt{c}, $slack_msg) if $opt{c};
+                }
+                &slack($err_slack, "$pipeline_channel_msg $slack_msg")
             }
         }
     }
