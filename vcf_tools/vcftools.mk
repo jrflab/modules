@@ -417,9 +417,11 @@ PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXD
 %.provean.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
 
+PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
 CLASSIFY_PATHOGENICITY = $(PYTHON) modules/vcf_tools/classify_pathogenicity_vcf.py
+CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --qsub_script $(QSUB_BIN) --num_provean_threads 5 --mem_per_thread 1.5G 
 %.pathogen.vcf : %.vcf
-	$(INIT) $(call CHECK_VCF,$<,$@,$(CLASSIFY_PATHOGENICITY) $< > $@ 2> $(LOG))
+	$(INIT) $(call CHECK_VCF,$<,$@,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
 
 endif
 VCFTOOLS_MK = true
