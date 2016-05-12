@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-""" classify pathogenicity of vcf records, querying provean as necessary """
+""" classify pathogenicity of vcf records, querying provean as necessary
+"""
 
-import os
 import argparse
 import vcf
 import urllib2
@@ -26,12 +26,12 @@ def three_to_one_amino_acid_code(x):
     # inverse to get 1 > 3 AA code mapping
     for aa in d:
         x = re.sub(aa, d[aa], x)
-        return x
+    return x
 
 
 def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ensembl.org',
                      provean_script='provean.sh', qsub_script='perl modules/qsub.pl', qsub_queue='jrf.q,all.q',
-                     mem_per_thread='1.5G', num_provean_threads=8):
+                     mem_per_thread='1.5G', num_provean_threads=4):
     """ add provean results using remote server or locally if necessary
     """
     query = ""
@@ -97,7 +97,7 @@ def get_hgvsp(record, max_retry=30, rest_server='http://grch37.rest.ensembl.org'
     """ get hgvsp from ensembl
     """
     ext = '/vep/human/region/{}:{}-{}/{}/?hgvs=1'.format(record.CHROM, record.POS,
-                                                   record.POS + len(record.REF), record.ALT[0])
+                                                         record.POS + len(record.REF) - 1, record.ALT[0])
     for attempt in range(max_retry):
         try:
             sys.stderr.write("querying {}\n".format(rest_server + ext))
@@ -137,49 +137,48 @@ def get_fasta(ensembl_id, max_retry=30, rest_server='http://grch37.rest.ensembl.
 
 def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org',
                            provean_script='provean.sh', qsub_script='perl modules/scripts/qsub.pl',
-                           qsub_queue='jrf.q,all.q', num_provean_threads=8, mem_per_thread='1.5G'):
+                           qsub_queue='jrf.q,all.q', num_provean_threads=4, mem_per_thread='1.5G'):
     """ run provean locally
     """
-    provean_queries = list()
+    provean_queries = []
     for record in records:
-        provean_queries.append(run_provean_query(record))
+        provean_queries.extend(run_provean_query(record))
     process_provean_queries(provean_queries)
 
 
 def run_provean_query(record, rest_server='http://grch37.rest.ensembl.org',
                       provean_script='provean.sh', qsub_script='perl modules/scripts/qsub.pl',
-                      qsub_queue='jrf.q,all.q', num_provean_threads=8, mem_per_thread='1.5G'):
+                      qsub_queue='jrf.q,all.q', num_provean_threads=4, mem_per_thread='1.5G'):
     sys.stderr.write('running provean locally...\n')
     hgvsp_ensps = get_hgvsp(record, rest_server=rest_server)
     ensp_hgvsp = {}
     for hgvsp_ensp in hgvsp_ensps:
         ensembl_id = hgvsp_ensp.split(":p.")[0]
         hgvsp = three_to_one_amino_acid_code(hgvsp_ensp.split(":p.")[1])
+        # ignore frameshifts
+        if 'fs' in hgvsp:
+            continue
         if ensembl_id not in ensp_hgvsp:
             ensp_hgvsp[ensembl_id] = []
         ensp_hgvsp[ensembl_id].append(hgvsp)
     provean_queries = []
     for ensp in ensp_hgvsp:
         fasta = get_fasta(ensp, rest_server=rest_server)
-        tmp_fasta = tempfile.NamedTemporaryFile(mode='w')
+        tmp_fasta = tempfile.NamedTemporaryFile(mode='w', delete=False)
         tmp_fasta.write(fasta)
-        tmp_var = tempfile.NamedTemporaryFile(mode='w')
+        tmp_var = tempfile.NamedTemporaryFile(mode='w', delete=False)
         for var in ensp_hgvsp[ensp]:
-            # ignore frameshifts
-            if 'fs' not in var:
-                tmp_var.write(var + "\n")
-        tmp_fasta.flush()
-        tmp_var.flush()
+            tmp_var.write(var + "\n")
+        tmp_fasta.close()
+        tmp_var.close()
         tmp_out = tempfile.mktemp()
-        os.fsync(tmp_fasta.fileno())
-        os.fsync(tmp_var.fileno())
         cmd = 'echo "{} --num_threads {} -q {} -v {} |' \
             'sed \\"1,/PROVEAN scores/d\\" > {}"'.format(provean_script, num_provean_threads,
                                                          tmp_fasta.name, tmp_var.name, tmp_out)
         if qsub_script is not None:
             cmd += '| {} -- -j y -q {} -V -b n -o err.test -pe smp {} -l h_vmem={}'.format(qsub_script, qsub_queue,
-                                                                                            num_provean_threads,
-                                                                                            mem_per_thread)
+                                                                                           num_provean_threads,
+                                                                                           mem_per_thread)
         else:
             cmd += "| bash"
         sys.stderr.write('running: {}\n'.format(cmd))
@@ -188,7 +187,8 @@ def run_provean_query(record, rest_server='http://grch37.rest.ensembl.org',
                  'out': tmp_out,
                  'process': process,
                  'ensp': ensp,
-                 'hgvsp': ensp_hgvsp[ensp]}
+                 'hgvsp': ensp_hgvsp[ensp],
+                 'files': [tmp_fasta, tmp_var, tmp_out]}
         provean_queries.append(query)
     return provean_queries
 
@@ -286,7 +286,7 @@ def get_missense_pathogenicity(record):
 
 
 def is_provean_pathogenic(record):
-    return any([x == 'Deleterious' for x in record.INFO['provean_pred']])
+    return 'provean_pred' in record.INFO and any([x == 'Deleterious' for x in record.INFO['provean_pred']])
 
 
 def get_provean_pathogenicity(record):
@@ -329,7 +329,7 @@ if __name__ == "__main__":
     parser.add_argument('--provean_script', nargs='?', default='provean.sh', help='provean script')
     parser.add_argument('--qsub_script', nargs='?', default='perl modules/scripts/qsub.pl', help='qsub script')
     parser.add_argument('--qsub_queue', nargs='?', default='jrf.q,all.q', help='qsub queue')
-    parser.add_argument('--num_provean_threads', nargs='?', default=8, type=int, help='number of provean threads')
+    parser.add_argument('--num_provean_threads', nargs='?', default=4, type=int, help='number of provean threads')
     args = parser.parse_args()
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
@@ -363,7 +363,7 @@ if __name__ == "__main__":
         if is_provean_record(record):
             provean_records.append(record)
         records.append(record)
-    add_provean_info_local(provean_records, mem_per_thread=args.mem_per_thread, provean_script=args.provean_script,
+    add_provean_info(provean_records, mem_per_thread=args.mem_per_thread, provean_script=args.provean_script,
                      qsub_script=args.qsub_script, num_provean_threads=args.num_provean_threads)
 
     for record in records:

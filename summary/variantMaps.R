@@ -81,9 +81,6 @@ if(!interactive()) {
 # make subdirectories if absent
 system("mkdir summary/sub_group &>/dev/null")
 system("mkdir summary/cna_heatmap &>/dev/null")
-system("mkdir summary/mutation_heatmap &>/dev/null")
-system("mkdir summary/cna_heatmap &>/dev/null")
-system("mkdir summary/variant_heatmap &>/dev/null")
 
 #------------
 # run options
@@ -340,10 +337,10 @@ MeltToTree <- function(events, dist.method='hamming', clust.method='complete', s
     dist <- reorder(dend, dist)
 
     tree <- list( event.matrix=event.matrix,
-                 dist=dist,
-                 hc=hc,
-                 dend=dend,
-                 dist=dist )
+                  dist=dist,
+                  hc=hc,
+                  dend=dend,
+                  dist=dist )
 
     return(tree)
 }
@@ -401,13 +398,15 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
                    'Clonal'='clonal', 'clonal'='clonal',
                    'cn'='cn', 'CN'='cn',
                    'ci95.low'='ci95.low', 'ccf_CI95_low'='ci95.low',
+                   'dbNSFP_PROVEAN_pred'='provean', 'provean'='provean',
                    'NORMAL.DP'='depth.n', 'depth.n'='depth.n',
                    'TUMOR.DP'='depth.t', 'depth.t'='depth.t',
-                   'effect'='effect','Hugo_Symbol'=='gene', 'Effect'='effect', 'Variant_Classification'='effect', 'ANN....EFFECT'='effect', 'ANN[*].EFFECT'='effect',
+                   'Effect'='variant', 'Variant_Classification'='variant', 'ANN....EFFECT'='variant', 'ANN[*].EFFECT'='variant',
+                   'effect'='effect',
                    'ExAC_AF'='ex.af', 'ex.af'='ex.af',
                    'end'='end', 'end'='stop',
                    'fathmm'='fathmm', 'FATHMM'='fathmm', 'fathmm_pred'='fathmm',
-                   'gene'='gene', 'Gene'='gene', 'Hugo_Symbol'='gene', 'GENE'='gene', 'hgnc'='gene', 'ANN....GENE'='gene', 'ANN[*].GENE'='gene', 'Gene.symbol'='gene',
+                   'gene'='gene', 'Gene'='gene', 'Hugo_Symbol'='gene', 'GENE'='gene', 'hgnc'='gene', 'ANN....GENE'='gene', 'ANN[*].GENE'='gene', 'Gene.symbol'='gene', 'Hugo_Symbol'=='gene',
                    'haploinsufficient'='haplo', 'hap_insuf'='haplo', 'haplo'='haplo',
                    'ANN[*].HGVS_C'='hgvs.c',
                    'ANN[*].HGVS_P'='hgvs.p',
@@ -442,7 +441,7 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
         col.names[which(is.na(col.names))] <- fallback.cols[which(is.na(col.names))]
         names(events) <- col.names
     } else if('all' %in% col.names) {
-        col.names <- c( 'alt','band','cancer.gene','ccf','chasm','chrom','clonal','cn','ci95.low','effect',
+        col.names <- c( 'alt','band','cancer.gene','ccf','chasm','chrom','clonal','cn','ci95.low','effect', 'variant',
                         'end','fathmm','gene','haploinsufficient','kandoth','lawrence','loh','maf','mut.taster',
                         'pathogenic','pheno','pos','pr.somatic.clonal','provean','purity','ref','sample','start' )
     }
@@ -460,8 +459,12 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
     events %<>% ChromMod(allosome)
 
     # column typing
-    events %<>% TypeCol( c('sample', 'gene', 'effect', 'ref',  'alt',  'cancer.gene', 'kandoth', 'lawrence', 'haplo', 'fathmm', 'chasm'),
-                       c('char',   'char', 'char',   'char', 'char', 'logic',       'logic',   'logic',    'logic', 'char',   'num') )
+    events %<>% TypeCol( c('sample', 'gene', 'effect', 'variant', 'ref',  'alt',  'cancer.gene', 'kandoth', 'lawrence', 'haplo', 'fathmm', 'chasm'),
+                       c('char',   'char', 'char',   'char', 'char', 'char', 'logic',       'logic',   'logic',    'logic', 'char',   'num') )
+
+    if('variant' %in% colnames(events) & !'effect' %in% colnames(events)) {
+        events %<>% mutate(effect=variant)
+    }
 
     if('effect' %in% colnames(events)){
         # rename variant classifications
@@ -490,6 +493,11 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
         } else if(events %>% filter(is.na(effect)) %>% nrow > 0) {
             message(yellow('warning: some variants not accounted for'))
         }
+    }
+
+    # remove unmutated LOH if present & format
+    if('cancer.gene' %in% colnames(events)) {
+        events %<>% mutate(cancer.gene=ifelse(cancer.gene%in%c('Carcinogenic','cancer', TRUE) & !is.na(effect),'Carcinogenic',NA))
     }
 
     # remove unmutated LOH if present & format
@@ -548,7 +556,7 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
     }
 
     # specify output columns
-    col.names <- c('sample','gene','chrom','effect','pheno','band','span','pos','maf','ccf','loh','clonal','pathogenic')
+    col.names <- c('sample','gene','chrom','effect','pheno','band','span','pos','maf','ccf','loh','cancer.gene','clonal','pathogenic')
 
     events %<>% filter(!is.na(pheno)) %>% filter(!is.na(effect) | !is.na(ccf))
 
@@ -691,7 +699,6 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
             NA)))))))) %>%
         mutate(ccf=ifelse(is.na(effect),NA,ccf)) %>%
         mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF <= 5%','5% < CCF <= 20%','20% < CCF <= 40%','40% < CCF <= 60%','60% < CCF <= 80%','80% < CCF <= 100%'))) %>%
-        mutate(pathogenic=as.factor(ifelse(pathogenic=='Pathogenic', 'darkgoldenrod2', NA))) %>%
         mutate(clonal=ifelse(clonal=='Clonal',clonal,NA)) %>%
         # mutate(clonal=as.factor(clonal) %>%
         select(-order) %>%
@@ -716,10 +723,10 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
 # main plotting function
 #-----------------------
 
-PlotVariants <- function(events, output.file, clonal=FALSE, pathogenic=FALSE, ccf=FALSE, loh=TRUE, width=20, height=20, text.size=18, event.type='gene'){
+PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, pathogenic=FALSE, ccf=FALSE, loh=TRUE, width=20, height=20, text.size=18, event.type='gene'){
 
     # rename for plot output
-    events %<>% plyr::rename(replace=c(sample='Sample', gene='Gene', band='Band', span='Span', variant='Variant', effect='Effect', pathogenic='Pathogenic', clonal='clonal', ccf='CCF', cn='CN'), warn_duplicated=FALSE)
+    events %<>% plyr::rename(replace=c(sample='Sample', gene='Gene', band='Band', span='Span', variant='Variant', effect='Effect', cancer.gene='Carcinogenic', pathogenic='Pathogenic', clonal='clonal', ccf='CCF', cn='CN'), warn_duplicated=FALSE)
 
     # plot aesthetic definitions
     palette  <- c( 'Truncating SNV'='#C84DDD',
@@ -738,10 +745,6 @@ PlotVariants <- function(events, output.file, clonal=FALSE, pathogenic=FALSE, cc
                     `40% < CCF <= 60%`='#2772b3',
                     `60% < CCF <= 80%`='#10539a',
                     `80% < CCF <= 100%`='#0b3269' )
-
-    geometry <- c(`LOH`=3)
-    surround.clonal <- c(Clonal='yellow')
-    surround.pathogenic <- c(Pathogenic='purple')
 
     # main plot params
     if(event.type=='gene') {
@@ -766,17 +769,26 @@ PlotVariants <- function(events, output.file, clonal=FALSE, pathogenic=FALSE, cc
     if(loh==TRUE) {
         hp <- hp +
         geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='white') +
-        scale_shape_manual(values=geometry, guide=guide_legend(colour = 'white'))
+        scale_shape_manual(values=c(`LOH`=3), guide=guide_legend(colour = 'white')) 
+        # geom_polygon(data=events, group=t, aes(x=sample-0.5, y=loh-0.5, xend=sample+0.5, yend=loh+0,5),colour='white')
     }
 
     if(clonal==TRUE) {
         hp <- hp +
-        geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1.5, fill=NA)
+        geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1.8, fill=NA) +
+        scale_color_manual(values='#DCA43E')
     }
 
     if(pathogenic==TRUE) {
         hp <- hp +
-        geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1.5, fill=NA)
+        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='#ff0015') +
+        scale_shape_manual(values=c(`LOH`=3), guide=guide_legend(colour = '#ff0015'))
+    }
+
+    if(cancer.gene==TRUE) {
+        hp <- hp +
+        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='black') +
+        scale_shape_manual(values=c(`Carcinogenic`=4), guide=guide_legend(colour = 'black'))
     }
 
     hp <- hp +
@@ -859,28 +871,31 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
     if(is.null(sample.names) & threshold==TRUE) {
         sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
     } else if(is.null(sample.names)) {
-        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band')) %>% sort
     }
 
     chr.rle <- gene.cn$chrom %>% rle
     chr.sep <- chr.rle$lengths %>% cumsum
     chr.mid <- c(0, chr.sep[-length(chr.sep)]) + chr.rle$lengths/2
 
-    pdf(file.name, width=12, height=3 + 0.5*length(sample.names))
+    pdf(file.name, width=12, height=3 + 0.25*length(sample.names))
 
         g.cn <- gene.cn %>% select(one_of(rev(sample.names)))
 
-        par(mfrow=c(length(sample.names),1), mar=c(1,1,1,1))
-        image(as.matrix(g.cn), col=c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
-        box()
+        layout(matrix(c(0,1),2,1,byrow=TRUE), c(length(sample.names),1), TRUE)  
 
-        for (i in (chr.sep*2)-1) {
-            abline(v=i/((max(chr.sep)-1)*2), col='grey')
-        }
+        par(mfrow=c(1,1), mar=c(8,5,1,1))
+        image(as.matrix(g.cn), col=c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
 
         for (i in seq(-1, max(((2*(ncol(g.cn)-1))+1),1), 2)) {
             abline(h=i/(2*(ncol(g.cn)-1)), col="white", lwd=2)
         }
+
+        for (i in (chr.sep*2)-1) {
+            abline(v=i/((max(chr.sep)-1)*2), lwd=1.5, col='grey', lty="dashed")
+        }
+
+        box()
 
          axis( 1,
                at       = chr.mid/(max(chr.sep)-1),
@@ -896,9 +911,9 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                tick     = FALSE )
 
          legend( 'bottom',
-                 inset  = c(0, -0.4),
+                 inset  = c(0, -0.28),
                  legend = c('Homozygous deletion', 'Loss', 'Gain', 'Amplification'),
-                 fill   = c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'),
+                 fill   = c('#CF3A3D', '#DC9493', '#7996BA', '#2A4B94'),
                  xpd    = TRUE,
                  ncol   = 2 )
      dev.off()
@@ -1179,7 +1194,7 @@ if(!interactive()) {
     message(green('gene cn formatting'))
 
     # select threshold columns
-    gene.cn <- read.delim(opts$gene_cn_in, sep='\t',stringsAsFactors=FALSE) %>% tbl_df
+    gene.cn <- read.delim(opts$gene_cn_in, sep='\t',stringsAsFactors=FALSE) %>% tbl_df %>% arrange(chrom, start)
 
     if(cn.cols=='threshold') {
         gene.cn %<>% select(gene=hgnc,chrom,start,end,band,matches('threshold'))
@@ -1241,7 +1256,7 @@ if(!interactive()) {
 
     # all mutations + cnas, add pheno columns
     variants <-
-        bind_rows( muts %>% mutate(class='muts') %>% select(class, sample, chrom, pos, span=gene, effect, ccf, loh, clonal),
+        bind_rows( muts %>% mutate(class='muts') %>% select(class, sample, chrom, pos, span=gene, effect, ccf, cancer.gene, loh, clonal),
                    cnas %>% mutate(class='cnas') %>% select(class, sample, chrom, pos=start, span=band, effect) ) %>%
         left_join(sub.sets.pheno, by='sample')
 
@@ -1294,7 +1309,7 @@ if(!interactive()) {
         # sub group setup
         sub.group <- sub.groups %>% filter(group.id == sub.num)
         sub.group.sets <- sub.group[names(sub.group) %>% list.filter(!. %in% c('group.id', 'comparison', 'extension', 'n.samples'))] %>% list.filter(!is.na(.)) %>% unlist
-        sub.group.samples <- sub.group.sets %>% list.map(sub.sets[.]) %>% unlist %>% unique %>% KeyMod(keys)
+        sub.group.samples <- sub.group.sets %>% list.map(sub.sets[.]) %>% unlist %>% unique %>% KeyMod(keys) %>% sort
 
         print(sub.group)
 
@@ -1309,20 +1324,55 @@ if(!interactive()) {
             variants %>%
             MergePheno(merge.cols=sub.group.sets, col.name='pheno') %>%
             MergePheno(merge.cols=sub.group.samples, col.name='sample.colors') %>%
-            select(class,sample,chrom,pos,span,effect,ccf,loh,clonal,pheno, sample.colors) %>%
             filter(!is.na(pheno))
 
+        # write cnas file
+        sub.variants %>%
+        arrange(sample, effect) %>%
+        write_tsv(str_c('summary/sub_group/', sub.group$extension, '/variant_summary_', sub.group$extension, '.tsv'))
+
         # melted mutations table for sub.set pair
-        sub.muts <-
-            sub.variants %>%
-            filter(class=='muts') %>%
-            rename(gene=span)
+        sub.muts <- sub.variants %>% filter(class=='muts')
+
+        # write mutations file
+        muts %>%
+        filter(sample %in% sub.group.samples) %>%
+        arrange(sample, effect) %>%
+        write_tsv(str_c('summary/sub_group/', sub.group$extension, '/mutation_summary_', sub.group$extension, '.tsv'))
+
+        # write mutations file
+        muts %>%
+        filter(sample %in% sub.group.samples) %>%
+        arrange(sample, effect) %>%
+        rowwise %>%
+        mutate_each(funs(ifelse(is.character(.),ifelse(is.na(.),'.',.),.))) %>%
+        mutate(cancer.gene=ifelse(cancer.gene=='Carcinogenic', TRUE, cancer.gene)) %>%
+        select(Sample.ID=sample, `Gene symbol`=gene, `Amino acid change`=hgvs.p, Effect=effect, Chromosome=chrom, `Genomic position`=pos, `Reference allele`=ref, `Alternate allele`=alt, `Type of mutation`=effect, `Depth at mutation (x)`=depth.t, `Mutant allele fraction`=maf.t, `Mutation Taster`=mut.taster, CHASM=chasm, FATHMM=fathmm, Provean=provean, Pathogenicity=pathogenic, `Loss of heterozygosity (LOH)`=loh, `Cancer Cell Fraction (CCF) (ABSOLUTE)`=ccf, `Probability of mutation being clonal`=pr.somatic.clonal, `Lower bound of 95% confidence interval`=ci95.low, `Clonal / Subclonal mutation`=clonality, `Cancer5000-S genes (Lawrence et al)`=lawrence, `127 significantly mutated genes (Kandoth et al)`=kandoth, `Cancer Gene Census`=cancer.gene ) %>%
+        write.xlsx(str_c('summary/sub_group/', sub.group$extension, '/mutation_summary_', sub.group$extension, '.xlsx'))
 
         # melted cna table for sub.set pair
-        sub.cnas <-
-            sub.variants %>%
-            filter(class=='cnas') %>%
-            rename(band=span)
+        sub.cnas <- sub.variants %>% filter(class=='cnas')
+
+        # write cnas file
+        sub.cnas %>%
+        arrange(sample, effect) %>%
+        write_tsv(str_c('summary/sub_group/', sub.group$extension, '/cna_summary_', sub.group$extension, '.tsv'))
+
+        # write new geneCN file
+        gene.cn %>%
+        select(gene,chrom,start,end,band,one_of(sub.group.samples)) %>%
+        arrange(chrom, start) %>% 
+        write.xlsx(str_c('summary/sub_group/', sub.group$extension, '/geneCN_', sub.group$extension, '.xlsx'))
+
+        gene.cn %>%
+        select(gene,chrom,start,end,band,one_of(sub.group.samples)) %>%
+        arrange(chrom, start) %>%
+        write_tsv(str_c('summary/sub_group/', sub.group$extension, '/geneCN_', sub.group$extension, '.tsv'))
+
+        # select columns
+        sub.variants %<>% select(class,sample,chrom,pos,span,effect,ccf,loh,clonal,cancer.gene,pheno,sample.colors)
+        sub.muts %<>% select(class,sample,chrom,pos,span,effect,ccf,loh,clonal,cancer.gene,pheno, sample.colors) %>% rename(gene=span)
+        sub.cnas %<>% select(class,sample,chrom,pos,span,effect,ccf,loh,clonal,cancer.gene,pheno,sample.colors) %>% rename(band=span)
 
         #  sub variants tree
         sub.variants.tree <- sub.variants %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='span', tree.samples=sub.group.samples)

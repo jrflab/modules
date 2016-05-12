@@ -31,28 +31,35 @@ suppressPackageStartupMessages(library("facets", lib.loc="/home/bermans/R-dev/")
 # parse options
 #--------------
 
-optList <- list( make_option("--geneCNFile", default = NULL, help = "gene copy-number file"),
-                 make_option("--outFile", default = NULL, help = "output file") )
+if(!interactive()) {
 
-parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);
+    optList <- list( make_option("--geneCNFile", default = NULL, help = "gene copy-number file"),
+                     make_option("--outFile", default = NULL, help = "output file") )
 
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+    parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList)
+    arguments <- parse_args(parser, positional_arguments = T)
+    opt <- arguments$options
 
-if (length(arguments$args) < 1) {
-    cat("Need cncf files\n")
-    print_help(parser);
-    stop();
-} else if (is.null(opt$geneCNFile)) {
-    cat("Need gene copynumber file\n")
-    print_help(parser);
-    stop();
-} else if (is.null(opt$outFile)) {
-    cat("Need output file\n")
-    print_help(parser);
-    stop();
+    if (length(arguments$args) < 1) {
+        cat("Need cncf files\n")
+        print_help(parser);
+        stop();
+    } else if (is.null(opt$geneCNFile)) {
+        cat("Need gene copynumber file\n")
+        print_help(parser);
+        stop();
+    } else if (is.null(opt$outFile)) {
+        cat("Need output file\n")
+        print_help(parser);
+        stop();
+    } else {
+        cncf.files <- arguments$args
+    }
+
 } else {
-    cncf.files <- arguments$args
+    opt <- list( geneCNFile = 'facets/geneCN.txt',
+                 outFile    = 'facets/geneCN.fill.txt' )
+    cncf.files <- list.files('facets/cncf', pattern='*cncf.txt', full.names=TRUE)
 }
 
 
@@ -65,28 +72,31 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
     if(is.null(sample.names) & threshold==TRUE) {
         sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
     } else if(is.null(sample.names)) {
-        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band')) %>% sort
     }
 
     chr.rle <- gene.cn$chrom %>% rle
     chr.sep <- chr.rle$lengths %>% cumsum
     chr.mid <- c(0, chr.sep[-length(chr.sep)]) + chr.rle$lengths/2
 
-    pdf(file.name, width=12, height=0.5*length(sample.names))
+    pdf(file.name, width=12, height=3 + 0.25*length(sample.names))
 
         g.cn <- gene.cn %>% select(one_of(rev(sample.names)))
 
-        par(mfrow=c(length(sample.names),1), mar=c(8,5,1,2))
-        image(as.matrix(g.cn), col=c('#cf3a3d', 'dc9493', 'white', '#7996ba', '#2a4b94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
-        box()
+        layout(matrix(c(0,1),2,1,byrow=TRUE), c(length(sample.names),1), TRUE)  
 
-        for (i in (chr.sep*2)-1) {
-            abline(v=i/((max(chr.sep)-1)*2), col='grey')
-        }
+        par(mfrow=c(1,1), mar=c(8,5,1,1))
+        image(as.matrix(g.cn), col=c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
 
         for (i in seq(-1, max(((2*(ncol(g.cn)-1))+1),1), 2)) {
             abline(h=i/(2*(ncol(g.cn)-1)), col="white", lwd=2)
         }
+
+        for (i in (chr.sep*2)-1) {
+            abline(v=i/((max(chr.sep)-1)*2), lwd=1.5, col='grey', lty="dashed")
+        }
+
+        box()
 
          axis( 1,
                at       = chr.mid/(max(chr.sep)-1),
@@ -102,9 +112,9 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                tick     = FALSE )
 
          legend( 'bottom',
-                 inset  = c(0, -0.4),
+                 inset  = c(0, -0.28),
                  legend = c('Homozygous deletion', 'Loss', 'Gain', 'Amplification'),
-                 fill   = c('#cf3a3d', 'dc9493', 'white', '#7996ba', '#2a4b94'),
+                 fill   = c('#CF3A3D', '#DC9493', '#7996BA', '#2A4B94'),
                  xpd    = TRUE,
                  ncol   = 2 )
      dev.off()
@@ -135,7 +145,7 @@ OverCall <- function(column.name) {
             mutate(index=as.numeric(index)) %>%
             group_by(index) %>%
             left_join(cncfs[[sample.name]], by='chrom') %>%
-            slice(which.min(abs(mid-loc.mid))) %>%
+            dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             ungroup %>%
             filter(cnlr.median>1.1) %>%
             .$index
@@ -156,7 +166,7 @@ OverCall <- function(column.name) {
             group_by(index) %>%
             ungroup %>%
             left_join(cncfs[[sample.name]], by='chrom') %>%
-            slice(which.min(abs(mid-loc.mid))) %>%
+            dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             filter(cnlr.median<0.5) %>%
             .$index
 
@@ -170,7 +180,7 @@ OverCall <- function(column.name) {
 # facets fill
 #------------
 
-cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE) %>% tbl_df
+cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE)
 
 cncfs <- lapply(cncf.files, function(x) {
                 read.delim(x, sep='\t', check.names=F, stringsAsFactors=FALSE) %>%
@@ -241,9 +251,9 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
 
             nfills <-
                     cnv.matrix %>%
-                    select(chrom, start, end, hgnc, get(sample.name)) %>%
+                    select(chrom, start, end, hgnc, one_of(sample.name)) %>%
                     tbl_df %>%
-                    slice(nrows) %>%
+                    filter(row_number() %in% nrows) %>%
                     mutate(mid=rowMeans(.[, c('start', 'end')])) %>%
                     rowwise %>%
                     inner_join(
@@ -256,7 +266,7 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
                     ungroup %>%
                     group_by(chrom, start, end, hgnc) %>%
                     filter(fill!=3) %>%
-                    slice(which.min(abs(mid-qmid))) %>%
+                    dplyr::slice(which.min(abs(mid-qmid))) %>%
                     .$fill
 
             # write neighbor calls to master table
