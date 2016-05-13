@@ -177,8 +177,8 @@ LOG = $(LOGDIR)/$(@).log
 
 
 # SGE variables
-QUEUE ?= jrf.q
-SGE_RREQ = -q $(QUEUE) -N X$(@F) -V -cwd 
+QUEUE ?= jrf.q all.q
+SGE_RREQ = $(foreach q,$(strip QUEUE),-q $(q) ) -N X$(@F) -V -cwd 
 PARALLEL_ENV = smp
 MEM_FREE = -l virtual_free=$1,h_vmem=$2
 REQ = SGE_RREQ="$(SGE_RREQ)"
@@ -201,7 +201,7 @@ REQ_MPI_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(MPI_ENV) $(1)"
 INIT_MPI_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MPI_MEM,$1,$2,$3); $(MPIRUN) -np $1
 
 QRSH = /common/sge/bin/lx-amd64/qrsh
-LAUNCH = $(INIT) $(QRSH) -N X$(@F) -V -cwd -q $(QUEUE) -now n -notify
+LAUNCH = $(INIT) $(QRSH) -N X$(@F) -V -cwd $(foreach q,$(strip $(QUEUE)),-q $q ) -now n -notify
 LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
 LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
 
@@ -219,9 +219,9 @@ else
 QSUB_BIN = $(PERL) modules/scripts/qsub.pl
 endif
 QSUB_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $1
-QSUB = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $(QUEUE)
+QSUB = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- $(foreach q,$(strip $(QUEUE)), -q $q)
 # check output file
-QSUB_CHECK = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- -q $(QUEUE)
+QSUB_CHECK = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- $(foreach q,$(strip $(QUEUE)), -q $(q))
 QSUB_CHECK_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- -q $1
 
 USE_CLUSTER ?= true
