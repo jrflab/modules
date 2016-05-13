@@ -590,11 +590,17 @@ OrgEvents <- function(events, sample.order=NULL, pheno.order, sub.sets.pheno, re
 
                 while(pick.sample!=1) {
 
-                    message(str_c(sample.order, collapse=' '))
+                   #message(str_c(sample.order, collapse=' '))
 
                     pick.df <- lapply(sub.samples, function(sub.sample) {
 
-                        sub.events <- events %>% select(sample,gene, n.gene) %>% arrange(desc(n.gene)) %>% filter(sample==sub.sample)
+                        sub.events <-
+                            events %>%
+                            select(sample, gene, n.gene) %>%
+                            arrange(desc(n.gene)) %>%
+                            filter(sample==sub.sample) %>%
+                            bind_rows(data_frame(n.gene=c(0,0,0)))
+
                         num.v = sub.events$n.gene
                         sum.n <- combn(num.v, take) %>% apply(2, sum) %>% max
 
@@ -1495,7 +1501,7 @@ if(!interactive()) {
         # mutations (by type)
         sub.muts %>%
         #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
-        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_type_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
@@ -1509,7 +1515,7 @@ if(!interactive()) {
         # mutations (by type)
         sub.muts %>%
         #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
-        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
