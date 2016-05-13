@@ -94,7 +94,7 @@ endif
 # post-annotation filter
 VCF_POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
 %.cft.vcf : %.vcf
-	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression '$(VCF_POST_ANN_FILTER_EXPRESSION)' --filterName customFilter && $(RM) $<")
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression '$(VCF_POST_ANN_FILTER_EXPRESSION)' --filterName customFilter && $(RM) $<"))
 
 
 # apply overall depth filter
@@ -413,13 +413,13 @@ AA_TABLE = $(HOME)/share/reference/aa_table.tsv
 
 PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXDB) --mysqlHost $(EMBL_MYSQLDB_HOST) \
 			   --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
-			   --mysqlDb $(EMBL_MYSQLDB_DB) --numThreads 8 --memPerThread 1G --queue $(QUEUE) --qsubPriority $(QSUB_PRIORITY)
+			   --mysqlDb $(EMBL_MYSQLDB_DB) --numThreads 8 --memPerThread 1G --queue $(subst $( ),$(,),$(QUEUE)) --qsubPriority $(QSUB_PRIORITY)
 %.provean.vcf : %.vcf
 	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
 
 PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
 CLASSIFY_PATHOGENICITY = $(PYTHON) modules/vcf_tools/classify_pathogenicity_vcf.py
-CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --qsub_script $(QSUB_BIN) --num_provean_threads 5 --mem_per_thread 1.5G 
+CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --qsub_script modules/scripts/qsub.pl --num_provean_threads 5 --mem_per_thread 1.5G 
 %.pathogen.vcf : %.vcf
 	$(INIT) $(call CHECK_VCF,$<,$@,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
 
