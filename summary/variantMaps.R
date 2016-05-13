@@ -12,7 +12,7 @@ pacman::p_load( dplyr,lazyeval,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx
                 crayon,colorspace,RColorBrewer,  # coloring
                 ggplot2,grid,gridExtra,gplots,  # plot layout
                 dendextend,dendextendRcpp,dynamicTreeCut,gclus,phangorn,  # dentrogram
-                gtools,  # permutation
+                gtools,nnet,  # permutation
                 optparse )  # option parsing
 
 loadNamespace('plyr')
@@ -517,7 +517,7 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
 # prepare melted table for plotting
 #----------------------------------
 
-OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') {
+OrgEvents <- function(events, sample.order=NULL, pheno.order, sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') {
 
 # sample.order:
 #   NULL = arrange alphabetically
@@ -531,25 +531,6 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
 #   'none'      = exclude X & Y chromosome
 #   'merge'     = treat X & Y coordinates as homologous pair
 #   'distinct'  = treat X & Y as seperate, sequential chromosomes
-
-    missing.samples <- sample.order[!sample.order %in% events$sample]
-
-    missing.pheno <-
-        sub.sets.pheno %>%
-        MergePheno(merge.cols=pheno.order, col.name='pheno') %>%
-        select(sample, pheno) %>%
-        filter(sample %in% missing.samples)
-
-    if(length(missing.samples) > 0){
-
-        message(yellow(str_c('missing specified samples: ',missing.samples,'\n')))
-
-        missing.fill <-
-            expand.grid(missing.samples,unique(unlist(events[,event.type])), stringsAsFactors=FALSE) %>%
-            set_names(c('sample', event.type)) %>%
-            tbl_df %>%
-            left_join(missing.pheno)
-    }
 
     # specify output columns
     col.names <- c('sample','gene','chrom','effect','pheno','band','span','pos','maf','ccf','loh','cancer.gene','clonal','pathogenic')
@@ -578,6 +559,7 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
             NA))))))))))
 
     if(event.type=='gene') {
+
         events %<>%
             # remove genes with lower prescedence
             group_by(sample,gene) %>%
@@ -593,8 +575,81 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
                 if(recurrence>0) {events %<>% filter(n.gene>=recurrence)}
                 return(events)
             } %>%
-            unique %>%
-            arrange(desc(n.gene),sample,desc(ccf),precedence,gene)
+            unique
+
+        if(is.null(sample.order)) {
+
+            sample.pool <- events$sample %>% unique
+
+            while(length(sample.order) < length(sample.pool)) {
+
+                sub.samples <- sample.pool %>% list.filter(!. %in% sample.order)
+                take  = 1
+                pick.sample = 0
+                n.rounds = 1
+
+                while(pick.sample!=1) {
+
+                    message(str_c(sample.order, collapse=' '))
+
+                    pick.df <- lapply(sub.samples, function(sub.sample) {
+
+                        sub.events <- events %>% select(sample,gene, n.gene) %>% arrange(desc(n.gene)) %>% filter(sample==sub.sample)
+                        num.v = sub.events$n.gene
+                        sum.n <- combn(num.v, take) %>% apply(2, sum) %>% max
+
+                        data_frame(sample=sub.sample, sum.n=sum.n)
+                    }) %>%
+                    bind_rows %>%
+                    filter(sum.n==max(sum.n))
+
+                    pick.sample = nrow(pick.df)
+
+                    if(pick.sample == 1) {
+
+                        sample.order <- c(sample.order, pick.df$sample)
+
+                    } else if(n.rounds == 3) {
+
+                        pick.sample = 1
+
+                        sample.order <- c(sample.order,
+                            events %>%
+                            filter(sample %in% sub.samples) %>%
+                            group_by(sample) %>%
+                            summarise(burden=n()) %>%
+                            arrange(desc(burden)) %>%
+                            top_n(1, burden) %>%
+                            .$sample )
+
+                    } else {
+
+                        take = take + 1
+                        sub.samples = pick.df$sample
+                        n.rounds = n.rounds + 1
+
+                    }
+                }
+            }
+        }
+
+        CheckDepth <- function(gene) {
+            found.gene = FALSE
+            while(found.gene == FALSE) {
+                for (sample.n in 1:length(sample.order)) {
+                    if(gene %in% (events %>% filter(sample %in% sample.order[sample.n]) %>% .$ gene)) {
+                        found.gene = TRUE
+                        return(sample.n)
+                    }
+                }
+            }
+        }
+
+        events %<>%
+        rowwise %>%
+        mutate(sample.order.depth=CheckDepth(gene)) %>%
+        ungroup %>%
+        arrange(desc(n.gene),sample.order.depth,sample,desc(ccf),precedence,gene)
     }
 
     if(event.type=='band') {
@@ -632,6 +687,25 @@ OrgEvents <- function(events, sample.order, pheno.order, sub.sets.pheno, recurre
         ungroup %>%
         select(-precedence) %>%
         unique
+
+    missing.samples <- sample.order[!sample.order %in% events$sample]
+
+    missing.pheno <-
+        sub.sets.pheno %>%
+        MergePheno(merge.cols=pheno.order, col.name='pheno') %>%
+        select(sample, pheno) %>%
+        filter(sample %in% missing.samples)
+
+    if(length(missing.samples) > 0){
+
+        message(yellow(str_c('missing specified samples: ',missing.samples,'\n')))
+
+        missing.fill <-
+            expand.grid(missing.samples,unique(unlist(events[,event.type])), stringsAsFactors=FALSE) %>%
+            set_names(c('sample', event.type)) %>%
+            tbl_df %>%
+            left_join(missing.pheno)
+    }
 
     if(event.type=='gene') {
         events.fill <-
@@ -1261,7 +1335,7 @@ if(!interactive()) {
         mutate(band.test=ifelse(!is.na(lead.jump.band), lead.jump.band, band)) %>%
         mutate(end=ifelse(!is.na(lead.jump.end), lead.jump.end, end)) %>%
         mutate(band=as.character(band)) %>%
-        mutate(band.rep=str_c(lead.jump.band, '–', band)) %>%
+        mutate(band.rep=str_c(lead.jump.band, '-', band)) %>%
         mutate(band=ifelse(!is.na(band.rep),band.rep,band)) %>%
         mutate(n.group=n()) %>%
         filter(!is.na(lead.jump.end) | is.na(band) | n.group==1) %>%
@@ -1271,7 +1345,7 @@ if(!interactive()) {
         mutate(band=str_c('.',band)) %>%
         mutate(band=ifelse(is.na(band),'',band)) %>%
         mutate(band=str_c(arm,band)) %>%
-        select(sample, band, chrom, start, end)
+        select(sample, band, chrom, start, end, effect)
 
 
     # write CNA file
@@ -1420,7 +1494,8 @@ if(!interactive()) {
 
         # mutations (by type)
         sub.muts %>%
-        OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+        #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_type_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
@@ -1433,7 +1508,8 @@ if(!interactive()) {
 
         # mutations (by type)
         sub.muts %>%
-        OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+        #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
@@ -1446,7 +1522,8 @@ if(!interactive()) {
 
         # mutations ccf
         sub.muts %>%
-        OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+        #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_ccf_', sub.group$extension, '.pdf'),
                       clonal      = TRUE,
                       pathogenic  = FALSE,
@@ -1459,7 +1536,8 @@ if(!interactive()) {
 
         # mutations ccf [recurrent]
         sub.muts %>%
-        OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+        #OrgEvents(sample.order=labels(sub.muts.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/mutation_heatmap/mutation_heatmap_ccf_recurrent_', sub.group$extension, '.pdf'),
                       clonal      = TRUE,
                       pathogenic  = FALSE,
@@ -1472,7 +1550,8 @@ if(!interactive()) {
 
         # copy number
         sub.cnas %>%
-        OrgEvents(sample.order=labels(sub.cnas.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
+        #OrgEvents(sample.order=labels(sub.cnas.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/cna_heatmap/cna_heatmap_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
@@ -1485,7 +1564,8 @@ if(!interactive()) {
 
         # all variants
         sub.variants %>%
-        OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
+        #OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/variant_heatmap/variant_heatmap_type_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
@@ -1498,7 +1578,8 @@ if(!interactive()) {
 
         # all variants
         sub.variants %>%
-        OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span') %>%
+        #OrgEvents(sample.order=labels(sub.variants.tree$dend), pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span') %>%
+        OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span') %>%
         PlotVariants( output.file = str_c('summary/sub_group/', sub.group$extension, '/variant_heatmap/variant_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                       clonal      = FALSE,
                       pathogenic  = FALSE,
