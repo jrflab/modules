@@ -25,10 +25,11 @@ VPATH ?= bam
 
 VARIANT_TYPES = varscan_indels varscan_snps
 
-PHONY += varscan varscan_vcfs varscan_tables
-varscan : varscan_vcfs varscan_tables
+PHONY += varscan varscan_vcfs varscan_mafs
+varscan : varscan_vcfs #varscan_mafs
+$(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
-varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
+#varscan_mafs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_MAFS,$(type)))
 
 
 %.Somatic.txt : %.txt
