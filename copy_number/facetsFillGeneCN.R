@@ -67,12 +67,15 @@ if(!interactive()) {
 # CNA heatmap function
 #---------------------
 
+
 PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE) {
 
     if(is.null(sample.names) & threshold==TRUE) {
         sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     } else if(is.null(sample.names)) {
-        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band')) %>% sort
+        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     }
 
     chr.rle <- gene.cn$chrom %>% rle
@@ -147,7 +150,7 @@ OverCall <- function(column.name) {
             left_join(cncfs[[sample.name]], by='chrom') %>%
             dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             ungroup %>%
-            filter(cnlr.median>1.1) %>%
+            filter(cnlr.median>1.0) %>%
             .$index
 
         cnv.matrix[logic.amp, column.name] <<- 1

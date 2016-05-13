@@ -78,10 +78,6 @@ if(!interactive()) {
                  variants_table_out     = 'summary/variants.tsv' )
 }
 
-# make subdirectories if absent
-system("mkdir summary/sub_group &>/dev/null")
-system("mkdir summary/cna_heatmap &>/dev/null")
-
 #------------
 # run options
 #------------
@@ -765,14 +761,6 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
         scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90', drop=FALSE)
     }
 
-    # add loh as +
-    if(loh==TRUE) {
-        hp <- hp +
-        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='white') +
-        scale_shape_manual(values=c(`LOH`=3), guide=guide_legend(colour = 'white')) 
-        # geom_polygon(data=events, group=t, aes(x=sample-0.5, y=loh-0.5, xend=sample+0.5, yend=loh+0,5),colour='white')
-    }
-
     if(clonal==TRUE) {
         hp <- hp +
         geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1.8, fill=NA) +
@@ -787,7 +775,7 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
 
     if(cancer.gene==TRUE) {
         hp <- hp +
-        geom_point(data=events, aes(shape=loh, stroke=1.5), size=2, colour='black') +
+        geom_point(data=events, aes(shape=cancer.gene, stroke=1.5), size=2, colour='black') +
         scale_shape_manual(values=c(`Carcinogenic`=4), guide=guide_legend(colour = 'black'))
     }
 
@@ -822,7 +810,15 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
             panel.border        = element_rect(fill=NA, colour='black', size=2),
             plot.margin         = unit(c(4,4,4,4), 'pt'))
 
-    # build Grob object
+    # loh slashes
+    if(loh==TRUE) {
+        hp <- hp + geom_segment(data=ggplot_build(hp)$data[[1]][which(events$loh=='LOH'), ], 
+                         aes(x=xmin, xend=xmax, y=ymin, yend=ymax), 
+                         color='white',
+                         size=1.5)
+    }
+
+    # build grob object
     hpg <- suppressWarnings(ggplotGrob(hp))
 
     # count number of samples in each group
@@ -870,8 +866,10 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
 
     if(is.null(sample.names) & threshold==TRUE) {
         sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     } else if(is.null(sample.names)) {
-        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band')) %>% sort
+        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     }
 
     chr.rle <- gene.cn$chrom %>% rle
@@ -1240,6 +1238,41 @@ if(!interactive()) {
         FormatEvents %>%
         select(sample, band, chrom, start, end, effect)
 
+        # collapse consecutive bands
+        cnas %<>%
+        arrange(sample, chrom, start) %>%
+        separate(band, into=c('arm', 'band'), sep='\\.', fill='right') %>%
+        mutate(band=as.numeric(band)) %>%
+        group_by(sample, chrom, arm, effect) %>%
+        mutate(lead.band=lead(band)) %>%
+        mutate(consec=band==lead.band-1 | band==lead.band+1) %>%
+        mutate(no.consec=ifelse(is.na(consec),TRUE,FALSE)) %>%
+        mutate(no.consec=ifelse(row_number()==n(),TRUE,no.consec)) %>%
+        mutate(consec=ifelse(row_number()==n(),TRUE,consec)) %>%
+        ungroup %>%
+        mutate(cu.consec=cumsum(.$no.consec)) %>%
+        mutate(cu.consec=ifelse(lag(no.consec)==FALSE & no.consec==TRUE, lag(cu.consec), cu.consec)) %>%
+        ungroup %>%
+        group_by(sample, chrom, arm, effect, cu.consec) %>%
+        slice(c(1,n())) %>%
+        unique %>%
+        mutate(lead.jump.band=lead(band)) %>%
+        mutate(lead.jump.end=lead(end)) %>%
+        mutate(band.test=ifelse(!is.na(lead.jump.band), lead.jump.band, band)) %>%
+        mutate(end=ifelse(!is.na(lead.jump.end), lead.jump.end, end)) %>%
+        mutate(band=as.character(band)) %>%
+        mutate(band.rep=str_c(lead.jump.band, '–', band)) %>%
+        mutate(band=ifelse(!is.na(band.rep),band.rep,band)) %>%
+        mutate(n.group=n()) %>%
+        filter(!is.na(lead.jump.end) | is.na(band) | n.group==1) %>%
+        top_n(1) %>%
+        ungroup %>%
+        mutate(arm=as.character(arm)) %>%
+        mutate(band=str_c('.',band)) %>%
+        mutate(band=ifelse(is.na(band),'',band)) %>%
+        mutate(band=str_c(arm,band)) %>%
+        select(sample, band, chrom, start, end)
+
 
     # write CNA file
     cnas %>%
@@ -1267,36 +1300,14 @@ if(!interactive()) {
     write_tsv(opts$variants_table_out)
 
 
-    #----------------------#
-    #                      #
-    # per-sub set plotting #
-    #                      #
-    #----------------------#
+    #------------------#
+    #                  #
+    # treat sub groups #
+    #                  #
+    #------------------#
 
-    #--------------------
-    # CN heatmap plotting
-    #--------------------
-
-    message(green('CN heatmap plotting'))
-
-    for(sub.set.num in 1:length(sub.sets)) {
-
-        sub.set.name <- names(sub.sets)[sub.set.num] %>% FixName
-        sub.set <- sub.sets[[sub.set.num]] %>% KeyMod(keys)
-
-        # cut down gene.cn table
-        sub.gene.cn <- gene.cn %>% select(gene,chrom,start,end,band,one_of(sub.set))
-
-        # call CN heatmap plotting function
-        PlotCNHeatmap(sub.gene.cn, file.name=str_c('summary/cna_heatmap/cna_heatmap_',sub.set.name,'.pdf'), threshold=FALSE)
-    }
-
-
-    #----------------#
-    #                #
-    # sub group loop #
-    #                #
-    #----------------#
+    # make subdirectories if absent
+    system("mkdir summary/sub_group &>/dev/null")
 
     for (sub.num in 0:(nrow(sub.groups)-1)) {
 
@@ -1346,7 +1357,7 @@ if(!interactive()) {
         arrange(sample, effect) %>%
         rowwise %>%
         mutate_each(funs(ifelse(is.character(.),ifelse(is.na(.),'.',.),.))) %>%
-        mutate(cancer.gene=ifelse(cancer.gene=='Carcinogenic', TRUE, cancer.gene)) %>%
+        mutate(cancer.gene=ifelse(cancer.gene=='Carcinogenic', 'TRUE', cancer.gene)) %>%
         select(Sample.ID=sample, `Gene symbol`=gene, `Amino acid change`=hgvs.p, Effect=effect, Chromosome=chrom, `Genomic position`=pos, `Reference allele`=ref, `Alternate allele`=alt, `Type of mutation`=effect, `Depth at mutation (x)`=depth.t, `Mutant allele fraction`=maf.t, `Mutation Taster`=mut.taster, CHASM=chasm, FATHMM=fathmm, Provean=provean, Pathogenicity=pathogenic, `Loss of heterozygosity (LOH)`=loh, `Cancer Cell Fraction (CCF) (ABSOLUTE)`=ccf, `Probability of mutation being clonal`=pr.somatic.clonal, `Lower bound of 95% confidence interval`=ci95.low, `Clonal / Subclonal mutation`=clonality, `Cancer5000-S genes (Lawrence et al)`=lawrence, `127 significantly mutated genes (Kandoth et al)`=kandoth, `Cancer Gene Census`=cancer.gene ) %>%
         write.xlsx(str_c('summary/sub_group/', sub.group$extension, '/mutation_summary_', sub.group$extension, '.xlsx'))
 
@@ -1383,6 +1394,23 @@ if(!interactive()) {
         # sub cnas tree
         sub.cnas.tree <- sub.cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band', tree.samples=sub.group.samples)
 
+        #--------------------
+        # CN heatmap plotting
+        #--------------------
+
+        message(green('CN heatmap plotting'))
+
+        for(sub.set.num in 1:length(sub.group.sets)) {
+
+            sub.set.name <- sub.sets[sub.group.sets][sub.set.num] %>% names %>% FixName
+            sub.set <- sub.sets[sub.group.sets][[sub.set.num]] %>% KeyMod(keys)
+
+            # cut down gene.cn table
+            sub.gene.cn <- gene.cn %>% select(gene,chrom,start,end,band,one_of(sub.set))
+
+            # call CN heatmap plotting function
+            PlotCNHeatmap(sub.gene.cn, file.name=str_c('summary/sub_group/', sub.group$extension, '/cna_heatmap/genecn_heatmap_', sub.group$extension, '_',sub.set.name,'.pdf'), threshold=FALSE)
+        }
 
         #-----------------
         # heatmap plotting
@@ -1542,7 +1570,7 @@ if(!interactive()) {
 
             #-------#
             #       #
-            # TREES #
+            # trees #
             #       #
             #-------#
 
