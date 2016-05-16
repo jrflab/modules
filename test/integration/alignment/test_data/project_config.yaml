@@ -22,4 +22,5 @@ gatk_hard_filter_snps: true
 gatk_pool_snp_recal: false
 
 qsub_priority: 0
+slack_channel: integration_test
 ...
