@@ -2,7 +2,7 @@
 ref: b37
 
 aligner: bwamem #tophat hisat bwa bowtie tmap
-bam_chr1_base_recal: true
+bam_chr1_base_recal: false
 bam_dup_type: markdup
 bam_no_filter: false
 bam_no_recal: false
