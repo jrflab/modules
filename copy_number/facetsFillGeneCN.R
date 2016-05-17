@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 # fill facets gene CN file
+
+suppressPackageStartupMessages(library("facets", lib.loc="/home/bermans/R-dev/"))
+
 # load base libraries
 pacman::p_load( optparse,
                 RColorBrewer,
@@ -24,34 +27,40 @@ pacman::p_load( optparse,
                 gridExtra,
                 RColorBrewer )
 
-suppressPackageStartupMessages(library("facets", lib.loc="/home/bermans/R-dev/"));
 
 #--------------
 # parse options
 #--------------
 
-optList <- list( make_option("--geneCNFile", default = NULL, help = "gene copy-number file"),
-                 make_option("--outFile", default = NULL, help = "output file") )
+if(!interactive()) {
 
-parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);
+    optList <- list( make_option("--geneCNFile", default = NULL, help = "gene copy-number file"),
+                     make_option("--outFile", default = NULL, help = "output file") )
 
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+    parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList)
+    arguments <- parse_args(parser, positional_arguments = T)
+    opt <- arguments$options
 
-if (length(arguments$args) < 1) {
-    cat("Need cncf files\n")
-    print_help(parser);
-    stop();
-} else if (is.null(opt$geneCNFile)) {
-    cat("Need gene copynumber file\n")
-    print_help(parser);
-    stop();
-} else if (is.null(opt$outFile)) {
-    cat("Need output file\n")
-    print_help(parser);
-    stop();
+    if (length(arguments$args) < 1) {
+        message('Need cncf files')
+        print_help(parser)
+        stop()
+    } else if (is.null(opt$geneCNFile)) {
+        message('Need gene copynumber file')
+        print_help(parser)
+        stop()
+    } else if (is.null(opt$outFile)) {
+        message('Need output file')
+        print_help(parser)
+        stop()
+    } else {
+        cncf.files <- arguments$args
+    }
+
 } else {
-    cncf.files <- arguments$args
+    opt <- list( geneCNFile = 'facets/geneCN.txt',
+                 outFile    = 'facets/geneCN.fill.txt' )
+    cncf.files <- list.files('facets/cncf', pattern='*cncf.txt', full.names=TRUE)
 }
 
 
@@ -63,28 +72,31 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
 
     if(is.null(sample.names) & threshold==TRUE) {
         sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     } else if(is.null(sample.names)) {
         sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
     }
 
     chr.rle <- gene.cn$chrom %>% rle
     chr.sep <- chr.rle$lengths %>% cumsum
     chr.mid <- c(0, chr.sep[-length(chr.sep)]) + chr.rle$lengths/2
 
-    pdf(file.name, width=12, height=0.5*length(sample.names))
+    pdf(file.name, width=12, height=3 + 0.25*length(sample.names))
 
         g.cn <- gene.cn %>% select(one_of(rev(sample.names)))
 
-        par(mfrow=c(length(sample.names),1), mar=c(8,5,1,2))
-        image(as.matrix(g.cn), col=c('#cf3a3d', 'dc9493', 'white', '#7996ba', '#2a4b94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
-        box()
+        layout(matrix(c(0,1),2,1,byrow=TRUE), c(length(sample.names),1), TRUE)  
 
-        for (i in (chr.sep*2)-1) {
-            abline(v=i/((max(chr.sep)-1)*2), col='grey')
-        }
+        par(mfrow=c(1,1), mar=c(8,5,1,1))
+        image(as.matrix(g.cn), col=c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
 
         for (i in seq(-1, max(((2*(ncol(g.cn)-1))+1),1), 2)) {
             abline(h=i/(2*(ncol(g.cn)-1)), col="white", lwd=2)
+        }
+
+        for (i in (chr.sep*2)-1) {
+            abline(v=i/((max(chr.sep)-1)*2), lwd=1.5, col='grey', lty="dashed")
         }
 
          axis( 1,
@@ -100,10 +112,12 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                cex.axis = 1,
                tick     = FALSE )
 
+        box()
+
          legend( 'bottom',
-                 inset  = c(0, -0.4),
+                 inset  = c(0, -0.28),
                  legend = c('Homozygous deletion', 'Loss', 'Gain', 'Amplification'),
-                 fill   = c('#cf3a3d', 'dc9493', 'white', '#7996ba', '#2a4b94'),
+                 fill   = c('#CF3A3D', '#DC9493', '#7996BA', '#2A4B94'),
                  xpd    = TRUE,
                  ncol   = 2 )
      dev.off()
@@ -133,10 +147,10 @@ OverCall <- function(column.name) {
             rownames_to_column(var='index') %>%
             mutate(index=as.numeric(index)) %>%
             group_by(index) %>%
-            left_join(cncfs[[sample.name]], by='chrom') %>%
-            slice(which.min(abs(mid-loc.mid))) %>%
+            left_join(cncfs[[sample.name]] %>% mutate(chrom=ifelse(chrom=='Y' | chrom=='X', 23, chrom)), by='chrom', copy=TRUE) %>%
+            dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             ungroup %>%
-            filter(cnlr.median>1.1) %>%
+            filter(cnlr.median>1.0) %>%
             .$index
 
         cnv.matrix[logic.amp, column.name] <<- 1
@@ -154,8 +168,8 @@ OverCall <- function(column.name) {
             mutate(index=as.numeric(index)) %>%
             group_by(index) %>%
             ungroup %>%
-            left_join(cncfs[[sample.name]], by='chrom') %>%
-            slice(which.min(abs(mid-loc.mid))) %>%
+            left_join(cncfs[[sample.name]] %>% mutate(chrom=ifelse(chrom=='Y' | chrom=='X', 23, chrom)), by='chrom', copy=TRUE) %>%
+            dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             filter(cnlr.median<0.5) %>%
             .$index
 
@@ -169,7 +183,7 @@ OverCall <- function(column.name) {
 # facets fill
 #------------
 
-cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE) %>% tbl_df
+cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE)
 
 cncfs <- lapply(cncf.files, function(x) {
                 read.delim(x, sep='\t', check.names=F, stringsAsFactors=FALSE) %>%
@@ -186,16 +200,18 @@ cnv.matrix %<>%
 
 chrom <- cnv.matrix$chrom
 
-PlotCNHeatmap(cnv.matrix, file.name='facets/gene.cn.pdf', threshold=TRUE)
+PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
 
 cnv.matrix %<>% arrange(chrom, start, end)
 
 cnv.matrix[is.na(cnv.matrix)] <- 3  # replace NA with numeric for use in rle function
 breaks <- c(0, cumsum(table(chrom)[chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
 
+
+# main loop
 for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start', 'end', 'hgnc', 'band'))) {
 
-    cat('\n * sample:', sample.name)
+    message(' * sample: ', sample.name)
 
     #loop over chromosomes in junction table
     for (chromosome in 1:length(cnv.matrix$chrom %>% unique)) {
@@ -240,9 +256,9 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
 
             nfills <-
                     cnv.matrix %>%
-                    select(chrom, start, end, hgnc, get(sample.name)) %>%
+                    select(chrom, start, end, hgnc, one_of(sample.name)) %>%
                     tbl_df %>%
-                    slice(nrows) %>%
+                    filter(row_number() %in% nrows) %>%
                     mutate(mid=rowMeans(.[, c('start', 'end')])) %>%
                     rowwise %>%
                     inner_join(
@@ -250,12 +266,11 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
                         filter(chrom==chromosome) %>%
                         mutate(qmid=rowMeans(.[, c('start', 'end')])) %>% 
                         select(chrom, qmid, fill=get(sample.name)),
-                        by='chrom'
-                        ) %>%
+                        by='chrom', copy=TRUE) %>%
                     ungroup %>%
                     group_by(chrom, start, end, hgnc) %>%
                     filter(fill!=3) %>%
-                    slice(which.min(abs(mid-qmid))) %>%
+                    dplyr::slice(which.min(abs(mid-qmid))) %>%
                     .$fill
 
             # write neighbor calls to master table
@@ -265,17 +280,12 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
                 cnv.matrix[nrows, sample.name] <- NA
             }
         }
-    } # loop over chromosomes
-
-    #cat('\n')
+    }  # loop over chromosomes
 }
 
-cnv.matrix$chrom <- chrom
+
+# add midpoints
 cnv.matrix %<>% mutate(mid=(start+end)/2) %>% select(chrom, start, mid, end, everything()) %>% ungroup
-
-
-# plot final heatmap
-PlotCNHeatmap(cnv.matrix, file.name='facets/gene.cn.fill.pdf', threshold=TRUE)
 
 # call overcall fix function
 names(cnv.matrix) %>%
@@ -283,6 +293,9 @@ list.filter(!. %in% c('chrom', 'start', 'mid', 'end', 'hgnc', 'band')) %>%
 list.map(., .) %>%
 map(~ OverCall(.x))
 
+# plot final heatmap
+PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.fill.pdf', threshold=TRUE)
+
 write_tsv(cnv.matrix, opt$outFile)
 
-cat(green("\n  [done]\n\n"))
+message(green(' [done]'))

@@ -41,7 +41,7 @@ FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_EM'
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
-	facets/geneCN.txt facets/geneCN.fill.txt facets/geneCN.heatmap.pdf facets/geneCN.fill.heatmap.pdf
+	facets/geneCN.txt facets/geneCN.fill.txt facets/geneCN.pdf facets/geneCN.fill.pdf
 
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP:.gz=) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf) 
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
@@ -80,7 +80,7 @@ facets/geneCN.fill.txt : facets/geneCN.txt $(foreach pair,$(SAMPLE_PAIRS),facets
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) --outFile $@ --geneCNFile $< \
 		$(filter %.cncf.txt,$^)")
 
-facets/geneCN%heatmap.pdf  : facets/geneCN%txt
+facets/geneCN%pdf  : facets/geneCN%txt
 	$(call LSCRIPT_MEM,8G,10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
 
 include modules/variant_callers/gatk.mk
