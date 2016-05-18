@@ -41,6 +41,10 @@ SOMATIC_SUFFIX = $(subst $( ),.,$(strip $1 $(SOMATIC_FILTER_SUFFIX) $(SOMATIC_AN
 
 SOMATIC_EFF_TYPES := high_moderate low_modifier synonymous nonsynonymous
 
+# vcfs w/o post filtering 
+SOMATIC_FT1_SUFFIX = $(subst $( ),.,$(strip $1 $(SOMATIC_FILTER_SUFFIX) $(SOMATIC_ANN_SUFFIX)))
+SOMATIC_FT1_VCF_SUFFIXES = $(foreach type,$1,$(call SOMATIC_FT1_SUFFIX,$(type)))
+
 SOMATIC_VCF_SUFFIXES = $(foreach type,$1,$(call SOMATIC_SUFFIX,$(type)))
 
 SOMATIC_TABLE_EXTENSIONS = tab $(foreach eff,$(SOMATIC_EFF_TYPES),tab.$(eff))
