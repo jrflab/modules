@@ -177,7 +177,7 @@ plotMutBarplot <- function(samp, mm) {
     mdf %>% filter(sample == samp) %>%
         ggplot(aes(x = context, y = value, fill = alteration)) +
         geom_bar(stat = 'identity') +
-        facet_grid(~ alteration, scales = 'free_x', switch = 'x') +
+        facet_grid(~ alteration, switch = 'x') +
         xlab("") + ylab("") + ggtitle(tit) +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               legend.position = 'none',
@@ -203,7 +203,7 @@ plotMutBarplotStranded <- function(samp, mmTranscribed, mmUntranscribed) {
     mdf %>% filter(sample == samp) %>%
         ggplot(aes(x = context, y = value, fill = transcribed)) +
         geom_bar(stat = 'identity', position = 'dodge') +
-        facet_grid(~ alteration, scales = 'free_x', switch = 'x') +
+        facet_grid(~ alteration, switch = 'x') +
         theme(axis.text.x = element_text(angle = 90, hjust = 1),
               panel.border = element_blank(),
               axis.line.x = element_line(color = 'black', size = 1),
