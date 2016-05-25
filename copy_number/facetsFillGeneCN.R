@@ -137,7 +137,7 @@ OverCall <- function(column.name) {
 
     sample.rle <- cnv.matrix[, column.name] %>% unlist %>% unname %>% rle
 
-    mark.amp <- intersect(which(sample.rle$lengths > 100), which(sample.rle$values == 2))
+    mark.amp <- intersect(which(sample.rle$lengths > 50), which(sample.rle$values == 2))
 
     if (length(mark.amp)!=0) {
 
@@ -158,7 +158,7 @@ OverCall <- function(column.name) {
         cnv.matrix[logic.amp, column.name] <<- 1
     }
 
-    mark.del <- intersect(which(sample.rle$lengths > 100), which(sample.rle$values == -2))
+    mark.del <- intersect(which(sample.rle$lengths > 50), which(sample.rle$values == -2))
 
     if (length(mark.del)!=0) {
 
