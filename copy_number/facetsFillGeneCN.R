@@ -1,9 +1,11 @@
 #!/usr/bin/env Rscript
+
 # fill facets gene CN file
 
-suppressPackageStartupMessages(library("facets", lib.loc="/home/bermans/R-dev/"))
-
+#--------------------
 # load base libraries
+#--------------------
+
 pacman::p_load( optparse,
                 RColorBrewer,
                 GenomicRanges,
@@ -16,16 +18,7 @@ pacman::p_load( optparse,
                 purrr,
                 magrittr,
                 rlist,
-                crayon,
-                foreach,
-                Cairo,
-                RMySQL,
-                rtracklayer,
-                colorspace,
-                ggplot2,
-                grid,
-                gridExtra,
-                RColorBrewer )
+                Cairo )
 
 
 #--------------
@@ -70,29 +63,37 @@ if(!interactive()) {
 
 PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE) {
 
-    if(is.null(sample.names) & threshold==TRUE) {
-        sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
-        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
-    } else if(is.null(sample.names)) {
-        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
-        sample.names <- sample.names[sample.names %>% gsub('[^0-9]', '',.) %>% as.numeric %>% order]
+    if(all(class(gene.cn) == 'character')) {
+      gene.cn <- read.delim(gene.cn, sep='\t', stringsAsFactors=FALSE) %>% tbl_df
     }
 
+    if(is.null(sample.names) & threshold==TRUE) {
+        sample.names <- gene.cn %>% select(matches('threshold')) %>% names %>% sort
+    } else if(is.null(sample.names)) {
+        sample.names <- gene.cn %>% names %>% list.filter(! . %in% c('hgnc','gene','chrom','start','mid','end','band'))
+    }
+
+    # convert X & Y to 23
+    gene.cn %<>% mutate(chrom=as.numeric(ifelse(chrom == 'X' | chrom == 'Y', '23', chrom)))
+
+    # segment spans
     chr.rle <- gene.cn$chrom %>% rle
     chr.sep <- chr.rle$lengths %>% cumsum
+
+    # midpoints
     chr.mid <- c(0, chr.sep[-length(chr.sep)]) + chr.rle$lengths/2
 
-    pdf(file.name, width=12, height=3 + 0.25*length(sample.names))
+    # remove annotation cols
+     gene.cn %<>% select(one_of(rev(sample.names)))
 
-        g.cn <- gene.cn %>% select(one_of(rev(sample.names)))
+    pdf(file.name, width=24, height=2+length(sample.names)/3)
 
-        layout(matrix(c(0,1),2,1,byrow=TRUE), c(length(sample.names),1), TRUE)  
+        par(mar=c(14, 14, 1, 1), oma=c(1, 1, 1, 1))  # bottom, left, top, right
 
-        par(mfrow=c(1,1), mar=c(8,5,1,1))
-        image(as.matrix(g.cn), col=c('#CF3A3D', '#DC9493', '#FFFFFF', '#7996BA', '#2A4B94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
+        image(as.matrix(gene.cn), col=c('#cf3a3d', '#dc9493', '#FFFFFF', '#7996ba', '#2a4b94'), xaxt='n', yaxt='n', zlim=c(-2, 2))
 
-        for (i in seq(-1, max(((2*(ncol(g.cn)-1))+1),1), 2)) {
-            abline(h=i/(2*(ncol(g.cn)-1)), col="white", lwd=2)
+        for (i in seq(-1, max(((2*(ncol(gene.cn)-1))+1),1), 2)) {
+            abline(h=i/(2*(ncol(gene.cn)-1)), col="white", lwd=2)
         }
 
         for (i in (chr.sep*2)-1) {
@@ -102,12 +103,12 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
          axis( 1,
                at       = chr.mid/(max(chr.sep)-1),
                label    = chr.rle$values,
-               cex.axis = 0.8,
+               cex.axis = 1.3,
                tick     = FALSE )
 
          axis( 2,
-               at       = if(ncol(g.cn)==1){0.5}else{seq(0, 1, 1/max((ncol(g.cn)-1),1))},
-               label    = sub('T_.*', '', colnames(g.cn)),
+               at       = if(ncol(gene.cn)==1){0.5}else{seq(0, 1, 1/max((ncol(gene.cn)-1),1))},
+               label    = if(threshold==TRUE){ sub('_LRR_threshold$', '', colnames(gene.cn)) }else{ colnames(gene.cn) },
                las      = 2,
                cex.axis = 1,
                tick     = FALSE )
@@ -115,11 +116,12 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
         box()
 
          legend( 'bottom',
-                 inset  = c(0, -0.28),
-                 legend = c('Homozygous deletion', 'Loss', 'Gain', 'Amplification'),
-                 fill   = c('#CF3A3D', '#DC9493', '#7996BA', '#2A4B94'),
+                 inset  = c(0, -0.15),
+                 legend = c('Amplification', 'Gain', 'Loss', 'Homozygous deletion'),
+                 fill   = c('#2a4b94', '#7996ba', '#dc9493', '#cf3a3d'),
                  xpd    = TRUE,
-                 ncol   = 2 )
+                 ncol   = 2,
+                 cex    = 1.1 )
      dev.off()
 
 }
@@ -135,7 +137,7 @@ OverCall <- function(column.name) {
 
     sample.rle <- cnv.matrix[, column.name] %>% unlist %>% unname %>% rle
 
-    mark.amp <- intersect(which(sample.rle$lengths > 100), which(sample.rle$values == 2))
+    mark.amp <- intersect(which(sample.rle$lengths > 50), which(sample.rle$values == 2))
 
     if (length(mark.amp)!=0) {
 
@@ -150,13 +152,13 @@ OverCall <- function(column.name) {
             left_join(cncfs[[sample.name]] %>% mutate(chrom=ifelse(chrom=='Y' | chrom=='X', 23, chrom)), by='chrom', copy=TRUE) %>%
             dplyr::slice(which.min(abs(mid-loc.mid))) %>%
             ungroup %>%
-            filter(cnlr.median>1.0) %>%
+            filter(cnlr.median>0.8) %>%
             .$index
 
         cnv.matrix[logic.amp, column.name] <<- 1
     }
 
-    mark.del <- intersect(which(sample.rle$lengths > 100), which(sample.rle$values == -2))
+    mark.del <- intersect(which(sample.rle$lengths > 50), which(sample.rle$values == -2))
 
     if (length(mark.del)!=0) {
 
@@ -170,7 +172,7 @@ OverCall <- function(column.name) {
             ungroup %>%
             left_join(cncfs[[sample.name]] %>% mutate(chrom=ifelse(chrom=='Y' | chrom=='X', 23, chrom)), by='chrom', copy=TRUE) %>%
             dplyr::slice(which.min(abs(mid-loc.mid))) %>%
-            filter(cnlr.median<0.5) %>%
+            filter(cnlr.median<0.4) %>%
             .$index
 
         cnv.matrix[logic.del, column.name] <<- -1
@@ -186,9 +188,16 @@ OverCall <- function(column.name) {
 cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE)
 
 cncfs <- lapply(cncf.files, function(x) {
-                read.delim(x, sep='\t', check.names=F, stringsAsFactors=FALSE) %>%
-                tbl_df %>%
-                mutate(loc.mid=(loc.start+loc.end)/2) # add genome-wide stats
+
+                cncf <- read.delim(x, sep='\t', check.names=F, stringsAsFactors=FALSE) %>%
+                tbl_df
+                # rename column names if they exist
+                names.key <- c('loc.start'='start', 'loc.end'='end')
+                existing <- match(names(names.key), names(cncf))
+                names(cncf)[na.omit(existing)] <- names.key[which(!is.na(existing))]
+                # add midpoints
+                cncf %<>% mutate(loc.mid=(start+end)/2) # add genome-wide stats
+                return(cncf)
                 })
 names(cncfs) <- sub('\\.cncf\\.txt', '', basename(cncf.files))
 
@@ -197,8 +206,6 @@ cnv.matrix %<>%
         ifelse(chrom=='X', 23,
         ifelse(chrom=='Y', 23, chrom))) %>%
     mutate(chrom=as.integer(chrom))
-
-chrom <- cnv.matrix$chrom
 
 PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
 
@@ -285,7 +292,7 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
 
 
 # add midpoints
-cnv.matrix %<>% mutate(mid=(start+end)/2) %>% select(chrom, start, mid, end, everything()) %>% ungroup
+cnv.matrix %<>% mutate(mid=(start+end)/2) %>% select(chrom, start, mid, end, band, hgnc, everything())
 
 # call overcall fix function
 names(cnv.matrix) %>%
