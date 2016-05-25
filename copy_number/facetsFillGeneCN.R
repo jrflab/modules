@@ -209,8 +209,6 @@ cnv.matrix %<>%
 
 PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
 
-cnv.matrix %<>% arrange(chrom, start, end)
-
 cnv.matrix[is.na(cnv.matrix)] <- 3  # replace NA with numeric for use in rle function
 breaks <- c(0, cumsum(table(chrom)[chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
 
