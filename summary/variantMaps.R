@@ -8,6 +8,8 @@
 #           #
 #-----------#
 
+suppressPackageStartupMessages(loadNamespace('plyr'))
+
 pacman::p_load( dplyr,lazyeval,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx,  # base
                 crayon,colorspace,RColorBrewer,  # coloring
                 ggplot2,grid,gridExtra,gplots,  # plot layout
@@ -15,10 +17,8 @@ pacman::p_load( dplyr,lazyeval,readr,tidyr,magrittr,purrr,stringr,rlist,openxlsx
                 gtools,nnet,  # permutation
                 optparse )  # option parsing
 
-loadNamespace('plyr')
-
 # set graphics device
-options(device=pdf)  # options(encoding='ISOLatin2.enc') | pdf.options(encoding='ISOLatin2.enc')
+options(device=pdf)
 
 
 #-------------------#
@@ -185,7 +185,9 @@ KeyMod <- function(sample.object, keys, force.keys=FALSE) {
         keys.index <- which(sample.object %in% names(keys))
         if(length(keys.index) == 0 & force.keys==FALSE) {
 
-            if(interactive()) { message(green('no keys to convert')) }
+            if(interactive()) {
+                message(green('no keys to convert'))
+            }
 
         } else if(force.keys==FALSE) {
 
@@ -1017,22 +1019,27 @@ if(!interactive()) {
     config <- list.load(opts$project_config)
 
     # load sample list
-    samples <- list.load(opts$samples_config) %>% list.stack(fill=TRUE) %>% tbl_df
+    samples <-
+        list.load(opts$samples_config) %>%
+        list.apply(as_data_frame) %>%
+        bind_rows %>%
+        rowwise %>%
+        mutate(id=sub(name,'',tumor)) %>%
+        ungroup
 
     # sample key values
     keys <- config$keys %>% unlist
     if(is.null(keys)) {
-        message(yellow('no keys found in config file, using samples file'))
-        keys <- samples$name
-        names(keys) <- samples$tumor
+        message(yellow('no keys found in config file, using defaults'))
+        keys <- samples$tumor %>% unique %>% set_names(samples$tumor %>% unique)
     }
 
     # define sub.sets
-    sub.sets <- config$subsets %>% map(~ { .x %>% KeyMod(keys)})
+    sub.sets <- list(all=keys)
 
-    # add all samples as sub.set
-    sub.sets <- c( sub.sets %>% list.map(KeyMod(., keys)),
-                   list(all=samples$tumor %>% KeyMod(keys)) )
+    if(!is.null(config$subsets)) {
+        sub.sets <- c(sub.sets, config$subsets %>% map(~ { .x %>% KeyMod(keys)}))
+    }
 
     # sub.set groups for pairwise comparisons
     if(!is.null(config$subset_groups)) {
@@ -1068,7 +1075,7 @@ if(!interactive()) {
             ungroup %>%
             mutate(comparison=str_c(a, ' x ', b))
     } else if(length(sub.sets) == 1) {
-        sub.groups <- data_frame(overlap=NA, group.id=1, extension=names(config$subsets), a=names(config$subsets), b=NA)
+        sub.groups <- data_frame(overlap=NA, group.id=1, extension=names(sub.sets[[1]]), a=names(sub.sets[[1]]), b=NA)
     } else {
         sub.groups <- data_frame(overlap=1, group.id=1, extension=NA, comparison=NA, a=NA, b=NA)
     }
@@ -1196,9 +1203,8 @@ if(!interactive()) {
         segs.loh <-
             list.files(opts$cncf_path, pattern='.cncf.txt',full.names=TRUE) %>%
             map(~ {
-
                 cncf <-
-                    read.delim(.x,stringsAsFactors=FALSE,sep="\t") %>%
+                    read.delim(.x, stringsAsFactors=FALSE, sep="\t") %>%
                     tbl_df %>%
                     separate(ID, into=c('sample','normal'), sep='_') %>%
                     # loh calclulation
