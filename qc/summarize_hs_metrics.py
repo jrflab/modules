@@ -12,13 +12,16 @@ import pandas as pd
 column_map = collections.OrderedDict([
     ('Sample ID', 'SAMPLE'),
     ('Target Territory', 'TARGET_TERRITORY'),
+    ('Total Reads', 'TOTAL_READS'),
     ('Percent Selected Bases', 'PCT_SELECTED_BASES'),
     ('Mean Target Coverage', 'MEAN_TARGET_COVERAGE'),
     ('Percent Target Bases 2X', 'PCT_TARGET_BASES_2X'),
     ('Percent Target Bases 10X', 'PCT_TARGET_BASES_10X'),
     ('Percent Target Bases 20X', 'PCT_TARGET_BASES_20X'),
-    ('Percent Target Bases 30X', 'PCT_TARGET_BASES_40X'),
-    ('Percent Target Bases 50X', 'PCT_TARGET_BASES_50X')
+    ('Percent Target Bases 30X', 'PCT_TARGET_BASES_30X'),
+    ('Percent Target Bases 40X', 'PCT_TARGET_BASES_40X'),
+    ('Percent Target Bases 50X', 'PCT_TARGET_BASES_50X'),
+    ('Percent Target Bases 100X', 'PCT_TARGET_BASES_100X')
 ])
 
 def slack_warning(slack_group, slack_token, slack_channel, message):
