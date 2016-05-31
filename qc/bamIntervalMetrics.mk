@@ -57,8 +57,18 @@ metrics/interval_hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).
 	done; \
 	rm -f $@.tmp
 
-metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.tsv)
+metrics/hs_metrics.summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.tsv)
 	$(INIT) $(SUMMARIZE_HS_METRICS) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME) $^ > $@ 2> $(LOG)
+
+metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLEs),metrics/$(sample).hs_metrics.tsv)
+	$(INIT) \
+		{ \
+		sed '/^$$/d; /^#/d; s/SAMPLE.*//; s/BAIT_SET/SAMPLE/; s/\s$$//' $< | head -1; \
+		for metrics in $^; do \
+			samplename=$$(basename $${metrics%%.hs_metrics.tsv}); \
+			sed "/^#/d; /^BAIT/d; /^\$$/d; s/^hs/$$samplename/; s/\t\+$$//" $$metrics; \
+		done; \
+		} > $@
 
 metrics/interval_report/index.html : metrics/hs_metrics.tsv
 	$(call LSCRIPT_MEM,7G,10G,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
