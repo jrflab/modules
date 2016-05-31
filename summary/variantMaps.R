@@ -38,14 +38,24 @@ pacman::p_load( ggdendro, dendextend, dendextendRcpp, dynamicTreeCut, gclus, pha
 
 # vm <- function(){ source('modules/summary/variantMaps.R') }
 
-run.input.parameters = TRUE
-run.data.processing  = TRUE
-run.sub.sets         = FALSE
-run.cn.heatmap.plots = FALSE
-run.cascade.plots    = FALSE
-run.trees            = FALSE
-run.fishers.plots    = FALSE
-run.experimental     = FALSE
+run.input.parameters = 1
+run.data.processing  = 1
+run.sub.sets         = 1
+run.cn.heatmap.plots = 1
+run.cascade.plots    = 1
+run.trees            = 1
+
+run.fishers.plots    = 0
+run.experimental     = 0
+
+
+#-------------------
+# annotation options
+#-------------------
+
+call.loh             = 1
+call.abs             = 1
+loh.closest          = 1  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
 
 
 #----------------------
@@ -76,15 +86,6 @@ random.pheno.color   = TRUE
 color.seed           = 0
 pheno.palette        = c('#2d4be0', '#20e6ae', '#ccb625', '#969696')
 cn.cols              = 'threshold'  # 'threshold': reserved string for selecting columns with threshold sufix, 'all' = reserved string for using all columns, else a string specifing columns to use
-
-
-#-------------------
-# annotation options
-#-------------------
-
-call.loh             = FALSE
-call.abs             = FALSE
-loh.closest          = TRUE  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
 
 
 #---------------
@@ -1102,7 +1103,7 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                tick     = FALSE )
 
          legend( 'bottom',
-                 inset  = c(0, -0.28),
+                 inset  = c(0, -0.33),
                  legend = c('Homozygous deletion', 'Loss', 'Gain', 'Amplification'),
                  fill   = c('#CF3A3D', '#DC9493', '#7996BA', '#2A4B94'),
                  xpd    = TRUE,
@@ -1400,6 +1401,7 @@ if(call.abs == TRUE) {
         mutate(ccf=ifelse(ccf.replace == TRUE, cf, ccf))
 }
 
+
 #----------------------------------------
 # format per-gene copy number information
 #----------------------------------------
@@ -1668,7 +1670,11 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
         arrange(chrom, start) %>%
         write_tsv(str_c(sub.group.prefix, 'geneCN_', sub.group$extension, '.tsv'))
 
+
+        #---------------
         # select columns
+        #---------------
+
         sub.variants %<>% select(class, sample, chrom, pos, span, effect, ccf, loh, clonality, cancer.gene, pheno, sample.colors)
         sub.muts %<>% select(class, sample, chrom, pos, gene, effect, ccf, loh, clonality, cancer.gene, pheno, sample.colors)
         sub.cnas %<>% select(class, sample, chrom, pos, band, effect, ccf, loh, clonality, cancer.gene, pheno, sample.colors)
@@ -1855,23 +1861,10 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
             suppressWarnings(sub.variants.tree$dend %<>% set('labels', ''))
         }
 
-        #-------------------------------
-        # MUTANTS LINEAGE MAP GENERATION
-        #-------------------------------
 
-        # lineage.matrix = cbind(sub.muts.tree$event.matrix, Parental=FALSE) %>% t
-
-        # phylo.data <- phyDat(lineage.matrix, type='USER', levels=c(0, 1))
-        # phylo.hamming <- dist.hamming(phylo.data)
-        # phylo.tree <- njs(phylo.hamming)
-        # phylo.ratchet <- pratchet(phylo.data, start=phylo.tree) %>% acctran(phylo.data)
-        # lineage.dend <- root(phylo.ratchet, 'Parental')
-
-        # pdf(str_c('summary/sub_group/', sub.group$extension, '/tree/variant_lineage_muts_', sub.group$extension, '.pdf'))
-        #     plot(lineage.dend)
-        # dev.off()
-
-        plot_file <- str_c(sub.group.prefix, 'tree/variant_lineage_muts_', sub.group$extension, '.pdf')
+        #-----------------------------
+        # SUB GROUPLINEAGE CALCULATION
+        #-----------------------------
 
         muts.tree         = sub.muts[!is.na(sub.muts$ccf),]
         sample_names = as.list(sort(unique(muts.tree$sample)))
@@ -1904,35 +1897,54 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
           } else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$gene[i])] <- type }
         }
 
+
         smalltab <-
             mutation_heatmap %>%
             t %>%
             round(1) %>%
             cbind(0)
 
-        colnames(smalltab)[ncol(smalltab)] = "Parental"
+        colnames(smalltab)[ncol(smalltab)] = 'root'
 
-        pd <- phyDat(t(smalltab), type="USER", levels=c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
-        dm = dist.hamming(pd)
-        tree = njs(dm)
-        treeRatchet <- pratchet(pd, start=tree)
-        treeRatchet <- acctran(treeRatchet, pd)
-        rt <- phytools::reroot(treeRatchet, which(labels(treeRatchet) == 'Parental'))
-        pdf(plot_file)
-        plot(rt)
+
+        seq.patterns <- smalltab %>% t %>% phyDat(type="USER", levels=0:10/10)
+
+        phylo.dist <- seq.patterns %>% dist.hamming %>% njs
+
+        phylo.parsimony <- seq.patterns %>% pratchet(start=phylo.dist) %>% acctran(data=seq.patterns)
+
+        phylo.root <- phylo.parsimony %>% phytools::reroot(., node.number=which(.$tip.label == 'root'))
+
+        dend.root <- 
+            phylo.root %>%
+            chronos(model='discrete') %>%
+            as.dendrogram
+
+
+        dend.ext <-
+            dend.root %>%
+            set('branches_k_color') %>% #, k=length(sub.group.samples)) %>%
+            set('branches_lwd', 2) %>%
+            dendextend::ladderize %>%
+            prune('root')
+
+
+        # default rectilinear tree
+        pdf(str_c(sub.group.prefix, 'tree/muts_lineage_rect_', sub.group$extension, '.pdf'))
+            plot(phylo.root)
         dev.off()
 
 
-        ddata <- dendro_data(dhc, type = "triangle")
-        ggplot(segment(ddata)) + 
-        geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
-        coord_flip() + 
-        scale_y_reverse(expand = c(0.2, 0)) +
-        theme_dendro()
+        # triangular tree
+        pdf(str_c(sub.group.prefix, 'tree/muts_lineage_tri_', sub.group$extension, '.pdf'))
+            par(mar=c(1,1,1,6))  # bottom, left, top, right
+            plot(dend.ext, horiz=TRUE, type='triangle', edge.root=FALSE, axes=FALSE)
+           # plot_horiz.dendrogram(dend.ext, type='triangle', edge.root=FALSE, xaxt=NULL, yaxt=NULL)
+        dev.off()
+
 
 
         if(run.fishers.plots != TRUE) { next }  # // -- trees
-
 
         # // 
 
