@@ -62,7 +62,7 @@ metrics/interval_hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).
 metrics/hs_metrics.summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.tsv)
 	$(INIT) $(SUMMARIZE_HS_METRICS) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME) $^ > $@ 2> $(LOG)
 
-metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLEs),metrics/$(sample).hs_metrics.tsv)
+metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.tsv)
 	$(INIT) \
 		{ \
 		sed '/^$$/d; /^#/d; s/SAMPLE.*//; s/BAIT_SET/SAMPLE/; s/\s$$//' $< | head -1; \
