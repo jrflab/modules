@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 
-vcf_reader.filters['Common'] = vcf.parser._Filter(id='common',
+vcf_reader.filters['Common'] = vcf.parser._Filter(id='Common',
                                                   desc='no cosmic id, or has dbsnp ID and GMAF is > 0.01')
 
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
