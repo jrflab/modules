@@ -5,6 +5,7 @@ LOGDIR = log/recurrent_mutations.$(NOW)
 
 EXCEL_NONSYNONYMOUS_MUTECT ?= summary/tsv/mutect_nonsynonymous.tsv
 EXCEL_NONSYNONYMOUS_STRELKA_VARSCAN ?= summary/tsv/strelka_varscan_nonsynonymous.tsv
+EXCEL_ALL ?= summary/tsv/mutation_summary.tsv
 
 # sufam plot parameters
 SUFAM_PLOT_MIN_NR_SAMPLES_WITH_MUTATION?=2

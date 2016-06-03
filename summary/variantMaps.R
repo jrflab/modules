@@ -18,8 +18,9 @@ pacman::p_load( ggdendro, dendextend, dendextendRcpp, dynamicTreeCut, gclus, pha
                 gtools, nnet,                                                             # permutation
                 crayon, colorspace, RColorBrewer,                                         # coloring
                 ggplot2, grid, gridExtra, gplots,                                         # plotting
-                dplyr, lazyeval, readr, tidyr, magrittr, purrr, stringr, rlist, openxlsx, # base
-                optparse )                                                                # option parsing
+                dplyr, lazyeval, tidyr, magrittr, purrr, stringr, rlist,                  # dplyr
+                readr, openxlsx,                                                          # I/O
+                parallel, optparse )                                                      # utilities
 
 
 # // -- libraries
@@ -40,10 +41,10 @@ pacman::p_load( ggdendro, dendextend, dendextendRcpp, dynamicTreeCut, gclus, pha
 
 run.input.parameters = 1
 run.data.processing  = 1
-run.sub.sets         = 1
-run.cn.heatmap.plots = 1
-run.cascade.plots    = 1
-run.trees            = 1
+run.sub.sets         = 0
+run.cn.heatmap.plots = 0
+run.cascade.plots    = 0
+run.trees            = 0
 
 run.fishers.plots    = 0
 run.experimental     = 0
@@ -54,8 +55,9 @@ run.experimental     = 0
 #-------------------
 
 call.loh             = 1
-call.abs             = 1
 loh.closest          = 1  # should copy number / loh assignments be made according to closest segment if variant does not fall within segment: bool
+call.patho           = 1
+call.abs             = 1
 
 
 #----------------------
@@ -66,6 +68,8 @@ verbose              = FALSE
 excel.summary.sheet  = 'MUTATION_SUMMARY'
 allosome             = 'merge'
 sub.set.combinations = FALSE
+use.sufam            = TRUE
+
 
 #-------------------
 # clustering & trees
@@ -190,6 +194,11 @@ H3 <- function(txt) {
     message(blue(str_c('- ', txt)))
 }
 
+# warning
+Warn <- function(txt) {
+    message(yellow(str_c('- ', txt)))
+}
+
 H1('FUNCTIONS')
 
 
@@ -258,15 +267,15 @@ DummyCols <- function(events, col.names, debug) {
 
 ChromMod <- function(events, allosome){
 
-    if('X' %in% events$chrom) { message(yellow('X chromosome labelling converted to numeric')) }
+    if('X' %in% events$chrom) { Warn('X chromosome labelling converted to numeric') }
 
     if(allosome=='distinct') {
-            if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 24-based numeric')) }
+            if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 24-based numeric') }
             events %>%
             mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
             mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
     } else if(allosome =='merge') {
-            if('Y' %in% events$chrom) { message(yellow('Y chromosome labelling converted to 23-based numeric')) }
+            if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 23-based numeric') }
             events %>% 
             mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
     } else {
@@ -303,7 +312,7 @@ KeyMod <- function(sample.object, keys, debug, force.keys=FALSE) {
 
             conversions <- data.frame(pre=as.character(unique(sample.object)), post=keys[unique(as.character(sample.object))], in.keys=unique(as.character(events)) %in% names(keys), row.names=NULL)
             if(debug) {
-                message(yellow('forcing key conversions'))
+                Warn('forcing key conversions')
                 print(conversions)
             }
             sample.object[keys.index] <- keys[sample.object[keys.index]]
@@ -324,7 +333,7 @@ KeyMod <- function(sample.object, keys, debug, force.keys=FALSE) {
         } else {
             conversions <- data.frame(pre=as.character(unique(sample.object$sample)), post=keys[unique(as.character(sample.object$sample))], in.keys=unique(as.character(events$sample)) %in% names(keys), row.names=NULL)
             if(debug) {
-                message(yellow('forcing key conversions'))
+                Warn('forcing key conversions')
                 print(conversions)
             }
             sample.object %<>% mutate(sample=keys[sample])
@@ -608,14 +617,14 @@ FormatEvents <- function(events, col.names=NULL, drop=FALSE, allosome='merge', k
         }
     }
 
-    # remove unmutated LOH if present & format
-    if('cancer.gene' %in% colnames(events)) {
-        events %<>% mutate(cancer.gene=ifelse(cancer.gene%in%c('Carcinogenic','cancer', TRUE) & !is.na(effect),'Carcinogenic',NA))
+    # change chasm NA column to Inf
+    if('chasm' %in% colnames(events)) {
+        events %<>% mutate(chasm=ifelse(is.na(chasm), Inf, chasm))
     }
 
     # remove unmutated LOH if present & format
     if('loh' %in% colnames(events)) {
-        events %<>% mutate(loh=ifelse(loh%in%c('LOH','loh','Loss of heterozygosity') & !is.na(effect),'Loss of heterozygosity',NA))
+        events %<>% mutate(loh=ifelse(loh%in%c('LOH','loh','Loss of heterozygosity') & !is.na(effect),'Loss of heterozygosity','.'))
     }
 
     if(drop!=FALSE) {
@@ -897,9 +906,13 @@ OrgEvents <- function(events, sample.order=NULL, pheno.order, sub.sets.pheno, re
         mutate(ccf=ifelse(is.na(effect),NA,ccf)) %>%
         mutate(ccf=factor(ccf, levels=c('CCF = 0%','0% < CCF <= 5%','5% < CCF <= 20%','20% < CCF <= 40%','40% < CCF <= 60%','60% < CCF <= 80%','80% < CCF <= 100%'))) %>%
         mutate(clonal=ifelse(clonality=='Clonal', clonality, NA)) %>%
-        # mutate(clonal=as.factor(clonal) %>%
         select(-order) %>%
         mutate(sample=factor(sample, levels=sample.order))
+
+    # change working columns to NA
+    events %<>%
+        mutate(chasm=ifelse(chasm == Inf, NA, chasm)) %>%
+        mutate(loh=ifelse(loh == '.', NA, loh))
 
     if(event.type=='gene') {
         events %<>% filter(!is.na(gene))
@@ -920,7 +933,7 @@ OrgEvents <- function(events, sample.order=NULL, pheno.order, sub.sets.pheno, re
 # main plotting function
 #-----------------------
 
-PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, pathogenic=FALSE, ccf=FALSE, loh=TRUE, width=20, height=20, text.size=18, event.type='gene'){
+PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, pathogenic=FALSE, ccf=FALSE, loh=TRUE, width=7, height=7, text.size=6, event.type='gene'){
 
     # set graphics device
     options(device=pdf)
@@ -955,7 +968,8 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
         hp <- ggplot(events, aes(Sample, Span, drop=FALSE))
     }
 
-    if(ccf==TRUE) {  # CCF coloring
+    # CCF coloring
+    if(ccf==TRUE) {
         hp <- hp +
         geom_tile(data=events, aes(fill=CCF, drop=FALSE), colour='white') +
         scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90', drop=FALSE)
@@ -965,9 +979,17 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
         scale_fill_manual(breaks=names(palette), values=palette, na.value='gray90', drop=FALSE)
     }
 
+    # loh slashes
+    if(loh==TRUE & !all(is.na(events$loh))) {
+        hp <- hp + geom_segment(data=ggplot_build(hp)$data[[1]][which(events$loh=='LOH'), ], 
+                         aes(x=xmin, xend=xmax, y=ymin, yend=ymax), 
+                         color='white',
+                         size=1)
+    }
+
     if(clonal==TRUE & !all(is.na(events$clonality))) {
         hp <- hp +
-        geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1.8, fill=NA) +
+        geom_tile(data=events %>% filter(!is.na(Effect) & !is.na(clonal)), aes(colour=clonal), size=1, fill=NA) +
         scale_color_manual(values='#DCA43E')
     }
 
@@ -1015,14 +1037,6 @@ PlotVariants <- function(events, output.file, clonal=FALSE, cancer.gene=FALSE, p
            panel.background    = element_rect(fill=NA, color=NA),
            panel.border        = element_rect(fill=NA, colour='black', size=2),
            plot.margin         = unit(c(1,1,1,1), 'pt') )
-
-    # loh slashes
-    if(loh==TRUE & !all(is.na(events$loh))) {
-        hp <- hp + geom_segment(data=ggplot_build(hp)$data[[1]][which(events$loh=='LOH'), ], 
-                         aes(x=xmin, xend=xmax, y=ymin, yend=ymax), 
-                         color='white',
-                         size=1.5)
-    }
 
     # build grob object
     hpg <- suppressWarnings(ggplotGrob(hp))
@@ -1130,7 +1144,6 @@ CallLOH <- function(cncf.file) {
             ifelse(lcn>0,'.',
             ifelse(!is.na(lcn.em) & !is.na(lcn), '.',
             NA)))))) %>%
-        mutate(loh=ifelse(lcn==0 & cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
         mutate(loc.mid=(loc.start+loc.end)/2) %>%
         mutate(id=row_number())
 
@@ -1144,8 +1157,8 @@ CallLOH <- function(cncf.file) {
         slice(which.min(abs(loc.mid-loc.mid.adj))) %>%
         ungroup %>%
         mutate(loh=ifelse(is.na(loh), adj.loh, loh)) %>%
-        mutate(loh=ifelse(cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
-        mutate(loh=ifelse(loh=='.',NA,loh)) %>%
+        #mutate(loh=ifelse(loh=='LOH' & cnlr.median.clust < 0 & mafR > 0.2, 'LOH', '.')) %>%
+        #mutate(loh=ifelse(loh=='.',NA,loh)) %>%
         mutate(seg.id=str_c(sample, ':', row_number())) %>%
         select(sample,chrom,loc.start,loc.mid,loc.end,loh,lcn.em,lcn,tcn.em,tcn,mafR,cnlr.median,cnlr.median.clust,cf,seg,num.mark,seg.id)
 
@@ -1181,7 +1194,7 @@ config <- list.load(opts$project_config)
 # load sample list
 samples <-
     list.load(opts$samples_config) %>%
-    list.apply(as_data_frame) %>%
+    list.map(., as.data.frame(., stringsAsFactors=FALSE)) %>%
     bind_rows %>%
     rowwise %>%
     mutate(id=sub(name,'',tumor)) %>%
@@ -1191,7 +1204,7 @@ samples <-
 # sample key values
 keys <- config$keys %>% unlist
 if(is.null(keys)) {
-    message(yellow('no keys found in config file, using defaults'))
+    Warn('no keys found in config file, using defaults')
     keys <- samples$tumor %>% unique %>% set_names(samples$tumor %>% unique)
 }
 
@@ -1330,13 +1343,59 @@ muts <-
     select(sample, chrom, pos, gene, effect, everything())
 
 
+# if(use.sufam ==TRUE) {
+
+#     muts.suf <-
+#     read.delim('recurrent_mutations/sufam/all_sufam.txt', sep='\t', stringsAsFactors=FALSE) %>%
+#     tbl_df %>% left_join(samples, by=c('sample'='tumor')) %>%
+#     select(sample, normal, name, id, everything())
+
+#     maf.t, 
+
+#     # per-normal variant list
+#     muts.var <-
+#         muts %>%
+#         select(chrom, pos, ref, alt, variant, normal, hgvs.p, hgvs.c) %>%
+#         unique
+
+#     # sample-normal lookup table for sufam
+#     muts.norm <- 
+#         muts.og %>%
+#         select(sample, normal) %>%
+#         unique
+
+#     # sufam muts restricted to variants found in the same normal
+#     muts.su <-
+#         read.delim('recurrent_mutations/sufam/all_sufam.txt', sep='\t', stringsAsFactors=FALSE) %>%
+#         FormatEvents %>%
+#         tbl_df %>%
+#         filter(most_common_maf != 0) %>%
+#         #filter(most_common_al_count > 1) %>%
+#         left_join(muts.norm, by='sample', copy=TRUE) %>%
+#         inner_join(muts.var, by=c('chrom','pos','ref','val_alt'='alt', 'normal'), copy=TRUE)
+
+#     muts.join <-
+#         muts.og %>%
+#         full_join(muts.su, by=c('sample','chrom','pos','ref','alt'='val_alt', 'normal','variant','hgvs.p','hgvs.c'), copy=TRUE)
+
+#     muts.join.sum <-
+#         muts.join %>%
+#         mutate(in.og=!is.na(maf.t)) %>%
+#         mutate(in.su=!is.na(val_maf)) %>%
+#         mutate(in.og.su=in.og==TRUE & in.su==TRUE)
+
+# }
+
+
+
 #----------
 # LOH calls
 #----------
 
-message(green('loh calls'))
+H2('loh calls')
 
 if(call.loh == TRUE) {
+    H3('calling loh')
     # read cnf & make calls
     segs.loh <-
         list.files(opts$cncf_path, pattern='.cncf.txt', full.names=TRUE) %>%
@@ -1351,8 +1410,8 @@ if(call.loh == TRUE) {
         group_by(mut.id) %>%
         full_join(segs.loh, by=c('sample', 'chrom')) %>%
         slice(which.min(pos-loc.mid)) %>%
-        mutate(in.seg=(loc.start<=pos & pos<=loc.end)) %>%
-        ungroup
+        ungroup %>%
+        mutate(in.seg=(loc.start<=pos & pos<=loc.end))
 
     # filter loh calls if specified
     if(loh.closest!=TRUE) {
@@ -1360,7 +1419,7 @@ if(call.loh == TRUE) {
     }
 
     if('loh' %in% colnames(muts)) {
-        message(yellow('warning: removing existing loh column'))
+        Warn('removing existing loh column')
         muts %<>% select(-loh)
     } else {
         muts.loh %<>% select(-loh)
@@ -1368,8 +1427,31 @@ if(call.loh == TRUE) {
 
     # add loh & seg columns to mutation tables
     muts %<>% left_join(muts.loh, by=c('sample', 'chrom', 'pos', 'mut.id'))
+} else {
+    H3('skipping loh calling step')
+    if('loh' %in% names(muts)) {
+        Warn('warning: no prexisting loh column')
+    }
 }
 
+
+#--------------------
+# Pathogenicity calls
+#--------------------
+
+H2('Pathogenicity')
+
+if(call.patho == TRUE) {
+
+    H3('calling pathogenicity')
+
+    muts %<>% mutate(pathogenic = ifelse(effect == 'Missense SNV' & mut.taster %in% c('D', 'A') & (fathmm == 'CANCER' | chasm <= 0.3) & cancer.gene == 'Carcinogenic', 'Pathogenic',
+             ifelse(effect == 'Missense SNV' & mut.taster %in% c('D', 'A') & (fathmm == 'CANCER' | chasm <= 0.3) & cancer.gene != 'Carcinogenic', 'Potentially Pathogenic',
+             ifelse(effect == 'Inframe In-Del' & (haplo == TRUE | loh == 'LOH') & cancer.gene == 'Carcinogenic', 'Pathogenic',
+             ifelse(effect == 'Inframe In-Del' & (haplo == TRUE | loh == 'LOH' | cancer.gene == 'Carcinogenic'), 'Potentially Pathogenic',
+             ifelse(effect == 'Inframe In-Del', 'Passenger',
+             ifelse(effect %in% c('Frameshift In-Del', 'Splice site variant', 'Truncating SNV') & (loh == 'LOH' | cancer.gene == TRUE), 'Pathogenic', 'Passenger')))))))
+}
 
 #---------------------
 # ABSOLUTE CCF calling
@@ -1559,6 +1641,8 @@ H1('SUB SETS')
 #                
 #-------------
 
+sub.run='syn_nonsyn'
+sub.num=0
 
 for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
@@ -1574,9 +1658,12 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
     }
 
-    for (sub.num in 0:(nrow(sub.groups)-1)) {
+
+    # for (sub.num in 0:(nrow(sub.groups)-1)) {
 
         # // 
+
+    SubGroup <- function(sub.num) {
 
         #--------------------
         # setup sub group run
@@ -1644,7 +1731,7 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # write master summary sheet sheet
         if(sub.num==0) {
-            gene.cn.curated <- read.delim('facets/geneCN_curated.tsv', sep='\t', stringsAsFactors=FALSE) %>% tbl_df
+            gene.cn.curated <- read.delim('facets/geneCN_curated.tsv', sep='\t', stringsAsFactors=FALSE) %>% mutate(chrom=as.character(chrom)) %>% mutate(chrom=ifelse(chrom==23, 'X', chrom)) %>% tbl_df
 
             system('csvcut -tc SAMPLE,TOTAL_READS,MEAN_TARGET_COVERAGE,PCT_TARGET_BASES_2X,PCT_TARGET_BASES_50X,PCT_TARGET_BASES_100X metrics/hs_metrics.txt > summary/metrics.csv')
             metrics <- read.delim('summary/metrics.csv', sep=',', stringsAsFactors=FALSE)
@@ -1713,6 +1800,25 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // 
 
+
+        # fix sample order
+        sample.order.1 <-
+            sub.muts %>%
+            OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
+            .$sample %>%
+            as.character %>%
+            rev %>%
+            unique
+
+        # fix ample order [recurrent]
+        sample.order.2 <-
+            sub.muts %>%
+            OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
+            .$sample %>%
+            as.character %>%
+            rev %>%
+            unique
+
         H3('muts [type] cascade plot')
 
         sub.muts %>%
@@ -1723,9 +1829,9 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
                       ccf         = FALSE,
                       loh         = FALSE,
                       event.type  = 'gene',
-                      width       = length(unique(.$sample)) + 10,
-                      height      = (length(unique(.$gene))/3) + 10,
-                      text.size   = 30 )
+                      width       = (length(unique(.$sample))/2) + 3.3,
+                      height      = (length(unique(.$gene))/6) + 3,
+                      text.size   = 12 )
 
 
         H3('muts [type] [recurrent] cascade plot')
@@ -1738,9 +1844,9 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
                       ccf         = FALSE,
                       loh         = FALSE,
                       event.type  = 'gene',
-                      width       = length(unique(.$sample)) + 10,
-                      height      = (length(unique(.$gene))/3) + 10,
-                      text.size   = 30 )
+                      width       = (length(unique(.$sample))/2) + 3.3,
+                      height      = (length(unique(.$gene))/6) + 3,
+                      text.size   = 14 )
 
 
         H3('muts [CCF] cascade plot')
@@ -1753,9 +1859,9 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
                       ccf         = TRUE,
                       loh         = TRUE,
                       event.type  = 'gene',
-                      width       = length(unique(.$sample)) + 10,
-                      height      = (length(unique(.$gene))/3) + 10,
-                      text.size   = 30 )
+                      width       = (length(unique(.$sample))/2) + 4,
+                      height      = (length(unique(.$gene))/6) + 3,
+                      text.size   = 12 )
 
 
         H3('muts [CCF] [recurrent] cascade plot')
@@ -1768,35 +1874,27 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
                       ccf         = TRUE,
                       loh         = TRUE,
                       event.type  = 'gene',
-                      width       = length(unique(.$sample)) + 10,
-                      height      = (length(unique(.$gene))/3) + 10,
-                      text.size   = 30 )
-
-        # fix sample order
-        sample.order <-
-            sub.muts %>%
-            OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
-            .$sample %>%
-            as.character %>%
-            rev %>%
-            unique
+                      width       = (length(unique(.$sample))/2) + 4,
+                      height      = (length(unique(.$gene))/6) + 3,
+                      text.size   = 14 )
 
 
         H3('cnas cascade plot')
 
         if(nrow(sub.cnas) > 0) {
             sub.cnas %>%
-            OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band', debug) %>%
+            OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band', debug) %>%
             PlotVariants( output.file = str_c(sub.group.prefix, 'cna_heatmap/cna_heatmap_', sub.group$extension, '.pdf'),
                           clonal      = FALSE,
                           pathogenic  = FALSE,
                           ccf         = FALSE,
                           loh         = FALSE,
                           event.type  = 'band',
-                          width       = length(unique(.$sample)) + 10,
-                          height      = (length(unique(.$band))/3) + 10,
-                          text.size   = 30 )
+                          width       = (length(unique(.$sample))/2) + 3.3,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 12 )
         }
+
 
         #-----------------------
         # combined variant plots
@@ -1807,31 +1905,31 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
             H3('variants cascade plot')
 
             sub.variants %>%
-            OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span', debug) %>%
+            OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span', debug) %>%
             PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_', sub.group$extension, '.pdf'),
                           clonal      = FALSE,
                           pathogenic  = FALSE,
                           ccf         = FALSE,
                           loh         = FALSE,
                           event.type  = 'span',
-                          width       = length(unique(.$sample)) + 10,
-                          height      = (length(unique(.$span))/3) + 10,
-                          text.size   = 30 )
+                          width       = (length(unique(.$sample))/2) + 3.3,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 12 )
 
 
             H3('VARIANTS [recurrent] cascade plot')
 
             sub.variants %>%
-            OrgEvents(sample.order=sample.order, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span', debug) %>%
+            OrgEvents(sample.order=sample.order.2, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span', debug) %>%
             PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                           clonal      = FALSE,
                           pathogenic  = FALSE,
                           ccf         = FALSE,
                           loh         = FALSE,
                           event.type  = 'span',
-                          width       = length(unique(.$sample)) + 10,
-                          height      = (length(unique(.$span))/3) + 10,
-                          text.size   = 30 )
+                          width       = (length(unique(.$sample))/2) + 3.3,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 14 )
         }
 
 
@@ -1923,8 +2021,9 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         dend.ext <-
             dend.root %>%
-            set('branches_k_color') %>% #, k=length(sub.group.samples)) %>%
-            set('branches_lwd', 2) %>%
+            set('branches_lwd', 3) %>%
+            set('labels_cex', 1) %>%
+            set('branches_k_color', k=length(sub.group.samples)) %>%
             dendextend::ladderize %>%
             prune('root')
 
@@ -2108,7 +2207,11 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // -- fisher's plots
 
-    }
+    } # // SubGroup
+
+    mclapply(0:(nrow(sub.groups)-1), function(sub.num) {SubGroup(sub.num)}, mc.cores=20)
+
+    #} # // for sub.num
 
 }
 
