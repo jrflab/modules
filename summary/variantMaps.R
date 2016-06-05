@@ -40,7 +40,7 @@ pacman::p_load( ggdendro, dendextend, dendextendRcpp, dynamicTreeCut, gclus, pha
 # vm <- function(){ source('modules/summary/variantMaps.R') }
 
 run.input.parameters = 1
-run.data.processing  = 1
+run.data.processing  = 0
 run.sub.sets         = 0
 run.cn.heatmap.plots = 0
 run.cascade.plots    = 0
@@ -49,6 +49,7 @@ run.trees            = 0
 run.fishers.plots    = 0
 run.experimental     = 0
 
+stop.sub.0           = 1
 
 #-------------------
 # annotation options
@@ -267,20 +268,22 @@ DummyCols <- function(events, col.names, debug) {
 
 ChromMod <- function(events, allosome){
 
-    if('X' %in% events$chrom) { Warn('X chromosome labelling converted to numeric') }
+    if('X' %in% events$chrom & allosome != 'keep') { Warn('X chromosome labelling converted to numeric') }
 
-    if(allosome=='distinct') {
-            if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 24-based numeric') }
-            events %>%
-            mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
-            mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
-    } else if(allosome =='merge') {
-            if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 23-based numeric') }
-            events %>% 
-            mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
+    if(allosome == 'distinct') {
+        if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 24-based numeric') }
+        events %>%
+        mutate(.,chrom=as.numeric(ifelse(chrom=='X', 23,chrom))) %>%
+        mutate(chrom=as.numeric(ifelse(chrom=='Y', 24,chrom)))
+    } else if(allosome == 'merge') {
+        if('Y' %in% events$chrom) { Warn('Y chromosome labelling converted to 23-based numeric') }
+        events %>% 
+        mutate(chrom=as.numeric(ifelse(chrom %in% c('X','Y'), 23, chrom)))
+    } else if(allosome == 'keep') {
+        events
     } else {
-            events %>%
-            filter(!chrom %in% c('X','Y'))
+        events %>%
+        filter(!chrom %in% c('X','Y'))
     }
 }
 
@@ -1538,6 +1541,7 @@ cnas <-
     FormatEvents %>%
     select(sample, band, chrom, start, end, effect)
 
+
 # collapse consecutive bands
 cnas %<>%
     arrange(sample, chrom, start) %>%
@@ -1659,8 +1663,6 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
     }
 
 
-    # for (sub.num in 0:(nrow(sub.groups)-1)) {
-
         # // 
 
     SubGroup <- function(sub.num) {
@@ -1766,8 +1768,9 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
         sub.muts %<>% select(class, sample, chrom, pos, gene, effect, ccf, loh, clonality, cancer.gene, pheno, sample.colors)
         sub.cnas %<>% select(class, sample, chrom, pos, band, effect, ccf, loh, clonality, cancer.gene, pheno, sample.colors)
 
+        if(stop.sub.0 == TRUE) { QuietStop('- exiting after: sub.num = 0 //') }
 
-        if(run.cn.heatmap.plots != TRUE) { next }  # // -- sub sets
+        # // -- sub sets
 
         #---------------------
         #
@@ -1777,20 +1780,21 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // 
 
-        for(sub.set.num in 1:length(sub.group.sets)) {
+        if(run.cn.heatmap.plots != TRUE) {
 
-            sub.set.name <- sub.sets[sub.group.sets][sub.set.num] %>% names %>% FixName
-            sub.set <- sub.sets[sub.group.sets][[sub.set.num]] %>% KeyMod(keys, debug)
+            for(sub.set.num in 1:length(sub.group.sets)) {
 
-            # cut down gene.cn table
-            sub.gene.cn <- gene.cn %>% select(gene, chrom, start, end, band, one_of(sub.set))
+                sub.set.name <- sub.sets[sub.group.sets][sub.set.num] %>% names %>% FixName
+                sub.set <- sub.sets[sub.group.sets][[sub.set.num]] %>% KeyMod(keys, debug)
 
-            # call CN heatmap plotting function
-            PlotCNHeatmap(sub.gene.cn, file.name=str_c(sub.group.prefix, 'cna_heatmap/genecn_heatmap_', sub.group$extension, '_',sub.set.name,'.pdf'), threshold=FALSE)
-        }
+                # cut down gene.cn table
+                sub.gene.cn <- gene.cn %>% select(gene, chrom, start, end, band, one_of(sub.set))
 
+                # call CN heatmap plotting function
+                PlotCNHeatmap(sub.gene.cn, file.name=str_c(sub.group.prefix, 'cna_heatmap/genecn_heatmap_', sub.group$extension, '_',sub.set.name,'.pdf'), threshold=FALSE)
+            }
 
-        if(run.cascade.plots != TRUE) { next }  # // -- cn heatmap plots
+        }  # // -- cn heatmap plots
 
         #------------------
         #                  
@@ -1800,140 +1804,140 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // 
 
+        if(run.cascade.plots != TRUE) {
 
-        # fix sample order
-        sample.order.1 <-
+            # fix sample order
+            sample.order.1 <-
+                sub.muts %>%
+                OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
+                .$sample %>%
+                as.character %>%
+                rev %>%
+                unique
+
+            # fix ample order [recurrent]
+            sample.order.2 <-
+                sub.muts %>%
+                OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
+                .$sample %>%
+                as.character %>%
+                rev %>%
+                unique
+
+            H3('muts [type] cascade plot')
+
             sub.muts %>%
             OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
-            .$sample %>%
-            as.character %>%
-            rev %>%
-            unique
+            PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_type_', sub.group$extension, '.pdf'),
+                          clonal      = FALSE,
+                          pathogenic  = FALSE,
+                          ccf         = FALSE,
+                          loh         = FALSE,
+                          event.type  = 'gene',
+                          width       = (length(unique(.$sample))/2) + 3.3,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 12 )
 
-        # fix ample order [recurrent]
-        sample.order.2 <-
+
+            H3('muts [type] [recurrent] cascade plot')
+
             sub.muts %>%
             OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
-            .$sample %>%
-            as.character %>%
-            rev %>%
-            unique
-
-        H3('muts [type] cascade plot')
-
-        sub.muts %>%
-        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
-        PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_type_', sub.group$extension, '.pdf'),
-                      clonal      = FALSE,
-                      pathogenic  = FALSE,
-                      ccf         = FALSE,
-                      loh         = FALSE,
-                      event.type  = 'gene',
-                      width       = (length(unique(.$sample))/2) + 3.3,
-                      height      = (length(unique(.$gene))/6) + 3,
-                      text.size   = 12 )
-
-
-        H3('muts [type] [recurrent] cascade plot')
-
-        sub.muts %>%
-        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
-        PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
-                      clonal      = FALSE,
-                      pathogenic  = FALSE,
-                      ccf         = FALSE,
-                      loh         = FALSE,
-                      event.type  = 'gene',
-                      width       = (length(unique(.$sample))/2) + 3.3,
-                      height      = (length(unique(.$gene))/6) + 3,
-                      text.size   = 14 )
-
-
-        H3('muts [CCF] cascade plot')
-
-        sub.muts %>%
-        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
-        PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_ccf_', sub.group$extension, '.pdf'),
-                      clonal      = TRUE,
-                      pathogenic  = FALSE,
-                      ccf         = TRUE,
-                      loh         = TRUE,
-                      event.type  = 'gene',
-                      width       = (length(unique(.$sample))/2) + 4,
-                      height      = (length(unique(.$gene))/6) + 3,
-                      text.size   = 12 )
-
-
-        H3('muts [CCF] [recurrent] cascade plot')
-
-        sub.muts %>%
-        OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
-        PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_ccf_recurrent_', sub.group$extension, '.pdf'),
-                      clonal      = TRUE,
-                      pathogenic  = FALSE,
-                      ccf         = TRUE,
-                      loh         = TRUE,
-                      event.type  = 'gene',
-                      width       = (length(unique(.$sample))/2) + 4,
-                      height      = (length(unique(.$gene))/6) + 3,
-                      text.size   = 14 )
-
-
-        H3('cnas cascade plot')
-
-        if(nrow(sub.cnas) > 0) {
-            sub.cnas %>%
-            OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band', debug) %>%
-            PlotVariants( output.file = str_c(sub.group.prefix, 'cna_heatmap/cna_heatmap_', sub.group$extension, '.pdf'),
+            PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
                           clonal      = FALSE,
                           pathogenic  = FALSE,
                           ccf         = FALSE,
                           loh         = FALSE,
-                          event.type  = 'band',
-                          width       = (length(unique(.$sample))/2) + 3.3,
-                          height      = (length(unique(.$gene))/6) + 3,
-                          text.size   = 12 )
-        }
-
-
-        #-----------------------
-        # combined variant plots
-        #-----------------------
-
-        if(variant.plots == TRUE) {
-
-            H3('variants cascade plot')
-
-            sub.variants %>%
-            OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span', debug) %>%
-            PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_', sub.group$extension, '.pdf'),
-                          clonal      = FALSE,
-                          pathogenic  = FALSE,
-                          ccf         = FALSE,
-                          loh         = FALSE,
-                          event.type  = 'span',
-                          width       = (length(unique(.$sample))/2) + 3.3,
-                          height      = (length(unique(.$gene))/6) + 3,
-                          text.size   = 12 )
-
-
-            H3('VARIANTS [recurrent] cascade plot')
-
-            sub.variants %>%
-            OrgEvents(sample.order=sample.order.2, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span', debug) %>%
-            PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
-                          clonal      = FALSE,
-                          pathogenic  = FALSE,
-                          ccf         = FALSE,
-                          loh         = FALSE,
-                          event.type  = 'span',
+                          event.type  = 'gene',
                           width       = (length(unique(.$sample))/2) + 3.3,
                           height      = (length(unique(.$gene))/6) + 3,
                           text.size   = 14 )
-        }
 
 
-        if(run.trees != TRUE) { next }  # // -- cascade plots
+            H3('muts [CCF] cascade plot')
+
+            sub.muts %>%
+            OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='gene', debug) %>%
+            PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_ccf_', sub.group$extension, '.pdf'),
+                          clonal      = TRUE,
+                          pathogenic  = FALSE,
+                          ccf         = TRUE,
+                          loh         = TRUE,
+                          event.type  = 'gene',
+                          width       = (length(unique(.$sample))/2) + 4,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 12 )
+
+
+            H3('muts [CCF] [recurrent] cascade plot')
+
+            sub.muts %>%
+            OrgEvents(sample.order=NULL, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='gene', debug) %>%
+            PlotVariants( output.file = str_c(sub.group.prefix, 'mutation_heatmap/mutation_heatmap_ccf_recurrent_', sub.group$extension, '.pdf'),
+                          clonal      = TRUE,
+                          pathogenic  = FALSE,
+                          ccf         = TRUE,
+                          loh         = TRUE,
+                          event.type  = 'gene',
+                          width       = (length(unique(.$sample))/2) + 4,
+                          height      = (length(unique(.$gene))/6) + 3,
+                          text.size   = 14 )
+
+
+            H3('cnas cascade plot')
+
+            if(nrow(sub.cnas) > 0) {
+                sub.cnas %>%
+                OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='band', debug) %>%
+                PlotVariants( output.file = str_c(sub.group.prefix, 'cna_heatmap/cna_heatmap_', sub.group$extension, '.pdf'),
+                              clonal      = FALSE,
+                              pathogenic  = FALSE,
+                              ccf         = FALSE,
+                              loh         = FALSE,
+                              event.type  = 'band',
+                              width       = (length(unique(.$sample))/2) + 3.3,
+                              height      = (length(unique(.$gene))/6) + 3,
+                              text.size   = 12 )
+            }
+
+
+            #-----------------------
+            # combined variant plots
+            #-----------------------
+
+            if(variant.plots == TRUE) {
+
+                H3('variants cascade plot')
+
+                sub.variants %>%
+                OrgEvents(sample.order=sample.order.1, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=1, allosome='merge', event.type='span', debug) %>%
+                PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_', sub.group$extension, '.pdf'),
+                              clonal      = FALSE,
+                              pathogenic  = FALSE,
+                              ccf         = FALSE,
+                              loh         = FALSE,
+                              event.type  = 'span',
+                              width       = (length(unique(.$sample))/2) + 3.3,
+                              height      = (length(unique(.$gene))/6) + 3,
+                              text.size   = 12 )
+
+
+                H3('VARIANTS [recurrent] cascade plot')
+
+                sub.variants %>%
+                OrgEvents(sample.order=sample.order.2, pheno.order=sub.group.sets, sub.sets.pheno=sub.sets.pheno, recurrence=2, allosome='merge', event.type='span', debug) %>%
+                PlotVariants( output.file = str_c(sub.group.prefix, 'variant_heatmap/variant_heatmap_type_recurrent_', sub.group$extension, '.pdf'),
+                              clonal      = FALSE,
+                              pathogenic  = FALSE,
+                              ccf         = FALSE,
+                              loh         = FALSE,
+                              event.type  = 'span',
+                              width       = (length(unique(.$sample))/2) + 3.3,
+                              height      = (length(unique(.$gene))/6) + 3,
+                              text.size   = 14 )
+            }
+
+        }  # // -- cascade plots
 
         #----------
         #
@@ -1943,113 +1947,77 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // 
 
-        #  sub variants tree
-        sub.variants.tree <- sub.variants %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='span', tree.samples=sub.group.samples)
+        if(run.trees != TRUE) {
 
-        # sub muts tree
-        sub.muts.tree <- sub.muts %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='gene', tree.samples=sub.group.samples)
+            #  sub variants tree
+            sub.variants.tree <- sub.variants %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='span', tree.samples=sub.group.samples)
 
-        # sub cnas tree
-        sub.cnas.tree <- sub.cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band', tree.samples=sub.group.samples)
+            # sub muts tree
+            sub.muts.tree <- sub.muts %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='gene', tree.samples=sub.group.samples)
 
-        # remove labels from tree
-        if(tree.labels == FALSE){
-            suppressWarnings(sub.muts.tree$dend %<>% set('labels', ''))
-            suppressWarnings(sub.cnas.tree$dend %<>% set('labels', ''))
-            suppressWarnings(sub.variants.tree$dend %<>% set('labels', ''))
-        }
+            # sub cnas tree
+            sub.cnas.tree <- sub.cnas %>% MeltToTree(dist.method='hamming', clust.method='complete', sort.method='distance', span='band', tree.samples=sub.group.samples)
 
-
-        #-----------------------------
-        # SUB GROUPLINEAGE CALCULATION
-        #-----------------------------
-
-        muts.tree         = sub.muts[!is.na(sub.muts$ccf),]
-        sample_names = as.list(sort(unique(muts.tree$sample)))
-        mutation_genes = unique(muts$gene)
-        rownames(muts.tree) = 1:nrow(muts.tree)
-        TCGA=FALSE
-
-        # make a matrix of "blank" values the with nrow= #mutations and ncol=#samples
-        mutation_heatmap <- matrix(0, nrow=sum(unlist(lapply(sample_names, length))), ncol=sum(unlist(lapply(mutation_genes, length))))
-        rownames(mutation_heatmap) <- unlist(sample_names)
-        colnames(mutation_heatmap) <- mutation_genes
-
-        # make sure the sample and mutations are both in the list of gene mutations and gene samples
-        if (!TCGA) { smallmaf <- muts.tree[which(muts.tree$gene %in% unlist(mutation_genes) & muts.tree$sample %in% unlist(sample_names)),]
-        }else { 
-          muts.tree$id <- unlist(lapply(muts.tree$sample, function(x){substr(x, 1, 12)}))
-          print(head(muts.tree$id))
-          print(head(unlist(sample_names)))
-          smallmaf <- muts.tree[which(muts.tree$Hugo_Symbol %in% unlist(mutation_genes) & muts.tree$id %in% unlist(sample_names)),] 
-        }
-
-        # for each row read the Effect and create the type based on which category it fits in
-        for (i in 1:nrow(smallmaf)) {
-          if(!TCGA) { type = smallmaf$ccf[i] } else { type = smallmaf$effect[i] }
-          print(paste(i,type,sep="_"))
-          
-          if (!TCGA) { 
-            if (mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$sample[i],), which(colnames(mutation_heatmap)==smallmaf$gene[i])] < type) {
-              mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$sample[i],), which(colnames(mutation_heatmap)==smallmaf$gene[i])] <- type}
-          } else { mutation_heatmap[which(rownames(mutation_heatmap)==smallmaf$id[i]), which(colnames(mutation_heatmap)==smallmaf$gene[i])] <- type }
-        }
+            # remove labels from tree
+            if(tree.labels == FALSE){
+                suppressWarnings(sub.muts.tree$dend %<>% set('labels', ''))
+                suppressWarnings(sub.cnas.tree$dend %<>% set('labels', ''))
+                suppressWarnings(sub.variants.tree$dend %<>% set('labels', ''))
+            }
 
 
-        smalltab <-
-            mutation_heatmap %>%
-            t %>%
-            round(1) %>%
-            cbind(0)
+            #------------------------------
+            # SUB GROUP LINEAGE CALCULATION
+            #------------------------------
 
-        colnames(smalltab)[ncol(smalltab)] = 'root'
+            # determine possible tree sequences
+            seq.patterns <- sub.muts.tree$event.matrix %>% rbind(., root=0) %>% phyDat(type='USER', levels=0:10/10)
 
+            # tree hamming distance
+            phylo.dist <- seq.patterns %>% dist.hamming %>% njs
 
-        seq.patterns <- smalltab %>% t %>% phyDat(type="USER", levels=0:10/10)
+            # determine most parsimonious arrangement
+            phylo.parsimony <- seq.patterns %>% pratchet(start=phylo.dist) %>% acctran(data=seq.patterns)
 
-        phylo.dist <- seq.patterns %>% dist.hamming %>% njs
-
-        phylo.parsimony <- seq.patterns %>% pratchet(start=phylo.dist) %>% acctran(data=seq.patterns)
-
-        phylo.root <- phylo.parsimony %>% phytools::reroot(., node.number=which(.$tip.label == 'root'))
-
-        dend.root <- 
-            phylo.root %>%
-            chronos(model='discrete') %>%
-            as.dendrogram
+            # root tree
+            phylo.root <- phylo.parsimony %>% phytools::reroot(., node.number=which(.$tip.label == 'root'))
 
 
-        dend.ext <-
-            dend.root %>%
-            set('branches_lwd', 3) %>%
-            set('labels_cex', 1) %>%
-            set('branches_k_color', k=length(sub.group.samples)) %>%
-            dendextend::ladderize %>%
-            prune('root')
+            # convert phylo to dentrogram using chronological estimation
+            dend.root <- 
+                phylo.root %>%
+                chronos(model='discrete') %>%
+                as.dendrogram
 
 
-        # default rectilinear tree
-        pdf(str_c(sub.group.prefix, 'tree/muts_lineage_rect_', sub.group$extension, '.pdf'))
-            plot(phylo.root)
-        dev.off()
+            # tree aesthetics
+            dend.ext <-
+                dend.root %>%
+                set('branches_lwd', 3) %>%
+                set('labels_cex', 1) %>%
+                set('branches_k_color', k=length(sub.group.samples)) %>%
+                dendextend::ladderize # %>% prune('root')
 
 
-        # triangular tree
-        pdf(str_c(sub.group.prefix, 'tree/muts_lineage_tri_', sub.group$extension, '.pdf'))
-            par(mar=c(1,1,1,6))  # bottom, left, top, right
-            plot(dend.ext, horiz=TRUE, type='triangle', edge.root=FALSE, axes=FALSE)
-           # plot_horiz.dendrogram(dend.ext, type='triangle', edge.root=FALSE, xaxt=NULL, yaxt=NULL)
-        dev.off()
+            # default rectilinear tree
+            pdf(str_c(sub.group.prefix, 'tree/muts_lineage_rect_', sub.group$extension, '.pdf'))
+                plot(phylo.root)
+            dev.off()
 
 
+            # triangular tree
+            pdf(str_c(sub.group.prefix, 'tree/muts_lineage_tri_', sub.group$extension, '.pdf'), width=8, height=6)
+                par(mar=c(1,1,1,6))  # bottom, left, top, right
+                plot(dend.ext, horiz=TRUE, type='triangle', edge.root=FALSE, axes=FALSE)
+            dev.off()
 
-        if(run.fishers.plots != TRUE) { next }  # // -- trees
+        }  # // -- trees
 
-        # // 
+        #---------------------
+        # TREES (experimental)
+        #---------------------
 
-        #--------------------
-        # TREES (experimental
-        #--------------------
+         # // 
 
         if(run.experimental != FALSE) {
 
@@ -2154,7 +2122,7 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
 
         # // 
 
-        if(!is.na(sub.group$b)) {
+        if(run.fishers.plots == TRUE & !is.na(sub.group$b)) {
 
             if(length(sub.group.samples) > 2) {
 
@@ -2203,15 +2171,12 @@ for(sub.run in c('nonsyn', 'syn_nonsyn')) {
                         suffix          = sub.group$extension,
                         gene.names      = gene.names )
             }
-        }
 
-        # // -- fisher's plots
+        }  # // -- fisher's plots
 
-    } # // SubGroup
+    }  # // SubGroup
 
-    mclapply(0:(nrow(sub.groups)-1), function(sub.num) {SubGroup(sub.num)}, mc.cores=20)
-
-    #} # // for sub.num
+    mclapply(0:(nrow(sub.groups)-1), function(sub.num) { SubGroup(sub.num) }, mc.cores=20)
 
 }
 
