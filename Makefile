@@ -377,4 +377,16 @@ TARGETS += ann_ext_vcf
 ann_ext_vcf: 
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
+TARGETS += manta_rnaseq
+manta_rnaseq :
+	$(call RUN_MAKE,modules/sv_callers/mantaRnaseq.mk)
+
+TARGETS += manta
+manta :
+	$(call RUN_MAKE,modules/sv_callers/manta.mk)
+
+TARGETS += mantaTN
+mantaTN :
+	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
+
 .PHONY : $(TARGETS)
