@@ -21,7 +21,7 @@ SUMMARIZE_HS_METRICS = python modules/qc/summarize_hs_metrics.py
 
 .SECONDARY: 
 
-.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics insert_size_metrics
 
 bam_interval_metrics : hs_metrics interval_report non_ref_metrics
 
@@ -32,6 +32,8 @@ hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv
 amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metrics.tsv)
 
 interval_report : metrics/interval_report/index.html
+
+insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
 
 
 # interval metrics per sample
@@ -75,6 +77,20 @@ metrics/interval_report/index.html : metrics/hs_metrics.tsv
 
 metrics/%.interval_nonref_freq.tsv : bam/%.bam
 	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
+
+metrics/%.insert_size_metrics.tsv : bam/%.bam
+	$(call LSCRIPT_MEM,8G,10G,"$(call PICARD,CollectInsertSizeMetrics,8G) INPUT=$< OUTPUT=$@ \
+		REFERENCE_SEQUENCE=$(REF_FASTA) HISTOGRAM_FILE=$(@:.tsv=.pdf)")
+
+metrics/insert_size_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
+	$(INIT) \
+		{ \
+		sed '/^$$/d; /^#/d; s/SAMPLE.*//; s/\s$$//; s/^/SAMPLE\t/' $< | head -1; \
+		for metrics in $^; do \
+			samplename=$$(basename $${metrics%%.insert_size_metrics.tsv}); \
+			grep -A1 '^MEDIAN_INSERT_SIZE' $$metrics | sed "1d; s/^/$$samplename\t/; s/\t\+$$//";  \
+		done; \
+		} > $@
 
 
 include modules/bam_tools/processBam.mk
