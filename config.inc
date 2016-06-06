@@ -23,7 +23,7 @@ SUFAM_ENV ?= /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 JARDIR ?= $(HOME)/share/usr/lib/java
 
 # jrflab modules environment
-JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.8
+JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.9
 
 ### Applications
 UNZIP ?= /usr/bin/unzip

@@ -12,3 +12,4 @@ pycurl=7.19.5.1
 numexpr=2.5.2
 setuptools=20.6.7
 openpyxl=2.3.2
+manta=0.29.6
