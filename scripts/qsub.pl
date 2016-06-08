@@ -103,7 +103,7 @@ $SIG{TERM} = \&signalHandler;
 # loop to give a chance to receive sigint/sigterms
 my $stat;
 do {
-    ($error, my $jobidOut, $stat, $diagnosis) = drmaa_wait($jobid, 10);
+    ($error, my $jobidOut, $stat, $diagnosis) = drmaa_wait($jobid, int(rand(120)) + 30);
 } until ($error != $DRMAA_ERRNO_EXIT_TIMEOUT);
 
 # pull all exit-related codes
