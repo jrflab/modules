@@ -64,7 +64,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 
 define convert-varscan-tumor-normal
 varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
-	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@
+	$$(call LSCRIPT_MEM,4G,8G,"$$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
