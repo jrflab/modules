@@ -83,13 +83,13 @@ varscan/chr_tables/%.$1.$2.txt : bam/%.bam bam/%.bam.bai
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) $$(VARSCAN_OPTS) > $$@")
 
 varscan/chr_vcf/%.$1.$2.vcf : varscan/chr_tables/%.$1.$2.fp_pass.txt
-	$$(INIT) $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@
+	$$(call LSCRIPT_MEM,4G,5G,"$$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-type,$(chr),$(type)))))
 
 define merge-varscan-vcfs
 varscan/vcf/$1.%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1.$$(chr).%.vcf)
-	$$(INIT) grep '^##' $$< > $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
+	$$(call LSCRIPT_MEM,4G,5G,"grep '^##' $$< > $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-varscan-vcfs,$(sample))))
 

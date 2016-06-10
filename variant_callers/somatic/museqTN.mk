@@ -54,7 +54,7 @@ $(foreach chr,$(CHROMOSOMES), \
 # merge museq chunks
 define museq-tumor-normal
 museq/vcf/$1_$2.museq.vcf : $$(foreach chr,$$(CHROMOSOMES),museq/chr_vcf/$1_$2.$$(chr).museq.vcf)
-	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
+	$$(call LSCRIPT_MEM,4G,5G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 		$(eval $(call museq-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

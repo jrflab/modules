@@ -50,7 +50,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 #$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 define pedigree-tumor-normal
 vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fp.fixAD.vcf
-	$$(INIT) grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
+	$$(call LSCRIPT_MEM,4G,5G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call pedigree-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
