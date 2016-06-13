@@ -47,12 +47,17 @@ FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
 					  --mysqlDb $(EMBL_MYSQLDB_DB)
 FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
-FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_EM'
+FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
+
+
+#------
+# rules
+#------
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
-	facets/geneCN.txt facets/geneCN.fill.txt facets/geneCN.pdf facets/geneCN.fill.pdf
+	facets/geneCN.txt facets/geneCN.pdf facets/geneCN.fill.txt
 
-facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP:.gz=) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf) 
+facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP:.gz=) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
 # flag homozygous calls
@@ -88,12 +93,42 @@ facets/cncf/%.cncf.txt : facets/base_count/%.bc.gz
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
-facets/geneCN.fill.txt : facets/geneCN.txt $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
-	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) --outFile $@ --geneCNFile $< \
+#-------------------
+# facets fill script
+#-------------------
+
+GENECN_TXT = facets/geneCN.txt
+GENECN_PDF = facets/geneCN.raw.pdf
+GENECN_FILL_TXT = facets/geneCN.fill.txt
+GENECN_FILL_PDF = facets/geneCN.fill.pdf
+
+FILL_FILES = $(GENECN_PDF) $(GENECN_FILL_TXT) $(GENECN_FILL_PDF)
+
+.PHONY : FILL_TOUCH
+
+FILL_TOUCH :
+	echo "Creating $(FILL_FILES)"
+	touch $(FILL_FILES)
+
+facets/geneCN.fill.txt : $(GENECN_TXT) FILL_TOUCH $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) \
+		--geneCN_fill_pdf $(GENECN_FILL_PDF) \
+		--geneCN_fill_txt $(GENECN_FILL_TXT) \
+		--geneCN_pdf $(GENECN_PDF) \
+		--geneCN_txt $(GENECN_TXT) \
 		$(filter %.cncf.txt,$^)")
 
-facets/geneCN%pdf  : facets/geneCN%txt
+#----------------
+# geneCN plotting
+#----------------
+
+facets/geneCN.pdf : facets/geneCN.txt
 	$(call LSCRIPT_MEM,8G,10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
+
+
+#---------
+# includes
+#---------
 
 include modules/variant_callers/gatk.mk
 include modules/bam_tools/processBam.mk

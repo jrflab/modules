@@ -21,6 +21,16 @@ pacman::p_load( optparse,
                 rlist,
                 Cairo )
 
+# use showtext if installed for monospaced system font, useful for TCGA
+# barcodes on y axis
+if ('showtext' %in% rownames(installed.packages())) {
+  suppressMessages(library(showtext))
+  font.add('DejaVuSansMono', 'DejaVuSansMono.ttf')
+  showtext.auto()
+  fontfamily <- 'DejaVuSansMono'
+} else {
+  fontfamily <- 'serif'
+}
 
 #--------------
 # parse options
@@ -28,8 +38,10 @@ pacman::p_load( optparse,
 
 if(!interactive()) {
 
-    optList <- list( make_option("--geneCNFile", default = NULL, help = "gene copy-number file"),
-                     make_option("--outFile", default = NULL, help = "output file") )
+    optList <- list( make_option("--geneCN_txt", default = NULL, help = "gene copy number input file"),
+                     make_option("--geneCN_fill_txt", default = NULL, help = "gene copy number fill output file"),
+                     make_option("--geneCN_pdf", default = NULL, help = "gene copy number heatmap plot"),
+                     make_option("--geneCN_fill_pdf", default = NULL, help = "gene copy number fill heatmap plot") )
 
     parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList)
     arguments <- parse_args(parser, positional_arguments = T)
@@ -39,12 +51,20 @@ if(!interactive()) {
         message('Need cncf files')
         print_help(parser)
         stop()
-    } else if (is.null(opt$geneCNFile)) {
-        message('Need gene copynumber file')
+    } else if (is.null(opt$geneCN_txt)) {
+        message('Need gene copy number input file location')
         print_help(parser)
         stop()
-    } else if (is.null(opt$outFile)) {
-        message('Need output file')
+    } else if (is.null(opt$geneCN_fill_txt)) {
+        message('Need gene copy number fill output file location')
+        print_help(parser)
+        stop()
+    } else if (is.null(opt$geneCN_pdf)) {
+        message('Need gene copy number heatmap plot location')
+        print_help(parser)
+        stop()
+    } else if (is.null(opt$geneCN_fill_pdf)) {
+        message('Need gene copy number fill heatmap plot location')
         print_help(parser)
         stop()
     } else {
@@ -52,8 +72,10 @@ if(!interactive()) {
     }
 
 } else {
-    opt <- list( geneCNFile = 'facets/geneCN.txt',
-                 outFile    = 'facets/geneCN.fill.txt' )
+    opt <- list( geneCN_txt = 'facets/geneCN.txt',
+                 geneCN_fill_txt = 'facets/geneCN.fill.txt',
+                 geneCN_pdf = 'facets/geneCN.pdf',
+                 geneCN_fill_pdf = 'facets/geneCN.fill.pdf' )
     cncf.files <- list.files('facets/cncf', pattern='*cncf.txt', full.names=TRUE)
 }
 
@@ -87,7 +109,7 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
     # remove annotation cols
      gene.cn %<>% select(one_of(rev(sample.names)))
 
-    pdf(file.name, width=24, height=2+length(sample.names)/3)
+    pdf(file.name, width=24, height=2+length(sample.names)/2)
 
         par(mar=c(14, 14, 1, 1), oma=c(1, 1, 1, 1))  # bottom, left, top, right
 
@@ -108,16 +130,16 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                tick     = FALSE )
 
          axis( 2,
-               at       = if(ncol(gene.cn)==1){0.5}else{seq(0, 1, 1/max((ncol(gene.cn)-1),1))},
+               at       = if(ncol(gene.cn)==1){ 0.5 }else{ seq(0, 1, 1/max((ncol(gene.cn)-1),1)) },
                label    = if(threshold==TRUE){ sub('_LRR_threshold$', '', colnames(gene.cn)) }else{ colnames(gene.cn) },
                las      = 2,
-               cex.axis = 1,
+               cex.axis = 1.1,
                tick     = FALSE )
 
         box()
 
          legend( 'bottom',
-                 inset  = c(0, -0.15),
+                 inset  = c(0, -0.5),
                  legend = c('Amplification', 'Gain', 'Loss', 'Homozygous deletion'),
                  fill   = c('#2a4b94', '#7996ba', '#dc9493', '#cf3a3d'),
                  xpd    = TRUE,
@@ -186,7 +208,7 @@ OverCall <- function(column.name) {
 # facets fill
 #------------
 
-cnv.matrix <- read.delim(opt$geneCNFile, sep='\t', check.names=FALSE, stringsAsFactors=FALSE)
+cnv.matrix <- read.delim(opt$geneCN_txt, sep='\t', check.names=FALSE, stringsAsFactors=FALSE)
 
 cncfs <- lapply(cncf.files, function(x) {
 
@@ -208,7 +230,7 @@ cnv.matrix %<>%
         ifelse(chrom=='Y', 23, chrom))) %>%
     mutate(chrom=as.integer(chrom))
 
-PlotCNHeatmap(gene.cn=cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
+PlotCNHeatmap(gene.cn=cnv.matrix, file.name=opt$geneCN_pdf, threshold=TRUE)
 
 cnv.matrix[is.na(cnv.matrix)] <- 3  # replace NA with numeric for use in rle function
 breaks <- c(0, cumsum(table(cnv.matrix$chrom)[cnv.matrix$chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
@@ -298,9 +320,11 @@ list.filter(!. %in% c('chrom', 'start', 'mid', 'end', 'hgnc', 'band')) %>%
 list.map(., .) %>%
 map(~ OverCall(.x)) %>% invisible
 
-# plot final heatmap
-PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.fill.pdf', threshold=TRUE) %>% invisible
+# write fill file
+write_tsv(cnv.matrix, opt$geneCN_fill_txt)
 
-write_tsv(cnv.matrix, opt$outFile)
+# plot fill heatmap
+PlotCNHeatmap(cnv.matrix, file.name=opt$geneCN_fill_pdf, threshold=TRUE) %>% invisible
+
 
 message(green(' [done]'))
