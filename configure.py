@@ -94,7 +94,9 @@ if not os.path.isfile(args.sample_fastq_file):
     print("sample fastq file does not exist: {}".format(args.sample_fastq_file))
 else:
     print("\n# sample_fastq_file", file=of)
-    sample_fastq = yaml.load(args.sample_fastq_file)
+    sff = open(args.sample_fastq_file, 'r')
+    sample_fastq = yaml.load(sff)
+    sff.close()
     split_samples = set()
     for k, v in sample_fastq.iteritems():
         for idx, fastq in enumerate(v):
