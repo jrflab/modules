@@ -14,7 +14,7 @@ suppressMessages(library(optparse))
 
 optList <- list(
                 make_option("--includeChrY", action="store_true", default=F, help="Include Chromosome Y (drop by default)"),
-                make_option("--sampleColumnPostFix", default="_LRR_threshold", help="Postfix of columns that represent samples"));
+                make_option("--sampleColumnPostFix", default="_LRR_threshold$", help="Postfix of columns that represent samples"));
 parser <- OptionParser(usage = "%prog [geneCN file] [output_plot_file]", option_list=optList);
 
 arguments <- parse_args(parser, positional_arguments = T);
@@ -54,7 +54,7 @@ plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamil
         for (i in (chrsep*2)-1) { abline(v=i/((max(chrsep)-1)*2), col="grey") }
         for (i in seq(-1, max(((2*(ncol(mm2)-1))+1),1), 2)) { abline(h=i/(2*(ncol(mm2)-1)), col="white", lwd=2)}
     axis(1,at=chrmid/(max(chrsep)-1), label=rle(mm$chrom)$values, cex.axis=0.8, tick=F, family=fontfamily)
-    axis(2,at=seq(0,1,1/max((ncol(mm2)-1),1)), label=sub("T_.*N$", "", sub(sample_column_postfix, "", colnames(mm2))), las=2, cex.axis=1, tick=F, family=fontfamily)
+    axis(2,at=seq(0,1,1/max((ncol(mm2)-1),1)), label=sub(sample_column_postfix, "", colnames(mm2)), las=2, cex.axis=1, tick=F, family=fontfamily)
     }, mm)
     legend("bottom", inset=c(0,-.4), legend=c("Homozygous deletion", "Loss", "Gain", "Amplification"),
            fill=c("red", "darksalmon", "lightblue", "blue"), xpd=T, ncol=2)
