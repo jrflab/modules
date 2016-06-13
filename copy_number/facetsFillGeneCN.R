@@ -207,11 +207,10 @@ cnv.matrix %<>%
         ifelse(chrom=='Y', 23, chrom))) %>%
     mutate(chrom=as.integer(chrom))
 
-PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
+PlotCNHeatmap(gene.cn=cnv.matrix, file.name='facets/geneCN.pdf', threshold=TRUE)
 
 cnv.matrix[is.na(cnv.matrix)] <- 3  # replace NA with numeric for use in rle function
-breaks <- c(0, cumsum(table(chrom)[chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
-
+breaks <- c(0, cumsum(table(cnv.matrix$chrom)[cnv.matrix$chrom %>% table %>% names %>% as.numeric %>% order])) # start-1 == end
 
 # main loop
 for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start', 'end', 'hgnc', 'band'))) {
