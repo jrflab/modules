@@ -10,7 +10,7 @@ include modules/variant_callers/somatic/somaticVariantCaller.inc
 LOGDIR ?= log/strelka.$(NOW)
 PHONY += strelka strelka_vcfs strelka_mafs
 
-strelka : strelka_vcfs strelka_mafs
+strelka : strelka_vcfs #strelka_mafs
 	
 VARIANT_TYPES := strelka_snps strelka_indels
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
