@@ -7,6 +7,7 @@
 #--------------------
 
 pacman::p_load( optparse,
+                crayon,
                 RColorBrewer,
                 GenomicRanges,
                 plyr,
@@ -122,7 +123,7 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
                  xpd    = TRUE,
                  ncol   = 2,
                  cex    = 1.1 )
-     dev.off()
+     dev.off() %>% invisible
 
 }
 
@@ -252,7 +253,7 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
             gstarts <- cumsum(chbit$lengths)[nav-1]+start
             glengths <- chbit$lengths[nav]
 
-            nrows <- 
+            nrows <-
                 gstarts %>%
                 map2(glengths, ~ .x:(.x+.y-1)) %>%
                 unlist %>%
@@ -268,7 +269,7 @@ for (sample.name in names(cnv.matrix) %>% list.filter(!. %in% c('chrom', 'start'
                     inner_join(
                         cnv.matrix %>%
                         filter(chrom==chromosome) %>%
-                        mutate(qmid=rowMeans(.[, c('start', 'end')])) %>% 
+                        mutate(qmid=rowMeans(.[, c('start', 'end')])) %>%
                         select(chrom, qmid, fill=get(sample.name)),
                         by='chrom', copy=TRUE) %>%
                     ungroup %>%
@@ -295,10 +296,10 @@ cnv.matrix %<>% mutate(mid=(start+end)/2) %>% select(chrom, start, mid, end, ban
 names(cnv.matrix) %>%
 list.filter(!. %in% c('chrom', 'start', 'mid', 'end', 'hgnc', 'band')) %>%
 list.map(., .) %>%
-map(~ OverCall(.x))
+map(~ OverCall(.x)) %>% invisible
 
 # plot final heatmap
-PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.fill.pdf', threshold=TRUE)
+PlotCNHeatmap(cnv.matrix, file.name='facets/geneCN.fill.pdf', threshold=TRUE) %>% invisible
 
 write_tsv(cnv.matrix, opt$outFile)
 
