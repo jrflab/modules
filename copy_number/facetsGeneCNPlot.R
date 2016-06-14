@@ -22,8 +22,8 @@ opt <- arguments$options;
 
 if (length(arguments$args) != 2) {
     cat("Need one geneCN file and one output plot file\n")
-    print_help(parser);
-    stop();
+    print_help(parser)
+    stop()
 } else {
     geneCN <- arguments$args[1]
     outFile <- arguments$args[2]

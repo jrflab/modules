@@ -93,6 +93,7 @@ facets/cncf/%.cncf.txt : facets/base_count/%.bc.gz
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
+
 #-------------------
 # facets fill script
 #-------------------
@@ -106,7 +107,7 @@ FILL_FILES = $(GENECN_PDF) $(GENECN_FILL_TXT) $(GENECN_FILL_PDF)
 
 .PHONY : FILL_TOUCH
 
-FILL_TOUCH :
+FILL_TOUCH : $(GENECN_TXT)
 	echo "Creating $(FILL_FILES)"
 	touch $(FILL_FILES)
 
@@ -117,6 +118,7 @@ facets/geneCN.fill.txt : $(GENECN_TXT) FILL_TOUCH $(foreach pair,$(SAMPLE_PAIRS)
 		--geneCN_pdf $(GENECN_PDF) \
 		--geneCN_txt $(GENECN_TXT) \
 		$(filter %.cncf.txt,$^)")
+
 
 #----------------
 # geneCN plotting
