@@ -29,7 +29,7 @@ SOMATIC_POST_FILTERS += cft common_ft
 SOMATIC_POST_FILTER_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_POST_FILTERS,$1) pass2))
 
 SOMATIC_POST_ANNS += $(if $(findstring b37,$(REF)),$(if $(findstring indel,$1),mut_taste,nsfp chasm fathmm))
-SOMATIC_POST_ANNS += $(if $(findstring b37,$(REF)),gene_ann cn_reg clinvar hotspot)
+SOMATIC_POST_ANNS += $(if $(findstring b37,$(REF)),gene_ann cn_reg clinvar hotspot_ann)
 ifeq ($(ANN_FACETS),true)
 ifeq ($(REF),b37)
 SOMATIC_POST_ANNS += pathogen

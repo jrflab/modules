@@ -46,7 +46,7 @@ HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf
 COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.vcf
 BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
 EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
-EXOME_BED_NOHEADER ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader.bed
+EXOME_BED_NOHEADER ?= $(REF_DIR)/target_panels/sure_select_exome_v4_b37.bed
 MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
 
 EXOME ?= false
@@ -87,6 +87,14 @@ ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
 ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 
 HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
+
+# we need two hotspot vcfs unfortunately due to limitations of UnifiedGenotyper and multiple variants at position X
+HOTSPOT_VCF_SEQ = 1 2
+HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot/
+HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.vcf
+HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
+HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf
+HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.vcf
 
 endif
 B37_INC = true
