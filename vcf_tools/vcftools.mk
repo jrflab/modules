@@ -360,7 +360,10 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 		bgzip -c > $@")
 
 %.vcf.gz.tbi : %.vcf.gz
-	$(call LSCRIPT_MEM,3G,5G,"$(VT) index $<")
+	$(call LSCRIPT_MEM,3G,5G,"$(BCFTOOLS2) index -t -f $<")
+
+%.vcf.gz : %.vcf
+	$(call LSCRIPT,"bgzip -c $< > $@")
 
 ifdef SAMPLE_PAIRS
 ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
@@ -403,10 +406,17 @@ MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
 	$(INIT) $(call CHECK_VCF,$<,$@,$(MUTATION_TASTER) $< > $@ 2> $(LOG))
 
-CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
-CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
-%.hotspot.vcf : %.vcf
-	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@"))
+#CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
+#CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
+%.hotspot_ann.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(HOTSPOT_UNMERGED_VCF) $< > $@ && $(RM) $^"))
+#$(call CHECK_VCF,$<,$@,$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@"))
+
+# allele count filtering for hotspots: any alt allele count > 0
+%.ac_ft.vcf : %.vcf
+	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) filter \
+		$(SNP_SIFT_OPTS) \" ( AC[*] > 0 ) \" $< > $@ && $(RM) $^"))
 
 PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
 AA_TABLE = $(HOME)/share/reference/aa_table.tsv
