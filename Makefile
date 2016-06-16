@@ -375,6 +375,14 @@ merge_bam :
 # annotate external vcfs
 TARGETS += ann_ext_vcf
 ann_ext_vcf: 
-	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+	$(call RUN_MAKE,modules/vcf_tools/annotateExtVcfs.mk)
+
+TARGETS += hotspot
+hotspot: 
+	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
+
+TARGETS += hotspotTN
+hotspotTN: 
+	$(call RUN_MAKE,modules/variant_callers/somatic/hotspotTN.mk)
 
 .PHONY : $(TARGETS)
