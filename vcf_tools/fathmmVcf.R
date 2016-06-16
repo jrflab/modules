@@ -64,6 +64,9 @@ if (is.null(opt$ensemblTxdb)) {
 } else {
     txdb <- loadDb(opt$ensemblTxdb)
 }
+if (opt$genome == 'hg19') {
+    seqlevels(txdb) <- sub('^', 'chr', seqlevels(txdb))
+}
 cat('done\n')
 
 ref <- FaFile(opt$ref)
@@ -107,7 +110,8 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
 
     cat(paste('Chunk', i, "\n"))
     i <- i + 1
-    passIds <- which(rowRanges(vcf)$FILTER == "PASS" & seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y"))
+
+    passIds <- which(rowRanges(vcf)$FILTER == "PASS" & (seqnames(rowRanges(vcf)) %in% c(1:22, "X", "Y") | seqnames(rowRanges(vcf)) %in% paste('chr', c(1:22, "X", "Y"), sep = '')))
     if (length(passIds) == 0) {
         cat("No unfiltered variants\n")
     } else {

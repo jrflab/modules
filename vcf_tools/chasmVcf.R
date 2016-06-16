@@ -80,7 +80,9 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
         X$alt <- as.character(unlist(rowRanges(vcf)$ALT))
         X <- subset(X, sapply(alt, nchar) == 1 & sapply(ref, nchar) == 1 & filt == "PASS")
         X <- X[,-which(colnames(X) == 'filt')]
-        X$seq <- sub('^', 'chr', X$seq)
+        if (all(!grepl('chr', X$seq))) {
+            X$seq <- sub('^', 'chr', X$seq)
+        }
 
         setwd(opt$chasmDir)
         tmp <- tempfile()

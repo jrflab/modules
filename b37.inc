@@ -96,6 +96,16 @@ HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
 HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf
 HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.vcf
 
+HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.bed
+CANCER_GENE_CENSUS_BED ?= $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
+KANDOTH_BED ?= $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.bed
+LAWRENCE_BED ?= $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.bed
+
+CN_ENDOMETRIAL_SUBTYPES = CN_high CN_low Endometrioid_MSI_H Endometrioid_MSS Endometrioid MSI POLE Serous
+CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_Her2 Pam50_LumA Pam50_LumB Pam50_Normal Triple_negative
+CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
+CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
+
 endif
 B37_INC = true
 
