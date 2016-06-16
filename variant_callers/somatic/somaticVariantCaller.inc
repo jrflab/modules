@@ -7,15 +7,14 @@ ANN_FACETS ?= false
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
-    $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga)
+    $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
-SOMATIC_INDEL_ANNS = $(if $(findstring b37,$(REF)),mut_taste)
+SOMATIC_INDEL_ANNS = $(if $(findstring b37,$(REF)),mut_taste) \
+    $(if $(findstring true,$(HRUN)),hrun)
 SOMATIC_SNV_ANNS = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
 # pass filter for faster annotations
 # indel/snv initial round of annotations
-SOMATIC_ANN2 += $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS))
-SOMATIC_ANN2 += $(if $(findstring indel,$1),\
-            $(if $(findstring true,$(HRUN)),hrun))
+SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS))
 
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka

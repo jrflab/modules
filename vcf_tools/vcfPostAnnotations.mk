@@ -59,12 +59,6 @@ vcf/ann2/hrun/$1.%.hrun.vcf : vcf/ft2/$1.%.vcf bam/$1.bam bam/$1.bai
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
-
-CANCER_HOTSPOT_ANNOTATION_SCRIPT = python modules/vcf_tools/hotspot_vcf.py
-CANCER_HOTSPOT_ANNOTATION_TXT = $(HOME)/share/reference/cancer_hotspots_20160426.txt
-vcf/ann2/hotspot/%.hotspot.vcf : vcf/ft2/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_MEM,6G,7G,"$(CANCER_HOTSPOT_ANNOTATION_SCRIPT) $< $(CANCER_HOTSPOT_ANNOTATION_TXT) > $@"))
-
 # run snp sift to annotated with dbnsfp
 vcf/ann2/nsfp/%.nsfp.vcf : vcf/ft2/%.vcf vcf/ft2/%.vcf.idx
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp $(SNP_SIFT_OPTS) -f $(subst $( ),$(,),$(NSFP_FIELDS)) -db $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/; /^##INFO=<ID=dbNSFP_clinvar_rs/ s/Integer/String/;' > $@"))

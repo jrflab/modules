@@ -162,6 +162,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
                            strelka_varscan_high_moderate,
                            strelka_varscan_low_modifier,
                            strelka_varscan_synonymous, strelka_varscan_nonsynonymous,
+                           hotspot,
                            excel_file,
                            absolute_somatic_txts,
                            absolute_segments,
@@ -182,7 +183,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,hotspot".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
@@ -217,6 +218,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     # add raw files both as excel and tsv
+    add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(mutect_high_moderate), writer, "mutect_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "mutect_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(mutect_synonymous), writer, "mutect_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
@@ -240,6 +242,7 @@ def main():
     parser.add_argument("strelka_varscan_low_modifier", type=str, help="TSV")
     parser.add_argument("strelka_varscan_synonymous", type=str, help="TSV")
     parser.add_argument("strelka_varscan_nonsynonymous", type=str, help="TSV")
+    parser.add_argument("hotspot", type=str, help="TSV")
     parser.add_argument("excel_file", type=str, help="mutation summary excel")
     parser.add_argument("--absolute_somatic_txts", default=None, type=str, help="TSV comma separated list of somatic files of absolute input")
     parser.add_argument("--absolute_segments", default=None, type=str, help="TSV comma separated list of absolute mutations output")
@@ -263,6 +266,7 @@ def main():
                            args.strelka_varscan_low_modifier,
                            args.strelka_varscan_synonymous,
                            args.strelka_varscan_nonsynonymous,
+                           args.hotspot,
                            args.excel_file,
                            absolute_somatic_txts,
                            absolute_segments,
