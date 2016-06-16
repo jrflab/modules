@@ -375,6 +375,15 @@ merge_bam :
 # annotate external vcfs
 TARGETS += ann_ext_vcf
 ann_ext_vcf: 
-	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+	$(call RUN_MAKE,modules/vcf_tools/annotateExtVcf.mk)
+
+# call hotspots
+TARGETS += hotspot
+hotspot: 
+	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
+
+TARGETS += strelka_varscan_indels
+strelka_varscan_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
 .PHONY : $(TARGETS)

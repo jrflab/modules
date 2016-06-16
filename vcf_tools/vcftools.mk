@@ -43,8 +43,11 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf vcf/$(pair).%.v
 		$(call SNP_EFF_MEM,8G) ann -c $(SNP_EFF_CONFIG) $(SNP_EFF_GENOME) -formatEff -classic | \
 		bgzip -c > $@")
 
+%.vcf.gz : %.vcf
+	$(call LSCRIPT_MEM,2G,3G,"bgzip -c $< > $@")
+
 %.vcf.gz.tbi : %.vcf.gz
-	$(call LSCRIPT_MEM,3G,5G,"$(VT) index $<")
+	$(call LSCRIPT_MEM,3G,5G,"$(BCFTOOLS2) index -f -t $<")
 
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf_ann/$1_$2.%.vcf

@@ -94,4 +94,9 @@ NORMAL_VCF ?= $(HOME)/share/reference/spowellnormal.gatk_variants.vcf
 ifdef NORMAL_VCF
 vcf/nft/%.nft.vcf : vcf/%.vcf
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'normal' --mask $(NORMAL_VCF)")
+
+# allele count filtering for hotspots: any alt allele count > 0
+vcf/ft/ac_ft/%.ac_ft.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) filter \
+		$(SNP_SIFT_OPTS) \" ( AC[*] > 0 ) \" $< > $@"))
 endif
