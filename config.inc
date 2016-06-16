@@ -110,5 +110,7 @@ VEP_DATA ?= /opt/common/CentOS_6/vep/v82
 
 HISAT ?= $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
 
+TVC ?= $(HOME)/share/usr/bin/tvc
+
 endif
 CONFIG_INC = true
