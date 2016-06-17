@@ -14,7 +14,7 @@ define merged-bam
 	$$(INIT) $$(SAMTOOLS2) view -H $$< > $$@
 
 merged_bam/$1.header.sam : $$(merge.$1:.bam=.header.sam)
-	$$(call LSCRIPT_MEM,8G,9G,"$$(call PICARD,MergeSamFiles,9G) $$(foreach sam,$$^,I=$$(sam) ) O=$$@")
+	$$(call LSCRIPT_MEM,10G,12G,"$$(call PICARD,MergeSamFiles,10G) $$(foreach sam,$$^,I=$$(sam) ) O=$$@")
 
 merged_bam/$1.bam : merged_bam/$1.header.sam $$(merge.$1)
 	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS2) merge -f -h $$< $$(@) $$(filter %.bam,$$^)")
