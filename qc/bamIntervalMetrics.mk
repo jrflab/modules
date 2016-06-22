@@ -27,7 +27,7 @@ bam_interval_metrics : hs_metrics interval_report non_ref_metrics
 
 non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
 
-hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv
+hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv metrics/hs_metrics.summary.tsv
 
 amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metrics.tsv)
 
