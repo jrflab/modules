@@ -18,6 +18,11 @@ suppressPackageStartupMessages(library("Biobase"))
 
 optList <- list(
                 make_option("--outFile", default = NULL, help = "output file"),
+				make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
+				make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
+				make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
+				make_option("--mysqlPassword", default = 'embl', help = "MySQL server password"),
+				make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
                 make_option("--genesFile", default = NULL, help = "list of genes to include (hgnc symbols)"))
 parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);
 
@@ -36,7 +41,7 @@ if (length(arguments$args) < 1) {
     varscanCNVFiles <- arguments$args
 }
 
-connect <- function() dbConnect(MySQL(), host = "10.0.200.48", port = 38493, user = "embl", password = "embl", dbname = 'homo_sapiens_core_75_37')
+connect <- function() dbConnect(MySQL(), host = opt$mysqlHost, port = opt$mysqlPort, user = opt$mysqlUser, password = opt$mysqlPassword, dbname = opt$mysqlDb)
 cat('Connecting to ensembl ... ')
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
