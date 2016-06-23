@@ -5,7 +5,7 @@ vcf/ann/dbsnp/%.dbsnp.vcf : vcf/ft/%.vcf vcf/ft/%.vcf.idx
 
 vcf/ann/hotspot_ann/%.hotspot_ann.vcf : vcf/ft/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@ && $(RM) $^"))
+		$(HOTSPOT_UNMERGED_VCF) $< > $@"))
 
 # mouse genome project dbsnp
 vcf/ann/mgp_dbsnp/%.mgp_dbsnp.vcf : vcf/ft/%.vcf vcf/ft/%.vcf.idx 
