@@ -3,7 +3,7 @@ include modules/Makefile.inc
 include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/absoluteSeq.$(NOW)
-MEM := 2G
+MEM := 4G
 PE := 1
 SHELL = modules/scripts/Rshell
 .SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
@@ -22,14 +22,15 @@ absolute_rdata : $(foreach pair,$(SAMPLE_PAIRS),absolute/results/$(pair).ABSOLUT
 absolute_reviewed : absolute/reviewed/all.seq.ABSOLUTE.table.txt
 absolute_tables : $(foreach pair,$(SAMPLE_PAIRS),absolute/tables/$(pair).absolute.txt)
 
+USE_FACETS_COPYNUM ?= true
+USE_ONCOSCAN_COPYNUM ?= false
 USE_TITAN_COPYNUM ?= false
+
 USE_TITAN_ESTIMATES ?= false
 TITAN_RESULTS_DIR ?= titan/optclust_results_w10000_p2
 TITAN_ESTIMATE_FILE ?= $(TITAN_RESULTS_DIR)/titan_summary.txt
 
-USE_ONCOSCAN_COPYNUM ?= false
 
-USE_FACETS_COPYNUM ?= false
 
 define LIB_INIT
 library(ABSOLUTE)
