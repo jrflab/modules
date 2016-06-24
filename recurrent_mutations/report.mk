@@ -13,6 +13,8 @@ SUFAM_PLOT_SAMPLE_ORDER?=$(SAMPLES)
 
 recurrent_mutations: recurrent_mutations/recurrent_mutations.tsv recurrent_mutations/sufam/all_mutations.vcf recurrent_mutations/sufam/all_sufam.txt recurrent_mutations/sufam/sufam.ipynb recurrent_mutations/sufam/sufam.html
 
+recurrent_mutations_sufam: recurrent_mutations/sufam/all_mutations.vcf recurrent_mutations/sufam/all_sufam.txt recurrent_mutations/sufam/sufam.ipynb recurrent_mutations/sufam/sufam.html
+
 recurrent_mutations/recurrent_mutations.tsv: $(EXCEL_NONSYNONYMOUS_MUTECT) $(EXCEL_NONSYNONYMOUS_STRELKA_VARSCAN)
 	$(INIT) unset PYTHONPATH && \
 	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV) && \

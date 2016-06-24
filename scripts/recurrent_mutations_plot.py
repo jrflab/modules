@@ -71,6 +71,132 @@ class HandlerLOHLegend(HandlerPatch):
         return [p, lp]
 
 
+def output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_count, outputfile):
+    """Plot the standard CCF plot per gene with LOH and cancer gene annotations."""
+    # ccf per gene
+    mut_ccf_genes = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
+                                                  (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
+            .drop_duplicates(subset="TUMOR_SAMPLE CHROM POS REF ALT".split())\
+            .groupby(["TUMOR_SAMPLE", "ANN[*].GENE_SPLIT"])["cancer_cell_frac"].max().unstack("TUMOR_SAMPLE").fillna(0)
+
+    # sort recurrently mutated genes by number of hits in each sample
+    top_recurrent = gene_count.astype(bool).apply(lambda x: x.sum(), axis=1).sort_values(ascending=False)
+
+    # order sample by
+    # 1. having a hit in most recurrently mutated gene
+    # 2. nr of mutations in recurrently mutated genes
+    # dataframe cols: sample top_recurrent nr_hits_recurrent
+    sample_order_df = \
+        pd.DataFrame({"sample":
+                        [s for s in gene_count.columns],
+                        "top_recurrent":
+                        [min([top_recurrent.index.get_loc(g) for g in list(gene_count[gene_count.loc[:,s] > 0].index)]) for s in gene_count.columns],
+                        "nr_hits_recurrent":
+                        [gene_count.ix[top_recurrent[top_recurrent > 1].index, s].astype(bool).sum() for s in gene_count.columns]
+        })
+    sample_order = list(sample_order_df.sort_values(["top_recurrent", "nr_hits_recurrent", "sample"],
+                                                    ascending=[True, False, True])["sample"])
+
+    # order gene by
+    # 1. most recurrent
+    # 2. sample column order
+    # 3. ccf
+    sample_order_dict = {v:i for i, v in enumerate(sample_order)}
+
+    # determine non recurrent genes order
+    # gene top_sample_column ccf
+
+    # get the min sample column index for each gene
+    top_sample_column = [min([sample_order_dict[s] for s in gene_count.ix[g][gene_count.ix[g] > 0].index])
+                                                   for g in top_recurrent[top_recurrent == 1].index]
+    nonrecurrent_genes_order_df = \
+            pd.DataFrame({"gene":
+                           top_recurrent[top_recurrent == 1].index,
+                          "top_sample_column":
+                           top_sample_column,
+                          "ccf":
+                           [mut_ccf_genes.ix[g, sample_order[top_sample_column[i]]] for i, g in enumerate(top_recurrent[top_recurrent == 1].index)]
+            })
+    non_recurrent_genes_order = list(nonrecurrent_genes_order_df.sort_values(["top_sample_column", "ccf", "gene"], ascending=[True, False, True]).gene)
+    gene_order = list(top_recurrent[top_recurrent > 1].index) + non_recurrent_genes_order
+
+    # gene annotations
+    gene_annotations = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
+                                                     (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
+            .groupby(["ANN[*].GENE_SPLIT"])["cancer_gene LOH clonality".split()].apply(
+                    lambda x: pd.Series({"cancer_gene": len(x[x.cancer_gene == "true"]) > 0}))
+    # gene annotations per gene per sample
+    gene_ann_per_sample = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
+                        (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
+        .groupby(["ANN[*].GENE_SPLIT","TUMOR_SAMPLE"])["LOH clonality".split()].apply(
+            lambda x: pd.Series({"LOH": len(x[x.LOH == "true"]) > 0,
+                                "clonal": len(x[x.clonality == "clonal"]) > 0}))
+
+    # draw the plot
+    sns.set_context("notebook")
+    width = len(mut_ccf_genes.columns)
+    height = len(mut_ccf_genes)*.5
+    f, ax = plt.subplots(figsize=(width, height))
+
+    cbar_ax = f.add_axes([0.97, .874, .20, .002])
+    legend_ax = f.add_axes([0.95, .875, .05, .05])
+    legend_ax.axis('off')
+
+    heatmap = sns.heatmap(mut_ccf_genes.ix[gene_order, sample_order],
+        ax=ax,
+        cbar_ax=cbar_ax,
+        cbar_kws={"label": "", "orientation":"horizontal"},
+        square=True,
+        annot=False,
+        cmap="Blues",
+        mask=(mut_ccf_genes.ix[gene_order, sample_order] == 0),
+                        linewidths=.5, vmin=0, vmax=1)
+    ax.xaxis.set_label_position('top')
+    ax.xaxis.set_label_text("")
+    ax.xaxis.tick_top()
+    ax.yaxis.set_label_text("")
+    plt.setp(heatmap.xaxis.get_majorticklabels(), rotation=90)
+
+    # solid cbar http://stackoverflow.com/questions/33652272
+    cbar_ax.collections[0].set_edgecolor("face")
+
+    # add gene annotations
+    for i, y in enumerate(heatmap.yaxis.get_ticklocs()):
+        if gene_annotations.ix[gene_order[i]].cancer_gene:
+            heatmap.add_artist(matplotlib.patches.Ellipse((len(sample_order)+.2, len(gene_order)-y), .2,
+                                                        .2,
+                                                        color='k', clip_on=False))
+    # add per sample gene annotations
+    for i, x in enumerate(heatmap.xaxis.get_ticklocs()):
+        for j, y in enumerate(heatmap.yaxis.get_ticklocs()):
+            try:
+                ann = gene_ann_per_sample.ix[gene_order[j], sample_order[i]]
+            except KeyError:
+                continue
+            if ann.clonal:
+                heatmap.add_patch(
+                    plt.Rectangle((x-.5, len(gene_order)-y-.5),
+                                1, 1, fill=False, edgecolor='goldenrod', linewidth=2, clip_on=False))
+            if ann.LOH:
+                heatmap.add_artist(plt.Line2D((i, i + 1), (len(gene_order)-j, len(gene_order)-j+1), 1, color='w'))
+
+    # add legend
+    # box = ax.get_position() make room
+    # ax.set_position([box.x0, box.y0, box.width * 0.7, box.height])
+    cg = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="k")
+    loh = LOHLegend((1, 1), 1, 1, facecolor="w", edgecolor="k", linewidth=1)
+    clonal = mpatches.Rectangle((1, 1), 1, 1, facecolor="w", edgecolor="goldenrod", linewidth=2)
+    ccf = mpatches.Patch(facecolor="w", edgecolor="w")
+    legend = legend_ax.legend([cg, loh, clonal, ccf],
+        ["Cancer gene", "LOH", "Clonal", "CCF"],
+        handlelength=1, loc='lower left', fontsize=13,
+        handler_map={LOHLegend: HandlerLOHLegend()})
+    for t in legend.get_texts():
+        t.set_ha("left")
+
+    f.savefig(outputfile, bbox_inches='tight')
+
+
 def output_recurrent_mutations(snv_fp, indel_fp, outdir):
     # parse mutations
     snv = pd.read_csv(snv_fp, dtype={"CHROM": str}, sep="\t")
@@ -134,8 +260,14 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
                 mask=(mut_ccf[mut_ccf.astype(bool).apply(lambda x: x.sum(), axis=1) >= 2] == 0).T, vmin=0, vmax=1)
             f.savefig(outdir + "/recurrent_mutations_ccf.pdf")
 
-    # output nonsilent mutations plot using ccf
+    # output nonsilent mutations plot using ccf if all required annotations are available
     if all([c in muts.columns for c in "cancer_gene pathogenicity LOH clonality".split()]):
+
+        # plot combined ccf plot for all mutations per gene with annotations
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_count, outdir + "/nonsilent_mutations_ccf.pdf")
+
         mut_ccf = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                             (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
             .drop_duplicates(subset="TUMOR_SAMPLE CHROM POS REF ALT".split())\
@@ -161,6 +293,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
                 legend_ax = f.add_axes([0.7, .55, .15, .10])
                 legend_ax.axis('off')
                 heatmap = sns.heatmap(sample_muts.T, annot=False, vmin=0, vmax=1, ax=ax, cbar_ax=cbar_ax,
+                                      cmap="Blues",
                                       cbar_kws={"label": "", "orientation":"horizontal"}, linewidths=.5,
                                       square=True)
                 # heatmap.ax_heatmap.xaxis.set_tick_params(labelsize=3)
