@@ -404,7 +404,7 @@ allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 	sed 1,2d $^; \
 	} > $@
 
-MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
+MUTATION_TASTER = python modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
 	$(INIT) $(call CHECK_VCF,$<,$@,$(MUTATION_TASTER) $< > $@ 2> $(LOG))
 

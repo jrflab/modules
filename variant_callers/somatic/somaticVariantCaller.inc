@@ -38,7 +38,7 @@ SOMATIC_POST_ANNS += $(if $(findstring b37,$(REF))$(findstring hg19,$(REF)),\
 SOMATIC_POST_ANNS += $(if $(findstring b37,$(REF))$(findstring hg19,$(REF)),gene_ann cn_reg clinvar hotspot_ann)
 ifeq ($(ANN_FACETS),true)
 ifeq ($(REF),b37)
-SOMATIC_POST_ANNS += pathogen
+SOMATIC_POST_ANNS += $(if $(findstring strelka_indel,$1),mut_taste) pathogen
 endif
 endif
 SOMATIC_POST_ANN_SUFFIX = $(subst $( ),.,$(strip $(call SOMATIC_POST_ANNS,$1)))
