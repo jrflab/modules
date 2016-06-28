@@ -125,7 +125,7 @@ VCF_POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
 
 # target region filter
 %.target_ft.vcf : %.vcf
-	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM2,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --mask $(TARGETS_FILE) --maskName targetInterval --filterNotInMask && $(RM) $< $<.idx")
+	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --mask $(TARGETS_FILE) --maskName targetInterval --filterNotInMask && $(RM) $< $<.idx")
 
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
