@@ -29,7 +29,7 @@ else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
 
-MERGE_TN = $(PYTHON) /ifs/e63data/reis-filho/usr/bin/FACETS.app/mergeTN.py
+MERGE_TN = python modules/copy_number/facets_merge_tn.py
 
 FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
 FACETS_FILL_GENE_CN = $(RSCRIPT) modules/copy_number/facetsFillGeneCN.R
