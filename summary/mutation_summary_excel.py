@@ -183,7 +183,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,hotspot".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
