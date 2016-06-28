@@ -1,7 +1,6 @@
 # annotations that have pre-req annotations and are run last or should be run after the 2nd round of filtering
 
 PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
-CLASSIFY_PATHOGENICITY = $(PYTHON) modules/vcf_tools/classify_pathogenicity_vcf.py
 CLASSIFY_PATHOGENICITY = python modules/vcf_tools/classify_pathogenicity_vcf.py
 CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --qsub_script modules/scripts/qsub.pl --num_provean_threads 5 --mem_per_thread 1.5G 
 vcf/ann3/pathogen/%.pathogen.vcf : vcf/ann2/%.vcf
