@@ -261,7 +261,7 @@ def is_mt_pathogenic(record):
 
 
 def classify_missense_pathogenicity(record):
-    if ~is_mt_pathogenic(record) and ~is_chasm_pathogenic(record):
+    if not is_mt_pathogenic(record) and not is_chasm_pathogenic(record):
         return "passenger"
     else:
         if is_fathmm_pathogenic(record) or is_chasm_pathogenic(record):
@@ -297,13 +297,13 @@ def is_loh(record):
 
 
 def get_missense_pathogenicity(record):
-    if ~is_mt_pathogenic(record) and ~is_chasm_pathogenic(record):
-        return "passenger"
-    else:
+    if is_mt_pathogenic(record) or is_chasm_pathogenic(record):
         if is_fathmm_pathogenic(record) or is_chasm_pathogenic(record):
             return "pathogenic" if is_cancer_gene else "potentially_pathogenic"
         else:
             return "passenger"
+    else:
+        return "passenger"
 
 
 def is_provean_pathogenic(record):
@@ -311,7 +311,7 @@ def is_provean_pathogenic(record):
 
 
 def get_provean_pathogenicity(record):
-    if ~is_mt_pathogenic(record) and ~is_provean_pathogenic(record):
+    if not is_mt_pathogenic(record) and not is_provean_pathogenic(record):
         return "passenger"
     else:
         if (is_loh(record) or is_hap_insuf(record)) and is_cancer_gene(record):
@@ -339,7 +339,7 @@ def is_inframe(record):
 
 
 def is_provean_record(record):
-    return ~is_fs_splice_stop(record) and ~is_missense(record) and is_inframe(record) and ~is_mt_pathogenic(record)
+    return not is_fs_splice_stop(record) and not is_missense(record) and is_inframe(record) and not is_mt_pathogenic(record)
 
 
 if __name__ == "__main__":
@@ -361,7 +361,6 @@ if __name__ == "__main__":
     assert "kandoth" in vcf_reader.infos
     assert "lawrence" in vcf_reader.infos
     assert "facetsLCN_EM" in vcf_reader.infos
-    assert any(["MutationTaster_pred" in x for x in vcf_reader.infos])
 
     # add necessary info headers
     vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=-1, type='String',
