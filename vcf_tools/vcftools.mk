@@ -315,7 +315,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
-COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
+COMMON_FILTER_VCF = python modules/vcf_tools/common_filter_vcf.py
 %.common_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< > $@")
 
