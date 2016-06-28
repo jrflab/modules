@@ -138,8 +138,8 @@ def output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_
     height = len(mut_ccf_genes)*.5
     f, ax = plt.subplots(figsize=(width, height))
 
-    cbar_ax = f.add_axes([0.97, .874, .20, .002])
-    legend_ax = f.add_axes([0.95, .875, .05, .05])
+    cbar_ax = f.add_axes([0.97, .874, 1.5/width, 0.10/height])
+    legend_ax = f.add_axes([0.95, .875, 1/width, 1/height])
     legend_ax.axis('off')
 
     heatmap = sns.heatmap(mut_ccf_genes.ix[gene_order, sample_order],
@@ -286,11 +286,14 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
             for sample in mut_split.TUMOR_SAMPLE.unique():
                 sample_muts = mut_ccf[sample].sort_values(ascending=False)
                 sample_muts = pd.DataFrame(sample_muts[sample_muts > 0])
-                font_scale = min([1, 30.0/len(sample_muts)])
-                sns.set_context(context="poster", font_scale=font_scale)
-                f, ax = plt.subplots()
-                cbar_ax = f.add_axes([0.7, .53, .15, .02])
-                legend_ax = f.add_axes([0.7, .55, .15, .10])
+                #font_scale = min([1, 30.0/len(sample_muts)])
+                sns.set_context(context="notebook")
+                width = len(sample_muts) * 2
+                height = 10
+
+                f, ax = plt.subplots(figsize=(width, height))
+                cbar_ax = f.add_axes([0.7, .53, 1.5/width, .10/height])
+                legend_ax = f.add_axes([0.7, .55, 1/width, 1/height])
                 legend_ax.axis('off')
                 heatmap = sns.heatmap(sample_muts.T, annot=False, vmin=0, vmax=1, ax=ax, cbar_ax=cbar_ax,
                                       cmap="Blues",
@@ -311,9 +314,9 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
                     if annotations.ix[sample_muts.index[i]].clonality == "clonal":
                         heatmap.add_patch(plt.Rectangle((x-.5, 0), 1, 1, fill=False, edgecolor='goldenrod', linewidth=2, clip_on=False))
                     if annotations.ix[sample_muts.index[i]].pathogenicity == "pathogenic":
-                        heatmap.add_artist(plt.Circle((x, -1), 0.1, color='r', clip_on=False))
+                        heatmap.add_artist(plt.Circle((x, -.5), .5/height, color='r', clip_on=False))
                     if annotations.ix[sample_muts.index[i]].cancer_gene == "true":
-                        heatmap.add_artist(plt.Circle((x, -2), 0.1, color='k', clip_on=False))
+                        heatmap.add_artist(plt.Circle((x, -1), .5/height, color='k', clip_on=False))
                     if annotations.ix[sample_muts.index[i]].LOH == "true":
                         heatmap.add_artist(plt.Line2D((i, i + 1), (0, 1), 1, color='w'))
 
