@@ -6,7 +6,7 @@ DEFAULT_JAVA_MEM = 18G
 GATK = $(call GATK_MEM,$(DEFAULT_JAVA_MEM))
 GATK_MEM = $(JAVA7) -Xmx$(1) -jar $(GATK_JAR) -S LENIENT
 GATK2 = $(call GATK_MEM2,$(DEFAULT_JAVA_MEM))
-GATK_MEM2 = $(JAVA7) -Xmx$(1) -jar $(GATK_JAR2) -S LENIENT
+GATK_MEM2 = $(JAVA8) -Xmx$(1) -jar $(GATK_JAR2) -S LENIENT
 INDEL_REALIGN = $(JAVA7) -Xmx$(DEFAULT_JAVA_MEM) -jar $(GATK_JAR) -S LENIENT -T IndelRealigner
 
 # covariates for recalibration step

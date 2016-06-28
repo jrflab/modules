@@ -75,7 +75,7 @@ somatic_filter_vcf: $(PERL) modules/scripts/somaticFilterVCF.pl
 java_bin: /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
 java6_bin: /opt/common/CentOS_6/java/jdk1.6.0_45/bin/java
 java7_bin: /opt/common/CentOS_6/java/jdk1.7.0_75/bin/java
-java8_bin: $(HOME)/usr/jdk1.8.0_74/bin/java
+java8_bin: $(HOME)/share/usr/jdk1.8.0_74/bin/java
 #java: /usr/bin/java $(JAVA_ARGS)
 
 get_insert_size: $(HOME)/share/usr/bin/getInsertSize.py
