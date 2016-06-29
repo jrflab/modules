@@ -14,6 +14,8 @@ bam_reprocess: false
 
 vcf_post_ann_filter_expression: ExAC_AF > 0.05
 
+ann_facets: false
+
 # targets_file: intervals.bed
 exome: true
 

@@ -2,6 +2,7 @@
 from __future__ import print_function
 import yaml
 import argparse
+import collections
 
 """ convert yaml files to make include files
 """
@@ -19,7 +20,7 @@ def sample_yaml2mk(samples_file, out_file):
 
     tumors = set()
     normals = set()
-    normal_tumors = {}
+    normal_tumors = collections.defaultdict(list)
     tumor_normal = {}
     for s in samples:
         if 'normal' in s:
@@ -28,7 +29,7 @@ def sample_yaml2mk(samples_file, out_file):
             for t in s['tumor']:
                 tumors.add(t)
         if 'normal' in s and 'tumor' in s:
-            normal_tumors[s['normal']] = s['tumor']
+            normal_tumors[s['normal']].extend(s['tumor'])
             for t in s['tumor']:
                 tumor_normal[t] = s['normal']
 
@@ -118,19 +119,19 @@ if __name__ == '__main__':
 
     try:
         sample_yaml2mk(args.samples_file, args.out_file)
-    except:
+    except IOError:
         print("Error loading {}, skipping".format(args.samples_file))
 
     if args.sample_fastq_file is not None:
         try:
             sample_fastq_yaml2mk(args.sample_fastq_file, args.out_file)
-        except:
+        except IOError:
             print("Error loading {}, skipping.".format(args.sample_fastq_file))
 
     if args.sample_merge_file is not None:
         try:
             sample_merge_yaml2mk(args.sample_merge_file, args.out_file)
-        except:
+        except IOError:
             print("Error loading {}, skipping.".format(args.sample_merge_file))
 
     print("\n# defaults", file=of)
