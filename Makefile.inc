@@ -197,7 +197,7 @@ PBS_QSUB_ARGS = -e $(LOG) -j oe
 # mem for SGE
 # $(call SGE_MEM,ncpu,mem_per_cpu)
 SGE_PARALLEL_ENV = smp
-SGE_PARALLEL_MEM = -pe $(SGE_PARALLEL_ENV) -l virtual_free=$1,h_vmem=$2
+SGE_PARALLEL_MEM = -pe $(SGE_PARALLEL_ENV) $1 -l virtual_free=$2,h_vmem=$3
 SGE_MEM = -l virtual_free=$1,h_vmem=$2
 QSUB_PRIORITY ?= 0
 SGE_QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
