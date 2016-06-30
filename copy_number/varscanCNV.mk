@@ -22,7 +22,7 @@ SEG_ALPHAS ?= 0.01 0.0001 0.000001 0.0000000001
 VARSCAN_GENE_CN = $(RSCRIPT) modules/copy_number/varscanCNVGeneCN.R
 VARSCAN_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
-					  --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
+					  --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
 					  --mysqlDb $(EMBL_MYSQLDB_DB)
 MPILEUP_OPTS = -q 1 $(if $(TARGETS_FILE),-l $(TARGETS_FILE))
 

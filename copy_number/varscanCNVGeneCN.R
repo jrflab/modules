@@ -21,7 +21,7 @@ optList <- list(
 				make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
 				make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
 				make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
-				make_option("--mysqlPassword", default = 'embl', help = "MySQL server password"),
+				make_option("--mysqlPassword", default = NULL, help = "MySQL server password"),
 				make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
                 make_option("--genesFile", default = NULL, help = "list of genes to include (hgnc symbols)"))
 parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);

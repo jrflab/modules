@@ -28,7 +28,7 @@ optList <- list(
         make_option("--mysqlHost", default='10.0.200.71', help="MySQL server hostname [default %default]"),
         make_option("--mysqlPort", default=38493, help="MySQL server port [default %default]"),
         make_option("--mysqlUser", default='embl', help="MySQL server username [default %default]"),
-        make_option("--mysqlPassword", default='embl', help="MySQL server password [default %default]"),
+        make_option("--mysqlPassword", default=NULL, help="MySQL server password [default %default]"),
         make_option("--mysqlDb", default='homo_sapiens_core_75_37', help="MySQL server database [default %default]"),
         make_option("--provean", default='provean.sh', help="provean script [default %default]"),
         make_option("--numThreads", default=4, help="Number of provean threads [default %default]"),
@@ -76,12 +76,7 @@ cat('done\n')
 cdsByTx <- cdsBy(txdb, 'tx', use.names=T)
 
 cat('Connecting to ensembl ... ')
-connect <- function() dbConnect(MySQL(),
-                                host=opt$mysqlHost,
-                                port=opt$mysqlPort,
-                                user=opt$mysqlUser,
-                                password=opt$mysqlPassword,
-                                dbname=opt$mysqlDb)
+connect <- function() dbConnect(MySQL(), host = opt$mysqlHost, port = opt$mysqlPort, user = opt$mysqlUser, password = opt$mysqlPassword, dbname = opt$mysqlDb)
 mydb <- connect()
 on.exit(dbDisconnect(mydb))
 cat('done\n')

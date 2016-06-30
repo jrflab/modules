@@ -5,7 +5,15 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
 
+ifeq ($(CLUSTER_ENGINE),"PBS")
+..DUMMY := $(shell cp $(SNVBOX_CONF) modules/external/SNVBox/snv_box.conf)
+..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/chasm_db.yaml)
+..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/fathmm_db.yaml)
+..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
+endif
+
 VARIANT_TYPES ?= mutect_snps mutect_indels #strelka_indels varscan_indels strelka_varscan_indels
+
 
 DEPTH_FILTER ?= 5
 HRUN ?= false

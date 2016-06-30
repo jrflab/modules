@@ -14,30 +14,29 @@ PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
 AA_TABLE = $(HOME)/share/reference/aa_table.tsv
 
 PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXDB) --mysqlHost $(EMBL_MYSQLDB_HOST) \
-			   --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
+			   --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) \
+               $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
 			   --mysqlDb $(EMBL_MYSQLDB_DB) --numThreads 8 --memPerThread 1G --queue $(QUEUE) --qsubPriority $(QSUB_PRIORITY)
 
 vcf/%.provean.vcf : vcf/%.vcf
 	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
 
 CHASM = $(RSCRIPT) modules/vcf_tools/chasmVcf.R 
-#CHASM_DIR = /ifs/opt/common/CHASM/CHASMDL.1.0.7
-CHASM_DIR = $(HOME)/share/usr/CHASM
-CHASM_PYTHON_ENV = $(HOME)/share/usr/anaconda-envs/pyenv27-chasm
-CHASM_CLASSIFIER ?= Breast
+CHASM_DIR = $(HOME)/share/usr/CHASM-3.0/CHASM
+SNVBOX_DIR = $(PWD)/modules/external/SNVBox
+CHASM_CLASSIFIER ?= BRCA
 vcf/%.chasm.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,17G,"unset PYTHONPATH && source $(CHASM_PYTHON_ENV)/bin/activate $(CHASM_PYTHON_ENV) && $(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --python $(shell which python) --outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,17G,"$(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --snvBoxDir $(SNVBOX_DIR) --outFile $@ $<"))
 
 FATHMM = $(MY_RSCRIPT) modules/vcf_tools/fathmmVcf.R 
-FATHMM_DIR = $(HOME)/share/usr/fathmm
-FATHMM_PYTHON = $(HOME)/share/usr/bin/python
-FATHMM_PYTHONPATH = $(HOME)/share/usr/lib/python:$(HOME)/share/usr/lib/python2.7
-FATHMM_OPTS = --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) --fathmmDir $(FATHMM_DIR) --python $(FATHMM_PYTHON) \
-			  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) --mysqlDb $(EMBL_MYSQLDB_DB)
+FATHMM_DIR = $(PWD)/modules/external/fathmm
+FATHMM_OPTS = --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) \
+			  --fathmmDir $(FATHMM_DIR) --fathmmConfig $(FATHMM_CONF) \
+			  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) \
+              $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) --mysqlDb $(EMBL_MYSQLDB_DB)
 
 vcf/%.fathmm.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"PYTHONPATH=$(FATHMM_PYTHONPATH) $(FATHMM) $(FATHMM_OPTS) \
-		--outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"$(FATHMM) $(FATHMM_OPTS) --outFile $@ $<"))
 
 
 define hrun-tumor-normal

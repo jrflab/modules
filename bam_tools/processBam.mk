@@ -65,7 +65,7 @@ endif
 # indices
 # if bam file is a symlink, need to create a symlink to index
 %.bam.bai : %.bam
-	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(SAMTOOLS) index $<")
+	$(call LSCRIPT_CHECK,4G,8G,"$(SAMTOOLS) index $<")
 
 %.bai : %.bam.bai
 	$(INIT) cp $< $@

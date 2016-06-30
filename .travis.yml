@@ -23,6 +23,7 @@ install:
   - conda config --add channels bioconda 
   - conda config --add channels auto
   - conda config --add channels jrderuiter
+  - conda config --add channels biobuilds
   - conda create -q -n jrflab --file conda_env/jrflab_modules_env.txt
   - conda create -q -n r-env --file conda_env/R3.2.2.txt
 script:

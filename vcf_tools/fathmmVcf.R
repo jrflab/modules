@@ -2,7 +2,7 @@
 # Read a vcf file and append fathmm results
 
 suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("biomaRt"));
+#suppressPackageStartupMessages(library("biomaRt"));
 suppressPackageStartupMessages(library("VariantAnnotation"));
 suppressPackageStartupMessages(library("data.table"));
 suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
@@ -19,13 +19,14 @@ options(useFancyQuotes = F)
 optList <- list(
         make_option("--genome", default = 'b37', help = "genome build [default %default]"),
         make_option("--fathmmDir", default = '~/share/usr/fathmm', help = "fathmm dir"),
+        make_option("--fathmmConfig", help = "fathmm config file", default = NULL),
         make_option("--fathmmAlg", default = 'Cancer', help = "fathmm algorithm [default %default]"),
         make_option("--fathmmOnt", default = 'DO', help = "fathmm ontology [default %default]"),
         make_option("--ensemblTxdb", default = '~/share/reference/hsapiens_ensembl_biomart.sqlite', help = "Ensembl TxDb SQLite"),
         make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
         make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
         make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
-        make_option("--mysqlPassword", default = 'embl', help = "MySQL server password"),
+        make_option("--mysqlPassword", default = NULL, help = "MySQL server password"),
         make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
         make_option("--ref", default = '~/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta', help = "Reference fasta file"),
         make_option("--python", default = 'python', help = "python executable [default %default]"),
@@ -178,7 +179,11 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                 tmp1 <- tempfile()
                 tmp2 <- tempfile()
                 setwd(paste(opt$fathmmDir, '/cgi-bin', sep = ''))
-                cmd <- paste(opt$python, 'fathmm.py -w', opt$fathmmAlg, '-p', opt$fathmmOnt, tmp1, tmp2)
+                cmd <- paste(opt$python, 'fathmm.py')
+                if (!is.null(opt$fathmmConfig)) {
+                    cmd <- paste(cmd, '-c', opt$fathmmConfig)
+                }
+                cmd <- paste(cmd, '-w', opt$fathmmAlg, '-p', opt$fathmmOnt, tmp1, tmp2)
                 write.table(subset(ids, peptide_id != "", select = c('peptide_id', 'aa')), file = tmp1, quote = F, sep = ' ', row.names = F, col.names = F)
                 #cmd <- paste('python fathmm.py -w Cancer', tmp1, tmp2)
                 system(cmd)
