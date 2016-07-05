@@ -1,17 +1,13 @@
 ##fileformat=VCFv4.1
-##SnpEffCmd="SnpEff  -i vcf -o vcf hg19 -s strelka/vcf/IDC16T_IDC16N.strelka_indels.target_ft.pass.dbsnp.eff_summary.html strelka/vcf/IDC16T_IDC16N.strelka_indels.target_ft.pass.dbsnp.vcf "
+##MuTect="analysis_type=MuTect input_file=[bam/ASAv1T.bam, bam/ASAv1N.bam] read_buffer_size=null phone_home=STANDARD gatk_key=null tag=NA read_filter=[] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableRandomization=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 enable_experimental_downsampling=false baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 defaultBaseQualities=-1 validation_strictness=SILENT remove_program_records=false keep_program_records=false unsafe=null num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false logging_level=INFO log_to_file=null help=false noop=false enable_extended_output=true artifact_detection_mode=false tumor_sample_name=ASAv1T bam_tumor_sample_name=null normal_sample_name=ASAv1N force_output=false force_alleles=false only_passing_calls=false initial_tumor_lod=4.0 tumor_lod=6.3 fraction_contamination=0.02 minimum_mutation_cell_fraction=0.0 normal_lod=2.2 normal_artifact_lod=1.0 strand_artifact_lod=2.0 strand_artifact_power_threshold=0.9 dbsnp_normal_lod=5.5 somatic_classification_normal_power_threshold=0.95 minimum_normal_allele_fraction=0.0 tumor_f_pretest=0.005 min_qscore=5 gap_events_threshold=3 heavily_clipped_read_fraction=0.3 clipping_bias_pvalue_threshold=0.05 fraction_mapq0_threshold=0.5 pir_median_threshold=10.0 pir_mad_threshold=3.0 required_maximum_alt_allele_mapping_quality_score=20 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 power_constant_qscore=30 absolute_copy_number_data=null power_constant_af=0.30000001192092896 vcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub dbsnp=[(RodBinding name=dbsnp source=/home/limr/share/reference/GATK_bundle/2.3/dbsnp_137.b37.G5.GMAF1pc.include_cosmic.vcf)] cosmic=[] normal_panel=[] coverage_file=null coverage_20_q20_file=null power_file=null tumor_depth_file=null normal_depth_file=null filter_mismatching_base_and_quals=false"
+##SnpEffCmd="SnpEff  -i vcf -o vcf hg19 -s vcf/ASAv1T_ASAv1N.mutect.som_ad_ft.target_ft.pass.dbsnp.eff_summary.html vcf/ASAv1T_ASAv1N.mutect.som_ad_ft.target_ft.pass.dbsnp.vcf "
 ##SnpEffVersion="4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift filter -f strelka/vcf/IDC16T_IDC16N.strelka_indels.target_ft.vcf '( na FILTER ) | (FILTER = 'PASS')'"
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/clinvar_20151102.vcf.gz vcf/IDC16T_IDC16N.strelka_indels.target_ft.pass.dbsnp.eff.cosmic.exac_nontcga.facets.cft.common_ft.pass2.mut_taste.gene_ann.cn_reg.vcf"
+##SnpSiftCmd="SnpSift filter -f vcf/ASAv1T_ASAv1N.mutect.som_ad_ft.target_ft.vcf '( na FILTER ) | (FILTER = 'PASS')'"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/clinvar_20151102.vcf.gz vcf/ASAv1T_ASAv1N.mutect.som_ad_ft.target_ft.pass.dbsnp.eff.cosmic.exac_nontcga.facets.cft.common_ft.pass2.nsfp.chasm.fathmm.gene_ann.cn_reg.vcf"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/hotspot//hotspot_unmerged.vcf vcf/ASAv1T_ASAv1N.mutect.som_ad_ft.target_ft.pass.dbsnp.eff.cosmic.exac_nontcga.facets.cft.common_ft.pass2.nsfp.chasm.fathmm.gene_ann.cn_reg.clinvar.vcf"
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/ifs/e63data/reis-filho/data/palb2/exonseq/strelka/IDC16T_IDC16N/config/run.config.ini
-##content=strelka somatic indel calls
-##fileDate=20160509
-##germlineIndelTheta=0.0001
-##priorSomaticIndelRate=1e-06
-##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
-##source=strelka
-##startTime=Wed Jul  8 17:16:14 2015
+##fileDate=20160627
+##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=AA,Number=1,Type=String,Description="Peptide annotation">
 ##INFO=<ID=ANN,Number=.,Type=String,Description="Functional annotations: 'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'">
 ##INFO=<ID=ASP,Number=0,Type=Flag,Description="Is Assembly specific. This is set if the variant only maps to one assembly">
@@ -32,6 +28,7 @@
 ##INFO=<ID=CLNSRCID,Number=.,Type=String,Description="Variant Clinical Channel IDs">
 ##INFO=<ID=CNT,Number=1,Type=Integer,Description="How many samples have this mutation">
 ##INFO=<ID=COMMON,Number=1,Type=Integer,Description="RS is a common SNP.  A common SNP is one that has at least one 1000Genomes population with a minor allele of frequency >= 1% and for which 2 or more founders contribute to that minor allele frequency.">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=DSS,Number=0,Type=Flag,Description="In donor splice-site FxnCode = 75">
 ##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
 ##INFO=<ID=G5,Number=0,Type=Flag,Description=">5% minor allele frequency in 1+ populations">
@@ -41,8 +38,6 @@
 ##INFO=<ID=GMAF,Number=1,Type=Float,Description="global minor allele frequency from 1000g">
 ##INFO=<ID=GNO,Number=0,Type=Flag,Description="Genotypes available. The variant has individual genotype (in SubInd table).">
 ##INFO=<ID=HD,Number=0,Type=Flag,Description="Marker is on high density genotyping kit (50K density or greater).  The variant may have phenotype associations present in dbGaP.">
-##INFO=<ID=IC,Number=1,Type=Integer,Description="Number of times RU repeats in the indel allele">
-##INFO=<ID=IHP,Number=1,Type=Integer,Description="Largest reference interupted homopolymer length intersecting with the indel">
 ##INFO=<ID=INT,Number=0,Type=Flag,Description="In Intron FxnCode = 6">
 ##INFO=<ID=KGPROD,Number=0,Type=Flag,Description="Has 1000 Genome submission">
 ##INFO=<ID=KGPhase1,Number=0,Type=Flag,Description="1000 Genome phase 1 (incl. June Interim phase 1)">
@@ -50,6 +45,7 @@
 ##INFO=<ID=KGValidated,Number=0,Type=Flag,Description="1000 Genome validated">
 ##INFO=<ID=LOF,Number=.,Type=String,Description="Predicted loss of function effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
 ##INFO=<ID=LSD,Number=0,Type=Flag,Description="Submitted from a locus-specific database">
+##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=MTP,Number=0,Type=Flag,Description="Microattribution/third-party annotation(TPA:GWAS,PAGE)">
 ##INFO=<ID=MUT,Number=0,Type=Flag,Description="Is mutation (journal citation, explicit fact): a low frequency variation that is cited in journal and other reputable sources">
 ##INFO=<ID=NMD,Number=.,Type=String,Description="Predicted nonsense mediated decay effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
@@ -58,41 +54,32 @@
 ##INFO=<ID=NSF,Number=0,Type=Flag,Description="Has non-synonymous frameshift A coding region variation where one allele in the set changes all downstream amino acids. FxnClass = 44">
 ##INFO=<ID=NSM,Number=0,Type=Flag,Description="Has non-synonymous missense A coding region variation where one allele in the set changes protein peptide. FxnClass = 42">
 ##INFO=<ID=NSN,Number=0,Type=Flag,Description="Has non-synonymous nonsense A coding region variation where one allele in the set changes to STOP codon (TER). FxnClass = 41">
-##INFO=<ID=NT,Number=1,Type=String,Description="Genotype of the normal in all data tiers, as used to classify somatic variants. One of {ref,het,hom,conflict}.">
 ##INFO=<ID=OM,Number=0,Type=Flag,Description="Has OMIM/OMIA">
 ##INFO=<ID=OTH,Number=0,Type=Flag,Description="Has other variant with exactly the same set of mapped positions on NCBI refernce assembly.">
 ##INFO=<ID=OTHERKG,Number=0,Type=Flag,Description="non-1000 Genome submission">
-##INFO=<ID=OVERLAP,Number=0,Type=Flag,Description="Somatic indel possibly overlaps a second indel.">
 ##INFO=<ID=PH3,Number=0,Type=Flag,Description="HAP_MAP Phase 3 genotyped: filtered, non-redundant">
 ##INFO=<ID=PM,Number=0,Type=Flag,Description="Variant is Precious(Clinical,Pubmed Cited)">
 ##INFO=<ID=PMC,Number=0,Type=Flag,Description="Links exist to PubMed Central article">
-##INFO=<ID=QSI,Number=1,Type=Integer,Description="Quality score for any somatic variant, ie. for the ALT haplotype to be present at a significantly different frequency in the tumor and normal">
-##INFO=<ID=QSI_NT,Number=1,Type=Integer,Description="Quality score reflecting the joint probability of a somatic variant and NT">
 ##INFO=<ID=R3,Number=0,Type=Flag,Description="In 3' gene region FxnCode = 13">
 ##INFO=<ID=R5,Number=0,Type=Flag,Description="In 5' gene region FxnCode = 15">
-##INFO=<ID=RC,Number=1,Type=Integer,Description="Number of times RU repeats in the reference allele">
 ##INFO=<ID=REF,Number=0,Type=Flag,Description="Has reference A coding region variation where one allele in the set is identical to the reference sequence. FxnCode = 8">
 ##INFO=<ID=RS,Number=1,Type=Integer,Description="dbSNP ID (i.e. rs number)">
 ##INFO=<ID=RSPOS,Number=1,Type=Integer,Description="Chr position reported in dbSNP">
-##INFO=<ID=RU,Number=1,Type=String,Description="Smallest repeating sequence unit in inserted or deleted sequence">
 ##INFO=<ID=RV,Number=0,Type=Flag,Description="RS orientation is reversed">
 ##INFO=<ID=S3D,Number=0,Type=Flag,Description="Has 3D structure - SNP3D table">
 ##INFO=<ID=SAO,Number=1,Type=Integer,Description="Variant Allele Origin: 0 - unspecified, 1 - Germline, 2 - Somatic, 3 - Both">
-##INFO=<ID=SGT,Number=1,Type=String,Description="Most likely somatic genotype excluding normal noise states">
 ##INFO=<ID=SLO,Number=0,Type=Flag,Description="Has SubmitterLinkOut - From SNP->SubSNP->Batch.link_out">
-##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
+##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
 ##INFO=<ID=SSR,Number=1,Type=Integer,Description="Variant Suspect Reason Codes (may be more than one value added together) 0 - unspecified, 1 - Paralog, 2 - byEST, 4 - oldAlign, 8 - Para_EST, 16 - 1kg_failed, 1024 - other">
 ##INFO=<ID=STRAND,Number=1,Type=String,Description="Gene strand">
-##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
 ##INFO=<ID=SYN,Number=0,Type=Flag,Description="Has synonymous A coding region variation where one allele in the set does not change the encoded amino acid. FxnCode = 3">
 ##INFO=<ID=TPA,Number=0,Type=Flag,Description="Provisional Third Party Annotation(TPA) (currently rs from PHARMGKB who will give phenotype data)">
-##INFO=<ID=TQSI,Number=1,Type=Integer,Description="Data tier used to compute QSI">
-##INFO=<ID=TQSI_NT,Number=1,Type=Integer,Description="Data tier used to compute QSI_NT">
 ##INFO=<ID=U3,Number=0,Type=Flag,Description="In 3' UTR Location is in an untranslated region (UTR). FxnCode = 53">
 ##INFO=<ID=U5,Number=0,Type=Flag,Description="In 5' UTR Location is in an untranslated region (UTR). FxnCode = 55">
 ##INFO=<ID=VC,Number=1,Type=String,Description="Variation Class">
 ##INFO=<ID=VLD,Number=0,Type=Flag,Description="Is Validated.  This bit is set if the variant has 2+ minor allele count based on frequency or genotype data.">
 ##INFO=<ID=VP,Number=1,Type=String,Description="Variation Property.  Documentation is at ftp://ftp.ncbi.nlm.nih.gov/snp/specs/dbSNP_BitField_latest.pdf">
+##INFO=<ID=VT,Number=1,Type=String,Description="Variant type, can be SNP, INS or DEL">
 ##INFO=<ID=WGT,Number=1,Type=Integer,Description="Weight, 00 - unmapped, 1 - weight 1, 2 - weight 2, 3 - weight 3 or more">
 ##INFO=<ID=WTD,Number=0,Type=Flag,Description="Is Withdrawn by submitter If one member ss is withdrawn by submitter, then this bit is set.  If all member ss' are withdrawn, then the rs is deleted to SNPHistory">
 ##INFO=<ID=dbSNPBuildID,Number=1,Type=Integer,Description="First dbSNP Build for RS">
@@ -102,8 +89,29 @@
 ##INFO=<ID=facetsLCN_EM,Number=1,Type=Integer,Description="Facets lesser copy number (EM)">
 ##INFO=<ID=facetsTCN,Number=1,Type=Integer,Description="Facets total copy number">
 ##INFO=<ID=facetsTCN_EM,Number=1,Type=Integer,Description="Facets total copy number (EM)">
-##INFO=<ID=MutationTaster_pred,Number=A,Type=String,Description="Mutation taster prediction using webquery if indel or dbNSFP if it exists">
-##INFO=<ID=MutationTaster_score,Number=A,Type=Float,Description="Mutation taster score using webquery if indel or dbNSFP if it exists">
+##INFO=<ID=dbNSFP_MutationAssessor_pred,Number=A,Type=String,Description="Field 'MutationAssessor_pred' from dbNSFP">
+##INFO=<ID=dbNSFP_clinvar_clnsig,Number=A,Type=Integer,Description="Field 'clinvar_clnsig' from dbNSFP">
+##INFO=<ID=dbNSFP_Uniprot_id_Polyphen2,Number=A,Type=String,Description="Field 'Uniprot_id_Polyphen2' from dbNSFP">
+##INFO=<ID=dbNSFP_ExAC_Adj_AF,Number=A,Type=Float,Description="Field 'ExAC_Adj_AF' from dbNSFP">
+##INFO=<ID=dbNSFP_Uniprot_acc_Polyphen2,Number=A,Type=String,Description="Field 'Uniprot_acc_Polyphen2' from dbNSFP">
+##INFO=<ID=dbNSFP_MutationTaster_pred,Number=A,Type=String,Description="Field 'MutationTaster_pred' from dbNSFP">
+##INFO=<ID=dbNSFP_ESP6500_AA_AF,Number=A,Type=Float,Description="Field 'ESP6500_AA_AF' from dbNSFP">
+##INFO=<ID=dbNSFP_clinvar_rs,Number=A,Type=Integer,Description="Field 'clinvar_rs' from dbNSFP">
+##INFO=<ID=dbNSFP_Polyphen2_HVAR_score,Number=A,Type=Float,Description="Field 'Polyphen2_HVAR_score' from dbNSFP">
+##INFO=<ID=dbNSFP_MutationTaster_score,Number=A,Type=Float,Description="Field 'MutationTaster_score' from dbNSFP">
+##INFO=<ID=dbNSFP_MutationAssessor_score,Number=A,Type=String,Description="Field 'MutationAssessor_score' from dbNSFP">
+##INFO=<ID=dbNSFP_ESP6500_EA_AF,Number=A,Type=Float,Description="Field 'ESP6500_EA_AF' from dbNSFP">
+##INFO=<ID=dbNSFP_1000Gp3_AF,Number=A,Type=Float,Description="Field '1000Gp3_AF' from dbNSFP">
+##INFO=<ID=dbNSFP_PROVEAN_pred,Number=A,Type=String,Description="Field 'PROVEAN_pred' from dbNSFP">
+##INFO=<ID=dbNSFP_Polyphen2_HVAR_pred,Number=A,Type=String,Description="Field 'Polyphen2_HVAR_pred' from dbNSFP">
+##INFO=<ID=dbNSFP_Interpro_domain,Number=A,Type=String,Description="Field 'Interpro_domain' from dbNSFP">
+##INFO=<ID=Breast_chasm_mut,Number=A,Type=String,Description="Breast CHASM mutation">
+##INFO=<ID=Breast_chasm_pval,Number=A,Type=Float,Description="Breast CHASM p-value">
+##INFO=<ID=Breast_chasm_score,Number=A,Type=Float,Description="Breast CHASM score">
+##INFO=<ID=Breast_chasm_fdr,Number=A,Type=Float,Description="Breast CHASM B-H FDR">
+##INFO=<ID=fathmm_query,Number=A,Type=String,Description="fathmm query">
+##INFO=<ID=fathmm_pred,Number=A,Type=String,Description="fathmm prediction">
+##INFO=<ID=fathmm_score,Number=A,Type=Float,Description="fathmm score">
 ##INFO=<ID=hap_insuf,Number=0,Type=Flag,Description="hap_insuf: variant is in gene list">
 ##INFO=<ID=cancer_gene_census,Number=0,Type=Flag,Description="cancer_gene_census: variant is in gene list">
 ##INFO=<ID=kandoth,Number=0,Type=Flag,Description="kandoth: variant is in gene list">
@@ -127,27 +135,30 @@
 ##INFO=<ID=breast_Triple_negative,Number=0,Type=Flag,Description="breast_Triple_negative: variant is in gene list">
 ##INFO=<ID=KGPhase3,Number=0,Type=Flag,Description="1000 Genome phase 3">
 ##INFO=<ID=CLNREVSTAT,Number=.,Type=String,Description="ClinVar Review Status, mult - Classified by multiple submitters, single - Classified by single submitter, not - Not classified by submitter, exp - Reviewed by expert panel, prof - Reviewed by professional society">
-##INFO=<ID=hotspot,Number=.,Type=String,Description="Hotspot in cancerhotspots.org">
+##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
+##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
+##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
 ##INFO=<ID=pathogenicity,Number=A,Type=String,Description="Classification of pathogenicity">
 ##INFO=<ID=provean_protein_id,Number=A,Type=String,Description="provean protein id (run if necessary)">
 ##INFO=<ID=provean_pred,Number=A,Type=String,Description="provean prediction (run if necessary)">
 ##INFO=<ID=provean_score,Number=A,Type=Float,Description="provean score (run if necessary)">
-##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth for tier1">
-##FORMAT=<ID=DP2,Number=1,Type=Integer,Description="Read depth for tier2">
-##FORMAT=<ID=DP50,Number=1,Type=Float,Description="Average tier1 read depth within 50 bases">
-##FORMAT=<ID=FDP50,Number=1,Type=Float,Description="Average tier1 number of basecalls filtered from original read depth within 50 bases">
-##FORMAT=<ID=SUBDP50,Number=1,Type=Float,Description="Average number of reads below tier1 mapping quality threshold aligned across sites within 50 bases">
-##FORMAT=<ID=TAR,Number=2,Type=Integer,Description="Reads strongly supporting alternate allele for tiers 1,2">
-##FORMAT=<ID=TIR,Number=2,Type=Integer,Description="Reads strongly supporting indel allele for tiers 1,2">
-##FORMAT=<ID=TOR,Number=2,Type=Integer,Description="Other reads (weak support or insufficient indel breakpoint overlap) for tiers 1,2">
-##FILTER=<ID=BCNoise,Description="Average fraction of filtered basecalls within 50 bases of the indel exceeds 0.3">
-##FILTER=<ID=QSI_ref,Description="Normal sample is not homozygous ref or sindel Q-score < 30, ie calls with NT!=ref or QSI_NT < 30">
-##FILTER=<ID=Repeat,Description="Sequence repeat of more than 8x in the reference sequence">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=BQ,Number=A,Type=Float,Description="Average base quality for reads supporting alleles">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=FA,Number=A,Type=Float,Description="Allele fraction of the alternate allele with regard to reference">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=SS,Number=1,Type=Integer,Description="Variant status relative to non-adjacent Normal,0=wildtype,1=germline,2=somatic,3=LOH,4=post-transcriptional modification,5=unknown">
+##FILTER=<ID=PASS,Description="Accept as a confident somatic mutation">
+##FILTER=<ID=REJECT,Description="Rejected as a confident somatic mutation">
 ##FILTER=<ID=SnpSift,Description="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani, Expression used: ( na FILTER ) | (FILTER = 'PASS')">
 ##FILTER=<ID=customFilter,Description="ExAC_AF > 0.05">
-##FILTER=<ID=iHpol,Description="Indel overlaps an interupted homopolymer longer than 14x in the reference sequence">
+##FILTER=<ID=depthFilter,Description="vc.getGenotype(ASAv1T).getDP() <= 5 || vc.getGenotype(ASAv1N).getDP() <= 5">
+##FILTER=<ID=somaticAlleleDepth,Description="if (vc.getGenotype(ASAv1N).getDP() > 20) { ( vc.getGenotype(ASAv1N).getAD().1 * 1.0 / vc.getGenotype(ASAv1N).getDP()) > ( vc.getGenotype(ASAv1T).getAD().1 * 1.0 / vc.getGenotype(ASAv1T).getDP()) / 5.0 } else { vc.getGenotype(ASAv1N).getAD().1 > 1 }">
 ##FILTER=<ID=targetInterval,Description="Doesn't overlap a user-input mask">
-##FILTER=<ID=common,Description="no cosmic id, or has dbsnp ID and GMAF is > 0.01">
+##FILTER=<ID=tumorVarAlleleDepth,Description="vc.getGenotype(ASAv1T).getAD().1 < 5">
+##FILTER=<ID=Common,Description="no cosmic id, or has dbsnp ID and GMAF is > 0.01">
 ##contig=<ID=1,length=249250621>
 ##contig=<ID=2,length=243199373>
 ##contig=<ID=3,length=198022430>
@@ -232,21 +243,12 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	IDC16N	IDC16T
-1	16073524	1:16073524_C/CGAT	C	CGAT	.	PASS	ANN=CGAT|disruptive_inframe_insertion|MODERATE|TMEM82|TMEM82|transcript|NM_001013641.2|Coding|5/6|c.920_921insGAT|p.Thr307dup|989/1265|921/1032|307/343||;IC=1;IHP=4;NT=ref;QSI=115;QSI_NT=115;RC=0;RU=GAT;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.133440625861;facetsCF_EM=0.129026801702;facetsLCN=0;facetsLCN_EM=0;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=5.4489294965e-08;pathogenicity=passenger;provean_protein_id=ENSP00000364938;provean_pred=Deleterious;provean_score=-6.17;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	251:251:240.3:0.69:0.0:245,253:0,0:4,4	148:148:139.79:0.0:0.0:112,144:13,14:22,26
-1	22191734	1:22191734_AGGGTG/A	AGGGTG	A	.	PASS	ANN=A|intron_variant|MODIFIER|HSPG2|HSPG2|transcript|NM_001291860.1|Coding|35/96|c.4398+39_4398+43delCACCC||||||;IC=1;IHP=8;NT=ref;QSI=41;QSI_NT=41;RC=2;RU=GGGTG;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.133440625861;facetsCF_EM=0.129026801702;facetsLCN=0;facetsLCN_EM=0;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=2.4836812113e-05;endometrial_CN_high;endometrial_POLE;endometrial_Serous;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	93:93:94.68:0.0:0.0:94,98:0,0:10,12	51:51:53.5:0.0:0.0:44,50:4,4:6,6
-1	152083943	1:152083943_C/CTTCCTCCGG	C	CTTCCTCCGG	.	PASS	ANN=CTTCCTCCGG|inframe_insertion|MODERATE|TCHH|TCHH|transcript|NM_007113.3|Coding|3/3|c.1749_1750insCCGGAGGAA|p.Arg581_Glu583dup|1844/6995|1749/5832|583/1943||;IC=1;IHP=4;NT=ref;QSI=142;QSI_NT=142;RC=0;RU=TTCCTCCGG;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.133440625861;facetsCF_EM=0.129026801702;facetsLCN=0;facetsLCN_EM=0;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=6.71075972569e-10;endometrial_Serous;pathogenicity=passenger;provean_protein_id=ENSP00000357794;provean_pred=Neutral;provean_score=0.28;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	292:292:294.2:1.59:0.0:286,295:0,0:3,2	238:238:227.18:3.21:0.0:189,225:6,7:43,55
-6	30569998	6:30569998_CACCACT/C	CACCACT	C	.	PASS	ANN=C|inframe_deletion|MODERATE|PPP1R10|PPP1R10|transcript|NM_002714.3.6|Coding|19/20|c.2422_2427delAGTGGT|p.Ser808_Gly809del|3043/4588|2422/2823|808/940||;IC=0;IHP=4;NT=ref;QSI=30;QSI_NT=30;RC=1;RU=ACCACT;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.183355603601;facetsLCN=0;facetsLCN_EM=0;facetsTCN=2;facetsTCN_EM=2;MutationTaster_pred=polymorphism;MutationTaster_score=4.2220074187e-05;pathogenicity=passenger;provean_protein_id=ENSP00000365694;provean_pred=Neutral;provean_score=0.23;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	273:273:258.89:0.54:0.0:276,290:0,1:7,6	151:151:152.06:5.62:0.0:132,179:4,5:23,20
-6	30919263	6:30919263_A/ACACCAT	A	ACACCAT	.	PASS	ANN=ACACCAT|inframe_insertion|MODERATE|DPCR1|DPCR1|transcript|NM_080870.3|Coding|2/3|c.3024_3025insCCATCA|p.Thr1008_Ala1009insProSer|3025/5286|3025/4182|1009/1393||INFO_REALIGN_3_PRIME;IC=1;IHP=2;NT=ref;QSI=57;QSI_NT=57;RC=0;RU=CACCAT;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.183355603601;facetsLCN=0;facetsLCN_EM=0;facetsTCN=2;facetsTCN_EM=2;MutationTaster_pred=polymorphism;MutationTaster_score=1.75374769495e-06;pathogenicity=passenger;provean_protein_id=ENSP00000417182;provean_pred=Neutral;provean_score=1.82;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	120:120:118.97:0.18:0.0:118,120:0,0:2,2	60:60:61.3:4.13:0.0:42,54:4,4:14,11
-6	31106500	COSM1443223	TC	T	.	PASS	AA=p.H40fs*25;ANN=T|frameshift_variant|HIGH|PSORS1C1|PSORS1C1|transcript|NM_014068.2|Coding|5/6|c.118delC|p.His40fs|407/908|118/459|40/152||INFO_REALIGN_3_PRIME,T|downstream_gene_variant|MODIFIER|CCHCR1|CCHCR1.4|transcript|NM_001105564.1.4|Coding||c.*2805delG|||||3715|,T|intron_variant|MODIFIER|PSORS1C2|PSORS1C2|transcript|NM_014069.2|Coding|1/1|c.55+248delG||||||;CDS=c.112delC;CNT=1;GENE=PSORS1C1;IC=6;IHP=8;LOF=(PSORS1C1|PSORS1C1|1|1.00);NT=ref;QSI=43;QSI_NT=43;RC=7;RU=C;SGT=ref->het;SOMATIC;STRAND=+;TQSI=2;TQSI_NT=2;facetsCF=0.181133146284;facetsCF_EM=0.183355603601;facetsLCN=0;facetsLCN_EM=0;facetsTCN=2;facetsTCN_EM=2;MutationTaster_pred=polymorphism_automatic;MutationTaster_score=1.0;pathogenicity=.;;hotspot_per_annotation=0,0,0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	217:217:206.48:0.54:0.0:205,215:0,1:15,13	55:55:53.62:0.0:0.0:40,55:6,6:10,11
-6	129950677	6:129950677_CG/C	CG	C	.	PASS	ANN=C|intron_variant|MODIFIER|ARHGAP18|ARHGAP18|transcript|NM_033515.2|Coding|4/14|c.617-11delC||||||;IC=5;IHP=6;NT=ref;QSI=31;QSI_NT=31;RC=6;RU=G;SGT=ref->het;SOMATIC;TQSI=2;TQSI_NT=2;facetsCF=0.181133146284;facetsCF_EM=0.183355603601;facetsLCN=0;facetsLCN_EM=0;facetsTCN=2;facetsTCN_EM=2;MutationTaster_pred=polymorphism;MutationTaster_score=1.87872075008e-07;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	76:76:77.83:0.0:0.0:66,70:0,0:10,10	25:25:27.69:0.0:0.0:14,19:4,4:7,7
-9	78973706	9:78973706_GGAT/G	GGAT	G	.	PASS	ANN=G|disruptive_inframe_deletion|MODERATE|PCSK5|PCSK5|transcript|NM_001190482.1|Coding|37/37|c.5463_5465delTGA|p.Asp1822del|6001/9538|5463/5583|1821/1860||INFO_REALIGN_3_PRIME;IC=3;IHP=3;NT=ref;QSI=64;QSI_NT=64;RC=4;RU=GAT;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.482002462303;facetsLCN=0;facetsLCN_EM=1;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=disease_causing;MutationTaster_score=0.999989971887;endometrial_CN_high;endometrial_POLE;breast_ER_positive;breast_Pam50_Basal;breast_Triple_negative;pathogenicity=passenger;provean_protein_id=ENSP00000446280;provean_pred=Deleterious;provean_score=-4.68;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	166:166:162.71:0.4:0.0:139,144:0,0:30,32	36:36:40.96:0.0:0.0:28,36:4,4:5,6
-10	101578956	COSM1345245	CA	C	.	PASS	AA=p.G853fs*7;ANN=C|frameshift_variant|HIGH|ABCC2|ABCC2|transcript|NM_000392.4|Coding|19/32|c.2556delA|p.Lys852fs|2803/5446|2556/4638|852/1545||INFO_REALIGN_3_PRIME;CDS=c.2551delA;CNT=1;GENE=ABCC2;IC=5;IHP=6;LOF=(ABCC2|ABCC2|1|1.00);NT=ref;QSI=38;QSI_NT=38;RC=6;RU=A;SGT=ref->het;SOMATIC;STRAND=+;TQSI=2;TQSI_NT=2;facetsCF=0.609757622114;facetsCF_EM=0.609757622114;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;MutationTaster_pred=disease_causing_automatic;MutationTaster_score=1.0;endometrial_Endometrioid_MSS;endometrial_Endometrioid;pathogenicity=.;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	91:91:85.37:0.19:0.0:88,88:0,0:2,2	17:17:17.0:0.0:0.0:12,15:4,4:1,1
-11	488475	11:488475_T/TC	T	TC	.	PASS	ANN=TC|intron_variant|MODIFIER|PTDSS2|PTDSS2|transcript|NM_030783.1|Coding|7/11|c.736-54_736-53insC||||||;IC=2;IHP=6;NT=ref;QSI=44;QSI_NT=44;RC=1;RU=C;SGT=ref->het;SOMATIC;TQSI=2;TQSI_NT=2;facetsCF=0.609757622114;facetsCF_EM=0.609757622114;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;MutationTaster_pred=polymorphism;MutationTaster_score=2.73657863037e-07;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	72:72:78.56:0.57:0.0:70,70:0,0:2,2	17:17:27.31:0.0:0.0:10,15:4,5:3,3
-13	111120573	13:111120573_TATC/T	TATC	T	.	PASS	ANN=T|intron_variant|MODIFIER|COL4A2|COL4A2|transcript|NM_001846.2|Coding|27/47|c.2096-990_2096-988delATC||||||;IC=0;IHP=3;NT=ref;QSI=108;QSI_NT=108;RC=1;RU=ATC;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.183355603601;facetsLCN=0;facetsLCN_EM=0;facetsTCN=2;facetsTCN_EM=2;MutationTaster_pred=polymorphism;MutationTaster_score=1.31778325696e-06;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	219:219:218.62:0.31:0.0:224,231:0,0:1,1	60:60:60.15:0.0:0.0:46,63:10,13:5,8
-16	4559692	16:4559692_CTCCAGT/C	CTCCAGT	C	.	PASS	ANN=C|inframe_deletion|MODERATE|HMOX2|HMOX2|transcript|NM_001286267.1|Coding|7/7|c.1051_1056delCAGTTC|p.Gln351_Phe352del|1199/1852|1051/1113|351/370||INFO_REALIGN_3_PRIME,C|downstream_gene_variant|MODIFIER|CDIP1|CDIP1|transcript|NM_001199054.1|Coding||c.*877_*877delACTGGA|||||984|;ExAC_AF=0.001017;IC=0;IHP=4;NT=ref;QSI=83;QSI_NT=83;RC=1;RU=TCCAGT;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.482002462303;facetsLCN=0;facetsLCN_EM=1;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=disease_causing;MutationTaster_score=0.999362331345;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous;pathogenicity=passenger;provean_protein_id=ENSP00000219700;provean_pred=Deleterious;provean_score=-7.52;;hotspot_per_annotation=0,0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	181:181:193.47:0.18:0.0:194,202:0,0:3,3	94:94:85.68:0.0:0.0:83,95:6,6:7,10
-16	10912364	16:10912364_GC/G	GC	G	.	PASS	ANN=G|5_prime_UTR_variant|MODIFIER|TVP23A|TVP23A|transcript|NM_001079512.2|Coding|1/8|c.-15delG|||||15|;IC=2;IHP=5;NT=ref;QSI=58;QSI_NT=58;RC=3;RU=C;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.482002462303;facetsLCN=0;facetsLCN_EM=1;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=0.0027650195134;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	134:134:133.19:0.74:0.0:130,136:0,0:5,5	155:155:140.5:0.0:0.0:112,139:16,18:23,22
-19	40964470	rs199581429	C	CAG	.	PASS	ANN=CAG|intron_variant|MODIFIER|BLVRB|BLVRB|transcript|NM_000713.2|Coding|1/4|c.80-19_80-18insCT||||||;CAF=[0.9945,0.00551];COMMON=1;ExAC_AF=0.008301;GMAF=0.00551;IC=4;IHP=2;INT;KGPROD;KGPhase1;KGPilot123;NT=ref;QSI=53;QSI_NT=53;RC=3;RS=199581429;RSPOS=40964470;RU=AG;SAO=0;SGT=ref->het;SOMATIC;SSR=0;TQSI=2;TQSI_NT=2;VC=DIV;VP=0x05000008000100001c000200;WGT=1;dbSNPBuildID=137;facetsCF=0.181133146284;facetsCF_EM=0.482002462303;facetsLCN=0;facetsLCN_EM=1;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=2.64303618991e-07;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_POLE;endometrial_Serous;breast_ER_positive;breast_Pam50_Basal;breast_Pam50_LumB;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	119:119:118.04:0.14:0.0:109,109:0,0:10,10	85:85:85.55:0.0:0.0:59,69:12,12:12,15
-19	43969652	COSM1724789	AAGC	A	.	PASS	AA=p.L24delL;ANN=A|disruptive_inframe_deletion|MODERATE|LYPD3|LYPD3|transcript|NM_014400.2|Coding|1/5|c.69_71delGCT|p.Leu24del|179/1706|69/1041|23/346||;CDS=c.69_71delGCT;CNT=1;GENE=LYPD3;IC=5;IHP=2;NT=ref;QSI=33;QSI_NT=33;RC=6;RU=AGC;SGT=ref->het;SOMATIC;STRAND=-;TQSI=1;TQSI_NT=1;facetsCF=0.181133146284;facetsCF_EM=0.482002462303;facetsLCN=0;facetsLCN_EM=1;facetsTCN=3;facetsTCN_EM=3;MutationTaster_pred=polymorphism;MutationTaster_score=2.18298001897e-09;breast_ER_positive;breast_Pam50_Her2;pathogenicity=passenger;provean_protein_id=ENSP00000244333;provean_pred=Neutral;provean_score=-1.0;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	83:83:73.08:0.03:0.0:68,79:0,0:15,14	47:47:43.69:0.0:0.0:36,51:6,7:5,4
-22	43213779	COSM1416648	AT	A	.	PASS	AA=p.N299fs*22;ANN=A|frameshift_variant|HIGH|ARFGAP3|ARFGAP3|transcript|NM_014570.4|Coding|10/16|c.896delA|p.Asn299fs|1116/2833|896/1551|299/516||;CDS=c.896delA;CNT=5;ExAC_AF=9.415e-06;GENE=ARFGAP3;IC=7;IHP=8;LOF=(ARFGAP3|ARFGAP3|1|1.00);NT=ref;QSI=66;QSI_NT=66;RC=8;RU=T;SGT=ref->het;SOMATIC;STRAND=-;TQSI=2;TQSI_NT=2;facetsCF=0.609757622114;facetsCF_EM=0.609757622114;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;MutationTaster_pred=disease_causing_automatic;MutationTaster_score=1.0;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Pam50_Normal;breast_Triple_negative;pathogenicity=.;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	192:192:189.2:0.06:0.0:181,186:1,1:12,12	62:62:56.26:0.0:0.0:44,56:9,9:7,7
-22	45757811	22:45757811_TTGC/T	TTGC	T	.	PASS	ANN=T|disruptive_inframe_deletion|MODERATE|SMC1B|SMC1B|transcript|NM_148674.4|Coding|17/25|c.2613_2615delGCA|p.Gln872del|2667/4252|2613/3708|871/1235||;IC=2;IHP=2;NT=ref;QSI=38;QSI_NT=38;RC=3;RU=TGC;SGT=ref->het;SOMATIC;TQSI=1;TQSI_NT=1;facetsCF=0.609757622114;facetsCF_EM=0.609757622114;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;MutationTaster_pred=polymorphism;MutationTaster_score=0.316879880737;pathogenicity=passenger;provean_protein_id=ENSP00000350036;provean_pred=Deleterious;provean_score=-7.92;;hotspot_per_annotation=0	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	87:87:84.45:0.0:0.0:84,88:0,0:3,3	36:36:32.1:0.0:0.0:30,45:4,4:2,3
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	ASAv1N	ASAv1T
+1	120512278	1:120512278_A/T	A	T	.	PASS	ANN=T|missense_variant|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=N;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.49;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=PASSENGER/OTHER;fathmm_score=4.14;cancer_gene_census;pathogenicity=passenger	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+1	120512278	1:120512278_A/T	A	T	.	PASS	ANN=T|missense_variant|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=D;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.49;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=PASSENGER/OTHER;fathmm_score=4.14;cancer_gene_census;pathogenicity=passenger	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+1	120512278	1:120512278_A/T	A	T	.	PASS	ANN=T|missense_variant|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=D;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.49;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=CANCER;fathmm_score=4.14;cancer_gene_census;pathogenicity=pathogenic	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+1	120512278	1:120512278_A/T	A	T	.	PASS	ANN=T|missense_variant|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=D;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.49;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=CANCER;fathmm_score=4.14;pathogenicity=potentially_pathogenic	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+1	120512278	1:120512278_A/T	A	T	.	PASS	ANN=T|missense_variant|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=D;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.09;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=PASSENGER/OTHER;fathmm_score=4.14;cancer_gene_census;kandoth;lawrence;pathogenicity=pathogenic	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+7	117199646	1:120512278_A/T	CTTT	C	.	PASS	ANN=T|inframe_deletion|MODERATE|NOTCH2|NOTCH2|transcript|NM_024408.3|Coding|6/34|c.964T>A|p.Tyr322Asn|1261/11466|964/7416|322/2471||;SOMATIC;VT=SNP;facetsCF=1.0;facetsCF_EM=1.0;facetsLCN=1;facetsLCN_EM=1;facetsTCN=2;facetsTCN_EM=2;dbNSFP_MutationAssessor_pred=H;dbNSFP_Uniprot_id_Polyphen2=.;dbNSFP_Uniprot_acc_Polyphen2=D2WEZ3;dbNSFP_MutationTaster_pred=N;dbNSFP_Polyphen2_HVAR_score=0.915;dbNSFP_MutationTaster_score=1.0;dbNSFP_MutationAssessor_score=3.745;dbNSFP_PROVEAN_pred=D;dbNSFP_Polyphen2_HVAR_pred=D;dbNSFP_Interpro_domain=EGF-like;Breast_chasm_mut=NM_024408.2_Y322N;Breast_chasm_pval=0.524;Breast_chasm_score=0.79;fathmm_query=ENSP00000256646_Y322N;fathmm_pred=PASSENGER/OTHER;fathmm_score=4.14;hap_insuf;cancer_gene_census;kandoth;lawrence;pathogenicity=pathogenic;provean_protein_id=ENSP00000003084;provean_pred=Deleterious;provean_score=-13.79	GT:AD:BQ:DP:FA:SS	0:124,2:.:126:0.016:0	0/1:121,100:27.0:221:0.452:2
+13	49037890	13:49037890_CATATGCAAAGTGAAGA/C	CATATGCAAAGTGAAGA	C	.	PASS	ANN=C|frameshift_variant|HIGH|RB1|RB1|transcript|NM_000321.2|Coding|21/27|c.2135_2150delGCAAAGTGAAGAATAT|p.Cys712fs|2301/4772|2135/2787|712/928||INFO_REALIGN_3_PRIME;LOF=(RB1|RB1|1|1.00);SOMATIC;facetsCF=0.8426418804;facetsCF_EM=0.765856363708;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;pathogenicity=potentially_pathogenic;IC=0;IHP=4;MutationTaster_pred=disease_causing_automatic;MutationTaster_score=1.0;NT=ref;QSI=86;QSI_NT=86;RC=1;RU=ATATGCAAAGTGAAGA;SGT=ref->het;TQSI=1;TQSI_NT=1	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	58:58:53.39:0.0:0.0:63,65:0,0:5,5	38:38:48.71:0.0:0.0:23,24:17,17:16,16
+13	49037890	13:49037890_CATATGCAAAGTGAAGA/C	CATATGCAAAGTGAAGA	C	.	PASS	ANN=C|frameshift_variant|HIGH|RB1|RB1|transcript|NM_000321.2|Coding|21/27|c.2135_2150delGCAAAGTGAAGAATAT|p.Cys712fs|2301/4772|2135/2787|712/928||INFO_REALIGN_3_PRIME;LOF=(RB1|RB1|1|1.00);SOMATIC;facetsCF=0.8426418804;facetsCF_EM=0.765856363708;facetsLCN=0;facetsLCN_EM=0;facetsTCN=1;facetsTCN_EM=1;cancer_gene_census;pathogenicity=pathogenic;IC=0;IHP=4;MutationTaster_pred=disease_causing_automatic;MutationTaster_score=1.0;NT=ref;QSI=86;QSI_NT=86;RC=1;RU=ATATGCAAAGTGAAGA;SGT=ref->het;TQSI=1;TQSI_NT=1	DP:DP2:DP50:FDP50:SUBDP50:TAR:TIR:TOR	58:58:53.39:0.0:0.0:63,65:0,0:5,5	38:38:48.71:0.0:0.0:23,24:17,17:16,16
