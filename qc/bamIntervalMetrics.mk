@@ -15,15 +15,16 @@ NON_REF_FREQ = $(PERL) modules/qc/nonRefFreqFromPileup.pl
 NON_REF_FREQ_BIN_SIZE = 0.01
 
 SUMMARIZE_HS_METRICS = python modules/qc/summarize_hs_metrics.py
+SUMMARIZE_IDXSTATS = python modules/qc/summarize_idxstats.py
 
 
 .DELETE_ON_ERROR:
 
 .SECONDARY: 
 
-.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics insert_size_metrics
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics insert_size_metrics idxstats
 
-bam_interval_metrics : hs_metrics interval_report non_ref_metrics
+bam_interval_metrics : hs_metrics interval_report non_ref_metrics idxstats
 
 non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
 
@@ -35,6 +36,7 @@ interval_report : metrics/interval_report/index.html
 
 insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
 
+idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
 
 # interval metrics per sample
 metrics/%.hs_metrics.tsv metrics/%.interval_hs_metrics.tsv : bam/%.bam bam/%.bam.bai
@@ -91,6 +93,13 @@ metrics/insert_size_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).
 			grep -A1 '^MEDIAN_INSERT_SIZE' $$metrics | sed "1d; s/^/$$samplename\t/; s/\t\+$$//";  \
 		done; \
 		} > $@
+
+metrics/%.idxstats : bam/%.bam bam/%.bam.bai
+	$(call LSCRIPT,"samtools idxstats $< > $@")
+
+metrics/idxstats_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
+	$(INIT) $(SUMMARIZE_IDXSTATS) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME) --targets_file $(TARGETS_FILE) $^ > $@ 2> $(LOG)
+
 
 
 include modules/bam_tools/processBam.mk
