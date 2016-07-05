@@ -44,7 +44,7 @@ def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ense
     for attempt in range(max_retry):
         try:
             br = Browser()
-            sys.stderr.write("Querying Provean: {}\n".format(query))
+            sys.stderr.write("Querying Provean:\n{}".format(query))
             br.open('http://provean.jcvi.org/genome_submit_2.php?species=human')
             br.form = list(br.forms())[1]  # select the chrpos form
             control = br.form.find_control("CHR")
@@ -87,6 +87,7 @@ def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ense
                 record.INFO['provean_pred'] = '.'
                 record.INFO['provean_score'] = '.'
     else:
+        raise(Exception("Local Provean not implemented."))
         for record in records:
             add_provean_info_local(record, rest_server=rest_server, provean_script=provean_script,
                                    qsub_script=qsub_script, qsub_queue=qsub_queue, mem_per_thread=mem_per_thread,
@@ -243,20 +244,20 @@ def is_missense(record):
 
 def get_fs_splice_stop_pathogenicity(record):
     if (is_loh(record) or is_hap_insuf(record)) and is_cancer_gene(record):
-        record.INFO["pathogenicity"] = "pathogenic"
+        return "pathogenic"
     elif is_loh(record) or is_hap_insuf(record) or is_cancer_gene(record):
-        record.INFO["pathogenicity"] = "potentially_pathogenic"
+        return "potentially_pathogenic"
     else:
-        record.INFO["pathogenicity"] = "passenger"
+        return "passenger"
 
 
 def is_mt_pathogenic(record):
     pathogenic = False
     if 'MutationTaster_pred' in record.INFO:
-        pathogenic = 'disease' in record.INFO['MutationTaster_pred']
+        pathogenic = any(['disease' in info for info in record.INFO['MutationTaster_pred']])
     elif 'dbNSFP_MutationTaster_pred' in record.INFO:
-        pathogenic = record.INFO['dbNSFP_MutationTaster_pred'] == 'D' or \
-            record.INFO['dbNSFP_MutationTaster_pred'] == 'A'
+        pathogenic = 'D' in record.INFO['dbNSFP_MutationTaster_pred'] or \
+            'A' in record.INFO['dbNSFP_MutationTaster_pred']
     return pathogenic
 
 
@@ -277,11 +278,11 @@ def is_chasm_pathogenic(record):
 
 
 def is_fathmm_pathogenic(record):
-    return record.INFO['fathmm_pred'] == "CANCER" if 'fathmm_pred' in record.INFO else False
+    return "CANCER" in record.INFO['fathmm_pred'] if 'fathmm_pred' in record.INFO else False
 
 
 def is_cancer_gene(record):
-    return 'lawrence' in record.INFO or 'kandoth' in record.INFO
+    return 'lawrence' in record.INFO or 'kandoth' in record.INFO or 'cancer_gene_census' in record.INFO
 
 
 def is_hap_insuf(record):
@@ -299,7 +300,7 @@ def is_loh(record):
 def get_missense_pathogenicity(record):
     if is_mt_pathogenic(record) or is_chasm_pathogenic(record):
         if is_fathmm_pathogenic(record) or is_chasm_pathogenic(record):
-            return "pathogenic" if is_cancer_gene else "potentially_pathogenic"
+            return "pathogenic" if is_cancer_gene(record) else "potentially_pathogenic"
         else:
             return "passenger"
     else:
@@ -307,7 +308,7 @@ def get_missense_pathogenicity(record):
 
 
 def is_provean_pathogenic(record):
-    return 'provean_pred' in record.INFO and any([x == 'Deleterious' for x in record.INFO['provean_pred']])
+    return 'provean_pred' in record.INFO and record.INFO['provean_pred'] == 'Deleterious'
 
 
 def get_provean_pathogenicity(record):
@@ -329,8 +330,10 @@ def classify_pathogenicity(record):
         record.INFO["pathogenicity"] = get_fs_splice_stop_pathogenicity(record)
     elif is_missense(record):
         record.INFO["pathogenicity"] = get_missense_pathogenicity(record)
-    elif is_provean_record(record):
+    elif is_inframe(record):
         record.INFO["pathogenicity"] = get_provean_pathogenicity(record)
+    else:
+        record.INFO["pathogenicity"] = None
 
 
 def is_inframe(record):
@@ -338,7 +341,7 @@ def is_inframe(record):
     return any(["inframe" in ef for ef in ann_effect])
 
 
-def is_provean_record(record):
+def should_run_provean(record):
     return not is_fs_splice_stop(record) and not is_missense(record) and is_inframe(record) and not is_mt_pathogenic(record)
 
 
@@ -381,7 +384,7 @@ if __name__ == "__main__":
     records = list()
     provean_records = list()
     for record in vcf_reader:
-        if is_provean_record(record):
+        if should_run_provean(record):
             provean_records.append(record)
         records.append(record)
     if args.run_local:
