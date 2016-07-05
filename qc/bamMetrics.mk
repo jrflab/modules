@@ -14,6 +14,8 @@ COLLECT_METRICS = $(JAVA) -Xmx8G -jar $(PICARD_DIR)/CollectMultipleMetrics.jar V
 COLLECT_WGS_METRICS = $(JAVA) -Xmx8G -jar $(PICARD_JAR) CollectWgsMetrics VALIDATION_STRINGENCY=LENIENT
 COLLECT_GC_METRICS = $(JAVA) -Xmx8G -jar $(PICARD_DIR)/CollectGcBiasMetrics.jar VALIDATION_STRINGENCY=LENIENT
 
+SUMMARIZE_IDXSTATS = python modules/qc/summarize_idxstats.py
+
 PHONY += bam_metrics
 bam_metrics : summary_metrics gc flagstats wgs_metrics
 
@@ -27,6 +29,8 @@ PHONY += dup
 dup : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metrics)
 PHONY += gc
 gc : $(foreach sample,$(SAMPLES),metrics/$(sample).gc_bias_metrics)
+PHONY += idxstats
+idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
 
 metrics/%.alignment_summary_metrics : bam/%.bam
 	$(call LSCRIPT_MEM,12G,13G,"$(COLLECT_METRICS) I=$< O=metrics/$* REFERENCE_SEQUENCE=$(REF_FASTA)")
@@ -48,5 +52,12 @@ metrics/dup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metr
 	for metrics in $^; do \
 	    grep -A1 '^LIBRARY' $$metrics | sed '1d' >> $@; \
 	done
+
+metrics/%.idxstats : bam/%.bam bam/%.bam.bai
+	$(call LSCRIPT,"samtools idxstats $< > $@")
+
+metrics/idxstats_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
+	$(INIT) $(SUMMARIZE_IDXSTATS) --chromosomes $(CHROMOSOMES) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME)  $^ > $@ 2> $(LOG)
+
 
 .PHONY: $(PHONY)
