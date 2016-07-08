@@ -12,112 +12,6 @@ suppressPackageStartupMessages(library("facets"));
 suppressPackageStartupMessages(library("foreach"));
 suppressPackageStartupMessages(library("Cairo"));
 
-plotSampleCNCF <- function (x, fit) 
-{
-    mat = x$jointseg
-    cncf = fit$cncf
-    dipLogR <- fit$dipLogR
-    layout(matrix(c(1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6), ncol = 1))
-    par(mar = c(3, 3, 1, 1), mgp = c(2, 0.7, 0))
-    chr = mat$chrom
-    len = table(chr)
-    altcol = rep(c("light blue", "gray"), 12)[-24]
-    chr.col = rep(altcol, len)
-    nmark = cncf$num.mark
-    tmp = cumsum(len)
-    start = c(1, tmp[-23] + 1)
-    end = tmp
-    mid = start + len/2
-    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-max(c(max(abs(mat$cnlr)), 4)), 
-        max(c(max(abs(mat$cnlr)), 4))), col = c("grey", "lightblue")[1 + rep(cncf$chrom - 
-        2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio", xlab="Chromosomes")
-#    abline(h = dipLogR, col = "magenta4")
-    points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2, 
-        col = "brown")
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1)
-    box()
-    plot(mat$valor, axes = F, pch = ".", cex = 1.5, col = c("grey", 
-        "lightblue")[1 + rep(cncf$chrom - 2 * floor(cncf$chrom/2), 
-        cncf$num.mark)], ylab = "log-odds-ratio", ylim = c(-4, 
-        4))
-    points(rep(sqrt(abs(cncf$mafR)), cncf$num.mark), pch = ".", 
-        cex = 2, col = "brown")
-    points(-rep(sqrt(abs(cncf$mafR)), cncf$num.mark), pch = ".", 
-        cex = 2, col = "brown")
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1)
-    box()
-    plot(rep(cncf$cf.em, cncf$num.mark), axes = F, pch = ".", 
-        cex = 2, xlab = "Chromosome", ylab = "Cellular fraction (EM)", 
-        ylim = c(0, 1))
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1)
-    box()
-    abline(v = start, lty = 3, col = "gray")
-    abline(v = end, lty = 3, col = "gray")
-    tcnscaled <- cncf$tcn.em
-    tcnscaled[cncf$tcn.em > 5 & !is.na(cncf$tcn.em)] = (5 + (tcnscaled[cncf$tcn.em > 
-        5 & !is.na(cncf$tcn.em)] - 5)/3)
-    matplot(cbind(rep(tcnscaled, cncf$num.mark), rep(cncf$lcn.em, 
-        cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
-        lwd = 1, ylab = "Integer copy number (EM)", yaxt = "n", 
-        xaxt = "n", ylim=c(0, max(tcnscaled)))
-    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    box()
-    abline(v = start, lty = 3, col = "gray")
-    abline(v = end, lty = 3, col = "gray")
-    abline(h = c(0:5, 5 + (1:35)/3), lty = 3, col = "gray")
-    plot(rep(cncf$cf, cncf$num.mark), axes = F, pch = ".", cex = 2, 
-        xlab = "Chromosome", ylab = "Cellular fraction (cncf)", 
-        ylim = c(0, 1))
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1)
-    box()
-    abline(v = start, lty = 3, col = "gray")
-    abline(v = end, lty = 3, col = "gray")
-    tcnscaled <- cncf$tcn
-    tcnscaled[cncf$tcn > 5 & !is.na(cncf$tcn)] = (5 + (tcnscaled[cncf$tcn > 
-        5 & !is.na(cncf$tcn)] - 5)/3)
-    matplot(cbind(rep(tcnscaled, cncf$num.mark), rep(cncf$lcn, 
-        cncf$num.mark) - 0.1), pch = ".", cex = 3, col = 1:2, 
-        lwd = 1, ylab = "Integer copy number (cncf)", yaxt = "n", 
-        xaxt = "n", ylim = c(0, max(tcnscaled)))
-    axis(2, at = c(0:5, 5 + (1:35)/3), labels = 0:40, cex.axis = 1)
-    axis(side = 1, at = mid, 1:23, cex.axis = 1, las = 2)
-    box()
-    abline(v = start, lty = 3, col = "gray")
-    abline(v = end, lty = 3, col = "gray")
-    abline(h = c(0:5, 5 + (1:35)/3), lty = 3, col = "gray")
-}
-
-plotSampleLRR <- function(x, fit)
-{
-    mat = x$jointseg
-    cncf = fit$cncf
-    dipLogR <- fit$dipLogR
-    par(mar = c(3, 3, 1, 1), mgp = c(2, 0.7, 0))
-    chr = mat$chrom
-    len = table(chr)
-    altcol = rep(c("light blue", "gray"), 12)[-24]
-    chr.col = rep(altcol, len)
-    nmark = cncf$num.mark
-    tmp = cumsum(len)
-    start = c(1, tmp[-23] + 1)
-    end = tmp
-    mid = start + len/2
-    plot(mat$cnlr, pch = ".", axes = F, cex = 1.5, ylim = c(-max(c(max(abs(mat$cnlr)), 4)),
-        max(c(max(abs(mat$cnlr)), 4))), col = c("grey", "lightblue")[1 + rep(cncf$chrom -
-        2 * floor(cncf$chrom/2), cncf$num.mark)], ylab = "log-ratio", xlab="Chromosomes")
-    points(rep(cncf$cnlr.median, cncf$num.mark), pch = ".", cex = 2,
-        col = "brown")
-    axis(side = 1, at = mid, c(1:20, "", 22, "X"), cex.axis = 1, las = 2)
-    axis(side = 2, cex.axis = 1, las=2)
-    abline(h=0, lty=2, col="lightgrey")
-    box()
-}
-
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
@@ -175,6 +69,7 @@ switch(opt$genome,
        })
 
 
+chromLevels <- c(1:17,19:22, "X")
 
 buildData=installed.packages()["facets",]
 cat("#Module Info\n")
@@ -253,15 +148,23 @@ cat("# dipLogR =", fit$dipLogR, "\n", file = ff, append = T)
 cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
+CairoPNG(file = str_c(opt$outPrefix, ".lrr.png"), height = 400, width = 850)
+plotSample(out2)
+dev.off()
+
+pdf(file = str_c(opt$outPrefix, ".lrr.pdf"), height = 3, width = 9)
+plotSample(out2)
+dev.off()
+
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
 plotSampleCNCF(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 3, width = 9)
-plotSampleLRR(out2, fit)
+pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 9, width = 9)
+plotSampleCNCF(out2, fit)
 dev.off()
 
-tab <- cbind(out2$IGV[, 1:4], fit$cncf[, 2:ncol(fit$cncf)])
+tab <- cbind(select(out2$IGV, ID:num.mark), select(fit$cncf, -start, -end, -chrom, -num.mark))
 write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
 
 warnings()
