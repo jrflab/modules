@@ -6,7 +6,7 @@ LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 2G
 PE := 1
 SHELL = modules/scripts/Rshell
-.SHELLFLAGS = -s -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
+.SHELLFLAGS = $(if $(findstring true,$(USE_CLUSTER)),-s) -m $(MEM) -p $(PE) -n $(@F) -l $(LOGDIR) -e 
 
 .ONESHELL:
 .DELETE_ON_ERROR:
