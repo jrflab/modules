@@ -4,7 +4,7 @@ PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
 CLASSIFY_PATHOGENICITY = python modules/vcf_tools/classify_pathogenicity_vcf.py
 CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --qsub_script modules/scripts/qsub.pl --num_provean_threads 5 --mem_per_thread 1.5G 
 vcf/ann3/pathogen/%.pathogen.vcf : vcf/ann2/%.vcf
-	$(INIT) $(call CHECK_VCF,$<,$@,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
+	$(INIT) $(call CHECK_VCF,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
 
 MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 vcf/ann2/mut_taste/%.mut_taste.vcf : vcf/ft2/%.vcf
