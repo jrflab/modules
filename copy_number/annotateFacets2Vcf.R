@@ -37,7 +37,6 @@ if (length(arguments$args) < 1) {
 facetsSeg <- read.table(opt$facetsFile, sep = '\t', header = T)
 facetsGr <- with(facetsSeg, GRanges(seqnames = chrom,
                                     ranges = IRanges(start = loc.start, end = loc.end),
-                                    CF = cf, TCN = tcn, LCN = lcn,
                                     CF_EM = cf.em, TCN_EM = tcn.em, LCN_EM = lcn.em))
 
 # output file
@@ -54,9 +53,6 @@ tab <- TabixFile(zipped, idx, yieldSize = 8000)
 
 open(tab)
 while(nrow(vcf <- readVcf(tab, 'hg19'))) {
-  info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Float", Description = "Facets cellular fraction", row.names = "facetsCF"))
-  info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets total copy number", row.names = "facetsTCN"))
-  info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets lesser copy number", row.names = "facetsLCN"))
   info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Float", Description = "Facets cellular fraction (EM)", row.names = "facetsCF_EM"))
   info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets total copy number (EM)", row.names = "facetsTCN_EM"))
   info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets lesser copy number (EM)", row.names = "facetsLCN_EM"))
@@ -64,9 +60,6 @@ while(nrow(vcf <- readVcf(tab, 'hg19'))) {
   seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
   ol <- findOverlaps(rowRanges(vcf), facetsGr, select = 'first')
   if (sum(!is.na(ol)) > 0) {
-    info(vcf)$facetsCF[!is.na(ol)] <- facetsGr$CF[ol[!is.na(ol)]]
-    info(vcf)$facetsTCN[!is.na(ol)] <- facetsGr$TCN[ol[!is.na(ol)]]
-    info(vcf)$facetsLCN[!is.na(ol)] <- facetsGr$LCN[ol[!is.na(ol)]]
     info(vcf)$facetsCF_EM[!is.na(ol)] <- facetsGr$CF_EM[ol[!is.na(ol)]]
     info(vcf)$facetsTCN_EM[!is.na(ol)] <- facetsGr$TCN_EM[ol[!is.na(ol)]]
     info(vcf)$facetsLCN_EM[!is.na(ol)] <- facetsGr$LCN_EM[ol[!is.na(ol)]]

@@ -76,8 +76,22 @@ facets/cncf/%.cncf.txt : facets/base_count/%.bc.gz
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
-facets/geneCN.fill.txt : facets/geneCN.txt $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
-	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) --outFile $@ --geneCNFile $< \
+
+#-------------------
+# facets fill script
+#-------------------
+
+GENECN_TXT = facets/geneCN.txt
+GENECN_PDF = facets/geneCN.raw.pdf
+GENECN_FILL_TXT = facets/geneCN.fill.txt
+GENECN_FILL_PDF = facets/geneCN.fill.pdf
+
+facets/geneCN.fill.txt : $(GENECN_TXT) $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) \
+		--geneCN_fill_pdf $(GENECN_FILL_PDF) \
+		--geneCN_fill_txt $(GENECN_FILL_TXT) \
+		--geneCN_pdf $(GENECN_PDF) \
+		--geneCN_txt $(GENECN_TXT) \
 		$(filter %.cncf.txt,$^)")
 
 facets/geneCN%heatmap.pdf  : facets/geneCN%txt
