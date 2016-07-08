@@ -1,4 +1,5 @@
 ```{r setup, include=F}
+options(useHTTPS=F)
 library("optparse");
 library("VariantAnnotation");
 library("BSgenome.Hsapiens.UCSC.hg19");
