@@ -34,6 +34,7 @@ USE_FACETS_COPYNUM ?= false
 define LIB_INIT
 library(ABSOLUTE)
 library(dplyr)
+library(readr)
 endef
 
 
