@@ -12,6 +12,8 @@ suppressPackageStartupMessages(library("facets"));
 suppressPackageStartupMessages(library("foreach"));
 suppressPackageStartupMessages(library("Cairo"));
 
+source('modules/copy_number/facetsPlotSampleLRR.R')
+
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
@@ -68,8 +70,6 @@ switch(opt$genome,
            stop(paste("Invalid Genome",opt$genome))
        })
 
-
-chromLevels <- c(1:17,19:22, "X")
 
 buildData=installed.packages()["facets",]
 cat("#Module Info\n")
@@ -149,11 +149,11 @@ cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
 CairoPNG(file = str_c(opt$outPrefix, ".lrr.png"), height = 400, width = 850)
-plotSample(out2)
+plotSampleLRR(out2, fit)
 dev.off()
 
 pdf(file = str_c(opt$outPrefix, ".lrr.pdf"), height = 3, width = 9)
-plotSample(out2)
+plotSampleLRR(out2, fit)
 dev.off()
 
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
