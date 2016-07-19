@@ -33,6 +33,7 @@ USE_FACETS_COPYNUM ?= false
 
 define LIB_INIT
 library(ABSOLUTE)
+library(dplyr)
 endef
 
 
@@ -108,9 +109,11 @@ else ifeq ($(USE_FACETS_COPYNUM),true)
 absolute/segment/%.seg.txt : facets/cncf/%.cncf.txt
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<", stringsAsFactors=F, header=T, sep="\t")
-	colnames(X) <- c("ID","Chromosome","Start","End","seg","Num_Probes","nhet","Segment_Mean","mafR","segclust","cnlr.median.clust","mafR.clust","cf","tcn","lcn","cf.em","tcn.em","lcn.em")
-	write.table(X, file="$@", sep="\t", quote=F, row.names=F, append=F)
+	cncf <-
+		read.table("$<", stringsAsFactors=F, header=T, sep="\t") %>%
+		select(ID, Chromosome=chrom, Start=loc.start, End=loc.end, seg, Num_Probes=num.mark, nhet, Segment_mean=cnlr.median, mafR, segclust, cnlr.median.clust, cf.em, tcn.em, lcn.em)
+
+	cncf %>% write_tsv("$@")
 else
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
