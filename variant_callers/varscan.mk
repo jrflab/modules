@@ -52,40 +52,11 @@ override VARSCAN_OPTS = --min-coverage $(VARSCAN_MIN_COVERAGE) \
 	--p-value $(VARSCAN_P_VALUE) \
 	--strand-filter $(VARSCAN_STRAND_FILTER) 
 
-FILTER_SUFFIX := dp_ft.dgd_ft.encode_ft.nft
-ifdef TARGETS_FILE
-FILTER_SUFFIX := $(FILTER_SUFFIX).target_ft
-endif
-ANN_SUFFIX := pass.dbsnp.cosmic.nsfp.eff
+VARIANT_TYPES = varscan_snps varscan_indels
+VCFS = $(foreach sample,$(SAMPLES),$(foreach type,$(VARIANT_TYPES),vcf/$(sample).$(type).vcf))
 
-ifeq ($(VALIDATION),true)
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX)
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
-else
-VCF_SUFFIX.varscan_snps := $(FILTER_SUFFIX).$(ANN_SUFFIX).chasm.fathmm
-VCF_SUFFIX.varscan_indels := $(FILTER_SUFFIX).$(ANN_SUFFIX)
-endif
-
-ifeq ($(HRUN),true)
-HRUN_FILTER ?= 1
-VCF_SUFFIX.varscan_indels := $(VCF_SUFFIX.varscan_indels).hrun.hrun_ft
-endif
-
-VCF_SUFFIXES = $(foreach type,$(VARIANT_TYPES),$(type).$(VCF_SUFFIX.$(type)))
-TABLE_SUFFIXES = $(foreach suff,$(VCF_SUFFIXES),$(suff).tab.novel $(suff).tab \
-				 $(foreach eff,$(EFF_TYPES),\
-				 $(suff).tab.$(eff).novel $(suff).tab.$(eff)))
-
-VCFS = $(foreach sample,$(SAMPLES),$(foreach suff,$(VCF_SUFFIXES),vcf/$(sample).$(suff).vcf))
-TABLES = $(foreach sample,$(SAMPLES),$(foreach suff,$(TABLE_SUFFIXES),tables/$(sample).$(suff).txt))
-ALLTABLES = $(foreach suff,$(TABLE_SUFFIXES),alltables/all.$(suff).txt)
-
-all : vcfs tables cnv
-variants : vcfs tables
-cnv : copycalls segments
+all : vcfs
 vcfs : $(VCFS)
-tables : $(TABLES) $(ALLTABLES)
-reports : $(foreach type,$(VARIANT_TYPES),reports/$(type).$(FILTER_SUFFIX).grp)
 
 
 ifeq ($(SPLIT_CHR),true)

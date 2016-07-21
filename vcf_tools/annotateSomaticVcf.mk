@@ -1,4 +1,11 @@
-ifndef SOMATIC_VARIANT_CALLER_INC
+# annotate mutect, strelka and varscan vcf files
+
+include modules/Makefile.inc
+
+LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
+
+override VARIANT_TYPES = mutect strelka_varscan_indels
+
 DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
@@ -37,36 +44,46 @@ SOMATIC_ANN3 += pathogen
 endif
 endif
 
+PHONY += all somatic_vcfs somatic_mafs
+all : somatic_vcfs somatic_mafs
+somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
+somatic_mafs : $(foreach type,$(VARIANT_TYPES),$(type)_mafs)
+
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
 define somatic-merged-vcf
 # first filter round
-vcf/ft/%.$1.ft.vcf : $$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/ft/$$(ft)/%.$1.$$(ft).vcf)
+vcf/%.$1.ft.vcf : $$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf//%.$1.$$(ft).vcf)
 	$$(MERGE_SCRIPT)
 # first annotation round
-vcf/ann/%.$1.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/ann/$$(ann)/%.$1.ft.$$(ann).vcf)
+vcf/%.$1.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/%.$1.ft.$$(ann).vcf)
 	$$(MERGE_SCRIPT)
 # post-filter after first annotation round
-vcf/ft2/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/ft2/$$(ft)/%.$1.ann.$$(ft).vcf)
+vcf/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/%.$1.ann.$$(ft).vcf)
 	$$(MERGE_SCRIPT)
 # post-filter after first annotation round
 ifdef SOMATIC_ANN2
-vcf/ann2/%.$1.ann2.vcf : $$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/ann2/$$(ann)/%.$1.ft2.$$(ann).vcf)
+vcf/%.$1.ann2.vcf : $$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf)
 	$$(MERGE_SCRIPT)
 else
-vcf/ann2/%.$1.ann2.vcf : vcf/ft2/%.$1.ft2.pass.vcf
+vcf/%.$1.ann2.vcf : vcf/%.$1.ft2.pass.vcf
 	$$(INIT) cp $$< $$@
 endif
 ifdef SOMATIC_ANN3
-vcf_ann/%.$1.vcf : $$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/ann3/$$(ann)/%.$1.ann2.$$(ann).vcf)
+vcf_ann/%.$1.vcf : $$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ann2.$$(ann).vcf)
 	$$(MERGE_SCRIPT)
 else
-vcf_ann/%.$1.vcf: vcf/ann2/%.$1.ann2.vcf
+vcf_ann/%.$1.vcf: vcf/%.$1.ann2.vcf
 	$$(INIT) cp $$< $$@
 endif
+PHONY += $1_vcfs $1_mafs
+$1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
+$1_mafs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.maf)
 endef
-SOMATIC_VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
-SOMATIC_MAFS = $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$1.maf)
+$(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 
-endif
-SOMATIC_VARIANT_CALLER_INC = true
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY) 
+
+include modules/vcf_tools/vcftools.mk

@@ -13,9 +13,8 @@ PHONY += strelka strelka_vcfs strelka_mafs
 strelka : strelka_vcfs #strelka_mafs
 	
 VARIANT_TYPES := strelka_snps strelka_indels
-$(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
-strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
-strelka_mafs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_MAFS,$(type)))
+strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
+strelka_mafs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$(type).maf))
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
