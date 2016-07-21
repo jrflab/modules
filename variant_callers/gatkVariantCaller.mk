@@ -17,7 +17,6 @@ LOGDIR ?= log/gatk.$(NOW)
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/variantCaller.inc
 
 VPATH ?= bam
 
@@ -44,15 +43,13 @@ VPATH ?= bam
 ##### MAIN TARGETS ######
 VARIANT_TYPES = gatk_snps gatk_indels
 
-PHONY += gatk gatk_vcfs gatk_mafs gatk_reports
+PHONY += gatk gatk_vcfs gatk_mafs
 
-gatk : gatk_vcfs gatk_mafs # reports
+gatk : gatk_vcfs #gatk_mafs reports
 
-$(foreach type,$(VARIANT_TYPES),$(eval $(call merged-vcf,$(type))))
-gatk_vcfs : $(foreach type,$(VARIANT_TYPES),$(call VCFS,$(type)) $(addsuffix .idx,$(call VCFS,$(type))))
-gatk_mafs : $(foreach type,$(VARIANT_TYPES),$(call MAFS,$(type)))
+gatk_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach sample,$(SAMPLES),vcf/$(sample).$(type).vcf))
+gatk_mafs : $(foreach type,$(VARIANT_TYPES),$(foreach sample,$(SAMPLES),maf/$(sample).$(type).maf))
 
-gatk_reports : $(foreach type,gatk_indels gatk_snps,reports/$(type).dp_ft.grp)
 
 include modules/variant_callers/gatk.mk
 

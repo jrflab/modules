@@ -20,13 +20,7 @@ hotspot_vcfs : $(if $(SAMPLE_PAIRS),\
 hotspot_tables : $(if $(SAMPLE_PAIRS),alltables/allTN.hotspot.tab.txt\
 	alltables/all.hotspot.tab.txt)
 
-vcf_ann/%.hotspot.vcf : vcf/ann/%.hotspot.vcf
-	$(INIT) cp $< $@
-
-vcf/ft/%.hotspot.vcf : vcf/ft/ac_ft/%.hotspot.ac_ft.vcf
-	$(INIT) cp $< $@
-
-vcf/ann/%.hotspot.vcf : vcf/ann/hotspot_ann/%.hotspot.hotspot_ann.vcf
+vcf_ann/%.hotspot.vcf : vcf/%.hotspot.ac_ft.hotspot_ann.vcf
 	$(INIT) cp $< $@
 
 vcf/%.hotspot.vcf : $(foreach i,$(HOTSPOT_VCF_SEQ),hotspot/%.hotspot.$i.vcf.gz hotspot/%.hotspot.$i.vcf.gz.tbi)

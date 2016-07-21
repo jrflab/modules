@@ -386,4 +386,12 @@ TARGETS += strelka_varscan_indels
 strelka_varscan_indels:
 	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
+TARGETS += ann_somatic_vcf
+ann_somatic_vcf: 
+	$(call RUN_MAKE,modules/vcf_tools/annotateSomaticVcf.mk)
+
+TARGETS += ann_vcf
+ann_vcf: 
+	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
+
 .PHONY : $(TARGETS)
