@@ -124,7 +124,7 @@ absolute/segment/%.seg.txt : facets/cncf/%.cncf.txt
 	$(LIB_INIT)
 	cncf <-
 		read.table("$<", stringsAsFactors=F, header=T, sep="\t") %>%
-		select(ID, Chromosome=chrom, Start=loc.start, End=loc.end, seg, Num_Probes=num.mark, nhet, Segment_Mean=cnlr.median, mafR, segclust, cnlr.median.clust, cf.em, tcn.em, lcn.em)
+		select(ID, Chromosome=chrom, Start=loc.start, End=loc.end, seg, Num_Probes=num.mark, nhet, Segment_Mean=cnlr.median, mafR, segclust, mafR.clust, cnlr.median.clust, cf.em, tcn.em, lcn.em)
 
 	cncf %>% write_tsv(path="$@")
 else
@@ -195,7 +195,7 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(for
 absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.reviewed.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
-	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
+	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copynum.type = "total")
 
 absolute/tables/%.absolute.txt : absolute/reviewed/all.seq.ABSOLUTE.table.txt absolute/tables/%.somatic.txt
 	$(R_INIT)
