@@ -195,7 +195,7 @@ absolute/review/%.PP-calls_tab.txt absolute/review/%.PP-modes.data.RData : $(for
 absolute/reviewed/all.seq.ABSOLUTE.table.txt : absolute/review/all.PP-calls_tab.reviewed.txt absolute/review/all.PP-modes.data.RData
 	$(R_INIT)
 	$(LIB_INIT)
-	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copynum.type = "total")
+	ExtractReviewedResults("$<", 'seq', "$(<<)", "absolute", "all", verbose = T, copy_num_type = "total")
 
 absolute/tables/%.absolute.txt : absolute/reviewed/all.seq.ABSOLUTE.table.txt absolute/tables/%.somatic.txt
 	$(R_INIT)
