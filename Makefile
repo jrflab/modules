@@ -387,4 +387,8 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 
+TARGETS += star
+star:
+	$(call RUN_MAKE,modules/aligners/starAligner.mk)
+
 .PHONY : $(TARGETS)
