@@ -14,3 +14,4 @@ setuptools=20.6.7
 openpyxl=2.3.2
 lxml=3.6.0
 html5lib=0.999
+manta=0.29.6
