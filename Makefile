@@ -393,4 +393,8 @@ TARGETS += tvcTN
 tvcTN:
 	$(call RUN_MAKE,modules/variant_callers/tvcTN.mk)
 
+TARGETS += star
+star:
+	$(call RUN_MAKE,modules/aligners/starAligner.mk)
+
 .PHONY : $(TARGETS)
