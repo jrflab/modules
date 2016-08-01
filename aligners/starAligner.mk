@@ -35,12 +35,19 @@ star/$2.Aligned.sortedByCoord.out.bam : $3
 	$$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$$(STAR) $$(STAR_OPTS) \
 		--outFileNamePrefix star/$2. --runThreadN 4 \
 		--readFilesIn $$^ --readFilesCommand zcat")
-star/bam/$2.star.sorted.bam : star/$2.Aligned.sortedByCoord.out.bam
-	$$(INIT) mv $$< $$@
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),\
 	$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
+
+
+star/%.Aligned.sortedByCoord.out.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(STAR) $(STAR_OPTS) \
+		--outFileNamePrefix star/$*. --runThreadN 4 \
+		--readFilesIn $^ --readFilesCommand zcat")
+
+star/bam/%.star.sorted.bam : star/%.Aligned.sortedByCoord.out.bam
+	$(INIT) mv $< $@
 
 bam/%.bam : star/bam/%.star.$(BAM_SUFFIX)
 	$(INIT) ln -f $(<) $(@) 
