@@ -2,6 +2,8 @@ ifndef B37_INC
 REF = b37
 REF_DIR = $(HOME)/share/reference
 
+STAR_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/STAR_genome
+
 TOPHAT_REF = GRCh37
 GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
 

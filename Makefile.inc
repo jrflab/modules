@@ -176,107 +176,80 @@ MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
 LOG = $(LOGDIR)/$(@).log
 
 
+
+UMASK = 002
+
+
+ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
+UMASK = 002
+
 # SGE variables
 QUEUE ?= jrf.q all.q
-SGE_RREQ = $(foreach q,$(strip QUEUE),-q $(q) ) -N X$(@F) -V -cwd 
-PARALLEL_ENV = smp
-MEM_FREE = -l virtual_free=$1,h_vmem=$2
-REQ = SGE_RREQ="$(SGE_RREQ)"
 
-REQ_PARALLEL_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(PARALLEL_ENV) $(1)"
-REQ_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$1,$2)"
-UMASK = 002
-ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
-INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; echo $(ACTIVATE_JRFLAB_MODULES_ENV);
+### PBS
+# mem for PBS: multiply mem_per_cpu by ncpu for request
+# $(call PBS_MEM,ncpu,mem_per_cpu)
+PBS_MEM = -l mem=$2
+PBS_PARALLEL_MEM = -l nodes=1:ppn=$1 -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
+PBS_QSUB_ARGS = -e $(LOG) -j oe
+
+#### SGE
+# mem for SGE
+# $(call SGE_MEM,ncpu,mem_per_cpu)
+SGE_PARALLEL_ENV = smp
+SGE_PARALLEL_MEM = -pe $(SGE_PARALLEL_ENV) $1 -l virtual_free=$2,h_vmem=$3
+SGE_MEM = -l virtual_free=$1,h_vmem=$2
+QSUB_PRIORITY ?= 0
+SGE_QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
+
+
+## DRMAA qsub script
+QSUB_SCRIPT = perl modules/scripts/qsub.pl
+QSUB_SCRIPT_OPTS = -o $@
+QS = $(QSUB_SCRIPT) $(QSUB_SCRIPT_OPTS) $1 -- $(foreach q,$(strip $2), -q $q)
+QSUB = $(call QS,,$(QUEUE))
+QSUB_QUEUE = $(call QS,,$1)
+# check output file for non-zero size
+QSUB_CHECK = $(call QS,-c)
+QSUB_CHECK_QUEUE = $(call QS,-c,-q $1)
+
+#### no cluster
+INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);
 INIT_NOCLUSTER = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);";
-# $(call INIT_MEM,mem_free,h_vmem)
-INIT_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MEM,$1,$2);
-# $(call INIT_PARALLEL_MEM,ncpus,mem_free,h_vmem)
-INIT_PARALLEL_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_PARALLEL_MEM,$1,$2,$3);
 
-# openMPI
-MPIRUN = /opt/bin/mpirun
-MPI_ENV = openmpi
-REQ_MPI_MEM = SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,$2,$3) -pe $(MPI_ENV) $(1)"
-INIT_MPI_MEM = $(MKDIRS); umask $(UMASK); $(call REQ_MPI_MEM,$1,$2,$3); $(MPIRUN) -np $1
-
-QRSH = /common/sge/bin/lx-amd64/qrsh
-LAUNCH = $(INIT) $(QRSH) -N X$(@F) -V -cwd $(foreach q,$(strip $(QUEUE)),-q $q ) -now n -notify
-LAUNCH_PARALLEL_MEM = $(INIT) $(LAUNCH) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
-LAUNCH_MEM = $(INIT) $(LAUNCH) $(call MEM_FREE,$1,$2)
-
-# launch read script from stdin
-QSUB_PRIORITY ?= -500
-override QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
-QMAKE_BIN = /common/sge/bin/lx24-amd64/qmake
-QMAKE_QUEUE = $(QMAKE_BIN) -q $1
-QMAKE = $(call QSUB_QUEUE,$(QUEUE))
-
-QSUB_BIN_OPTS = -o $@
-ifeq ($(USE_QSUB_DAEMON),true)
-QSUB_BIN = $(PERL) modules/scripts/qsubClient.pl
-else
-QSUB_BIN = $(PERL) modules/scripts/qsub.pl
-endif
-QSUB_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- -q $1
-QSUB = $(QSUB_BIN) $(QSUB_BIN_OPTS) -- $(foreach q,$(strip $(QUEUE)), -q $q)
-# check output file
-QSUB_CHECK = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- $(foreach q,$(strip $(QUEUE)), -q $(q))
-QSUB_CHECK_QUEUE = $(QSUB_BIN) $(QSUB_BIN_OPTS) -c -- -q $1
-
+CLUSTER_ENGINE ?= SGE
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
 LSCRIPT = $(MKDIRS); ($(INIT_NOCLUSTER) echo $1) | $(SHELL) >& $(LOG)
 LSCRIPT_PARALLEL_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $4) | $(SHELL) >& $(LOG)
 LSCRIPT_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $3) | $(SHELL) >& $(LOG)
-
-LSCRIPT_NET = $(LSCRIPT)
-LSCRIPT_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
-LSCRIPT_MEM_NET = $(LSCRIPT_MEM)
-
+LSCRIPT_CHECK = $(MKDIRS); ($(INIT_NOCLUSTER) echo $1) | $(SHELL) >& $(LOG)
+LSCRIPT_CHECK_PARALLEL_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $4) | $(SHELL) >& $(LOG)
+LSCRIPT_CHECK_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $3) | $(SHELL) >& $(LOG)
 LSCRIPT_NAMED = $(call LSCRIPT,$2)
 LSCRIPT_NAMED_PARALLEL_MEM = $(call LSCRIPT_PARALLEL_MEM,$2,$3,$4,$5)
 LSCRIPT_NAMED_MEM = $(call LSCRIPT_MEM,$2,$3,$4)
-
-LSCRIPT_CHECK = $(LSCRIPT)
-LSCRIPT_CHECK_PARALLEL_MEM = $(LSCRIPT_PARALLEL_MEM)
-LSCRIPT_CHECK_MEM = $(LSCRIPT_MEM)
-
-LSCRIPT_CHECK_NET = $(LSCRIPT)
-LSCRIPT_CHECK_PARALLEL_MEM_NET = $(LSCRIPT_PARALLEL_MEM)
-LSCRIPT_CHECK_MEM_NET = $(LSCRIPT_MEM)
-
-LSCRIPT_CHECK_NAMED = $(LSCRIPT_NAMED)
-LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(LSCRIPT_NAMED_PARALLEL_MEM)
-LSCRIPT_CHECK_NAMED_MEM = $(LSCRIPT_MEM)
-
-else ## use cluster
+LSCRIPT_CHECK_NAMED = $(call LSCRIPT,$2)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(call LSCRIPT_PARALLEL_MEM,$2,$3,$4,$5)
+LSCRIPT_CHECK_NAMED_MEM = $(call LSCRIPT_MEM,$2,$3,$4)
+else
 LSCRIPT = $(call LSCRIPT_NAMED_MEM,$(@F),1G,2G,$1)
 LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
 
-LSCRIPT_NET = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
-LSCRIPT_BIG = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS)
-LSCRIPT_PARALLEL_MEM_NET = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
-LSCRIPT_PARALLEL_MEM_BIG = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3)
-LSCRIPT_MEM_NET = ($(INIT) echo "umask $(UMASK);" $3) | $(call QSUB_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
-LSCRIPT_MEM_BIG = ($(INIT) echo "umask $(UMASK);" $3) | $(call QSUB_QUEUE,big.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2)
-
-LSCRIPT_NAMED = ($(INIT) echo "umask $(UMASK);" $2) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,1G,2G)
-LSCRIPT_NAMED_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $5) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
-LSCRIPT_NAMED_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(QSUB) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+#$(call LS,qsub,name,qsub_args,script)
+LS = $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+LSCRIPT_NAMED = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
+LSCRIPT_NAMED_PARALLEL_MEM = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_PARALLEL_MEM,$2,$3,$4),$5)
+LSCRIPT_NAMED_MEM = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,$2,$3),$4)
 
 LSCRIPT_CHECK = $(call LSCRIPT_CHECK_NAMED,$(@F),$1)
 LSCRIPT_CHECK_PARALLEL_MEM = $(call LSCRIPT_CHECK_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 LSCRIPT_CHECK_MEM = $(call LSCRIPT_CHECK_NAMED_MEM,$(@F),$1,$2,$3)
 
-LSCRIPT_CHECK_NET = ($(INIT) echo "umask $(UMASK);" $1) | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -l internet=1
-LSCRIPT_CHECK_PARALLEL_MEM_NET = ($(INIT) echo "umask $(UMASK);" $4) | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) -pe $(PARALLEL_ENV) $1 $(call MEM_FREE,$2,$3) -l internet=1
-LSCRIPT_CHECK_MEM_NET = $(INIT) echo "umask $(UMASK);" $3 | $(call QSUB_CHECK_QUEUE,out.q) -N $(PROJECT_NAME)_$(@F) $(QSUB_ARGS) $(call MEM_FREE,$1,$2) -l internet=1
-
-LSCRIPT_CHECK_NAMED = $(INIT) echo "umask $(UMASK);" $2 | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS)
-LSCRIPT_CHECK_NAMED_PARALLEL_MEM = ($(INIT) echo "umask $(UMASK);" $5) | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) -pe $(PARALLEL_ENV) $2 $(call MEM_FREE,$3,$4)
-LSCRIPT_CHECK_NAMED_MEM = ($(INIT) echo "umask $(UMASK);" $4) | $(QSUB_CHECK) -N $(PROJECT_NAME)_$1 $(QSUB_ARGS) $(call MEM_FREE,$2,$3)
+LSCRIPT_CHECK_NAMED = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
+LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_PARALLEL_MEM,$2,$3,$4),$5)
+LSCRIPT_CHECK_NAMED_MEM = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,$2,$3),$4)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1

@@ -5,7 +5,6 @@
 include modules/Makefile.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx4G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
-BAM_TO_FASTQ = $(HOME)/share/usr/bin/bamToFastq
 
 LOGDIR ?= log/extract_fastq.$(NOW)
 
@@ -22,6 +21,5 @@ fastq/%.1.fastq.gz fastq/%.2.fastq.gz : bam/%.bam
 	$(call LSCRIPT_MEM,10G,20G,"$(SAM_TO_FASTQ) I=$< FASTQ=>(gzip -c > fastq/$*.1.fastq.gz) SECOND_END_FASTQ=>(gzip -c > fastq/$*.2.fastq.gz)")
 else
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,4G,5G,"$(BAM_TO_FASTQ) -i <($(SAMTOOLS2) sort -T bam/$* -O bam -n -@ 4 -m 4G $<) \
-		-fq >(gzip -c > fastq/$*.1.fastq.gz) -fq2 >(gzip -c > fastq/$*.2.fastq.gz)")
+	$(call LSCRIPT_PARALLEL_MEM,4,4G,9G,"$(SAMTOOLS2) sort -T bam/$* -O bam -n -@ 4 -m 6G $< | $(SAMTOOLS2) fastq -f 2 -1 >(gzip -c > fastq/$*.1.fastq.gz) -2 >(gzip -c > fastq/$*.2.fastq.gz) -")
 endif

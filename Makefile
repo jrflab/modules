@@ -393,4 +393,20 @@ TARGETS += tvcTN
 tvcTN:
 	$(call RUN_MAKE,modules/variant_callers/tvcTN.mk)
 
+TARGETS += star
+star:
+	$(call RUN_MAKE,modules/aligners/starAligner.mk)
+
+TARGETS += manta_rnaseq
+manta_rnaseq :
+	$(call RUN_MAKE,modules/sv_callers/mantaRnaseq.mk)
+
+TARGETS += manta
+manta :
+	$(call RUN_MAKE,modules/sv_callers/manta.mk)
+
+TARGETS += mantaTN
+mantaTN :
+	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
+
 .PHONY : $(TARGETS)

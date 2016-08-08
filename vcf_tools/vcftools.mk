@@ -53,42 +53,42 @@ ifdef NORMAL_VCF
 endif
 
 # run snp eff
-%.eff.vcf : %.vcf %.vcf.idx
+%.eff.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $*.eff_summary.html $< > $@ && $(RM) $^"))
 
 # run snp sift to annotated with dbnsfp
-%.nsfp.vcf : %.vcf %.vcf.idx
+%.nsfp.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp $(SNP_SIFT_OPTS) -f $(subst $( ),$(,),$(NSFP_FIELDS)) -db $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/' > $@ && $(RM) $^"))
 
 # run gatk snp eff
-%.gatk_eff.vcf : %.vcf %.vcf.idx
+%.gatk_eff.vcf : %.vcf
 	$(call LSCRIPT_MEM,5G,8G,"$(call SNP_EFF_MEM,4G) eff -i vcf -o gatk $(SNP_EFF_GENOME) $< > $@")
 
 # process snp eff output with gatk %=sample.indels/snps
-%.annotated.vcf : %.vcf %.gatk_eff.vcf %.gatk_eff.vcf.idx %.vcf.idx 
+%.annotated.vcf : %.vcf %.gatk_eff.vcf
 	$(call LSCRIPT_PARALLEL_MEM,5,2G,3G,"$(call GATK_MEM,8G) -T VariantAnnotator \
 	-R $(REF_FASTA) -nt 5 -A SnpEff  --variant $<  --snpEffFile $(word 2,$^) -o $@ &> $(LOGDIR)/$@.log")
 
 # snp sift using GMAF > 1% filtered dbsnp 
-%.dbsnp.vcf : %.vcf %.vcf.idx 
+%.dbsnp.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate \
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && $(RM) $^"))
 
 # mouse genome project dbsnp
-%.mgp_dbsnp.vcf : %.vcf %.vcf.idx 
+%.mgp_dbsnp.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && $(RM) $^"))
 
-%.cosmic.vcf : %.vcf %.vcf.idx 
+%.cosmic.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		$(COSMIC) $< > $@ && $(RM) $^"))
 
-%.clinvar.vcf : %.vcf %.vcf.idx 
+%.clinvar.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		$(CLINVAR) $< > $@ && $(RM) $^"))
 
-%.exac_nontcga.vcf : %.vcf %.vcf.idx 
+%.exac_nontcga.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) -info ExAC_AF $(EXAC_NONTCGA) $< > $@ && $(RM) $^"))
 
 # post-annotation filter
@@ -256,10 +256,10 @@ endef
 $(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
 # VariantEval: generate vcf report
-reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf) $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf.idx)
+reports/%.grp : $(foreach sample,$(SAMPLES),vcf/$(sample).%.vcf)
 	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
 ifdef SAMPLE_PAIRS
-reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf vcf/$(pair).%.vcf.idx)
+reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
 endif
 
@@ -315,7 +315,7 @@ tables/%.opl_tab.txt : vcf/%.vcf
 %.pass.txt : %.txt
 	$(INIT) head -1 $< > $@ && awk '$$6 == "PASS" { print }' $< >> $@ || true
 
-COMMON_FILTER_VCF = $(PYTHON) modules/vcf_tools/common_filter_vcf.py
+COMMON_FILTER_VCF = python modules/vcf_tools/common_filter_vcf.py
 %.common_ft.vcf : %.vcf
 	$(call LSCRIPT_MEM,4G,5G,"$(COMMON_FILTER_VCF) $< > $@")
 
@@ -404,7 +404,7 @@ allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 	sed 1,2d $^; \
 	} > $@
 
-MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
+MUTATION_TASTER = python modules/vcf_tools/mutation_taster_vcf.py
 %.mut_taste.vcf : %.vcf
 	$(INIT) $(call CHECK_VCF,$<,$@,$(MUTATION_TASTER) $< > $@ 2> $(LOG))
 

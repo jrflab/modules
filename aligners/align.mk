@@ -14,6 +14,8 @@ endef
 define rename-bam
 $$(ALIGNER)/bam/$1.$$(ALIGNER).bam : $$(ALIGNER)/bam/$2.$$(ALIGNER).bam
 	mv $$< $$@
+$$(ALIGNER)/bam/$1.$$(ALIGNER).sorted.bam : $$(ALIGNER)/bam/$2.$$(ALIGNER).sorted.bam
+	mv $$< $$@
 endef
 $(foreach sample,$(SAMPLES),\
 	$(if $(word 2,$(split.$(sample))),\
