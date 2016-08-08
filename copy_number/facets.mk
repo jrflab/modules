@@ -38,7 +38,7 @@ else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
 
-MERGE_TN = $(PYTHON) /ifs/e63data/reis-filho/usr/bin/FACETS.app/mergeTN.py
+MERGE_TN = python modules/copy_number/facets_merge_tn.py
 
 FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
 FACETS_FILL_GENE_CN = $(RSCRIPT) modules/copy_number/facetsFillGeneCN.R
@@ -103,15 +103,8 @@ GENECN_PDF = facets/geneCN.raw.pdf
 GENECN_FILL_TXT = facets/geneCN.fill.txt
 GENECN_FILL_PDF = facets/geneCN.fill.pdf
 
-FILL_FILES = $(GENECN_PDF) $(GENECN_FILL_TXT) $(GENECN_FILL_PDF)
 
-.PHONY : FILL_TOUCH
-
-FILL_TOUCH : $(GENECN_TXT)
-	echo "Creating $(FILL_FILES)"
-	touch $(FILL_FILES)
-
-facets/geneCN.fill.txt : $(GENECN_TXT) FILL_TOUCH $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
+facets/geneCN.fill.txt : $(GENECN_TXT) $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_FILL_GENE_CN) \
 		--geneCN_fill_pdf $(GENECN_FILL_PDF) \
 		--geneCN_fill_txt $(GENECN_FILL_TXT) \
