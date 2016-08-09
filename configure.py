@@ -102,8 +102,6 @@ if __name__ == '__main__':
                                      description='Convert project YAML file to Make')
     parser.add_argument('--project_config_file', help='project yaml config file',
                         default='project_config.yaml')
-    parser.add_argument('--config_file', help='modules yaml config file',
-                        default='modules/config.yaml')
     parser.add_argument('--samples_file', help='yaml samples file', default='samples.yaml')
     parser.add_argument('--sample_fastq_file', help='yaml sample fastq file mappings', default='sample.fastq.yaml')
     parser.add_argument('--sample_merge_file', help='yaml sample merge mappings')
@@ -133,8 +131,3 @@ if __name__ == '__main__':
             sample_merge_yaml2mk(args.sample_merge_file, args.out_file)
         except IOError:
             print("Error loading {}, skipping.".format(args.sample_merge_file))
-
-    print("\n# defaults", file=of)
-    config = yaml.load(open(args.config_file, 'r'))
-    for k, v in config.iteritems():
-        print("{} ?= {}".format(k.upper(), lowerBool(v)), file=of)
