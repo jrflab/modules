@@ -52,6 +52,7 @@ ifdef NORMAL_VCF
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --maskName 'normal' --mask $(NORMAL_VCF) && $(RM) $< $<.idx")
 endif
 
+
 # run snp eff
 %.eff.vcf : %.vcf
 	$(call CHECK_VCF,$<,$@,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $*.eff_summary.html $< > $@ && $(RM) $^"))
@@ -124,8 +125,9 @@ VCF_POST_ANN_FILTER_EXPRESSION ?= ExAC_AF > 0.1
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --filterExpression 'vc.getGenotype(\"TUMOR\").getAttributeAsInt(\"SS\", 0) != 2'  --filterName nonSomatic && $(RM) $< $<.idx")
 
 # target region filter
+INTERVAL_FILTER_VCF = python modules/vcf_tools/interval_filter_vcf.py
 %.target_ft.vcf : %.vcf
-	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) -V $< -o $@ --mask $(TARGETS_FILE) --maskName targetInterval --filterNotInMask && $(RM) $< $<.idx")
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(INTERVAL_FILTER_VCF) $(TARGETS_FILE) $< > $@ && $(RM) $< $<.idx")
 
 
 # varscan TN variant allele frequency: min tumor freq > 5% ; max normal freq < 5%
