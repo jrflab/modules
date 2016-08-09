@@ -409,4 +409,8 @@ TARGETS += mantaTN
 mantaTN :
 	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
 
+TARGETS += clean_variants
+clean_variants :
+	rm -rf mutect varscan strelka vcf tables alltables summary hotspot
+
 .PHONY : $(TARGETS)
