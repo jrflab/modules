@@ -7,18 +7,11 @@ echo "TEST VARIANT CALLING test_data"
 cd ${DIR}/test_data
 # create project_config.inc
 python modules/configure.py
-echo "==mutect=="
+echo "==mutect2=="
 echo "run"
-make mutect && echo "success" || (echo "failed" && exit 1)
+make mutect2 && echo "success" || (echo "failed" && exit 1)
 echo "check files"
 for x in output/vcf/*mutect*.vcf; do
-    compare_vcf $x vcf/$(basename $x)
-done
-echo "==strelka_varscan_indels=="
-echo "run"
-make strelka_varscan_indels && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/vcf/*.strelka_varscan_indels.vcf; do
     compare_vcf $x vcf/$(basename $x)
 done
 echo "==hotspot=="

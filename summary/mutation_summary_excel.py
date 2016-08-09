@@ -103,14 +103,14 @@ def add_maf(df):
     rv = df.copy()
     def f(x):
         if "," in x["TUMOR.AD"]:
-            return float(x["TUMOR.AD"].split(",")[1]) / x["TUMOR.DP"]
+            return float(x["TUMOR.AD"].split(",")[1]) / sum(map(float, x["TUMOR.AD"].split(',')))
         else:
-            return ""
+            return float('nan')
     def g(x):
         if "," in x["NORMAL.AD"]:
-            return float(x["NORMAL.AD"].split(",")[1]) / x["NORMAL.DP"]
+            return float(x["NORMAL.AD"].split(",")[1]) / sum(map(float, x["NORMAL.AD"].split(',')))
         else:
-            return ""
+            return float('nan')
     if len(df) > 0:
         rv["TUMOR_MAF"] = df.apply(f, axis=1)
         rv["NORMAL_MAF"] = df.apply(g, axis=1)
@@ -139,7 +139,7 @@ def add_non_existent_columns(df, columns, fill_value):
 
 
 def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, annotdf=None):
-    if all([c in df.columns for c in "TUMOR.AD NORMAL.AD TUMOR.DP NORMAL.DP".split()]):
+    if all([c in df.columns for c in "TUMOR.AD NORMAL.AD".split()]):
         df = add_maf(df)
     if len(df > 0):
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
@@ -157,11 +157,11 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
             df.to_csv(output_tsv_dir + "/" + sheetname.lower() + ".tsv", sep="\t", index=True)
 
 
-def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
-                           mutect_synonymous, mutect_nonsynonymous,
-                           strelka_varscan_high_moderate,
-                           strelka_varscan_low_modifier,
-                           strelka_varscan_synonymous, strelka_varscan_nonsynonymous,
+def write_mutation_summary(mutect_snps_high_moderate, mutect_snps_low_modifier,
+                           mutect_snps_synonymous, mutect_snps_nonsynonymous,
+                           mutect_indels_high_moderate,
+                           mutect_indels_low_modifier,
+                           mutect_indels_synonymous, mutect_indels_nonsynonymous,
                            hotspot,
                            excel_file,
                            absolute_somatic_txts,
@@ -185,7 +185,7 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
         annotdf = None
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
-    chasm_score_columns = [c for c in pd.read_csv(mutect_high_moderate, sep="\t").columns if "chasm_score" in c]
+    chasm_score_columns = [c for c in pd.read_csv(mutect_snps_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
     summary_columns += chasm_score_columns + "cancer_gene_census,kandoth,lawrence,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
 
@@ -196,37 +196,37 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
 
     # add summaries
     required_columns = summary_columns + "NORMAL.AD TUMOR.AD facetsLCN_EM".split()
-    mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
-                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
-                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(strelka_varscan_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
+    mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_snps_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
+                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(mutect_indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
                         ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
     exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
     add_columns_write_excel(mutsdf[exac_af_sel], writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
         annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_high_moderate), "HIGH|MODERATE"),
+    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_snps_high_moderate), "HIGH|MODERATE"),
         writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_nonsynonymous), "HIGH|MODERATE"),
+    add_columns_write_excel(read_tsv(mutect_snps_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_snps_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_snps_nonsynonymous), "HIGH|MODERATE"),
         writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(strelka_varscan_high_moderate), "HIGH|MODERATE"),
+    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_indels_high_moderate), "HIGH|MODERATE"),
         writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(strelka_varscan_nonsynonymous), "HIGH|MODERATE"),
+    add_columns_write_excel(read_tsv(mutect_indels_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_indels_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(filter_annotations_with_impact(read_tsv(mutect_indels_nonsynonymous), "HIGH|MODERATE"),
         writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     # add raw files both as excel and tsv
     add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_high_moderate), writer, "mutect_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_low_modifier), writer, "mutect_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_synonymous), writer, "mutect_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(mutect_nonsynonymous), writer, "mutect_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_high_moderate), writer, "strelka_varscan_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_low_modifier), writer, "strelka_varscan_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_synonymous), writer, "strelka_varscan_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(strelka_varscan_nonsynonymous), writer, "strelka_varscan_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_snps_high_moderate), writer, "mutect_snps_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_snps_low_modifier), writer, "mutect_snps_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_snps_synonymous), writer, "mutect_snps_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_snps_nonsynonymous), writer, "mutect_snps_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_indels_high_moderate), writer, "mutect_indels_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_indels_low_modifier), writer, "mutect_indels_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_indels_synonymous), writer, "mutect_indels_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    add_columns_write_excel(read_tsv(mutect_indels_nonsynonymous), writer, "mutect_indels_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     writer.close()
 
@@ -234,14 +234,14 @@ def write_mutation_summary(mutect_high_moderate, mutect_low_modifier,
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("mutect_high_moderate", type=str, help="TSV")
-    parser.add_argument("mutect_low_modifier", type=str, help="TSV")
-    parser.add_argument("mutect_synonymous", type=str, help="TSV")
-    parser.add_argument("mutect_nonsynonymous", type=str, help="TSV")
-    parser.add_argument("strelka_varscan_high_moderate", type=str, help="TSV")
-    parser.add_argument("strelka_varscan_low_modifier", type=str, help="TSV")
-    parser.add_argument("strelka_varscan_synonymous", type=str, help="TSV")
-    parser.add_argument("strelka_varscan_nonsynonymous", type=str, help="TSV")
+    parser.add_argument("mutect_snps_high_moderate", type=str, help="TSV")
+    parser.add_argument("mutect_snps_low_modifier", type=str, help="TSV")
+    parser.add_argument("mutect_snps_synonymous", type=str, help="TSV")
+    parser.add_argument("mutect_snps_nonsynonymous", type=str, help="TSV")
+    parser.add_argument("mutect_indels_high_moderate", type=str, help="TSV")
+    parser.add_argument("mutect_indels_low_modifier", type=str, help="TSV")
+    parser.add_argument("mutect_indels_synonymous", type=str, help="TSV")
+    parser.add_argument("mutect_indels_nonsynonymous", type=str, help="TSV")
     parser.add_argument("hotspot", type=str, help="TSV")
     parser.add_argument("excel_file", type=str, help="mutation summary excel")
     parser.add_argument("--absolute_somatic_txts", default=None, type=str, help="TSV comma separated list of somatic files of absolute input")
@@ -258,14 +258,14 @@ def main():
     else:
         absolute_somatic_txts = None
         absolute_segments = None
-    write_mutation_summary(args.mutect_high_moderate,
-                           args.mutect_low_modifier,
-                           args.mutect_synonymous,
-                           args.mutect_nonsynonymous,
-                           args.strelka_varscan_high_moderate,
-                           args.strelka_varscan_low_modifier,
-                           args.strelka_varscan_synonymous,
-                           args.strelka_varscan_nonsynonymous,
+    write_mutation_summary(args.mutect_snps_high_moderate,
+                           args.mutect_snps_low_modifier,
+                           args.mutect_snps_synonymous,
+                           args.mutect_snps_nonsynonymous,
+                           args.mutect_indels_high_moderate,
+                           args.mutect_indels_low_modifier,
+                           args.mutect_indels_synonymous,
+                           args.mutect_indels_nonsynonymous,
                            args.hotspot,
                            args.excel_file,
                            absolute_somatic_txts,
