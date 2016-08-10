@@ -5,7 +5,7 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
 
-override VARIANT_TYPES = mutect strelka_varscan_indels
+override VARIANT_TYPES = mutect strelka_indels varscan_indels strelka_varscan_indels
 
 DEPTH_FILTER ?= 5
 HRUN ?= false
@@ -80,6 +80,10 @@ PHONY += $1_vcfs
 $1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
+
+strelka_varscan_indels: $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).strelka_varscan_indels.vcf)
+vcf_ann/%.strelka_varscan_indels.vcf : vcf_ann/%.varscan_indels.vcf vcf_ann/%.strelka_indels.vcf
+	$(call LSCRIPT_MEM,9G,12G,"grep -P '^#' $< > $@ && $(BEDTOOLS) intersect -a $< -b $(<<) >> $@")
 
 .DELETE_ON_ERROR:
 .SECONDARY:
