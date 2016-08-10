@@ -17,6 +17,7 @@ include modules/aligners/align.inc
 
 LOGDIR = log/star.$(NOW)
 
+SEQ_PLATFROM = illumina
 
 STAR_CHIMERIC ?= true
 STAR = $(HOME)/share/usr/bin/STAR
@@ -34,6 +35,7 @@ define align-split-fastq
 star/$2.Aligned.sortedByCoord.out.bam : $3
 	$$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$$(STAR) $$(STAR_OPTS) \
 		--outFileNamePrefix star/$2. --runThreadN 4 \
+		--outSAMattrRGline \"ID:$2\" \"LB:$1\" \"SM:$1\" \"PL:$${SEQ_PLATFORM}\" \
 		--readFilesIn $$^ --readFilesCommand zcat")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
