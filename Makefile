@@ -21,8 +21,10 @@ MAKELOG = log/$(@).$(NOW).log
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),true)
 MAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
-endif
 NUM_JOBS ?= 100
+else
+NUM_JOBS ?= 12
+endif
 
 define RUN_MAKE_J
 $(MAKE) -e -f $1 -j $2 $(TARGET) && \
