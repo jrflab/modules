@@ -1,0 +1,3 @@
+TUMOR_SAMPLE	NORMAL_SAMPLE	CHROM	POS	REF	ALT	ANN[*].GENE	ANN[*].HGVS_P	ANN[*].HGVS_C	ANN[*].EFFECT	TUMOR_MAF	NORMAL_MAF	TUMOR.DP	NORMAL.DP	ExAC_AF	LOH	HOTSPOT	cancer_gene_census	kandoth	lawrence	hap_insuf	ANN[*].IMPACT
+EMC8T	EMC8N	2	95775789	G	GT	MRPS5	.	c.278-4_278-3insA	splice_region_variant&intron_variant	0.30303030303	0.0	33	29	.	N/A	.	.	.	.	.	LOW
+AM5TC	AM5N	7	47925659	CA	C	PKD1L1	.	c.2837-8delT	splice_region_variant&intron_variant	0.394495412844	0.0	109	91	.	N/A	.	.	.	.	.	LOW
