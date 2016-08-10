@@ -6,7 +6,6 @@ LOGDIR ?= log/varscanTN.$(NOW)
 
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 IGNORE_FP_FILTER ?= true
 
@@ -25,10 +24,10 @@ VPATH ?= bam
 
 VARIANT_TYPES = varscan_indels varscan_snps
 
-PHONY += varscan varscan_vcfs varscan_tables
-varscan : varscan_vcfs varscan_tables
-varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
-varscan_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
+PHONY += varscan varscan_vcfs varscan_mafs
+varscan : varscan_vcfs #varscan_mafs
+varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
+varscan_mafs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$(type).maf))
 
 
 %.Somatic.txt : %.txt

@@ -59,10 +59,10 @@ vcf <- readVcf(tab, genomeName)
 passIds <- which(rowRanges(vcf)$FILTER == "PASS")
 if (nrow(vcf) > 0 && sum(seqnames(vcf) %in% chromosomes) > 0 &&
     sum(isSNV(vcf)) > 0 && (opt$ignoreFilter | length(passIds) > 0)) {
-    vcf <- vcf[isSNV(vcf) & seqnames(vcf) %in% chromosomes]
     if (!opt$ignoreFilter) {
         vcf <- vcf[passIds, ]
     }
+    vcf <- vcf[isSNV(vcf) & seqnames(vcf) %in% chromosomes]
     s <- sub('\\..*', '', vcfFile)
     s <- sub('.*/', '', s)
     vr <- VRanges(seqnames = seqnames(vcf),

@@ -11,38 +11,35 @@ echo "==mutect=="
 echo "run"
 make mutect && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-for x in output/alltables/*mutect*; do
-    compare_files $x alltables/$(basename $x)
+for x in output/vcf/*mutect*.vcf; do
+    diff_files $x vcf/$(basename $x)
 done
 echo "==strelka=="
 echo "run"
 make strelka && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-for x in output/alltables/*.strelka_{snps,indels}.*; do
-    compare_files $x alltables/$(basename $x)
+for x in output/vcf/*.strelka_{snps,indels}.vcf; do
+    diff_files $x vcf/$(basename $x)
 done
-echo "==varscanTN=="
+echo "==varscan=="
 echo "run"
 make varscanTN && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-for x in output/alltables/*.varscan_{snps,indels}.*; do
-    compare_files $x alltables/$(basename $x)
+for x in output/vcf/*.varscan_{snps,indels}.vcf; do
+    diff_files $x vcf/$(basename $x)
 done
-echo "==merge_strelka_varscan=="
+echo "==hotspot=="
 echo "run"
-make merge_strelka_varscan && echo "success" || (echo "failed" && exit 1)
+make hotspot && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-for x in output/alltables/*strelka_varscan*; do
-    compare_files $x alltables/$(basename $x)
+for x in output/vcf_ann/*hotspot*.vcf; do
+    diff_files $x vcf_ann/$(basename $x)
 done
-echo "==hotspotTN=="
-echo "run"
-make hotspotTN && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/alltables/*hotspot*; do
-    compare_files $x alltables/$(basename $x)
+make ann_somatic_vcf && echo "success" || (echo "failed" && exit 1)
+for x in output/vcf_ann/*.vcf; do
+    diff_files $x vcf_ann/$(basename $x)
 done
 make mutation_summary && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-compare_files summary/mutation_summary.xlsx output/summary/mutation_summary.xlsx
+compare_files output/summary/mutation_summary.xlsx summary/mutation_summary.xlsx
 exit 0

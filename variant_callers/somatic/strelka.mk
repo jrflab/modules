@@ -3,24 +3,22 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/strelka.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 ##### DEFAULTS ######
 
 
 LOGDIR ?= log/strelka.$(NOW)
-PHONY += strelka strelka_vcfs strelka_tables
+PHONY += strelka strelka_vcfs strelka_mafs
 
-strelka : strelka_vcfs strelka_tables
+strelka : strelka_vcfs #strelka_mafs
 	
 VARIANT_TYPES := strelka_snps strelka_indels
-strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_VCFS,$(type)))
-strelka_tables : $(foreach type,$(VARIANT_TYPES),$(call SOMATIC_TABLES,$(type)))
+strelka_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
+strelka_mafs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$(type).maf))
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
 	$$(call LSCRIPT_NAMED,strelka_$1_$2,"rm -rf $$(@D) && $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=$$(@D)")
 
-#$$(INIT) qmake -inherit -q jrf.q -- -j 20 -C $$< > $$(LOG) && touch $$@
 strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
 	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,10,1G,1.5G,"make -j 10 -C $$(<D)")
 

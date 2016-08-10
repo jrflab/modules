@@ -4,7 +4,6 @@ LOGDIR ?= log/tvcTN.$(NOW)
 
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 VPATH ?= bam
 

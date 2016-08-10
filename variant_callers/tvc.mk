@@ -3,7 +3,6 @@
 LOGDIR ?= log/tvc.$(NOW)
 
 include modules/Makefile.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 VPATH ?= bam
 

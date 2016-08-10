@@ -4,7 +4,6 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 include modules/variant_callers/somatic/scalpel.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/scalpel.$(NOW)
 
@@ -12,12 +11,13 @@ LOGDIR = log/scalpel.$(NOW)
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all scalpel_vcfs scalpel_tables
+.PHONY: all scalpel_vcfs scalpel_mafs
 
-scalpel : scalpel_vcfs scalpel_tables
+scalpel : scalpel_vcfs scalpel_mafs
 
-scalpel_vcfs : $(call SOMATIC_VCFS,scalpel_indels)
-scalpel_tables : $(call SOMATIC_TABLES,scalpel_indels)
+
+scalpel_vcfs : $(foreach pair,$(SAMPLE_PAIR),vcf/$(pair).scalpel_indels.vcf)
+scalpel_mafs : $(foreach pair,$(SAMPLE_PAIR),maf/$(pair).scalpel_indels.maf)
 
 ifdef BED_FILES
 define scalpel-bed-tumor-normal

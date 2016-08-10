@@ -304,9 +304,6 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 
-TARGETS += merge_strelka_varscan
-merge_strelka_varscan :
-	$(call RUN_MAKE,modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk)
 
 TARGETS += rseqc
 rseqc :
@@ -383,9 +380,6 @@ TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 
-TARGETS += hotspotTN
-hotspotTN: 
-	$(call RUN_MAKE,modules/variant_callers/somatic/hotspotTN.mk)
 
 TARGETS += tvc
 tvc:
@@ -393,7 +387,15 @@ tvc:
 
 TARGETS += tvcTN
 tvcTN:
-	$(call RUN_MAKE,modules/variant_callers/tvcTN.mk)
+	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
+
+TARGETS += ann_somatic_vcf
+ann_somatic_vcf: 
+	$(call RUN_MAKE,modules/vcf_tools/annotateSomaticVcf.mk)
+
+TARGETS += ann_vcf
+ann_vcf: 
+	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 
 TARGETS += star
 star:
