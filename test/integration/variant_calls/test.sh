@@ -12,32 +12,32 @@ echo "run"
 make mutect && echo "success" || (echo "failed" && exit 1)
 echo "check files"
 for x in output/vcf/*mutect*.vcf; do
-    diff_files $x vcf/$(basename $x)
+    compare_vcf $x vcf/$(basename $x)
 done
 echo "==strelka=="
 echo "run"
 make strelka && echo "success" || (echo "failed" && exit 1)
 echo "check files"
 for x in output/vcf/*.strelka_{snps,indels}.vcf; do
-    diff_files $x vcf/$(basename $x)
+    compare_vcf $x vcf/$(basename $x)
 done
 echo "==varscan=="
 echo "run"
 make varscanTN && echo "success" || (echo "failed" && exit 1)
 echo "check files"
 for x in output/vcf/*.varscan_{snps,indels}.vcf; do
-    diff_files $x vcf/$(basename $x)
+    compare_vcf $x vcf/$(basename $x)
 done
 echo "==hotspot=="
 echo "run"
 make hotspot && echo "success" || (echo "failed" && exit 1)
 echo "check files"
 for x in output/vcf_ann/*hotspot*.vcf; do
-    diff_files $x vcf_ann/$(basename $x)
+    compare_vcf $x vcf_ann/$(basename $x)
 done
 make ann_somatic_vcf && echo "success" || (echo "failed" && exit 1)
 for x in output/vcf_ann/*.vcf; do
-    diff_files $x vcf_ann/$(basename $x)
+    compare_vcf $x vcf_ann/$(basename $x)
 done
 make mutation_summary && echo "success" || (echo "failed" && exit 1)
 echo "check files"

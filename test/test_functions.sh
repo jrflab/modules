@@ -19,6 +19,12 @@ diff_files() {
         || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }
 
+compare_vcf() {
+    diff -q <(grep -v '^#' $1) <(grep -v '^#' $2) > /dev/null \
+        && echo "success, files the same: ${1} ${2}" \
+        || (echo "failed, files differ: ${1} ${2}" && exit 1)
+}
+
 
 upload_image() {
     local image
