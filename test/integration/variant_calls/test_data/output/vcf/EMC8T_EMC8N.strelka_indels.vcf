@@ -2,7 +2,7 @@
 ##fileDate=20160810
 ##source=strelka
 ##source_version=2.0.15
-##startTime=Wed Aug 10 12:49:07 2016
+##startTime=Wed Aug 10 13:15:39 2016
 ##reference=file:///ifs/e63data/reis-filho/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##contig=<ID=1,length=249250621>
 ##contig=<ID=2,length=243199373>
@@ -116,7 +116,7 @@
 ##FILTER=<ID=iHpol,Description="Indel overlaps an interupted homopolymer longer than 14x in the reference sequence">
 ##FILTER=<ID=BCNoise,Description="Average fraction of filtered basecalls within 50 bases of the indel exceeds 0.3">
 ##FILTER=<ID=QSI_ref,Description="Normal sample is not homozygous ref or sindel Q-score < 30, ie calls with NT!=ref or QSI_NT < 30">
-##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/home/limr/rc/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
+##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/home/limr/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
 2	95775789	.	G	GT	.	PASS	IC=2;IHP=2;NT=ref;QSI=34;QSI_NT=34;RC=1;RU=T;SGT=ref->het;SOMATIC;TQSI=2;TQSI_NT=2	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	31:31:30,30:0,0:0,0:29.24:0.00:0.00	33:33:18,25:9,11:6,6:29.35:0.00:0.00
 11	46917758	.	C	CA	.	PASS	IC=2;IHP=2;NT=ref;QSI=80;QSI_NT=80;RC=1;RU=A;SGT=ref->het;SOMATIC;TQSI=2;TQSI_NT=1	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	50:50:50,51:0,0:0,0:55.8:0.00:0.00	98:98:54,56:34,34:8,8:114.16:0.00:0.00

@@ -23,7 +23,7 @@ SUFAM_ENV ?= /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 JARDIR ?= $(HOME)/share/usr/lib/java
 
 # jrflab modules environment
-JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.10
+JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.0.13
 
 ### Applications
 UNZIP ?= /usr/bin/unzip
@@ -38,7 +38,7 @@ BWA ?= bwa
 SAMTOOLS ?= samtools
 SAMTOOLS2 ?= $(HOME)/share/usr/bin/samtools-1.3
 VCFUTILS ?= $(HOME)/share/usr/bin/vcfutils.pl
-BCFTOOLS2 ?= $(HOME)/share/usr/bin/bcftools-1.2
+BCFTOOLS2 ?= bcftools
 BCFTOOLS ?= $(HOME)/share/usr/bin/bcftools-0.1.19
 BEDTOOLS ?= $(HOME)/share/usr/bin/bedtools
 BGZIP ?= $(HOME)/share/usr/bin/bgzip

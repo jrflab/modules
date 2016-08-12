@@ -34,5 +34,7 @@ for x in output/vcf_ann/*.vcf; do
 done
 make mutation_summary && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-compare_files output/summary/mutation_summary.xlsx summary/mutation_summary.xlsx
+for x in output/summary/tsv/*.tsv; do
+    diff_files $x summary/tsv/$(basename $x)
+done
 exit 0

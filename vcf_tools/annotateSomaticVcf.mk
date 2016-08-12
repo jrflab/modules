@@ -15,7 +15,8 @@ ANN_PATHOGEN ?= false
 ANN_FACETS ?= false
 ANN_MUT_TASTE ?= false
 ifeq ($(ANN_PATHOGEN),true)
-$(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),$(error non-hg19/b37 pathogen annotation unsupported)
+$(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),\
+	$(error non-hg19/b37 pathogen annotation unsupported))
 ANN_FACETS = true
 ANN_MUT_TASTE = true
 endif
@@ -24,12 +25,19 @@ SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
-SOMATIC_INDEL_ANNS = $(if $(and $(findstring true,$(ANN_MUT_TASTE)),$(findstring b37,$(REF))),mut_taste) \
-    $(if $(findstring true,$(HRUN)),hrun)
-SOMATIC_SNV_ANNS = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
+ifeq ($(HRUN),true)
+SOMATIC_INDEL_ANN2 += hrun
+endif
+ifeq ($(ANN_MUT_TASTE),true)
+SOMATIC_INDEL_ANN2 += mut_taste
+endif
+SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
 # pass filter for faster annotations
 # indel/snv initial round of annotations
-SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_ANNS))
+SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2))
+ifeq ($(ANN_FACETS),true)
+SOMATIC_ANN2 += facets
+endif
 
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka
@@ -45,18 +53,13 @@ SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun_ft))
 
 # final annotations (run last)
-ifeq ($(ANN_FACETS),true)
-SOMATIC_ANN2 += facets
-endif
-ifeq ($(ANN_MUT_TASTE),true)
-SOMATIC_ANN2 += mut_taste
-endif
 ifeq ($(ANN_PATHOGEN),true)
 SOMATIC_ANN3 += pathogen
 endif
 
-PHONY += all somatic_vcfs somatic_mafs
-all : somatic_vcfs somatic_mafs
+PHONY += all somatic_vcfs merged_vcfs
+all : somatic_vcfs merged_vcfs
+merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
@@ -72,24 +75,23 @@ vcf/%.$1.ft.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/%.$1.ft.$$(ann
 vcf/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/%.$1.ft.ann.$$(ft).vcf)
 	$$(MERGE_SCRIPT)
 # post-filter after first annotation round
-ifdef SOMATIC_ANN2
-vcf/%.$1.ft2.ann2.vcf : $$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf)
+vcf/%.$1.ft2.ann2.vcf : $$(if $$(call SOMATIC_ANN2,$1),$$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf),vcf/%.$1.ft2.vcf)
 	$$(MERGE_SCRIPT)
-else
-vcf/%.$1.ann2.vcf : vcf/%.$1.ft2.pass.vcf
-	$$(INIT) cp $$< $$@
-endif
-ifdef SOMATIC_ANN3
-vcf_ann/%.$1.vcf : $$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf)
+vcf_ann/%.$1.vcf : $$(if $$(call SOMATIC_ANN3,$1),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
-else
-vcf_ann/%.$1.vcf: vcf/%.$1.ft2.ann2.vcf
-	$$(INIT) cp $$< $$@
-endif
 PHONY += $1_vcfs
 $1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
+
+define somatic-merge-vcf-tumor-normal
+vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf.gz
+	$$(call LSCRIPT_MEM,4G,5G,"$$(BCFTOOLS2) view -l 5 -s $1$$(,)$2 $$^ > $$@")
+vcf_ann/$1_$2.merged.vcf.gz : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
+	$$(call LSCRIPT_MEM,4G,6G,"$$(BCFTOOLS2) concat -O z -a -D $$(filter %.vcf.gz,$$^) > $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call somatic-merge-vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
 
 .DELETE_ON_ERROR:
 .SECONDARY:

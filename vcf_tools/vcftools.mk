@@ -46,9 +46,6 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 %.vcf.gz : %.vcf
 	$(call LSCRIPT_MEM,2G,3G,"bgzip -c $< > $@")
 
-%.vcf.gz.tbi : %.vcf.gz
-	$(call LSCRIPT_MEM,3G,5G,"$(BCFTOOLS2) index -f -t $<")
-
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf_ann/$1_$2.%.vcf
 	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@")
