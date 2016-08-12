@@ -28,7 +28,7 @@ vcf/%.hotspot.vcf : $(foreach i,$(HOTSPOT_VCF_SEQ),hotspot/%.hotspot.$i.vcf.gz h
 
 define hotspot-vcf-tumor-normal-i
 hotspot/$1_$2.hotspot.$3.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai 
-	$$(call LSCRIPT_MEM,8G,10G,"$$(call GATK_MEM,8G) \
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) \
 		-T UnifiedGenotyper $$(HOTSPOT_GATK_OPTS) -I $$(<) -I $$(<<) \
 		-alleles $$(HOTSPOT_VCF.$3) -L $$(HOTSPOT_VCF.$3) -o $$@")
 endef
@@ -38,7 +38,7 @@ $(if $(SAMPLE_PAIRS),$(foreach pair,$(SAMPLE_PAIRS),\
 
 define hotspot-vcf-i
 hotspot/%.hotspot.$1.vcf : bam/%.bam bam/%.bam.bai
-	$$(call LSCRIPT_MEM,8G,10G,"$$(call GATK_MEM,8G) \
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) \
 		-T UnifiedGenotyper $$(HOTSPOT_GATK_OPTS) -I $$(<) \
 		-alleles $$(HOTSPOT_VCF.$1) -L $$(HOTSPOT_VCF.$1) -o $$@")
 endef
