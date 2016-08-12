@@ -413,6 +413,10 @@ TARGETS += mantaTN
 mantaTN :
 	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
 
+TARGETS += strelka_varscan_indels
+strelka_varscan_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
+
 TARGETS += clean_variants
 clean_variants :
 	rm -rf mutect varscan strelka vcf tables alltables summary hotspot

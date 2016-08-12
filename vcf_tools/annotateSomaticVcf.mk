@@ -5,19 +5,26 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
 
-override VARIANT_TYPES = mutect strelka_indels varscan_indels strelka_varscan_indels
+override VARIANT_TYPES = mutect strelka_varscan_indels
 
 DEPTH_FILTER ?= 5
 HRUN ?= false
 FFPE_NORMAL_FILTER ?= false
-VALIDATION ?= false
+
+ANN_PATHOGEN ?= false
 ANN_FACETS ?= false
+ANN_MUT_TASTE ?= false
+ifeq ($(ANN_PATHOGEN),true)
+$(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),$(error non-hg19/b37 pathogen annotation unsupported)
+ANN_FACETS = true
+ANN_MUT_TASTE = true
+endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
     eff \
     $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
-SOMATIC_INDEL_ANNS = $(if $(findstring b37,$(REF)),mut_taste) \
+SOMATIC_INDEL_ANNS = $(if $(and $(findstring true,$(ANN_MUT_TASTE)),$(findstring b37,$(REF))),mut_taste) \
     $(if $(findstring true,$(HRUN)),hrun)
 SOMATIC_SNV_ANNS = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
 # pass filter for faster annotations
@@ -26,7 +33,7 @@ SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANNS),$(SOMATIC_SNV_A
 
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka
-SOMATIC_FILTER1 = $(if $(findstring varscan,$1)$(findstring mutect,$1),\
+SOMATIC_FILTER1 = $(if $(findstring mutect,$1),\
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))
 # target filter
 SOMATIC_FILTER1 += $(if $(TARGETS_FILE),target_ft)
@@ -40,9 +47,12 @@ SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
 # final annotations (run last)
 ifeq ($(ANN_FACETS),true)
 SOMATIC_ANN2 += facets
-ifeq ($(REF),b37)
-SOMATIC_ANN3 += pathogen
 endif
+ifeq ($(ANN_MUT_TASTE),true)
+SOMATIC_ANN2 += mut_taste
+endif
+ifeq ($(ANN_PATHOGEN),true)
+SOMATIC_ANN3 += pathogen
 endif
 
 PHONY += all somatic_vcfs somatic_mafs
@@ -80,10 +90,6 @@ PHONY += $1_vcfs
 $1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
-
-strelka_varscan_indels: $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).strelka_varscan_indels.vcf)
-vcf_ann/%.strelka_varscan_indels.vcf : vcf_ann/%.varscan_indels.vcf vcf_ann/%.strelka_indels.vcf
-	$(call LSCRIPT_MEM,9G,12G,"grep -P '^#' $< > $@ && $(BEDTOOLS) intersect -a $< -b $(<<) >> $@")
 
 .DELETE_ON_ERROR:
 .SECONDARY:

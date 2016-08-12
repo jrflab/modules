@@ -14,18 +14,11 @@ echo "check files"
 for x in output/vcf/*mutect*.vcf; do
     compare_vcf $x vcf/$(basename $x)
 done
-echo "==strelka=="
+echo "==strelka_varscan_indels=="
 echo "run"
-make strelka && echo "success" || (echo "failed" && exit 1)
+make strelka_varscan_indels && echo "success" || (echo "failed" && exit 1)
 echo "check files"
-for x in output/vcf/*.strelka_{snps,indels}.vcf; do
-    compare_vcf $x vcf/$(basename $x)
-done
-echo "==varscan=="
-echo "run"
-make varscanTN && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/vcf/*.varscan_{snps,indels}.vcf; do
+for x in output/vcf/*.strelka_varscan_indels.vcf; do
     compare_vcf $x vcf/$(basename $x)
 done
 echo "==hotspot=="
