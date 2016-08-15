@@ -26,9 +26,12 @@ if __name__ == "__main__":
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
     for record in vcf_reader:
-        query = trees[record.CHROM].search(record.POS)
-        if len(query) == 0:
+        if record.CHROM not in trees:
             record.FILTER.append('targetInterval')
+        else:
+            query = trees[record.CHROM].search(record.POS)
+            if len(query) == 0:
+                record.FILTER.append('targetInterval')
         vcf_writer.write_record(record)
 
     vcf_writer.close()

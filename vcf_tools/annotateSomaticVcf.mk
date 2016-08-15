@@ -15,7 +15,7 @@ ANN_PATHOGEN ?= false
 ANN_FACETS ?= false
 ANN_MUT_TASTE ?= false
 ifeq ($(ANN_PATHOGEN),true)
-$(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),\
+$(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 	$(error non-hg19/b37 pathogen annotation unsupported))
 ANN_FACETS = true
 ANN_MUT_TASTE = true
@@ -66,7 +66,7 @@ MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
 define somatic-merged-vcf
 # first filter round
-vcf/%.$1.ft.vcf : $$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/%.$1.$$(ft).vcf)
+vcf/%.$1.ft.vcf : $$(if $$(strip $$(call SOMATIC_FILTER1,$1)),$$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/%.$1.$$(ft).vcf),vcf/%.$1.vcf)
 	$$(MERGE_SCRIPT)
 # first annotation round
 vcf/%.$1.ft.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/%.$1.ft.$$(ann).vcf)
@@ -75,12 +75,12 @@ vcf/%.$1.ft.ann.vcf : $$(foreach ann,$$(call SOMATIC_ANN1,$1),vcf/%.$1.ft.$$(ann
 vcf/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/%.$1.ft.ann.$$(ft).vcf)
 	$$(MERGE_SCRIPT)
 # post-filter after first annotation round
-vcf/%.$1.ft2.ann2.vcf : $$(if $$(call SOMATIC_ANN2,$1),$$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf),vcf/%.$1.ft2.vcf)
+vcf/%.$1.ft2.ann2.vcf : $$(if $$(strip $$(call SOMATIC_ANN2,$1)),$$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf),vcf/%.$1.ft2.vcf)
 	$$(MERGE_SCRIPT)
-vcf_ann/%.$1.vcf : $$(if $$(call SOMATIC_ANN3,$1),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
+vcf_ann/%.$1.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
 PHONY += $1_vcfs
-$1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf)
+$1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf vcf/$(pair).$1.ft2.ann2.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 
