@@ -28,9 +28,7 @@ endif
 
 all : $(ALL)
 
-include modules/variant_callers/somatic/somaticVariantCaller.inc
-
-ALL_TABLE ?= alltables/allTN.$(call SOMATIC_FILTER_SUFFIX,mutect).tab.txt
+ALL_TABLE ?= alltables/allTN.mutect_snps.tab.txt
 
 emu/mutations.txt : $(ALL_TABLE)
 	$(INIT) awk 'NR > 1 { sub("X", "23", $$3); sub("Y", "24", $$3); sub("MT", "25", $$3); print $$1 "_" $$2, $$3, $$4, $$6 ">" $$7 }' $< | cat - $(EMU_REF_MUTATIONS) > $@
@@ -65,3 +63,5 @@ emu/samples.txt :
 
 emu/report/index.html : emu/emu_results_bic.txt emu/samples.txt emu/mutations.txt $(RESULT_TIMESTAMPS)
 	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
+
+include modules/vcf_tools/vcftools.mk

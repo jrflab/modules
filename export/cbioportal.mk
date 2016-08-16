@@ -1,14 +1,12 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/variantCaller.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 SHELL = /bin/bash
 
 LOGDIR = log/cbioportal.$(NOW)
 
 .PHONY: mafs
 
-mafs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach caller,mutect strelka_varscan_indels,export/cbioportal/$(pair).$(caller).maf))
+mafs : $(foreach pair,$(SAMPLE_PAIRS),$(foreach caller,mutect_snps mutect_indels,export/cbioportal/$(pair).$(caller).maf))
 
 define CBIOPORTAL_VCF_RULE
 unset PERL5LIB PERL_MB_OPT PERLBREW_ROOT PERL_LOCAL_LIB_ROOT PERL_MM_OPT && \
@@ -25,10 +23,7 @@ mkdir -p $(@D) && \
 	--normal-id $(normal.$*)
 endef
 
-export/cbioportal/%.mutect.maf: vcf/%.$(call SOMATIC_VCF_SUFFIXES,mutect).vcf
-	$(CBIOPORTAL_VCF_RULE)
-
-export/cbioportal/%.strelka_varscan_indels.maf: vcf/%.strelka_varscan_indels.vcf
+export/cbioportal/%.maf: vcf/%.vcf
 	$(CBIOPORTAL_VCF_RULE)
 
 include modules/vcf_tools/vcftools.mk

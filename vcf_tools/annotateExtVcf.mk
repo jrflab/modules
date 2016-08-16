@@ -1,5 +1,4 @@
 include modules/Makefile.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR ?= log/vcf.$(NOW)
 
@@ -9,7 +8,7 @@ SOMATIC_FILTERS :=
 
 ext_ann : ext_vcfs ext_tables
 
-ext_vcfs : $(call SOMATIC_VCFS,$(EXT_NAME))
-ext_tables : $(call SOMATIC_TABLES,$(EXT_NAME))
+ext_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).ext.vcf)
+ext_tables : altables/allTN.ext.tab.txt
 
 include modules/vcf_tools/vcftools.mk

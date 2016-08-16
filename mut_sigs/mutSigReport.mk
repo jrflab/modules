@@ -1,8 +1,6 @@
 # mutation signature report
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/variantCaller.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/mutsig_report.$(NOW)
 
@@ -21,7 +19,7 @@ MUTSIG_REPORT_OPTS = --name $(PROJECT_NAME) \
 
 mutect_mutsig_reports : mutsig_report/mutect/mutsig_report.timestamp
 
-mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).mutect.VRanges.Rdata)
+mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).mutect_snps.VRanges.Rdata)
 	$(call LSCRIPT_NAMED_PARALLEL_MEM,mutect_mutsig_report,4,3G,5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
 
 mutsig_report/vrange/%.VRanges.Rdata : vcf/%.vcf

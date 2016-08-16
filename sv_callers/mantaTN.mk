@@ -1,7 +1,6 @@
 # run manta on tumour-normal matched pairs
 
 include modules/Makefile.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 include modules/sv_callers/manta.inc
 
 LOGDIR ?= log/manta.$(NOW)

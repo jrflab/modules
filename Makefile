@@ -342,10 +342,6 @@ TARGETS += gatk_validation
 gatk_validation :
 	$(call RUN_MAKE,modules/variant_callers/somatic/gatkValidation.mk)
 
-TARGETS += samtools_validation
-samtools_validation :
-	$(call RUN_MAKE,modules/variant_callers/somatic/samtoolsValidation.mk)
-
 TARGETS += norm_copynum
 norm_copynum :
 	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)

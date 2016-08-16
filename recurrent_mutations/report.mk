@@ -1,10 +1,9 @@
 include modules/Makefile.inc
-include modules/variant_callers/somatic/somaticVariantCaller.inc
 
 LOGDIR = log/recurrent_mutations.$(NOW)
 
-EXCEL_NONSYNONYMOUS_MUTECT ?= summary/tsv/mutect_nonsynonymous.tsv
-EXCEL_NONSYNONYMOUS_STRELKA_VARSCAN ?= summary/tsv/strelka_varscan_nonsynonymous.tsv
+EXCEL_NONSYNONYMOUS_MUTECT_SNPS ?= summary/tsv/mutect_snps_nonsynonymous.tsv
+EXCEL_NONSYNONYMOUS_MUTECT_INDELS ?= summary/tsv/mutect_indels_nonsynonymous.tsv
 
 # sufam plot parameters
 SUFAM_PLOT_MIN_NR_SAMPLES_WITH_MUTATION?=2
@@ -15,12 +14,12 @@ recurrent_mutations: recurrent_mutations/recurrent_mutations.tsv recurrent_mutat
 
 recurrent_mutations_sufam: recurrent_mutations/sufam/all_mutations.vcf recurrent_mutations/sufam/all_sufam.txt recurrent_mutations/sufam/sufam.ipynb recurrent_mutations/sufam/sufam.html
 
-recurrent_mutations/recurrent_mutations.tsv: $(EXCEL_NONSYNONYMOUS_MUTECT) $(EXCEL_NONSYNONYMOUS_STRELKA_VARSCAN)
+recurrent_mutations/recurrent_mutations.tsv: $(EXCEL_NONSYNONYMOUS_MUTECT_SNPS) $(EXCEL_NONSYNONYMOUS_MUTECT_INDELS)
 	$(INIT) unset PYTHONPATH && \
 	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV) && \
 	python modules/scripts/recurrent_mutations_plot.py $^ $(@D)
 
-recurrent_mutations/sufam/all_mutations.vcf: $(EXCEL_NONSYNONYMOUS_MUTECT) $(EXCEL_NONSYNONYMOUS_STRELKA_VARSCAN)
+recurrent_mutations/sufam/all_mutations.vcf: $(EXCEL_NONSYNONYMOUS_MUTECT_SNPS) $(EXCEL_NONSYNONYMOUS_MUTECT_INDELS)
 	$(INIT) unset PYTHONPATH && \
 	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV) && \
 	(csvcut -tc CHROM,POS,ID,REF,ALT,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].IMPACT,ANN[*].EFFECT,GMAF $< | head -1 | sed 's/CHROM/#CHROM/'; \
