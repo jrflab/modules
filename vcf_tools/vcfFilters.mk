@@ -53,6 +53,7 @@ endef
 $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call somatic-filter-vcf-set,$(set))))
 endif
 
+MUTECT2_SOMATIC_AD_FILTER_VCF = python modules/vcf_tools/somatic_ad_filter_vcf.py
 ifdef SAMPLE_PAIRS
 # ff normal filter :
 # filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF
@@ -61,6 +62,9 @@ ifdef SAMPLE_PAIRS
 # filter if normal depth > 20 and normal variant depth > 1/3 * tumor variant depth
 # or normal variant depth greater than 1
 define som-ad-ft-tumor-normal
+vcf/$1_$2.%.mt2_som_ad_ft.vcf : vcf/$1_$2.%.vcf
+	$$(call LSCRIPT_CHECK_MEM,4G,7G,"$$(MUTECT2_SOMATIC_AD_FILTER_VCF) --tumor $1 --normal $2 $$< > $$@")
+
 vcf/$1_$2.%.som_ad_ft.vcf : vcf/$1_$2.%.vcf
 	$$(call LSCRIPT_CHECK_MEM,8G,12G,"$$(call GATK_MEM,8G) -T VariantFiltration -R $$(REF_FASTA) -V $$< -o $$@ \
 		--filterExpression 'if (vc.getGenotype(\"$2\").getDP() > 20) { ( vc.getGenotype(\"$2\").getAD().1 * 1.0 / vc.getGenotype(\"$2\").getDP()) > ( vc.getGenotype(\"$1\").getAD().1 * 1.0 / vc.getGenotype(\"$1\").getDP()) / 5.0 } else { vc.getGenotype(\"$2\").getAD().1 > 1 }' \

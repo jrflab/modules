@@ -112,6 +112,10 @@ TARGETS += mutect
 mutect :
 	$(call RUN_MAKE,modules/variant_callers/somatic/mutectVariantCaller.mk)
 
+TARGETS += mutect2
+mutect2 :
+	$(call RUN_MAKE,modules/variant_callers/somatic/mutect2.mk)
+
 TARGETS += varscan_cnv
 varscan_cnv :
 	$(call RUN_MAKE,modules/copy_number/varscanCNV.mk)

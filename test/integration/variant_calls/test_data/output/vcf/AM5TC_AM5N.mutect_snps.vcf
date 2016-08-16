@@ -1,0 +1,171 @@
+##fileformat=VCFv4.2
+##GATKCommandLine.MuTect2=<ID=MuTect2,Version=3.6-0-g89b7209,Date="Tue Aug 16 12:00:46 EDT 2016",Epoch=1471363246802,CommandLineOptions="analysis_type=MuTect2 input_file=[bam/AM5TC.bam, bam/AM5N.bam] showFullBamList=false read_buffer_size=null read_filter=[] disable_read_filter=[] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 refactor_NDN_cigar_string=false fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 static_quantized_quals=null round_down_quantized=false disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false no_cmdline_in_header=false sites_only=false never_trim_vcf_format_field=false bcf=false bam_compression=null simplifyBAM=false disable_bam_indexing=false generate_md5=false num_threads=1 num_cpu_threads_per_data_thread=4 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 reference_window_stop=0 phone_home= gatk_key=null tag=NA logging_level=INFO log_to_file=null help=false version=false m2debug=false artifact_detection_mode=false initial_tumor_lod=4.0 initial_normal_lod=0.5 tumor_lod=6.3 normal_lod=2.2 dbsnp_normal_lod=5.5 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 debug=false useFilteredReadsForAnnotations=false emitRefConfidence=NONE bamOutput=null bamWriterType=CALLED_HAPLOTYPES emitDroppedReads=false disableOptimizations=false annotateNDA=false heterozygosity=0.001 indel_heterozygosity=1.25E-4 standard_min_confidence_threshold_for_calling=30.0 standard_min_confidence_threshold_for_emitting=30.0 max_alternate_alleles=6 max_num_PL_values=100 input_prior=[] sample_ploidy=2 genotyping_mode=DISCOVERY alleles=(RodBinding name= source=UNBOUND) contamination_fraction_to_filter=0.0 contamination_fraction_per_sample_file=null p_nonref_model=null exactcallslog=null output_mode=EMIT_VARIANTS_ONLY allSitePLs=false kmerSize=[10, 25] dontIncreaseKmerSizesForCycles=false allowNonUniqueKmersInRef=false numPruningSamples=1 recoverDanglingHeads=false doNotRecoverDanglingBranches=false minDanglingBranchLength=4 consensus=false maxNumHaplotypesInPopulation=128 errorCorrectKmers=false minPruning=2 debugGraphTransformations=false allowCyclesInKmerGraphToGeneratePaths=false graphOutput=null kmerLengthForReadErrorCorrection=25 minObservationsForKmerToBeSolid=20 gcpHMM=10 pair_hmm_implementation=VECTOR_LOGLESS_CACHING pair_hmm_sub_implementation=ENABLE_ALL always_load_vector_logless_PairHMM_lib=false phredScaledGlobalReadMismappingRate=45 noFpga=false debug_read_name=null MQ_filtering_level=20 cosmic=[] normal_panel=[] dbsnp=(RodBinding name=dbsnp source=/home/limr/share/reference/dbsnp_138.b37.gmaf.vcf) comp=[] annotation=[DepthPerAlleleBySample, BaseQualitySumPerAlleleBySample, TandemRepeatAnnotator, OxoGReadCounts] excludeAnnotation=[SpanningDeletions] out=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/mutect2/chr_vcf/AM5TC_AM5N.1.mutect_snps_indels.vcf dontTrimActiveRegions=false maxDiscARExtension=25 maxGGAARExtension=300 paddingAroundIndels=150 paddingAroundSNPs=20 keepRG=null min_base_quality_score=10 errorCorrectReads=false captureAssemblyFailureBAM=false dontUseSoftClippedBases=false justDetermineActiveRegions=false doNotRunPhysicalPhasing=false activityProfileOut=null activeRegionOut=null activeRegionIn=null activeRegionExtension=null forceActive=false activeRegionMaxSize=null bandPassSigma=null maxProbPropagationDistance=50 activeProbabilityThreshold=0.002 filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
+##SAMPLE=<ID=NORMAL,SampleName=AM5N,File=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/bam/AM5N.bam>
+##SAMPLE=<ID=TUMOR,SampleName=AM5TC,File=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/bam/AM5TC.bam>
+##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+##INFO=<ID=ECNT,Number=1,Type=String,Description="Number of events in this haplotype">
+##INFO=<ID=HCNT,Number=1,Type=String,Description="Number of haplotypes that support this variant">
+##INFO=<ID=MAX_ED,Number=1,Type=Integer,Description="Maximum distance between events in this active region">
+##INFO=<ID=MIN_ED,Number=1,Type=Integer,Description="Minimum distance between events in this active region">
+##INFO=<ID=NLOD,Number=1,Type=String,Description="Normal LOD score">
+##INFO=<ID=PON,Number=1,Type=String,Description="Count from Panel of Normals">
+##INFO=<ID=RPA,Number=.,Type=Integer,Description="Number of times tandem repeat unit is repeated, for each allele (including reference)">
+##INFO=<ID=RU,Number=1,Type=String,Description="Tandem repeat unit (bases)">
+##INFO=<ID=STR,Number=0,Type=Flag,Description="Variant is a short tandem repeat">
+##INFO=<ID=TLOD,Number=1,Type=String,Description="Tumor LOD score">
+##FORMAT=<ID=AD,Number=A,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AF,Number=1,Type=Float,Description="Allele fraction of the event in the tumor">
+##FORMAT=<ID=ALT_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the alternate allele">
+##FORMAT=<ID=ALT_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the alternate allele">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=FOXOG,Number=1,Type=Float,Description="Fraction of alt reads indicating OxoG error">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PGT,Number=1,Type=String,Description="Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another">
+##FORMAT=<ID=PID,Number=1,Type=String,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=QSS,Number=A,Type=Integer,Description="Sum of base quality scores for each allele">
+##FORMAT=<ID=REF_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the reference allele">
+##FORMAT=<ID=REF_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the reference allele">
+##FILTER=<ID=alt_allele_in_normal,Description="Evidence seen in the normal sample">
+##FILTER=<ID=clustered_events,Description="Clustered events observed in the tumor">
+##FILTER=<ID=germline_risk,Description="Evidence indicates this site is germline, not somatic">
+##FILTER=<ID=homologous_mapping_event,Description="More than three events were observed in the tumor">
+##FILTER=<ID=multi_event_alt_allele_in_normal,Description="Multiple events observed in tumor and normal">
+##FILTER=<ID=panel_of_normals,Description="Seen in at least 2 samples in the panel of normals">
+##FILTER=<ID=str_contraction,Description="Site filtered due to contraction of short tandem repeat region">
+##FILTER=<ID=t_lod_fstar,Description="Tumor does not meet likelihood threshold">
+##FILTER=<ID=triallelic_site,Description="Site filtered because more than two alt alleles pass tumor LOD">
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
+1	244755022	.	C	T	.	PASS	ECNT=1;HCNT=2;MAX_ED=.;MIN_ED=.;NLOD=27.10;TLOD=42.29	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:49,21:0.321:12:9:0.429:1445,599:19:30	0/0:114,1:0.011:1:0:0.0:3205,12:43:71
+2	179416547	.	A	G	.	clustered_events	ECNT=2;HCNT=6;MAX_ED=39;MIN_ED=39;NLOD=42.35;TLOD=75.10	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:70,30:0.341:12:18:0.6:1995,864:37:33	0/0:156,0:0.0:0:0:.:4353,0:70:86
+3	42265050	.	C	A	.	PASS	ECNT=1;HCNT=28;MAX_ED=.;MIN_ED=.;NLOD=61.36;TLOD=294.78	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:185,126:0.417:68:58:0.46:5684,3537:89:96	0/0:238,0:0.0:0:0:.:7231,0:105:133
+3	49842010	.	C	T	.	PASS	ECNT=1;HCNT=31;MAX_ED=.;MIN_ED=.;NLOD=86.73;TLOD=264.43	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:248,124:0.334:62:62:0.5:7262,3623:131:117	0/0:346,1:0.003413:0:1:1.0:9808,3:157:189
+3	196529982	rs78043821	A	G	.	clustered_events;multi_event_alt_allele_in_normal	DB;ECNT=5;HCNT=56;MAX_ED=55;MIN_ED=31;NLOD=10.20;TLOD=6.69	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:71,5:0.05:5:0:0.0:2140,159:30:41	0/0:78,6:0.042:4:2:0.333:2265,187:26:52
+3	196530013	rs73205842	A	G	.	clustered_events;multi_event_alt_allele_in_normal	DB;ECNT=5;HCNT=57;MAX_ED=55;MIN_ED=31;NLOD=14.71;TLOD=26.29	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:86,12:0.114:9:3:0.25:0|1:196530013_A_G:2512,375:31:55	0/0:112,4:0.033:3:1:0.25:0|1:196530013_A_G:3119,118:40:72
+3	196530022	rs115224945	C	T	.	clustered_events;multi_event_alt_allele_in_normal	DB;ECNT=5;HCNT=57;MAX_ED=55;MIN_ED=31;NLOD=19.24;TLOD=27.57	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:89,10:0.113:7:3:0.3:0|1:196530013_A_G:2795,281:33:56	0/0:117,2:0.021:1:1:0.5:0|1:196530013_A_G:3591,56:42:75
+3	196530037	.	T	A	.	clustered_events;multi_event_alt_allele_in_normal	ECNT=5;HCNT=51;MAX_ED=55;MIN_ED=31;NLOD=17.19;TLOD=8.35	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:83,2:0.068:1:1:0.5:0|1:196530035_G_GA:2295,53:32:51	0/0:105,2:0.023:1:1:0.5:0|1:196530035_G_GA:2948,41:38:67
+4	55131048	.	G	A	.	PASS	ECNT=1;HCNT=49;MAX_ED=.;MIN_ED=.;NLOD=18.17;TLOD=28.71	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:50,14:0.121:8:6:0.571:1553,381:23:27	0/0:64,0:0.0:0:0:.:1862,0:22:42
+5	67591150	.	G	T	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=4;HCNT=15;MAX_ED=51;MIN_ED=45;NLOD=46.75;TLOD=4.67	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:132,2:0.018:2:0:1.0:0|1:67591148_T_TTATCATAA:4140,40:56:76	0/0:241,3:0.015:3:0:1.0:0|1:67591148_T_TTATCATAA:7243,65:106:135
+5	67591154	.	T	C	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=4;HCNT=15;MAX_ED=51;MIN_ED=45;NLOD=46.10;TLOD=4.67	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:129,1:0.018:1:0:1.0:0|1:67591148_T_TTATCATAA:3552,28:55:74	0/0:236,3:0.015:3:0:1.0:0|1:67591148_T_TTATCATAA:6538,38:105:131
+5	96503722	.	A	G	.	PASS	ECNT=1;HCNT=24;MAX_ED=.;MIN_ED=.;NLOD=17.61;TLOD=31.54	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:31,15:0.295:7:8:0.533:842,444:12:19	0/0:66,0:0.0:0:0:.:1832,0:30:36
+5	110835624	.	G	A	.	PASS	ECNT=1;HCNT=69;MAX_ED=.;MIN_ED=.;NLOD=65.50;TLOD=142.69	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:108,61:0.379:35:26:0.574:3359,1759:59:49	0/0:261,0:0.0:0:0:.:7762,0:120:141
+5	130846067	.	G	A	.	PASS	ECNT=1;HCNT=2;MAX_ED=.;MIN_ED=.;NLOD=30.24;TLOD=44.78	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:33,21:0.37:11:10:0.524:978,617:9:24	0/0:124,0:0.0:0:0:.:3589,0:66:58
+6	122768041	.	C	T	.	PASS	ECNT=1;HCNT=48;MAX_ED=.;MIN_ED=.;NLOD=50.87;TLOD=94.74	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:58,39:0.402:21:18:0.462:1764,1159:27:31	0/0:207,0:0.0:0:0:.:6176,0:85:122
+8	28651450	.	A	T	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=12.46;TLOD=4.84	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:93,2:0.022:2:0:0.0:0|1:28651450_A_T:2544,57:41:52	0/0:62,2:0.033:1:1:0.5:0|1:28651450_A_T:1702,31:20:42
+8	28651451	.	C	T	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=12.76;TLOD=4.84	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:92,2:0.022:2:0:0.0:0|1:28651450_A_T:2765,57:40:52	0/0:58,1:0.033:1:0:0.0:0|1:28651450_A_T:1755,28:19:39
+8	28651453	.	C	G	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=12.34;TLOD=4.83	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:82,2:0.022:2:0:0.0:0|1:28651450_A_T:2478,63:34:48	0/0:55,1:0.018:1:0:0.0:0|1:28651450_A_T:1650,31:18:37
+8	28651455	.	A	T	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=11.45;TLOD=4.92	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:79,2:0.024:2:0:0.0:0|1:28651450_A_T:2342,57:32:47	0/0:54,1:0.019:1:0:0.0:0|1:28651450_A_T:1599,28:18:36
+8	28651458	.	A	G	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=10.55;TLOD=4.98	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:74,2:0.026:2:0:0.0:0|1:28651450_A_T:2146,52:29:45	0/0:52,1:0.02:1:0:0.0:0|1:28651450_A_T:1496,27:17:35
+8	28651459	.	G	T	.	clustered_events;multi_event_alt_allele_in_normal;t_lod_fstar	ECNT=6;HCNT=9;MAX_ED=9;MIN_ED=1;NLOD=10.85;TLOD=4.98	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:74,2:0.026:2:0:1.0:0|1:28651450_A_T:2133,44:29:45	0/0:51,1:0.02:1:0:1.0:0|1:28651450_A_T:1451,26:16:35
+9	104356907	.	G	A	.	PASS	ECNT=1;HCNT=38;MAX_ED=.;MIN_ED=.;NLOD=77.54;TLOD=170.66	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:331,83:0.213:46:37:0.554:9699,2407:155:176	0/0:295,1:0.003788:1:0:1.0:8126,3:137:158
+9	139981571	.	G	A	.	PASS	ECNT=1;HCNT=4;MAX_ED=.;MIN_ED=.;NLOD=34.25;TLOD=9.10	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:94,7:0.074:4:3:0.571:2856,188:46:48	0/0:155,2:0.007937:0:2:0.0:4560,59:69:86
+10	74100864	.	G	T	.	PASS	ECNT=1;HCNT=4;MAX_ED=.;MIN_ED=.;NLOD=55.58;TLOD=54.93	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:186,32:0.147:13:19:0.406:5687,938:90:96	0/0:220,1:0.005291:1:0:1.0:6331,11:97:123
+10	99376090	.	C	T	.	PASS	ECNT=1;HCNT=2;MAX_ED=.;MIN_ED=.;NLOD=21.55;TLOD=120.38	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:50,52:0.531:27:25:0.481:1467,1524:31:19	0/0:97,1:0.012:1:0:0.0:2711,28:49:48
+10	124214218	.	C	T	.	PASS	ECNT=1;HCNT=4;MAX_ED=.;MIN_ED=.;NLOD=19.21;TLOD=116.90	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:53,50:0.512:32:18:0.36:1627,1420:28:25	0/0:84,2:0.013:0:2:1.0:2470,38:47:37
+10	124457488	.	T	C	.	clustered_events;homologous_mapping_event	ECNT=3;HCNT=22;MAX_ED=68;MIN_ED=4;NLOD=37.60;TLOD=7.68	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:102,2:0.031:2:0:1.0:0|1:124457484_T_TGACTTA:2777,54:56:46	0/0:156,0:0.007092:0:0:.:0|1:124457484_T_TGACTTA:4336,0:66:90
+10	126515192	.	G	A	.	PASS	ECNT=1;HCNT=28;MAX_ED=.;MIN_ED=.;NLOD=24.92;TLOD=140.31	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:66,57:0.327:28:29:0.491:1983,1639:35:31	0/0:109,1:0.005291:0:1:0.0:3081,30:45:64
+11	533875	rs28933406	G	T	.	PASS	DB;ECNT=1;HCNT=10;MAX_ED=.;MIN_ED=.;NLOD=56.20;TLOD=226.47	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:177,104:0.384:58:46:0.558:5423,3067:93:84	0/0:236,0:0.0:0:0:.:7066,0:120:116
+11	1265872	rs200110372	G	A	.	PASS	DB;ECNT=1;HCNT=1;MAX_ED=.;MIN_ED=.;NLOD=7.17;TLOD=7.90	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:29,6:0.185:5:1:0.833:827,182:17:12	0/0:29,0:0.0:0:0:.:839,0:18:11
+11	27520946	.	C	T	.	clustered_events	ECNT=2;HCNT=63;MAX_ED=55;MIN_ED=55;NLOD=56.50;TLOD=102.45	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:94,47:0.345:26:21:0.447:2875,1338:45:49	0/0:232,0:0.0:0:0:.:7109,0:97:135
+11	71932131	.	G	C	.	alt_allele_in_normal	ECNT=1;HCNT=11;MAX_ED=.;MIN_ED=.;NLOD=3.11;TLOD=18.51	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:181,9:0.043:6:3:0.667:5549,160:95:86	0/0:159,9:0.067:4:5:0.444:4724,119:70:89
+12	31270149	rs7316147	G	C	.	clustered_events;germline_risk;homologous_mapping_event	DB;ECNT=3;HCNT=2;MAX_ED=22;MIN_ED=1;NLOD=5.12;TLOD=17.49	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:18,5:0.238:4:1:0.8:0|1:31270149_G_C:549,154:8:10	0/0:21,0:0.0:0:0:.:0|1:31270149_G_C:621,0:12:9
+12	31270150	rs7315923	C	A	.	clustered_events;germline_risk;homologous_mapping_event	DB;ECNT=3;HCNT=2;MAX_ED=22;MIN_ED=1;NLOD=5.42;TLOD=17.49	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:18,5:0.238:4:1:0.2:0|1:31270149_G_C:550,129:8:10	0/0:20,0:0.0:0:0:.:0|1:31270149_G_C:627,0:12:8
+12	31270171	rs7301557	T	C	.	clustered_events;germline_risk;homologous_mapping_event	DB;ECNT=3;HCNT=2;MAX_ED=22;MIN_ED=1;NLOD=4.52;TLOD=17.00	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:13,6:0.294:5:1:0.833:0|1:31270149_G_C:393,159:7:6	0/0:14,0:0.0:0:0:.:0|1:31270149_G_C:391,0:8:6
+12	40753055	rs200515208	G	T	.	t_lod_fstar	DB;ECNT=1;HCNT=2;MAX_ED=.;MIN_ED=.;NLOD=6.53;TLOD=4.12	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:19,6:0.24:0:6:0.0:511,98:16:3	0/0:24,0:0.0:0:0:.:679,0:22:2
+13	28885846	.	G	T	.	PASS	ECNT=1;HCNT=1;MAX_ED=.;MIN_ED=.;NLOD=20.07;TLOD=46.76	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:32,24:0.404:6:18:0.25:979,663:16:16	0/0:84,0:0.0:0:0:.:2539,0:37:47
+16	27659939	.	C	A	.	PASS	ECNT=1;HCNT=23;MAX_ED=.;MIN_ED=.;NLOD=36.27;TLOD=182.14	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:145,87:0.381:44:43:0.494:4557,2420:61:84	0/0:146,0:0.0:0:0:.:4402,0:68:78
+16	58314194	.	C	T	.	PASS	ECNT=1;HCNT=21;MAX_ED=.;MIN_ED=.;NLOD=53.02;TLOD=224.03	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:172,106:0.378:59:47:0.443:5113,2983:82:90	0/0:228,1:0.005376:0:1:1.0:6728,21:119:109
+16	74366531	rs3743922	A	C	.	PASS	DB;ECNT=1;HCNT=1;MAX_ED=.;MIN_ED=.;NLOD=5.60;TLOD=8.56	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:43,5:0.116:4:1:0.2:1137,134:24:19	0/0:44,2:0.048:1:1:0.5:1177,59:16:28
+17	76799507	.	C	G	.	PASS	ECNT=1;HCNT=24;MAX_ED=.;MIN_ED=.;NLOD=81.38;TLOD=348.20	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:285,158:0.362:85:73:0.462:8711,4660:168:117	0/0:318,1:0.003636:1:0:0.0:9543,14:150:168
+18	3534412	.	G	A	.	PASS	ECNT=1;HCNT=34;MAX_ED=.;MIN_ED=.;NLOD=39.68;TLOD=183.19	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:199,86:0.31:41:45:0.477:5755,2483:92:107	0/0:161,1:0.006897:0:1:0.0:4457,30:82:79
+19	17291713	.	G	A	.	PASS	ECNT=1;HCNT=24;MAX_ED=.;MIN_ED=.;NLOD=39.59;TLOD=181.24	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:156,86:0.366:38:48:0.442:4656,2490:84:72	0/0:167,0:0.0:0:0:.:4753,0:85:82
+19	33119808	.	A	G	.	PASS	ECNT=1;HCNT=4;MAX_ED=.;MIN_ED=.;NLOD=14.30;TLOD=10.69	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:50,6:0.113:1:5:0.833:1433,168:22:28	0/0:53,0:0.0:0:0:.:1534,0:24:29
+22	37414752	.	G	T	.	PASS	ECNT=1;HCNT=73;MAX_ED=.;MIN_ED=.;NLOD=71.97;TLOD=366.61	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:278,175:0.378:82:93:0.469:8061,5202:138:140	0/0:291,0:0.0:0:0:.:8136,0:137:154
+22	42609570	.	G	A	.	PASS	ECNT=1;HCNT=36;MAX_ED=.;MIN_ED=.;NLOD=41.39;TLOD=200.15	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:QSS:REF_F1R2:REF_F2R1	0/1:176,96:0.358:44:52:0.458:5487,2671:85:91	0/0:165,1:0.006993:1:0:1.0:4896,3:86:79
+X	135049720	.	C	T	.	clustered_events;homologous_mapping_event	ECNT=3;HCNT=24;MAX_ED=125;MIN_ED=124;NLOD=6.28;TLOD=6.51	GT:AD:AF:ALT_F1R2:ALT_F2R1:FOXOG:PGT:PID:QSS:REF_F1R2:REF_F2R1	0/1:14,2:0.143:2:0:0.0:0|1:135049720_C_T:419,57:9:5	0/0:22,0:0.0:0:0:.:0|1:135049720_C_T:667,0:12:10

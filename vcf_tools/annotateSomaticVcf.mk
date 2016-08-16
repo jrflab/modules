@@ -5,7 +5,7 @@ include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
 
-override VARIANT_TYPES = mutect strelka_varscan_indels
+VARIANT_TYPES ?= mutect_snps mutect_indels #strelka_indels varscan_indels strelka_varscan_indels
 
 DEPTH_FILTER ?= 5
 HRUN ?= false
@@ -32,17 +32,19 @@ ifeq ($(ANN_MUT_TASTE),true)
 SOMATIC_INDEL_ANN2 += mut_taste
 endif
 SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
-# pass filter for faster annotations
+ pass filter for faster annotations
 # indel/snv initial round of annotations
 SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2))
 ifeq ($(ANN_FACETS),true)
+$(if $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)),,\
+	$(error no facets data available for annotations))
 SOMATIC_ANN2 += facets
 endif
 
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka
-SOMATIC_FILTER1 = $(if $(findstring mutect,$1),\
-    $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft,som_ad_ft))
+SOMATIC_FILTER1 = $(if $(findstring mutect_snps,$1),mt2_som_ad_ft,\
+    $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft))
 # target filter
 SOMATIC_FILTER1 += $(if $(TARGETS_FILE),target_ft)
 
@@ -80,7 +82,7 @@ vcf/%.$1.ft2.ann2.vcf : $$(if $$(strip $$(call SOMATIC_ANN2,$1)),$$(foreach ann,
 vcf_ann/%.$1.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
 PHONY += $1_vcfs
-$1_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).$1.vcf vcf/$(pair).$1.ft2.ann2.vcf)
+$1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 
