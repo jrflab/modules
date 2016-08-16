@@ -67,4 +67,5 @@ include modules/copy_number/titan.inc
 define titan-pair
 vcf/$1.%.titan.vcf : vcf/$1.%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/$1.titan_seg.txt
 	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $$(<<) --outFile $$@ $$<")
+endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call titan-pair,$(pair))))

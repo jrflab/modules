@@ -417,6 +417,25 @@ TARGETS += strelka_varscan_indels
 strelka_varscan_indels:
 	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
+# workflows
+TARGETS += tseq_workflow
+tseq_workflow: tseq_workflow_ann
+	$(MAKE) -f modules/summary/mutationSummary.mk
+	$(MAKE) -f modules/recurrent_mutations/report.mk
+	$(MAKE) -f modules/export/cbioportal.mk
+
+TARGETS += tseq_workflow_post_align
+tseq_workflow_post_align: $(ALIGNER)
+	$(MAKE) -f modules/qc/bamIntervalMetrics.mk
+	$(MAKE) -f modules/variant_callers/somatic/mutect2.mk
+	$(MAKE) -f modules/variant_callers/gatkVariantCaller.mk
+	$(MAKE) -f modules/copy_number/facets.mk
+
+TARGETS += tseq_workflow_ann
+tseq_workflow_ann: tseq_workflow_post_align
+	$(MAKE) -f modules/vcf_tools/annotateSomaticVcf.mk
+	$(MAKE) -f modules/vcf_tools/annotateVcf.mk
+
 TARGETS += clean_variants
 clean_variants :
 	rm -rf mutect varscan strelka vcf tables alltables summary hotspot
