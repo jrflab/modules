@@ -32,7 +32,7 @@ ifeq ($(ANN_MUT_TASTE),true)
 SOMATIC_INDEL_ANN2 += mut_taste
 endif
 SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
- pass filter for faster annotations
+
 # indel/snv initial round of annotations
 SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2))
 ifeq ($(ANN_FACETS),true)
