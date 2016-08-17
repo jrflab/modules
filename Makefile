@@ -19,29 +19,21 @@ NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
 USE_CLUSTER ?= true
-ifeq ($(USE_CLUSTER),true)
-MAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
+QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
 NUM_JOBS ?= 100
-else
-NUM_JOBS ?= 12
-endif
 
-define RUN_MAKE_J
-$(MAKE) -e -f $1 -j $2 $(TARGET) && \
+define RUN_QMAKE
+$(QMAKE) -e -f $1 -j $2 $(TARGET) && \
 	mkdir -p completed_tasks && \
 	touch completed_tasks/$@
 endef
 
-RUN_MAKE = $(call RUN_MAKE_J,$1,$(NUM_JOBS))
+RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
 
 
-TARGETS += merge_fastq
-merge_fastq : 
-	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
-
-TARGETS += gatk
-gatk : 
-	$(call RUN_MAKE,modules/variant_callers/gatkVariantCaller.mk)
+#####
+# Aligners
+#####
 
 TARGETS += bwa
 bwa : NUM_ATTEMPTS = 50
@@ -62,14 +54,6 @@ tmap : NUM_ATTEMPTS = 50
 tmap :
 	$(call RUN_MAKE,modules/aligners/tmapAligner.mk)
 
-TARGETS += tophat_fusion
-tophat_fusion : 
-	$(call RUN_MAKE,modules/sv_callers/tophatFusion.mk)
-
-TARGETS += tophat
-tophat : 
-	$(call RUN_MAKE,modules/aligners/tophatAligner.mk)
-
 TARGETS += hisat
 hisat : 
 	$(call RUN_MAKE,modules/aligners/hisatAligner.mk)
@@ -78,35 +62,43 @@ TARGETS += cufflinks
 cufflinks : 
 	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
 
-TARGETS += process_bam
-process_bam : 
-	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
+TARGETS += tophat
+tophat : 
+	$(call RUN_MAKE,modules/aligners/tophatAligner.mk)
 
-TARGETS += bam_metrics
-bam_metrics :
-	$(call RUN_MAKE,modules/qc/bamMetrics.mk)
+TARGETS += star
+star:
+	$(call RUN_MAKE,modules/aligners/starAligner.mk)
 
-TARGETS += bam_interval_metrics
-bam_interval_metrics :
-	$(call RUN_MAKE,modules/qc/bamIntervalMetrics.mk)
 
-TARGETS += rnaseq_metrics
-rnaseq_metrics :
-	$(call RUN_MAKE,modules/qc/rnaseqMetrics.mk)
+#####
+# variant callers
+####
 
-TARGETS += fastqc
-fastqc :
-	$(call RUN_MAKE,modules/qc/fastqc.mk)
+TARGETS += samtools_het
+samtools_het :
+	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
-# not tested on the cluster
-# requires x11 for graphics
-TARGETS += interval_qc
-interval_qc :
-	$(call RUN_MAKE,modules/qc/intervalBamQC.mk)
+TARGETS += snpcaller
+snpcaller :
+	$(call RUN_MAKE,modules/variant_callers/snpCaller.mk)
+
+
+TARGETS += hotspot
+hotspot: 
+	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
+
+TARGETS += gatk
+gatk : 
+	$(call RUN_MAKE,modules/variant_callers/gatkVariantCaller.mk)
 
 TARGETS += jsm
 jsm :
 	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
+
+TARGETS += merge_fastq
+merge_fastq : 
+	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
 
 TARGETS += mutect
 mutect :
@@ -116,13 +108,9 @@ TARGETS += mutect2
 mutect2 :
 	$(call RUN_MAKE,modules/variant_callers/somatic/mutect2.mk)
 
-TARGETS += varscan_cnv
-varscan_cnv :
-	$(call RUN_MAKE,modules/copy_number/varscanCNV.mk)
-
-TARGETS += varscan_fpfilter
-varscan_fpfilter :
-	$(call RUN_MAKE,modules/variant_callers/varscanFpfilter.mk)
+TARGETS += strelka
+strelka :
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelka.mk)
 
 TARGETS += varscanTN
 varscanTN :
@@ -132,66 +120,78 @@ TARGETS += varscan
 varscan :
 	$(call RUN_MAKE,modules/variant_callers/varscan.mk)
 
+TARGETS += pyrohmm
+pyrohmm :
+	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
 
-# single sample mutation seq
 TARGETS += museqTN
 museqTN :
 	$(call RUN_MAKE,modules/variant_callers/somatic/museqTN.mk)
-
-TARGETS += merge_vcfTN
-merge_vcfTN :
-	$(call RUN_MAKE,modules/vcf_tools/vcfMergeTN.mk)
 
 TARGETS += somatic_sniper
 somatic_sniper :
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticSniper.mk)
 
-
-TARGETS += som_indels
-som_indels :
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndelDetector.mk)
-
 TARGETS += snvmix
 snvmix :
 	$(call RUN_MAKE,modules/variant_callers/snvmix.mk)
 
-TARGETS += pyrohmm
-pyrohmm :
-	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
+TARGETS += pindel
+pindel :
+	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
+
+TARGETS += scalpel
+scalpel :
+	$(call RUN_MAKE,modules/variant_callers/somatic/scalpel.mk)
+
+TARGETS += tvc
+tvc:
+	$(call RUN_MAKE,modules/variant_callers/tvc.mk)
+
+TARGETS += tvcTN
+tvcTN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
 
 
-TARGETS += compare_vcf
-compare_vcf :
-	$(call RUN_MAKE,modules/vcf_tools/vcfCompare.mk)
+#####
+# copy number
+####
 
-TARGETS += merge_vcf_platform
-merge_vcf_platform :
-	$(call RUN_MAKE,modules/vcf_tools/vcfMergePlatform.mk)
+TARGETS += norm_copynum
+norm_copynum :
+	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)
 
-TARGETS += compare_vcfTN
-compare_vcfTN :
-	$(call RUN_MAKE,modules/vcf_tools/vcfCompareTN.mk)
+TARGETS += facets
+facets :
+	$(call RUN_MAKE,modules/copy_number/facets.mk)
 
-TARGETS += read_depth
-read_depth :
-	$(call RUN_MAKE,modules/qc/readDepth.mk)
+TARGETS += titan
+titan :
+	$(call RUN_MAKE,modules/copy_number/titan.mk)
 
-TARGETS += qualimap
-qualimap :
-	$(call RUN_MAKE,modules/qc/qualimap.mk)
+TARGETS += strelka_varscan_indels
+strelka_varscan_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
+
+TARGETS += varscan_cnv
+varscan_cnv :
+	$(call RUN_MAKE,modules/copy_number/varscanCNV.mk)
 
 TARGETS += hmmcopy
 hmmcopy :
 	$(call RUN_MAKE,modules/copy_number/hmmCopy.mk)
 
-TARGETS += nfuse_wgss_wtss
-nfuse_wgss_wtss :
-	$(call RUN_MAKE,modules/copy_number/nfuseWGSSWTSS.mk)
+TARGETS += freec
+freec : 
+	$(call RUN_MAKE,modules/copy_number/controlFreeC.mk)
 
-TARGETS += sum_reads
-sum_reads :
-	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
+TARGETS += freecTN
+freecTN : 
+	$(call RUN_MAKE,modules/copy_number/controlFreeCTN.mk)
 
+TARGETS += freec_lohTN
+freec_lohTN : 
+	$(call RUN_MAKE,modules/copy_number/controlFreeCLOHTN.mk)
 
 TARGETS += exomecnv
 exomecnv : 
@@ -205,17 +205,38 @@ TARGETS += gistic
 gistic :
 	$(call RUN_MAKE,modules/copy_number/gistic.mk)
 
-TARGETS += freec
-freec : 
-	$(call RUN_MAKE,modules/copy_number/controlFreeC.mk)
 
-TARGETS += freecTN
-freecTN : 
-	$(call RUN_MAKE,modules/copy_number/controlFreeCTN.mk)
+####
+# SV callers
+####
 
-TARGETS += freec_lohTN
-freec_lohTN : 
-	$(call RUN_MAKE,modules/copy_number/controlFreeCLOHTN.mk)
+TARGETS += tophat_fusion
+tophat_fusion : 
+	$(call RUN_MAKE,modules/sv_callers/tophatFusion.mk)
+
+TARGETS += manta_rnaseq
+manta_rnaseq :
+	$(call RUN_MAKE,modules/sv_callers/mantaRnaseq.mk)
+
+TARGETS += manta
+manta :
+	$(call RUN_MAKE,modules/sv_callers/manta.mk)
+
+TARGETS += mantaTN
+mantaTN :
+	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
+
+TARGETS += brass
+brass :
+	$(call RUN_MAKE,modules/sv_callers/brass.mk)
+
+TARGETS += integrate_rnaseq
+integrate_rnaseq :
+	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
+
+TARGETS += integrate
+integrate :
+	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
 
 NUM_DEFUSE_JOBS ?= 5
 TARGETS += defuse
@@ -239,21 +260,9 @@ TARGETS += hydra
 hydra :
 	$(call RUN_MAKE,modules/sv_callers/hydra.mk)
 
-TARGETS += pindel
-pindel :
-	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
-
-TARGETS += scalpel
-scalpel :
-	$(call RUN_MAKE,modules/variant_callers/somatic/scalpel.mk)
-
-TARGETS += snp6
-snp6 :
-	$(call RUN_MAKE,modules/snp6/snp6.mk)
-
-TARGETS += snpcaller
-snpcaller :
-	$(call RUN_MAKE,modules/variant_callers/snpCaller.mk)
+TARGETS += nfuse_wgss_wtss
+nfuse_wgss_wtss :
+	$(call RUN_MAKE,modules/sv_callers/nfuseWGSSWTSS.mk)
 
 TARGETS += soapfuse
 soapfuse :
@@ -267,64 +276,117 @@ TARGETS += fusioncatcher
 fusioncatcher :
 	$(call RUN_MAKE,modules/sv_callers/fusioncatcher.mk)
 
-TARGETS += strelka
-strelka :
-	$(call RUN_MAKE,modules/variant_callers/somatic/strelka.mk)
-
 TARGETS += crest
 crest :
 	$(call RUN_MAKE,modules/sv_callers/crest.mk)
 
-TARGETS += pyloh
-pyloh :
-	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
 
-TARGETS += clonehd
-clonehd :
-	$(call RUN_MAKE,modules/clonality/clonehd.mk)
+###
+# pre-processing
+###
 
-TARGETS += emu
-emu :
-	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
+TARGETS += fix_rg
+fix_rg :
+	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
 
+TARGETS += merge_split_fastq
+merge_split_fastq :
+	$(call RUN_MAKE,modules/fastq_tools/mergeSplitFastq.mk)
 
 TARGETS += extract_fastq
 extract_fastq :
 	$(call RUN_MAKE,modules/fastq_tools/extractFastq.mk)
 
-TARGETS += titan
-titan :
-	$(call RUN_MAKE,modules/copy_number/titan.mk)
+TARGETS += process_bam
+process_bam : 
+	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
 
-TARGETS += ann_titan
-ann_titan :
-	$(call RUN_MAKE,modules/copy_number/annotateTitan.mk)
+# standalone bam file merger
+TARGETS += merge_bam
+merge_bam :
+	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
-TARGETS += samtools_het
-samtools_het :
-	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
+
+###
+# QC
+###
+
+TARGETS += bam_metrics
+bam_metrics :
+	$(call RUN_MAKE,modules/qc/bamMetrics.mk)
+
+TARGETS += bam_interval_metrics
+bam_interval_metrics :
+	$(call RUN_MAKE,modules/qc/bamIntervalMetrics.mk)
+
+TARGETS += rnaseq_metrics
+rnaseq_metrics :
+	$(call RUN_MAKE,modules/qc/rnaseqMetrics.mk)
+
+TARGETS += fastqc
+fastqc :
+	$(call RUN_MAKE,modules/qc/fastqc.mk)
+
+TARGETS += interval_qc
+interval_qc :
+	$(call RUN_MAKE,modules/qc/intervalBamQC.mk)
+
+TARGETS += rseqc
+rseqc :
+	$(call RUN_MAKE,modules/qc/rseqc.mk)
+
+TARGETS += qualimap
+qualimap :
+	$(call RUN_MAKE,modules/qc/qualimap.mk)
+
+
+###
+# RNAseq
+###
+
+TARGETS += sum_reads
+sum_reads :
+	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
+
+TARGETS += snp6
+snp6 :
+	$(call RUN_MAKE,modules/snp6/snp6.mk)
+
+
+###
+# ploidy
+###
+
+TARGETS += pyloh
+pyloh :
+	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
+
+
+###
+# clonality
+###
+
+TARGETS += clonehd
+clonehd :
+	$(call RUN_MAKE,modules/clonality/clonehd.mk)
 
 TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 
 
-TARGETS += rseqc
-rseqc :
-	$(call RUN_MAKE,modules/qc/rseqc.mk)
+###
+# mutation signatures
+###
 
-TARGETS += integrate_rnaseq
-integrate_rnaseq :
-	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
-
-TARGETS += integrate
-integrate :
-	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
+TARGETS += emu
+emu :
+	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
 
 
-TARGETS += merge_split_fastq
-merge_split_fastq :
-	$(call RUN_MAKE,modules/fastq_tools/mergeSplitFastq.mk)
+###
+# misc
+###
 
 TARGETS += contest
 contest :
@@ -334,60 +396,28 @@ TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 
-TARGETS += fix_rg
-fix_rg :
-	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
 
-TARGETS += gatk_validation
-gatk_validation :
-	$(call RUN_MAKE,modules/variant_callers/somatic/gatkValidation.mk)
-
-TARGETS += norm_copynum
-norm_copynum :
-	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)
-
-TARGETS += mutation_summary
-mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
+###
+# reports
+###
 
 TARGETS += recurrent_mutations
 recurrent_mutations :
 	$(call RUN_MAKE,modules/recurrent_mutations/report.mk)
 
-TARGETS += facets
-facets :
-	$(call RUN_MAKE,modules/copy_number/facets.mk)
-
-TARGETS += brass
-brass :
-	$(call RUN_MAKE,modules/sv_callers/brass.mk)
-
 TARGETS += mutsig_report
 mutsig_report :
 	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 
-# standalone bam file merger
-TARGETS += merge_bam
-merge_bam :
-	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
-# annotate external vcfs
+###
+# annotations
+###
+
+## annotate external vcfs
 TARGETS += ann_ext_vcf
 ann_ext_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateExtVcf.mk)
-
-TARGETS += hotspot
-hotspot: 
-	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
-
-
-TARGETS += tvc
-tvc:
-	$(call RUN_MAKE,modules/variant_callers/tvc.mk)
-
-TARGETS += tvcTN
-tvcTN:
-	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
 
 TARGETS += ann_somatic_vcf
 ann_somatic_vcf: 
@@ -397,27 +427,15 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 
-TARGETS += star
-star:
-	$(call RUN_MAKE,modules/aligners/starAligner.mk)
+TARGETS += mutation_summary
+mutation_summary :
+	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 
-TARGETS += manta_rnaseq
-manta_rnaseq :
-	$(call RUN_MAKE,modules/sv_callers/mantaRnaseq.mk)
 
-TARGETS += manta
-manta :
-	$(call RUN_MAKE,modules/sv_callers/manta.mk)
-
-TARGETS += mantaTN
-mantaTN :
-	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
-
-TARGETS += strelka_varscan_indels
-strelka_varscan_indels:
-	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
-
+###
 # workflows
+###
+
 TARGETS += tseq_workflow
 tseq_workflow: tseq_workflow_ann
 	$(MAKE) -f modules/summary/mutationSummary.mk
@@ -435,6 +453,11 @@ TARGETS += tseq_workflow_ann
 tseq_workflow_ann: tseq_workflow_post_align
 	$(MAKE) -f modules/vcf_tools/annotateSomaticVcf.mk
 	$(MAKE) -f modules/vcf_tools/annotateVcf.mk
+
+
+###
+# cleanup
+###
 
 TARGETS += clean_variants
 clean_variants :
