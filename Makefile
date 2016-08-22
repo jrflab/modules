@@ -280,6 +280,10 @@ TARGETS += crest
 crest :
 	$(call RUN_MAKE,modules/sv_callers/crest.mk)
 
+TARGETS += star_fusion
+star_fusion:
+	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
+
 
 ###
 # pre-processing
