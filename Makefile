@@ -70,6 +70,9 @@ TARGETS += star
 star:
 	$(call RUN_MAKE,modules/aligners/starAligner.mk)
 
+TARGETS += star_fusion_aligner
+star_fusion_aligner:
+	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
 
 #####
 # variant callers
@@ -210,6 +213,10 @@ gistic :
 # SV callers
 ####
 
+TARGETS += star_fusion
+star_fusion:
+	$(call RUN_MAKE,modules/sv_callers/starFusion.mk)
+
 TARGETS += tophat_fusion
 tophat_fusion : 
 	$(call RUN_MAKE,modules/sv_callers/tophatFusion.mk)
@@ -279,10 +286,6 @@ fusioncatcher :
 TARGETS += crest
 crest :
 	$(call RUN_MAKE,modules/sv_callers/crest.mk)
-
-TARGETS += star_fusion
-star_fusion:
-	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
 
 
 ###
