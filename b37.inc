@@ -3,6 +3,7 @@ REF = b37
 REF_DIR = $(HOME)/share/reference
 
 STAR_REF_DIR = $(REF_DIR)/GATK_bundle/2.3/STAR_genome
+STAR_CTAT_DIR= $(REF_DIR)/GRCh37_gencode_v19_CTAT_lib_July272016
 
 TOPHAT_REF = GRCh37
 GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes.gtf
