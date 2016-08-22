@@ -37,7 +37,7 @@ star/$2.star_align_timestamp : $3
 	$$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$$(STAR) $$(STAR_OPTS) \
 		--outFileNamePrefix star/$2. --runThreadN 4 \
 		--outSAMattrRGline \"ID:$2\" \"LB:$1\" \"SM:$1\" \"PL:$${SEQ_PLATFORM}\" \
-		--readFilesIn $$^ --readFilesCommand zcat && touch $@")
+		--readFilesIn $$^ --readFilesCommand zcat && touch $$@")
 star/$2.Aligned.sortedByCoord.out.bam : star/$2.star_align_timestamp
 star/$2.Chimeric.out.junction : star/$2.star_align_timestamp
 endef
