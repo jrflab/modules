@@ -30,7 +30,7 @@ mutect2_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vc
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect2-tumor-normal-chr
 mutect2/chr_vcf/$1_$2.$3.mutect_snps_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,3G,4G,"$$(MUTECT2) -nct 4 --intervals $3 -I:tumor $$< -I:normal $$(<<) -o $$@")
+	$$(call LSCRIPT_CHECK_MEM,14G,14G,"$$(MUTECT2) --intervals $3 -I:tumor $$< -I:normal $$(<<) -o $$@")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
