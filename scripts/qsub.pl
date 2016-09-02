@@ -27,7 +27,7 @@ my $host = hostname;
 sub check_file {
     my ($cwd, $file) = @_;
     #my @nodes = qw/e01 e02 e03 e04 e05 e06/;
-    my @nodes = qw/e01 e02 e04 e05 e06/;
+    my @nodes = qw/e01 e02 e03 e04 e06/;
     my $maxConnectionFails = 1;
     my $fileSize = `stat -c\%s $cwd/$file`;
     my $nowString = strftime "%a %b %e %H:%M:%S %Y", localtime;
