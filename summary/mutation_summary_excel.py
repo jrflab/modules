@@ -120,6 +120,25 @@ def add_maf(df):
     return rv
 
 
+def add_dp(df):
+    rv = df.copy()
+    def h(x):
+        if "," in x["TUMOR.AD"]:
+            return sum(map(float, x["TUMOR.AD"].split(',')))
+        else:
+            return float('nan')
+    def i(x):
+        if "," in x["NORMAL.AD"]:
+            return sum(map(float, x["NORMAL.AD"].split(',')))
+        else:
+            return float('nan')
+    if len(df) > 0:
+        rv["TUMOR_DP"] = df.apply(h, axis=1)
+        rv["NORMAL_DP"] = df.apply(i, axis=1)
+    else:
+        rv["TUMOR_DP"] = pd.Series()
+        rv["NORMAL_DP"] = pd.Series()
+
 
 def add_cancer_gene(df):
     rv = df.copy()
@@ -141,6 +160,7 @@ def add_non_existent_columns(df, columns, fill_value):
 def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, annotdf=None):
     if all([c in df.columns for c in "TUMOR.AD NORMAL.AD".split()]):
         df = add_maf(df)
+        df = add_dp(df)
     if len(df > 0):
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
             df = add_cancer_gene(df)
@@ -183,7 +203,7 @@ def write_mutation_summary(mutect_snps_high_moderate, mutect_snps_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR.DP,NORMAL.DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,HOTSPOT".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(mutect_snps_high_moderate, sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
