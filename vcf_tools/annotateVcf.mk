@@ -26,7 +26,7 @@ FILTERS += $(if $(findstring indel,$1),\
 #POST_FILTERS += cft common_ft
 
 PHONY += all vcfs
-all : vcfs mafs
+all : vcfs
 vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 
 
