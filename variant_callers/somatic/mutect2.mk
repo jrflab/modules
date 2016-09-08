@@ -42,7 +42,7 @@ mutect2/vcf/$1_$2.mutect_snps_indels.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect
 		cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) > $$@")
 
 vcf/$1_$2.%.vcf : mutect2/vcf/$1_$2.%.vcf
-	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<
+	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call mutect2-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
