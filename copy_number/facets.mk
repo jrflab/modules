@@ -16,19 +16,11 @@ FACETS_MIN_NHET ?= 25
 FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) --min_nhet $(FACETS_MIN_NHET) --pre_cval $(FACETS_PRE_CVAL)
 
-GET_BASE_COUNTS = /ifs/e63data/reis-filho/usr/bin/GetBaseCounts
-GET_BASE_COUNTS_OPTS = --filter_improper_pair --sort_output --maq 15 --baq 20 --cov 0 --fasta $(REF_FASTA)
-NORMAL_BASE_COUNT_CENTER = 100
-NORMAL_BASE_COUNT_CLIP_THRESHOLD = 800
-RECENTER_BASE_COUNTS = python modules/copy_number/recenter_base_count.py
-RECENTER_BASE_COUNTS_OPTS = --normal_center $(NORMAL_BASE_COUNT_CENTER) --threshold $(NORMAL_BASE_COUNT_CLIP_THRESHOLD)
+SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
+SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
 
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf.gz,$(DBSNP))
 
-# downsample bams using GATK (max depth = 800)
-FACETS_DOWNSAMPLE_BAM ?= false
-# recenter and clip the normal base counts
-FACETS_RECENTER_CLIP_BASE_COUNTS ?= false
 
 # augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
@@ -44,7 +36,7 @@ FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
 FACETS_FILL_GENE_CN = $(RSCRIPT) modules/copy_number/facetsFillGeneCN.R
 FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
-					  --mysqlUser $(EMBL_MYSQLDB_USER) --mysqlPassword $(EMBL_MYSQLDB_PW) \
+					  --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
 					  --mysqlDb $(EMBL_MYSQLDB_DB)
 FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
@@ -74,20 +66,14 @@ facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP:.gz=) $(foreach sample,$(SAM
 facets/vcf/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< | gzip -c > $@
 
-facets/base_count/%.bc.gz : $(if $(findstring $(FACETS_DOWNSAMPLE_BAM),true),bam/%.dcov800.bam bam/%.dcov800.bam.bai,bam/%.bam bam/%.bam.bai) $(FACETS_SNP_VCF)
-	$(call LSCRIPT_CHECK_MEM,8G,13G,"$(GET_BASE_COUNTS) $(GET_BASE_COUNTS_OPTS) --bam $< --vcf $(<<<) --out >( gzip -c > $@)")
 
-define base-count-tumor-normal
-facets/base_count/$1_$2.bc.gz : facets/base_count/$1.bc.gz facets/base_count/$2.bc.gz
-	$$(call LSCRIPT_CHECK_MEM,8G,30G,"$$(MERGE_TN) $$^ \
-		$$(if $$(findstring true,$$(FACETS_RECENTER_CLIP_BASE_COUNTS)), \
-		| $$(RECENTER_BASE_COUNTS) $$(RECENTER_BASE_COUNTS_OPTS)) \
-		| gzip -c > $$@")
+define snp-pileup-tumor-normal
+facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
+	$$(call LSCRIPT_CHECK_MEM,8G,20G,"$$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) <(zcat $$(<<<)) $$@ $$< $$(<<)")
 endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call base-count-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
-
-facets/cncf/%.cncf.txt : facets/base_count/%.bc.gz
+facets/cncf/%.cncf.txt : facets/snp_pileup/%.snp_pileup.gz
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix $(@D)/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)

@@ -21,7 +21,7 @@ include modules/Makefile
 ENDL
 
 unless (-d "modules") {
-    system "git clone git\@github.com:jrflab/modules.git -b master";
+    system "git clone --recursive git\@github.com:jrflab/modules.git -b master";
 }
 
 unless (-e "Makefile") {

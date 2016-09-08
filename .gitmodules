@@ -1,0 +1,3 @@
+[submodule "external/fathmm"]
+	path = external/fathmm
+	url = https://github.com/jrflab/fathmm.git

@@ -138,7 +138,7 @@ COUNT_SAMPLES = $(shell expr `sed 's/\..*//; s:.*/::' <<< $1 | grep -o "_" | wc 
 
 JAVA_ARGS = -Djava.io.tmpdir=$(TMPDIR)
 #JAVA_TMP := $(HOME)/tmp
-JAVA := $(JAVA_BIN) $(JAVA_ARGS)
+JAVA := java $(JAVA_ARGS)
 JAVA6 := $(JAVA6_BIN) $(JAVA_ARGS)
 JAVA7 := $(JAVA7_BIN) $(JAVA_ARGS)
 JAVA8 := $(JAVA8_BIN) $(JAVA_ARGS)
@@ -175,78 +175,127 @@ MKDIR = mkdir -p -m 775
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
 LOG = $(LOGDIR)/$(@).log
 
-
-
-ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
 UMASK = 002
 
-# SGE variables
-QUEUE ?= jrf.q all.q
+ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
 
+# SGE variables
+#QUEUE ?= jrf.q all.q
+QUEUE ?=
+
+WALLTIMES = MEM SHORT LONG
 ### PBS
 # mem for PBS: multiply mem_per_cpu by ncpu for request
 # $(call PBS_MEM,ncpu,mem_per_cpu)
-PBS_MEM = -l mem=$2
-PBS_PARALLEL_MEM = -l nodes=1:ppn=$1 -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
-PBS_QSUB_ARGS = -e $(LOG) -j oe
+PBS_SHORT = -l mem=$2 -l walltime=1:00:00
+PBS_MEM = -l mem=$2 -l walltime=12:00:00
+PBS_LONG = -l mem=$2 -l walltime=128:00:00
+PBS_PARALLEL_MEM_WALLTIME = -l nodes=1:ppn=$1 -l walltime=$3  -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
+PBS_PARALLEL_MEM = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$2,12:00:00)
+PBS_PARALLEL_SHORT = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$2,1:00:00)
+PBS_PARALLEL_LONG = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$2,128:00:00)
+PBS_QSUB_ARGS = -o $(LOG) -j oe -d $(PWD)
+PBS_QSUB_SCRIPT = python modules/scripts/qsub_pbs.py
+PBS_DOCKER_MEM = -l mem=$2 -l walltime=12:00:00 -l nodes=1:docker -l mem=$2
+PBS_DOCKER_SHORT = -l mem=$2 -l walltime=1:00:00 -l nodes=1:docker -l mem=$2
+PBS_DOCKER_LONG = -l mem=$2 -l walltime=128:00:00 -l nodes=1:docker -l mem=$2
+PBS_DOCKER_PARALLEL_MEM_WALLTIME = -l nodes=1:docker:ppn=$1 -l walltime=$3 -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
+PBS_DOCKER_PARALLEL_MEM = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$2,12:00:00)
+PBS_DOCKER_PARALLEL_SHORT = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$2,1:00:00)
+PBS_DOCKER_PARALLEL_LONG = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$2,128:00:00)
+PBS_NODES = gg02 gg05 gg06
+
 
 #### SGE
 # mem for SGE
 # $(call SGE_MEM,ncpu,mem_per_cpu)
 SGE_PARALLEL_ENV = smp
 SGE_PARALLEL_MEM = -pe $(SGE_PARALLEL_ENV) $1 -l virtual_free=$2,h_vmem=$3
+SGE_PARALLEL_SHORT = $(SGE_PARALLEL_MEM)
+SGE_PARALLEL_LONG = $(SGE_PARALLEL_MEM)
+SGE_SHORT = $(SGE_MEM)
 SGE_MEM = -l virtual_free=$1,h_vmem=$2
+SGE_LONG = $(SGE_MEM)
 QSUB_PRIORITY ?= 0
 SGE_QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
+SGE_NODES = e01 e02 e03 e04 e06
+SGE_QSUB_SCRIPT = python modules/scripts/qsub.py
+
 
 
 ## DRMAA qsub script
-QSUB_SCRIPT = perl modules/scripts/qsub.pl
-QSUB_SCRIPT_OPTS = -o $@
-QS = $(QSUB_SCRIPT) $(QSUB_SCRIPT_OPTS) $1 -- $(foreach q,$(strip $2), -q $q)
+QSUB_SCRIPT_OPTS = -o $@ -s $($(CLUSTER_ENGINE)_NODES)
+QS = $($(CLUSTER_ENGINE)_QSUB_SCRIPT) $(QSUB_SCRIPT_OPTS) $1 --args $(foreach q,$(strip $2), -q $q)
 QSUB = $(call QS,,$(QUEUE))
 QSUB_QUEUE = $(call QS,,$1)
 # check output file for non-zero size
 QSUB_CHECK = $(call QS,-c)
 QSUB_CHECK_QUEUE = $(call QS,-c,-q $1)
 
+
+
 #### no cluster
-INIT = $(MKDIRS); umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);
-INIT_NOCLUSTER = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);";
+RUN_FIRST = $(MKDIRS)
+ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV)";
+
+# run locally
+INIT = $(RUN_FIRST); umask $(UMASK); set -o pipefail;
 
 CLUSTER_ENGINE ?= SGE
 USE_CLUSTER ?= true
 ifeq ($(USE_CLUSTER),false)
-LSCRIPT = $(MKDIRS); ($(INIT_NOCLUSTER) echo $1) | $(SHELL) >& $(LOG)
-LSCRIPT_PARALLEL_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $4) | $(SHELL) >& $(LOG)
-LSCRIPT_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $3) | $(SHELL) >& $(LOG)
-LSCRIPT_CHECK = $(MKDIRS); ($(INIT_NOCLUSTER) echo $1) | $(SHELL) >& $(LOG)
-LSCRIPT_CHECK_PARALLEL_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $4) | $(SHELL) >& $(LOG)
-LSCRIPT_CHECK_MEM = $(MKDIRS); ($(INIT_NOCLUSTER) echo $3) | $(SHELL) >& $(LOG)
+LSCRIPT = $(RUN_FIRST); ($(ECHO_FIRST) echo $1) | $(SHELL) >& $(LOG)
+LSCRIPT_PARALLEL_MEM = $(RUN_FIRST); ($(ECHO_FIRST) echo $4) | $(SHELL) >& $(LOG)
+LSCRIPT_PARALLEL_SHORT = $(LSCRIPT_PARALLEL_MEM)
+LSCRIPT_PARALLEL_LONG = $(LSCRIPT_PARALLEL_MEM)
+LSCRIPT_MEM = $(RUN_FIRST); ($(ECHO_FIRST) echo $3) | $(SHELL) >& $(LOG)
+LSCRIPT_SHORT = $(LSCRIPT_MEM)
+LSCRIPT_LONG = $(LSCRIPT_MEM)
+LSCRIPT_CHECK = $(RUN_FIRST); ($(ECHO_FIRST) echo $1) | $(SHELL) >& $(LOG)
+LSCRIPT_CHECK_PARALLEL_MEM = $(RUN_FIRST) && ($(ECHO_FIRST) echo $4) | $(SHELL) >& $(LOG)
+LSCRIPT_CHECK_PARALLEL_SHORT = $(LSCRIPT_CHECK_PARALLEL_MEM)
+LSCRIPT_CHECK_PARALLEL_LONG = $(LSCRIPT_CHECK_PARALLEL_MEM)
+LSCRIPT_CHECK_MEM = $(RUN_FIRST); ($(ECHO_FIRST) echo $3) | $(SHELL) >& $(LOG)
+LSCRIPT_CHECK_SHORT = $(LSCRIPT_CHECK_MEM)
+LSCRIPT_CHECK_LONG = $(LSCRIPT_CHECK_MEM)
 LSCRIPT_NAMED = $(call LSCRIPT,$2)
 LSCRIPT_NAMED_PARALLEL_MEM = $(call LSCRIPT_PARALLEL_MEM,$2,$3,$4,$5)
+LSCRIPT_NAMED_PARALLEL_SHORT = $(call LSCRIPT_PARALLEL_SHORT,$2,$3,$4,$5)
+LSCRIPT_NAMED_PARALLEL_LONG = $(call LSCRIPT_PARALLEL_LONG,$2,$3,$4,$5)
 LSCRIPT_NAMED_MEM = $(call LSCRIPT_MEM,$2,$3,$4)
+LSCRIPT_NAMED_SHORT = $(LSCRIPT_NAMED_MEM)
+LSCRIPT_NAMED_LONG = $(LSCRIPT_NAMED_MEM)
 LSCRIPT_CHECK_NAMED = $(call LSCRIPT,$2)
 LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(call LSCRIPT_PARALLEL_MEM,$2,$3,$4,$5)
+LSCRIPT_CHECK_NAMED_PARALLEL_LONG = $(call LSCRIPT_PARALLEL_LONG,$2,$3,$4,$5)
+LSCRIPT_CHECK_NAMED_PARALLEL_SHORT = $(call LSCRIPT_PARALLEL_SHORT,$2,$3,$4,$5)
 LSCRIPT_CHECK_NAMED_MEM = $(call LSCRIPT_MEM,$2,$3,$4)
+LSCRIPT_CHECK_NAMED_SHORT = $(call LSCRIPT_SHORT,$2,$3,$4)
+LSCRIPT_CHECK_NAMED_LONG = $(call LSCRIPT_LONG,$2,$3,$4)
 else
-LSCRIPT = $(call LSCRIPT_NAMED_MEM,$(@F),1G,2G,$1)
-LSCRIPT_PARALLEL_MEM = $(call LSCRIPT_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
-LSCRIPT_MEM = $(call LSCRIPT_NAMED_MEM,$(@F),$1,$2,$3)
-
 #$(call LS,qsub,name,qsub_args,script)
-LS = $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+LS = $(ACTIVATE_JRFLAB_MODULES_ENV); $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+$(foreach wt,$(WALLTIMES),\
+	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
+	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
+	$(eval LSCRIPT_NAMED_PARALLEL_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_PARALLEL_$(wt),$$2,$$3,$$4),$$5)) \
+	$(eval LSCRIPT_NAMED_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_$(wt),$$2,$$3),$$4)) \
+	$(eval LSCRIPT_CHECK_PARALLEL_$(wt) = $$(call LSCRIPT_CHECK_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
+	$(eval LSCRIPT_CHECK_$(wt) = $$(call LSCRIPT_CHECK_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
+	$(eval LSCRIPT_DOCKER_PARALLEL_$(wt) = $$(call LSCRIPT_DOCKER_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
+	$(eval LSCRIPT_DOCKER_$(wt) = $$(call LSCRIPT_DOCKER_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
+	$(eval LSCRIPT_CHECK_NAMED_PARALLEL_$(wt) = $$(call LS,$$(QSUB_CHECK),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_PARALLEL_$(wt),$$2,$$3,$$4),$$5)) \
+	$(eval LSCRIPT_DOCKER_NAMED_PARALLEL_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_DOCKER_PARALLEL_$(wt),$$2,$$3,$$4),$$5)) \
+	$(eval LSCRIPT_CHECK_NAMED_$(wt) = $$(call LS,$$(QSUB_CHECK),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_$(wt),$$2,$$3),$$4)) \
+	$(eval LSCRIPT_DOCKER_NAMED_$(wt) = $$(call LS,$$(QSUB_CHECK),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_DOCKER_$(wt),$$2,$$3),$$4)))
+
+LSCRIPT = $(call LSCRIPT_NAMED_MEM,$(@F),1G,2G,$1)
 LSCRIPT_NAMED = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
-LSCRIPT_NAMED_PARALLEL_MEM = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_PARALLEL_MEM,$2,$3,$4),$5)
-LSCRIPT_NAMED_MEM = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,$2,$3),$4)
 
 LSCRIPT_CHECK = $(call LSCRIPT_CHECK_NAMED,$(@F),$1)
 LSCRIPT_CHECK_PARALLEL_MEM = $(call LSCRIPT_CHECK_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
-LSCRIPT_CHECK_MEM = $(call LSCRIPT_CHECK_NAMED_MEM,$(@F),$1,$2,$3)
 
 LSCRIPT_CHECK_NAMED = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
-LSCRIPT_CHECK_NAMED_PARALLEL_MEM = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_PARALLEL_MEM,$2,$3,$4),$5)
-LSCRIPT_CHECK_NAMED_MEM = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,$2,$3),$4)
 endif
 
 #MD5 = md5sum $(1:.md5=) > $1
@@ -278,24 +327,6 @@ define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
-
-##Set environment variables
-export TMPDIR := $(HOME)/share/tmp
-PATH := $(HOME)/share/usr/bin:$(PATH)
-PATH := $(PATH):$(HOME)/share/usr/ensembl-git-tools/bin
-export PATH
-export R_LIBS := $(HOME)/share/usr/lib64/R/library:/home/limr/R/x86_64-unknown-linux-gnu-library/3.0
-
-LD_LIBRARY_PATH := $(HOME)/share/usr/mysql/lib:$(LD_LIBRARY_PATH)
-export LD_LIBRARY_PATH
-
-PERL5LIB := $(HOME)/share/usr/perl5/lib/perl5:$(HOME)/share/usr/ActivePerl-5.18/lib
-PERL5LIB := $(HOME)/share/usr/src/bioperl-live:$(PERL5LIB)
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-compara/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-variation/modules
-PERL5LIB := $(PERL5LIB):$(HOME)/share/usr/src/ensembl-funcgen/modules
-export PERL5LIB
 
 endif
 MAKEFILE_INC = true

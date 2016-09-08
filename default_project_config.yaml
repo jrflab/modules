@@ -1,4 +1,8 @@
 ---
+cluster_engine: SGE # PBS
+
+use_cluster: true
+
 ref: b37
 
 aligner: bwamem #tophat hisat bwa bowtie tmap

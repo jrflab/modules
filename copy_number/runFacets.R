@@ -9,6 +9,7 @@ suppressPackageStartupMessages(library("tidyr"));
 suppressPackageStartupMessages(library("stringr"));
 suppressPackageStartupMessages(library("magrittr"));
 suppressPackageStartupMessages(library("facets"));
+suppressPackageStartupMessages(library("pctGCdata"));
 suppressPackageStartupMessages(library("foreach"));
 suppressPackageStartupMessages(library("Cairo"));
 
@@ -43,28 +44,30 @@ if (length(arguments$args) < 1) {
     print_help(parser);
     stop();
 } else {
-    baseCountFile <- arguments$args[1];
+    snpPileupFile <- arguments$args[1];
 }
 
-tumorName <- baseCountFile %>% sub('.*/', '', .) %>% sub('_.*', '', .)
-normalName <- baseCountFile %>% sub('.*/', '', .) %>% sub('.*_', '', .) %>% sub('\\..*', '', .)
+tumorName <- snpPileupFile %>% sub('.*/', '', .) %>% sub('_.*', '', .)
+normalName <- snpPileupFile %>% sub('.*/', '', .) %>% sub('.*_', '', .) %>% sub('\\..*', '', .)
 
 switch(opt$genome,
        b37={
-           data(hg19gcpct)
-           chromLevels=c(1:22, "X")
+            facetsGenome = 'hg19'
        },
        GRCh37={
-           data(hg19gcpct)
-           chromLevels=c(1:22, "X")
+            facetsGenome = 'hg19'
        },
        hg19={
-           data(hg19gcpct)
-           chromLevels=paste("chr", c(1:22, "X"), sep = '')
+            facetsGenome = 'hg19'
        },
        mm9={
-           data(mm9gcpct)
-           chromLevels=paste("chr", c(1:19, "X", "Y"), sep = '')
+            facetsGenome = 'mm9'
+       },
+       mm10={
+            facetsGenome = 'mm10'
+       },
+       GRCm38={
+            facetsGenome = 'mm10'
        },
        {
            stop(paste("Invalid Genome",opt$genome))
@@ -80,7 +83,8 @@ version=buildData["Version"]
 cat("\n")
 
 
-preOut <- baseCountFile %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, chromlevels = chromLevels)
+snpmat <- readSnpMatrix(snpPileupFile)
+preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, gbuild = facetsGenome)
 out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
@@ -89,7 +93,7 @@ while (!success && cval < opt$max_cval) {
     out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
     print(str_c("attempting to run emncf() with cval2 = ", cval))
     fit <- tryCatch({
-        out2 %>% emcncf
+        out2 %>% emcncf2
     }, error = function(e) {
         print(paste("Error:", e))
         return(NULL)
@@ -134,7 +138,7 @@ save(out2, fit, file = str_c(opt$outPrefix, ".Rdata"), compress=T)
 
 ff = str_c(opt$outPrefix, ".out")
 cat("# Version =", version, "\n", file = ff, append = T)
-cat("# Input =", basename(baseCountFile), "\n", file = ff, append = T)
+cat("# Input =", basename(snpPileupFile), "\n", file = ff, append = T)
 cat("# tumor =", tumorName, "\n", file = ff, append = T)
 cat("# normal =", normalName, "\n", file = ff, append = T)
 cat("# snp.nbhd =", opt$snp_nbhd, "\n", file = ff, append = T)
@@ -157,11 +161,11 @@ plotSampleLRR(out2, fit)
 dev.off()
 
 CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
-plotSampleCNCF(out2, fit)
+plotSample(out2, fit)
 dev.off()
 
 pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 9, width = 9)
-plotSampleCNCF(out2, fit)
+plotSample(out2, fit)
 dev.off()
 
 tab <- cbind(select(out2$IGV, ID:num.mark), select(fit$cncf, -start, -end, -chrom, -num.mark))

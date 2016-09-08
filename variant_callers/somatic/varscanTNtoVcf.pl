@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use experimental 'smartmatch';
+#use experimental 'smartmatch';
 
 use Getopt::Std;
 my %opt;

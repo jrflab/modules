@@ -18,10 +18,10 @@ if __name__ == "__main__":
 
     vcf_reader.infos['MutationTaster_pred'] = vcf.parser._Info(id='MutationTaster_pred', num=-1, type='String',
                                                             desc="Mutation taster prediction using webquery if indel or"
-                                                            " dbNSFP if it exists")
+                                                            " dbNSFP if it exists", source=None, version=None)
     vcf_reader.infos['MutationTaster_score'] = vcf.parser._Info(id='MutationTaster_score', num=-1, type='Float',
                                                                 desc="Mutation taster score using webquery if indel or"
-                                                                " dbNSFP if it exists")
+                                                                " dbNSFP if it exists", source=None, version=None)
 
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
