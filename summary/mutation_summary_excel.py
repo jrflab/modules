@@ -138,6 +138,7 @@ def add_dp(df):
     else:
         rv["TUMOR_DP"] = pd.Series()
         rv["NORMAL_DP"] = pd.Series()
+    return rv
 
 
 def add_cancer_gene(df):
