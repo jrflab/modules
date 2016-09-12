@@ -177,6 +177,7 @@ LOG = $(LOGDIR)/$(@).log
 
 UMASK = 002
 
+export PATH := $(JRFLAB_MODULES_ENV)/bin:$(PATH)
 ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
 
 # SGE variables
@@ -274,7 +275,7 @@ LSCRIPT_CHECK_NAMED_SHORT = $(call LSCRIPT_SHORT,$2,$3,$4)
 LSCRIPT_CHECK_NAMED_LONG = $(call LSCRIPT_LONG,$2,$3,$4)
 else
 #$(call LS,qsub,name,qsub_args,script)
-LS = $(ACTIVATE_JRFLAB_MODULES_ENV); $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+LS = $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
 $(foreach wt,$(WALLTIMES),\
 	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
 	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \

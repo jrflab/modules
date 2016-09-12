@@ -19,7 +19,7 @@ class Job:
     _kill_now = False
 
     def __init__(self, session, job_script, qsub_args, out_file=None,
-                 poll_interval=20):
+                 poll_interval=60):
         self.session = session
         self.poll_interval = poll_interval
         self.job_script = job_script
@@ -45,7 +45,7 @@ class Job:
         while True:
             try:
                 retval = self.session.wait(self.id, self.poll_interval +
-                                           random.randrange(0, 20))
+                                           random.randrange(0, 60))
                 if retval.hasExited or retval.hasSignal \
                         or retval.wasAborted or retval.hasCoreDump:
                     break
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--in_file',
                         nargs='?', default=sys.stdin, help='input script file')
     parser.add_argument('--poll_interval', nargs='?',
-                        help='job polling interval', default=20)
+                        help='job polling interval', default=60)
     parser.add_argument('-c', '--check', default=False,
                         action='store_true',
                         help='check this file for non-zero size')
