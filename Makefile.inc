@@ -328,5 +328,7 @@ dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
 
+export DRMAA_LIBRARY_PATH = /common/sge/lib/lx24-amd64/libdrmaa.so.1.0
+
 endif
 MAKEFILE_INC = true
