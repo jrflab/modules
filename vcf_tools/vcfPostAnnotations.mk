@@ -26,7 +26,7 @@ CHASM_DIR = $(HOME)/share/usr/CHASM-3.0/CHASM
 SNVBOX_DIR = $(PWD)/modules/external/SNVBox
 CHASM_CLASSIFIER ?= BRCA
 vcf/%.chasm.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,17G,"$(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --snvBoxDir $(SNVBOX_DIR) --outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,17G,"cp $(SNVBOX_CONF) $(SNVBOX_DIR)/snv_box.conf && $(CHASM) --genome $(REF) --classifier $(subst $( ),$(,),$(CHASM_CLASSIFIER)) --chasmDir $(CHASM_DIR) --snvBoxDir $(SNVBOX_DIR) --outFile $@ $<"))
 
 FATHMM = $(MY_RSCRIPT) modules/vcf_tools/fathmmVcf.R 
 FATHMM_DIR = $(PWD)/modules/external/fathmm
