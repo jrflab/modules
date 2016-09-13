@@ -83,6 +83,11 @@ endif
 %.filtered.bam : %.bam
 	$(call LSCRIPT_MEM,6G,7G,"$(SAMTOOLS) view -bF $(BAM_FILTER_FLAGS) $< > $@ && $(RM) $<")
 
+# Remove reads mapping to chromomsomes prefixed with mouse, used for PDX
+# combined reference alignment. Filters mouse reads.
+%.pdx_filtered.bam : %.bam
+	$(call LSCRIPT_MEM,6G,7G,"($(SAMTOOLS) view -H $< | grep -v mouse; $(SAMTOOLS) view $< | grep -vP '\tmouse' ) | $(SAMTOOLS) view -bS - > $@ && $(RM) $<")
+
 %.fixmate.bam : %.bam
 	$(call LSCRIPT_MEM,9G,14G,"$(call FIX_MATE_MEM,8G) I=$< O=$@ && $(RM) $<")
 

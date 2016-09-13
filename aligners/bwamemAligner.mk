@@ -24,6 +24,7 @@ FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 
 BWA_ALN_OPTS ?= -M
 #BWA_ALN_OPTS ?= -q 20
+BWAMEM_REF_FASTA ?= $(REF_FASTA)
 
 ..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
 .SECONDARY:
@@ -41,17 +42,17 @@ bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 #$(call align-split-fastq,name,split-name,fastqs)
 define align-split-fastq
 bwamem/bam/$2.bwamem.bam : $3
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$$(BWA) mem -t 8 $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$$(BWA) mem -t 8 $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),$(if $(fq.$(ss)),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 bwamem/bam/%.bwamem.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
 bwamem/bam/%.bwamem.bam : fastq/%.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
+	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(BWA) mem -t 8 $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
 fastq/%.fastq.gz : fastq/%.fastq
 	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $<")

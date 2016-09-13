@@ -40,6 +40,12 @@ MAPSPLICE_REF_BASENAME = $(REF_DIR)/GATK_bundle/2.3/mapsplice_ref/hg19
 
 GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 
+# align to combined reference if PDX, filter mouse chromosomes afterwards
+PDX ?= false
+ifeq ($(PDX),true)
+BWAMEM_REF_FASTA ?= $(REF_DIR)/pdx/combined_Mus_musculus_GRCm38_human_g1k_v37.fasta
+endif
+
 REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
 REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
 DBSNP ?= $(REF_DIR)/dbsnp_138.b37.gmaf.vcf
