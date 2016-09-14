@@ -18,6 +18,9 @@ MIN_MAP_QUAL ?= 1
 VALIDATION ?= false
 MIN_VAR_FREQ ?= $(if $(findstring false,$(VALIDATION)),0.05,0.000001)
 
+#VARSCAN
+VARSCAN_MEM = $(JAVA7) -Xmx$1 -jar $(VARSCAN_JAR)
+VARSCAN = $(call VARSCAN_MEM,8G)
 VARSCAN_OPTS = $(if $(findstring true,$(VALIDATION)),--validation 1 --strand-filter 0) --min-var-freq $(MIN_VAR_FREQ)
 
 VPATH ?= bam

@@ -155,6 +155,9 @@ TARGETS += tvcTN
 tvcTN:
 	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
 
+TARGETS += somatic_indels
+somatic_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
 
 #####
 # copy number

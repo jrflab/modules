@@ -12,7 +12,7 @@ ifeq ($(CLUSTER_ENGINE),"PBS")
 ..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
 endif
 
-VARIANT_TYPES ?= mutect_snps mutect_indels #strelka_indels varscan_indels strelka_varscan_indels
+VARIANT_TYPES ?= mutect_snps somatic_indels #strelka_indels varscan_indels strelka_varscan_indels
 
 
 DEPTH_FILTER ?= 5
