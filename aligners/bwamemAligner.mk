@@ -42,7 +42,7 @@ bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 #$(call align-split-fastq,name,split-name,fastqs)
 define align-split-fastq
 bwamem/bam/$2.bwamem.bam : $3
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$$(BWA) mem -t 8 $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
+	$$(call LSCRIPT_PARALLEL_MEM,8,1G,$$(if $$(findstring true,$$(PDX),4G,2G)),"$$(BWA) mem -t 8 $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),$(if $(fq.$(ss)),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
