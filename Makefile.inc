@@ -230,9 +230,12 @@ QSUB_CHECK = $(call QS,-c)
 QSUB_CHECK_QUEUE = $(call QS,-c,-q $1)
 
 
+MAKE_PID := $(shell echo $$PPID)
+JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
+JOBS := $(subst -j,,$(JOB_FLAG))
 
 #### no cluster
-RUN_FIRST = $(MKDIRS)
+RUN_FIRST = $(if $(JOBS),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
 ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV)";
 
 # run locally
@@ -271,7 +274,7 @@ LSCRIPT_CHECK_NAMED_SHORT = $(call LSCRIPT_SHORT,$2,$3,$4)
 LSCRIPT_CHECK_NAMED_LONG = $(call LSCRIPT_LONG,$2,$3,$4)
 else
 #$(call LS,qsub,name,qsub_args,script)
-LS = $(MKDIRS); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+LS = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
 $(foreach wt,$(WALLTIMES),\
 	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
 	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
