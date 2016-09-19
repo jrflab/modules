@@ -26,9 +26,7 @@ BWA_ALN_OPTS ?= -M
 #BWA_ALN_OPTS ?= -q 20
 BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 8
-$(info $(PDX))
 BWAMEM_MEM_PER_THREAD = $(if $(findstring true,$(PDX)),4G,2G)
-$(info $(BWAMEM_MEM_PER_THREAD))
 
 ..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
 .SECONDARY:
