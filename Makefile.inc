@@ -235,7 +235,7 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$
 JOBS := $(subst -j,,$(JOB_FLAG))
 
 #### no cluster
-RUN_FIRST = $(if $(JOBS),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
+RUN_FIRST = $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
 ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV)";
 
 # run locally
