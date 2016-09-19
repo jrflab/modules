@@ -185,7 +185,7 @@ WALLTIMES = MEM SHORT LONG
 # mem for PBS: multiply mem_per_cpu by ncpu for request
 # $(call PBS_MEM,ncpu,mem_per_cpu)
 PBS_SHORT = -l mem=$2 -l walltime=1:00:00
-PBS_MEM = -l mem=$2 -l walltime=12:00:00
+PBS_MEM = -l mem=$2 -l walltime=24:00:00
 PBS_LONG = -l mem=$2 -l walltime=128:00:00
 PBS_PARALLEL_MEM_WALLTIME = -l nodes=1:ppn=$1 -l walltime=$3  -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
 PBS_PARALLEL_MEM = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,12:00:00)
@@ -193,7 +193,7 @@ PBS_PARALLEL_SHORT = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,1:00:00)
 PBS_PARALLEL_LONG = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,128:00:00)
 PBS_QSUB_ARGS = -o $(LOG) -j oe -d $(PWD)
 PBS_QSUB_SCRIPT = python modules/scripts/qsub_pbs.py
-PBS_DOCKER_MEM = -l mem=$2 -l walltime=12:00:00 -l nodes=1:docker -l mem=$2
+PBS_DOCKER_MEM = -l mem=$2 -l walltime=24:00:00 -l nodes=1:docker -l mem=$2
 PBS_DOCKER_SHORT = -l mem=$2 -l walltime=1:00:00 -l nodes=1:docker -l mem=$2
 PBS_DOCKER_LONG = -l mem=$2 -l walltime=128:00:00 -l nodes=1:docker -l mem=$2
 PBS_DOCKER_PARALLEL_MEM_WALLTIME = -l nodes=1:docker:ppn=$1 -l walltime=$3 -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
