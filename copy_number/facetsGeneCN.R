@@ -9,7 +9,9 @@
 #---------------
 
 # load base libraries
-suppressMessages(pacman::p_load(optparse,RColorBrewer,GenomicRanges,plyr,dplyr,tibble,readr,stringr,tidyr,purrr,magrittr,rlist,crayon,foreach,Cairo,RMySQL,rtracklayer,colorspace,ggplot2,grid,gridExtra,RColorBrewer))
+for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr","stringr","tidyr","magrittr","foreach","Cairo","rtracklayer","grid","rlist")) {
+    suppressPackageStartupMessages(library(lib, character.only=TRUE))
+}
 
 #--------------
 # parse options
