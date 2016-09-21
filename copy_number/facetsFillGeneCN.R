@@ -6,20 +6,9 @@
 # load base libraries
 #--------------------
 
-pacman::p_load( optparse,
-                crayon,
-                RColorBrewer,
-                GenomicRanges,
-                plyr,
-                dplyr,
-                tibble,
-                readr,
-                stringr,
-                tidyr,
-                purrr,
-                magrittr,
-                rlist,
-                Cairo )
+for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr","stringr","tidyr","magrittr","foreach","Cairo","rtracklayer","grid","rlist","purrr","tibble","readr","crayon")) {
+    suppressPackageStartupMessages(library(lib, character.only=TRUE))
+}
 
 # use showtext if installed for monospaced system font, useful for TCGA
 # barcodes on y axis
