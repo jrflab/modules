@@ -7,9 +7,9 @@ LOGDIR ?= log/annotate_somatic_vcf.$(NOW)
 
 ifeq ($(CLUSTER_ENGINE),"PBS")
 ..DUMMY := $(shell cp $(SNVBOX_CONF) modules/external/SNVBox/snv_box.conf)
-..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/chasm_db.yaml)
-..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/fathmm_db.yaml)
-..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
+..DUMMY := $(shell python modules/scripts/launcher_sql_db.py modules/db/chasm_db.yaml)
+..DUMMY := $(shell python modules/scripts/launcher_sql_db.py modules/db/fathmm_db.yaml)
+..DUMMY := $(shell python modules/scripts/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
 endif
 
 SNV_TYPE ?= mutect_snps
