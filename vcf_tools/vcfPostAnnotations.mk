@@ -38,6 +38,10 @@ FATHMM_OPTS = --genome $(REF) --ensemblTxdb $(ENSEMBL_TXDB) --ref $(REF_FASTA) \
 vcf/%.fathmm.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"$(FATHMM) $(FATHMM_OPTS) --outFile $@ $<"))
 
+PARSSNP_VCF = $(RSCRIPT) modules/vcf_tools/parsSNPVcf.R
+vcf/%.parssnp.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"$(PARSSNP_VCF) --parsnpRdata $(PARSSNP_RESOURCES) --outFile $@ $<"))
+
 
 define hrun-tumor-normal
 vcf/$1_$2.%.hrun.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
@@ -52,7 +56,7 @@ endef
 $(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
 # run snp sift to annotated with dbnsfp
-vcf/%.nsfp.vcf : vcf/%.vcf vcf/%.vcf.idx
+vcf/%.nsfp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) dbnsfp $(SNP_SIFT_OPTS) -f $(subst $( ),$(,),$(NSFP_FIELDS)) -db $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/; /^##INFO=<ID=dbNSFP_clinvar_rs/ s/Integer/String/;' > $@"))
 
 ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R

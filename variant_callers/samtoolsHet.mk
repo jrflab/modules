@@ -9,7 +9,7 @@ LOGDIR ?= log/samtools_het.$(NOW)
 .SECONDARY: 
 .PHONY : het_snps
 
-het_snps : $(foreach s,$(SAMPLES),vcf/$s.het_snp.vcf vcf/$s.het_snp.vcf.idx)
+het_snps : $(foreach s,$(SAMPLES),vcf/$s.het_snp.vcf)
 
 include modules/vcf_tools/vcftools.mk
 

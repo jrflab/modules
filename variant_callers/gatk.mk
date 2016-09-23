@@ -82,12 +82,12 @@ $(foreach sample,$(SAMPLES),$(eval $(call hapcall-vcf,$(sample))))
 endif # split by chr
 
 # select snps % = sample
-gatk/vcf/%.variants.snps.vcf : gatk/vcf/%.variants.vcf gatk/vcf/%.variants.vcf.idx
+gatk/vcf/%.variants.snps.vcf : gatk/vcf/%.variants.vcf
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T SelectVariants  -R $(REF_FASTA)  --variant $<  -o $@ \
 	 -selectType SNP")
 
 # select indels % = indels
-gatk/vcf/%.variants.indels.vcf : gatk/vcf/%.variants.vcf gatk/vcf/%.variants.vcf.idx
+gatk/vcf/%.variants.indels.vcf : gatk/vcf/%.variants.vcf
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T SelectVariants -R $(REF_FASTA) --variant $<  -o $@ \
 	-selectType INDEL")
 
@@ -126,41 +126,41 @@ endef
 
 # apply variant recal %=sample
 ifeq ($(GATK_HARD_FILTER_SNPS),true)
-gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.vcf.idx
+gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) $(SNP_FILTERS) -o $@ \
 	--variant $<")
 else 
 
 # pool sample vcfs for recalibration
 ifeq ($(GATK_POOL_SNP_RECAL),true)
-gatk/vcf/samples.snps.recal.vcf : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.vcf) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.vcf.idx)
+gatk/vcf/samples.snps.recal.vcf : $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.vcf)
 	$(call VARIANT_RECAL,$@,$^)
 define sample-apply-recal
-gatk/vcf/$1.variants.snps.filtered.vcf : gatk/vcf/$1.variants.snps.vcf gatk/vcf/samples.snps.recal.vcf gatk/vcf/samples.snps.recal.vcf.idx gatk/vcf/$1.variants.snps.vcf.idx 
+gatk/vcf/$1.variants.snps.filtered.vcf : gatk/vcf/$1.variants.snps.vcf gatk/vcf/samples.snps.recal.vcf
 	$$(call APPLY_VARIANT_RECAL,$$@,$$<,$$(word 2,$$^))
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call sample-apply-recal,$(sample))))
 
 ifdef SAMPLE_SETS
-gatk/vcf/sets.snps.recal.vcf : $(foreach set,$(SAMPLE_SET_PAIRS),gatk/vcf/$(set).variants.snps.vcf gatk/vcf/$(set).variants.snps.vcf.idx )
+gatk/vcf/sets.snps.recal.vcf : $(foreach set,$(SAMPLE_SET_PAIRS),gatk/vcf/$(set).variants.snps.vcf)
 	$(call VARIANT_RECAL,$@,$^)
 define sets-apply-recal
-gatk/vcf/$1.variants.snps.filtered.vcf : gatk/vcf/$1.variants.snps.vcf gatk/vcf/sets.snps.recal.vcf gatk/vcf/sets.snps.recal.vcf.idx gatk/vcf/$1.variants.snps.vcf.idx 
+gatk/vcf/$1.variants.snps.filtered.vcf : gatk/vcf/$1.variants.snps.vcf gatk/vcf/sets.snps.recal.vcf
 	$$(call APPLY_VARIANT_RECAL,$$@,$$<,$$(word 2,$$^))
 endef
 $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call sets-apply-recal,$(set))))
 endif
 
 else 
-gatk/vcf/%.variants.snps.recal.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.vcf.idx
+gatk/vcf/%.variants.snps.recal.vcf : gatk/vcf/%.variants.snps.vcf
 	$(call VARIANT_RECAL,$@,$^)
-gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.recal.vcf gatk/vcf/%.variants.snps.vcf.idx gatk/vcf/%.variants.snps.recal.vcf.idx
+gatk/vcf/%.variants.snps.filtered.vcf : gatk/vcf/%.variants.snps.vcf gatk/vcf/%.variants.snps.recal.vcf
 	$(call APPLY_VARIANT_RECAL,$@,$<,$(word 2,$^))
 endif
 endif
 
 # hard filter indels %=sample
-gatk/vcf/%.variants.indels.filtered.vcf : gatk/vcf/%.variants.indels.vcf gatk/vcf/%.variants.indels.vcf.idx
+gatk/vcf/%.variants.indels.filtered.vcf : gatk/vcf/%.variants.indels.vcf
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -T VariantFiltration -R $(REF_FASTA) $(INDEL_FILTERS) -o $@ \
 	--variant $<")
 

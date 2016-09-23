@@ -6,8 +6,8 @@ LOGDIR = log/summary.$(NOW)
 .DELETE_ON_ERROR:
 
 
-SNV_TYPE ?= mutect_snps #mutect
-INDEL_TYPE ?= mutect_indels #strelka_varscan_indels
+SNV_TYPE ?= mutect_snps
+INDEL_TYPE ?= somatic_indels
 
 HOTSPOT_TABLE = alltables/allTN.hotspot.tab.txt
 ALLTABLES_HIGH_MODERATE_SNVS = alltables/allTN.$(SNV_TYPE).tab.high_moderate.txt

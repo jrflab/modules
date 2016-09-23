@@ -125,5 +125,7 @@ HISAT ?= $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
 
 TVC ?= $(HOME)/share/usr/bin/tvc
 
+ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
+
 endif
 CONFIG_INC = true

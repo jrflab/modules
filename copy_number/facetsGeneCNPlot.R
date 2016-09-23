@@ -45,7 +45,7 @@ plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamil
     if (is.null(sample_names)) { sample_names <- list(sort(colnames(mm)[sapply(colnames(mm), function(x) {grepl(paste(sample_column_postfix,"$",sep=""), x)})])) }
     chrsep <- cumsum(rle(mm$chrom)$lengths)
     chrmid <- c(0,chrsep[-length(chrsep)]) + (rle(mm$chrom)$lengths/2)
-    pdf(plot_file, width=12, height=.8*length(sample_names[[1]]))
+    pdf(plot_file, width=12, height=2 + .8*length(sample_names[[1]]))
     par(mfrow=c(length(sample_names),1), mar=c(8,.5*(max(sapply(sample_names,nchar))-nchar(sample_column_postfix)),1,2))
     lapply(sample_names, function(x, mm) {
         mm2 <- mm[,rev(x)]; #for (i in 1:ncol(mm2)) { mm2[,i] <- as.numeric(mm2[,i]) }

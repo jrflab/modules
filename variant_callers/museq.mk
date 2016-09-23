@@ -65,7 +65,7 @@ gatk/tables/all.%.txt : $(foreach sample,$(SAMPLES),museq/tables/$(sample).%.txt
 gatk/vcf/%.snps.annotated.museq.vcf : gatk/vcf/%.snps.annotated.vcf museq/vcf/%.museq.vcf
 	$(INIT) grep '^##' $< > $@; echo '##INFO=<ID=PROB,Number=1,Type=Float,Description="MutationSeq Probability">' >> $@; grep '^#' $< | sed '/^##/d' >> $@; perl -e 'open IN, $$ARGV[0]; open IN2, $$ARGV[1]; while (<IN2>) { chomp; next if /^#/; @F = split /\t/;  $$M{$$F[0]}{$$F[1]} = $$F[7]; } $$i = 0; while (<IN>) { next if /^#/; @F = split /\t/;  $$F[7] = $$M{$$F[0]}{$$F[1]} . ";" . $$F[7] if exists $$M{$$F[0]}{$$F[1]} ; print join "\t", @F; } close IN; close IN2;' $^ >> $@
 
-gatk/vcf/%.snps.annotated.museq.filtered.vcf : gatk/vcf/%.snps.annotated.museq.vcf gatk/vcf/%.snps.annotated.museq.vcf.idx
+gatk/vcf/%.snps.annotated.museq.filtered.vcf : gatk/vcf/%.snps.annotated.museq.vcf
 	$(call INIT_MEM,5G,6G) $(call GATK_MEM,5G) -T VariantFiltration -R $(REF_FASTA) $(SNP_FILTERS) -o $@ --variant $< &> $(LOG)
 
 gatk/tables/%.txt : gatk/vcf/%.vcf

@@ -12,7 +12,10 @@ ifeq ($(CLUSTER_ENGINE),"PBS")
 ..DUMMY := $(shell python modules/db/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
 endif
 
-VARIANT_TYPES ?= mutect_snps somatic_indels #strelka_indels varscan_indels strelka_varscan_indels
+SNV_TYPE ?= mutect_snps
+INDEL_TYPE ?= somatic_indels
+#strelka_indels varscan_indels strelka_varscan_indels
+VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
 
 
 DEPTH_FILTER ?= 5
@@ -30,7 +33,7 @@ ANN_MUT_TASTE = true
 endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-    eff \
+    eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
     $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
 ifeq ($(HRUN),true)
@@ -39,7 +42,7 @@ endif
 ifeq ($(ANN_MUT_TASTE),true)
 SOMATIC_INDEL_ANN2 += mut_taste
 endif
-SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm fathmm)
+SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm fathmm parssnp)
 
 # indel/snv initial round of annotations
 SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2))
@@ -90,7 +93,7 @@ vcf/%.$1.ft2.ann2.vcf : $$(if $$(strip $$(call SOMATIC_ANN2,$1)),$$(foreach ann,
 vcf_ann/%.$1.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
 PHONY += $1_vcfs
-$1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf)
+$1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf vcf/$$(pair).$1.ft2.vcf vcf/$$(pair).$1.ft.ann.vcf vcf/$$(pair).$1.ft.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 

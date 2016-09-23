@@ -14,6 +14,10 @@
 ##INFO=<ID=RU,Number=1,Type=String,Description="Tandem repeat unit (bases)">
 ##INFO=<ID=STR,Number=0,Type=Flag,Description="Variant is a short tandem repeat">
 ##INFO=<ID=TLOD,Number=1,Type=String,Description="Tumor LOD score">
+##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
+##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
+##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
 ##FORMAT=<ID=AD,Number=A,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
 ##FORMAT=<ID=AF,Number=1,Type=Float,Description="Allele fraction of the event in the tumor">
 ##FORMAT=<ID=ALT_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the alternate allele">
@@ -28,6 +32,7 @@
 ##FORMAT=<ID=QSS,Number=A,Type=Integer,Description="Sum of base quality scores for each allele">
 ##FORMAT=<ID=REF_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the reference allele">
 ##FORMAT=<ID=REF_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the reference allele">
+##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
 ##FILTER=<ID=alt_allele_in_normal,Description="Evidence seen in the normal sample">
 ##FILTER=<ID=clustered_events,Description="Clustered events observed in the tumor">
 ##FILTER=<ID=germline_risk,Description="Evidence indicates this site is germline, not somatic">

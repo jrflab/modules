@@ -98,7 +98,7 @@ PlotCNHeatmap <- function(gene.cn, file.name, sample.names=NULL, threshold=FALSE
     # remove annotation cols
      gene.cn %<>% select(one_of(rev(sample.names)))
 
-    pdf(file.name, width=24, height=2+length(sample.names)/2)
+    pdf(file.name, width=24, height=4+length(sample.names)/2)
 
         par(mar=c(14, 14, 1, 1), oma=c(1, 1, 1, 1))  # bottom, left, top, right
 

@@ -1,15 +1,21 @@
 ##fileformat=VCFv4.1
-##GATKCommandLine.MuTect2=<ID=MuTect2,Version=3.6-0-g89b7209,Date="Tue Aug 16 11:58:06 EDT 2016",Epoch=1471363086458,CommandLineOptions="analysis_type=MuTect2 input_file=[bam/EMC8T.bam, bam/EMC8N.bam] showFullBamList=false read_buffer_size=null read_filter=[] disable_read_filter=[] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 refactor_NDN_cigar_string=false fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 static_quantized_quals=null round_down_quantized=false disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false no_cmdline_in_header=false sites_only=false never_trim_vcf_format_field=false bcf=false bam_compression=null simplifyBAM=false disable_bam_indexing=false generate_md5=false num_threads=1 num_cpu_threads_per_data_thread=4 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 reference_window_stop=0 phone_home= gatk_key=null tag=NA logging_level=INFO log_to_file=null help=false version=false m2debug=false artifact_detection_mode=false initial_tumor_lod=4.0 initial_normal_lod=0.5 tumor_lod=6.3 normal_lod=2.2 dbsnp_normal_lod=5.5 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 debug=false useFilteredReadsForAnnotations=false emitRefConfidence=NONE bamOutput=null bamWriterType=CALLED_HAPLOTYPES emitDroppedReads=false disableOptimizations=false annotateNDA=false heterozygosity=0.001 indel_heterozygosity=1.25E-4 standard_min_confidence_threshold_for_calling=30.0 standard_min_confidence_threshold_for_emitting=30.0 max_alternate_alleles=6 max_num_PL_values=100 input_prior=[] sample_ploidy=2 genotyping_mode=DISCOVERY alleles=(RodBinding name= source=UNBOUND) contamination_fraction_to_filter=0.0 contamination_fraction_per_sample_file=null p_nonref_model=null exactcallslog=null output_mode=EMIT_VARIANTS_ONLY allSitePLs=false kmerSize=[10, 25] dontIncreaseKmerSizesForCycles=false allowNonUniqueKmersInRef=false numPruningSamples=1 recoverDanglingHeads=false doNotRecoverDanglingBranches=false minDanglingBranchLength=4 consensus=false maxNumHaplotypesInPopulation=128 errorCorrectKmers=false minPruning=2 debugGraphTransformations=false allowCyclesInKmerGraphToGeneratePaths=false graphOutput=null kmerLengthForReadErrorCorrection=25 minObservationsForKmerToBeSolid=20 gcpHMM=10 pair_hmm_implementation=VECTOR_LOGLESS_CACHING pair_hmm_sub_implementation=ENABLE_ALL always_load_vector_logless_PairHMM_lib=false phredScaledGlobalReadMismappingRate=45 noFpga=false debug_read_name=null MQ_filtering_level=20 cosmic=[] normal_panel=[] dbsnp=(RodBinding name=dbsnp source=/home/limr/share/reference/dbsnp_138.b37.gmaf.vcf) comp=[] annotation=[DepthPerAlleleBySample, BaseQualitySumPerAlleleBySample, TandemRepeatAnnotator, OxoGReadCounts] excludeAnnotation=[SpanningDeletions] out=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/mutect2/chr_vcf/EMC8T_EMC8N.1.mutect_snps_indels.vcf dontTrimActiveRegions=false maxDiscARExtension=25 maxGGAARExtension=300 paddingAroundIndels=150 paddingAroundSNPs=20 keepRG=null min_base_quality_score=10 errorCorrectReads=false captureAssemblyFailureBAM=false dontUseSoftClippedBases=false justDetermineActiveRegions=false doNotRunPhysicalPhasing=false activityProfileOut=null activeRegionOut=null activeRegionIn=null activeRegionExtension=null forceActive=false activeRegionMaxSize=null bandPassSigma=null maxProbPropagationDistance=50 activeProbabilityThreshold=0.002 filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
-##GATKCommandLine=<ID=VariantFiltration,Version=3.1-1-gcfc45fd,Date="Tue Aug 16 12:07:42 EDT 2016",Epoch=1471363662587,CommandLineOptions="analysis_type=VariantFiltration input_file=[] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[] intervals=null excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false variant=(RodBinding name=variant source=vcf/EMC8T_EMC8N.mutect_indels.ft.ann.vcf) mask=(RodBinding name= source=UNBOUND) out=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub filterExpression=[ExAC_AF >
-##SAMPLE=<ID=NORMAL,SampleName=EMC8N,File=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/bam/EMC8N.bam>
-##SAMPLE=<ID=TUMOR,SampleName=EMC8T,File=/ifs/e63data/reis-filho/projects/cancer-dream/modules/test/integration/variant_calls/test_data/bam/EMC8T.bam>
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/dbsnp_138.b37.gmaf.vcf vcf/EMC8T_EMC8N.mutect_indels.ft.vcf"
+##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/dbsnp_138.b37.gmaf.vcf vcf/EMC8T_EMC8N.somatic_indels.ft.vcf"
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
 ##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##fileDate=20160923
+##INFO=<ID=1000g2014oct_afr,Number=1,Type=Float,Description="1000g2014oct_afr annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_all,Number=1,Type=Float,Description="1000g2014oct_all annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_eas,Number=1,Type=Float,Description="1000g2014oct_eas annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_eur,Number=1,Type=Float,Description="1000g2014oct_eur annotation provided by ANNOVAR">
 ##INFO=<ID=AA,Number=1,Type=String,Description="Peptide annotation">
+##INFO=<ID=AAChange_refGene,Number=.,Type=String,Description="AAChange_refGene annotation provided by ANNOVAR">
+##INFO=<ID=ALLELE_END,Number=0,Type=Flag,Description="Flag the end of ANNOVAR annotation for one alternative allele">
 ##INFO=<ID=ANN,Number=.,Type=String,Description="Functional annotations: 'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'">
+##INFO=<ID=ANNOVAR_DATE,Number=1,Type=String,Description="Flag the start of ANNOVAR annotation for one alternative allele">
 ##INFO=<ID=ASP,Number=0,Type=Flag,Description="Is Assembly specific. This is set if the variant only maps to one assembly">
 ##INFO=<ID=ASS,Number=0,Type=Flag,Description="In acceptor splice site FxnCode = 73">
+##INFO=<ID=CADD_phred,Number=.,Type=String,Description="CADD_phred annotation provided by ANNOVAR">
+##INFO=<ID=CADD_raw,Number=.,Type=String,Description="CADD_raw annotation provided by ANNOVAR">
 ##INFO=<ID=CAF,Number=.,Type=String,Description="An ordered, comma delimited list of allele frequencies based on 1000Genomes, starting with the reference allele followed by alternate alleles as ordered in the ALT column. Where a 1000Genomes alternate allele is not in the dbSNPs alternate allele set, the allele is added to the ALT column.  The minor allele is the second largest value in the list, and was previuosly reported in VCF as the GMAF.  This is the GMAF reported on the RefSNP and EntrezSNP pages and VariationReporter">
 ##INFO=<ID=CDA,Number=0,Type=Flag,Description="Variation is interrogated in a clinical diagnostic assay">
 ##INFO=<ID=CDS,Number=1,Type=String,Description="CDS annotation">
@@ -28,15 +34,23 @@
 ##INFO=<ID=CNT,Number=1,Type=Integer,Description="How many samples have this mutation">
 ##INFO=<ID=COMMON,Number=1,Type=Integer,Description="RS is a common SNP.  A common SNP is one that has at least one 1000Genomes population with a minor allele of frequency >= 1% and for which 2 or more founders contribute to that minor allele frequency.">
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=DSS,Number=0,Type=Flag,Description="In donor splice-site FxnCode = 75">
 ##INFO=<ID=ECNT,Number=1,Type=String,Description="Number of events in this haplotype">
 ##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=ExonicFunc_refGene,Number=.,Type=String,Description="ExonicFunc_refGene annotation provided by ANNOVAR">
+##INFO=<ID=FATHMM_pred,Number=.,Type=String,Description="FATHMM_pred annotation provided by ANNOVAR">
+##INFO=<ID=FATHMM_score,Number=.,Type=String,Description="FATHMM_score annotation provided by ANNOVAR">
+##INFO=<ID=Func_refGene,Number=.,Type=String,Description="Func_refGene annotation provided by ANNOVAR">
 ##INFO=<ID=G5,Number=0,Type=Flag,Description=">5% minor allele frequency in 1+ populations">
 ##INFO=<ID=G5A,Number=0,Type=Flag,Description=">5% minor allele frequency in each and all populations">
 ##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">
 ##INFO=<ID=GENEINFO,Number=1,Type=String,Description="Pairs each of gene symbol:gene id.  The gene symbol and id are delimited by a colon (:) and each pair is delimited by a vertical bar (|)">
+##INFO=<ID=GERP++_RS,Number=.,Type=String,Description="GERP++_RS annotation provided by ANNOVAR">
 ##INFO=<ID=GMAF,Number=1,Type=Float,Description="global minor allele frequency from 1000g">
 ##INFO=<ID=GNO,Number=0,Type=Flag,Description="Genotypes available. The variant has individual genotype (in SubInd table).">
+##INFO=<ID=GeneDetail_refGene,Number=.,Type=String,Description="GeneDetail_refGene annotation provided by ANNOVAR">
+##INFO=<ID=Gene_refGene,Number=.,Type=String,Description="Gene_refGene annotation provided by ANNOVAR">
 ##INFO=<ID=HCNT,Number=1,Type=String,Description="Number of haplotypes that support this variant">
 ##INFO=<ID=HD,Number=0,Type=Flag,Description="Marker is on high density genotyping kit (50K density or greater).  The variant may have phenotype associations present in dbGaP.">
 ##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
@@ -49,11 +63,19 @@
 ##INFO=<ID=KGPilot123,Number=0,Type=Flag,Description="1000 Genome discovery all pilots 2010(1,2,3)">
 ##INFO=<ID=KGValidated,Number=0,Type=Flag,Description="1000 Genome validated">
 ##INFO=<ID=LOF,Number=.,Type=String,Description="Predicted loss of function effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
+##INFO=<ID=LRT_pred,Number=.,Type=String,Description="LRT_pred annotation provided by ANNOVAR">
+##INFO=<ID=LRT_score,Number=.,Type=String,Description="LRT_score annotation provided by ANNOVAR">
+##INFO=<ID=LR_pred,Number=.,Type=String,Description="LR_pred annotation provided by ANNOVAR">
+##INFO=<ID=LR_score,Number=.,Type=String,Description="LR_score annotation provided by ANNOVAR">
 ##INFO=<ID=LSD,Number=0,Type=Flag,Description="Submitted from a locus-specific database">
 ##INFO=<ID=MAX_ED,Number=1,Type=Integer,Description="Maximum distance between events in this active region">
 ##INFO=<ID=MIN_ED,Number=1,Type=Integer,Description="Minimum distance between events in this active region">
 ##INFO=<ID=MTP,Number=0,Type=Flag,Description="Microattribution/third-party annotation(TPA:GWAS,PAGE)">
 ##INFO=<ID=MUT,Number=0,Type=Flag,Description="Is mutation (journal citation, explicit fact): a low frequency variation that is cited in journal and other reputable sources">
+##INFO=<ID=MutationAssessor_pred,Number=.,Type=String,Description="MutationAssessor_pred annotation provided by ANNOVAR">
+##INFO=<ID=MutationAssessor_score,Number=.,Type=String,Description="MutationAssessor_score annotation provided by ANNOVAR">
+##INFO=<ID=MutationTaster_pred,Number=.,Type=String,Description="MutationTaster_pred annotation provided by ANNOVAR">
+##INFO=<ID=MutationTaster_score,Number=.,Type=String,Description="MutationTaster_score annotation provided by ANNOVAR">
 ##INFO=<ID=NLOD,Number=1,Type=String,Description="Normal LOD score">
 ##INFO=<ID=NMD,Number=.,Type=String,Description="Predicted nonsense mediated decay effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
 ##INFO=<ID=NOC,Number=0,Type=Flag,Description="Contig allele not present in variant allele list. The reference sequence allele at the mapped position is not present in the variant allele list, adjusted for orientation.">
@@ -68,6 +90,10 @@
 ##INFO=<ID=PM,Number=0,Type=Flag,Description="Variant is Precious(Clinical,Pubmed Cited)">
 ##INFO=<ID=PMC,Number=0,Type=Flag,Description="Links exist to PubMed Central article">
 ##INFO=<ID=PON,Number=1,Type=String,Description="Count from Panel of Normals">
+##INFO=<ID=Polyphen2_HDIV_pred,Number=.,Type=String,Description="Polyphen2_HDIV_pred annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HDIV_score,Number=.,Type=String,Description="Polyphen2_HDIV_score annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HVAR_pred,Number=.,Type=String,Description="Polyphen2_HVAR_pred annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HVAR_score,Number=.,Type=String,Description="Polyphen2_HVAR_score annotation provided by ANNOVAR">
 ##INFO=<ID=R3,Number=0,Type=Flag,Description="In 3' gene region FxnCode = 13">
 ##INFO=<ID=R5,Number=0,Type=Flag,Description="In 5' gene region FxnCode = 15">
 ##INFO=<ID=REF,Number=0,Type=Flag,Description="Has reference A coding region variation where one allele in the set is identical to the reference sequence. FxnCode = 8">
@@ -76,18 +102,27 @@
 ##INFO=<ID=RSPOS,Number=1,Type=Integer,Description="Chr position reported in dbSNP">
 ##INFO=<ID=RU,Number=1,Type=String,Description="Tandem repeat unit (bases)">
 ##INFO=<ID=RV,Number=0,Type=Flag,Description="RS orientation is reversed">
+##INFO=<ID=RadialSVM_pred,Number=.,Type=String,Description="RadialSVM_pred annotation provided by ANNOVAR">
+##INFO=<ID=RadialSVM_score,Number=.,Type=String,Description="RadialSVM_score annotation provided by ANNOVAR">
 ##INFO=<ID=S3D,Number=0,Type=Flag,Description="Has 3D structure - SNP3D table">
 ##INFO=<ID=SAO,Number=1,Type=Integer,Description="Variant Allele Origin: 0 - unspecified, 1 - Germline, 2 - Somatic, 3 - Both">
+##INFO=<ID=SIFT_pred,Number=.,Type=String,Description="SIFT_pred annotation provided by ANNOVAR">
+##INFO=<ID=SIFT_score,Number=.,Type=String,Description="SIFT_score annotation provided by ANNOVAR">
 ##INFO=<ID=SLO,Number=0,Type=Flag,Description="Has SubmitterLinkOut - From SNP->SubSNP->Batch.link_out">
+##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=SSR,Number=1,Type=Integer,Description="Variant Suspect Reason Codes (may be more than one value added together) 0 - unspecified, 1 - Paralog, 2 - byEST, 4 - oldAlign, 8 - Para_EST, 16 - 1kg_failed, 1024 - other">
 ##INFO=<ID=STR,Number=0,Type=Flag,Description="Variant is a short tandem repeat">
 ##INFO=<ID=STRAND,Number=1,Type=String,Description="Gene strand">
 ##INFO=<ID=SYN,Number=0,Type=Flag,Description="Has synonymous A coding region variation where one allele in the set does not change the encoded amino acid. FxnCode = 3">
+##INFO=<ID=SiPhy_29way_logOdds,Number=.,Type=String,Description="SiPhy_29way_logOdds annotation provided by ANNOVAR">
 ##INFO=<ID=TLOD,Number=1,Type=String,Description="Tumor LOD score">
 ##INFO=<ID=TPA,Number=0,Type=Flag,Description="Provisional Third Party Annotation(TPA) (currently rs from PHARMGKB who will give phenotype data)">
 ##INFO=<ID=U3,Number=0,Type=Flag,Description="In 3' UTR Location is in an untranslated region (UTR). FxnCode = 53">
 ##INFO=<ID=U5,Number=0,Type=Flag,Description="In 5' UTR Location is in an untranslated region (UTR). FxnCode = 55">
+##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
 ##INFO=<ID=VC,Number=1,Type=String,Description="Variation Class">
+##INFO=<ID=VEST3_score,Number=.,Type=String,Description="VEST3_score annotation provided by ANNOVAR">
 ##INFO=<ID=VLD,Number=0,Type=Flag,Description="Is Validated.  This bit is set if the variant has 2+ minor allele count based on frequency or genotype data.">
 ##INFO=<ID=VP,Number=1,Type=String,Description="Variation Property.  Documentation is at ftp://ftp.ncbi.nlm.nih.gov/snp/specs/dbSNP_BitField_latest.pdf">
 ##INFO=<ID=WGT,Number=1,Type=Integer,Description="Weight, 00 - unmapped, 1 - weight 1, 2 - weight 2, 3 - weight 3 or more">
@@ -102,6 +137,7 @@
 ##INFO=<ID=breast_Pam50_Normal,Number=0,Type=Flag,Description="breast_Pam50_Normal: variant is in gene list">
 ##INFO=<ID=breast_Triple_negative,Number=0,Type=Flag,Description="breast_Triple_negative: variant is in gene list">
 ##INFO=<ID=cancer_gene_census,Number=0,Type=Flag,Description="cancer_gene_census: variant is in gene list">
+##INFO=<ID=cytoBand,Number=.,Type=String,Description="cytoBand annotation provided by ANNOVAR">
 ##INFO=<ID=dbSNPBuildID,Number=1,Type=Integer,Description="First dbSNP Build for RS">
 ##INFO=<ID=endometrial_CN_high,Number=0,Type=Flag,Description="endometrial_CN_high: variant is in gene list">
 ##INFO=<ID=endometrial_CN_low,Number=0,Type=Flag,Description="endometrial_CN_low: variant is in gene list">
@@ -111,9 +147,18 @@
 ##INFO=<ID=endometrial_MSI,Number=0,Type=Flag,Description="endometrial_MSI: variant is in gene list">
 ##INFO=<ID=endometrial_POLE,Number=0,Type=Flag,Description="endometrial_POLE: variant is in gene list">
 ##INFO=<ID=endometrial_Serous,Number=0,Type=Flag,Description="endometrial_Serous: variant is in gene list">
+##INFO=<ID=esp6500siv2_all,Number=1,Type=Float,Description="esp6500siv2_all annotation provided by ANNOVAR">
+##INFO=<ID=genomicSuperDups,Number=.,Type=String,Description="genomicSuperDups annotation provided by ANNOVAR">
 ##INFO=<ID=hap_insuf,Number=0,Type=Flag,Description="hap_insuf: variant is in gene list">
 ##INFO=<ID=kandoth,Number=0,Type=Flag,Description="kandoth: variant is in gene list">
 ##INFO=<ID=lawrence,Number=0,Type=Flag,Description="lawrence: variant is in gene list">
+##INFO=<ID=phyloP100way_vertebrate,Number=.,Type=String,Description="phyloP100way_vertebrate annotation provided by ANNOVAR">
+##INFO=<ID=phyloP46way_placental,Number=.,Type=String,Description="phyloP46way_placental annotation provided by ANNOVAR">
+##INFO=<ID=snp138,Number=.,Type=String,Description="snp138 annotation provided by ANNOVAR">
+##INFO=<ID=facetsCF_EM,Number=1,Type=Float,Description="Facets cellular fraction (EM)">
+##INFO=<ID=facetsTCN_EM,Number=1,Type=Integer,Description="Facets total copy number (EM)">
+##INFO=<ID=facetsLCN_EM,Number=1,Type=Integer,Description="Facets lesser copy number (EM)">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
 ##FORMAT=<ID=AF,Number=1,Type=Float,Description="Allele fraction of the event in the tumor">
 ##FORMAT=<ID=ALT_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the alternate allele">
@@ -121,13 +166,13 @@
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
 ##FORMAT=<ID=FOXOG,Number=1,Type=Float,Description="Fraction of alt reads indicating OxoG error">
 ##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=PGT,Number=1,Type=String,Description="Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another">
 ##FORMAT=<ID=PID,Number=1,Type=String,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
 ##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
 ##FORMAT=<ID=QSS,Number=A,Type=Integer,Description="Sum of base quality scores for each allele">
 ##FORMAT=<ID=REF_F1R2,Number=1,Type=Integer,Description="Count of reads in F1R2 pair orientation supporting the reference allele">
 ##FORMAT=<ID=REF_F2R1,Number=1,Type=Integer,Description="Count of reads in F2R1 pair orientation supporting the reference allele">
+##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
 ##FILTER=<ID=alt_allele_in_normal,Description="Evidence seen in the normal sample">
 ##FILTER=<ID=clustered_events,Description="Clustered events observed in the tumor">
 ##FILTER=<ID=customFilter,Description="ExAC_AF > 0.05">
@@ -225,4 +270,4 @@
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
-2	95775789	2:95775789_G/GT	G	GT	.	PASS	ANN=GT|splice_region_variant&intron_variant|LOW|MRPS5|MRPS5|transcript|NM_031902.3|Coding|3/11|c.278-4_278-3insA||||||;ECNT=1;HCNT=1;MAX_ED=.;MIN_ED=.;NLOD=6.62;RPA=1,2;RU=T;STR;TLOD=25.63;endometrial_Endometrioid;endometrial_Endometrioid_MSS;endometrial_Serous	GT:AD:AF:ALT_F1R2:ALT_F2R1:QSS:REF_F1R2:REF_F2R1	0/1:25,11:0.36:5:6:881,389:14:11	0/0:30,0:0.0:0:0:1061,0:20:10
+2	95775789	2:95775789_G/GT	G	GT	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=GT|splice_region_variant&intron_variant|LOW|MRPS5|MRPS5|transcript|NM_031902.3|Coding|3/11|c.278-4_278-3insA||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;ECNT=1;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=MRPS5;HCNT=1;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;NLOD=6.62;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RPA=1,2;RU=T;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;STR;SiPhy_29way_logOdds=.;TLOD=25.63;VEST3_score=.;cytoBand=2q11.1;endometrial_Endometrioid;endometrial_Endometrioid_MSS;endometrial_Serous;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsTCN_EM=2;facetsLCN_EM=1	GT:AD:AF:ALT_F1R2:ALT_F2R1:QSS:REF_F1R2:REF_F2R1	0/1:25,11:0.36:5:6:881:14:11	0/0:30,0:0.0:0:0:1061:20:10

@@ -1,5 +1,5 @@
 # dbsnp annotations
-vcf/%.dbsnp.vcf : vcf/%.vcf vcf/%.vcf.idx 
+vcf/%.dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate \
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@"))
 
@@ -8,12 +8,12 @@ vcf/%.hotspot_ann.vcf : vcf/%.vcf
 		$(HOTSPOT_UNMERGED_VCF) $< > $@"))
 
 # mouse genome project dbsnp
-vcf/%.mgp_dbsnp.vcf : vcf/%.vcf vcf/%.vcf.idx 
+vcf/%.mgp_dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@"))
 
-vcf/%.cosmic.vcf : vcf/%.vcf vcf/%.vcf.idx 
+vcf/%.cosmic.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		$(COSMIC) $< > $@"))
 
@@ -29,15 +29,15 @@ vcf/%.exondist.vcf : vcf/%.vcf
 # run snp eff
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
-vcf/%.eff.vcf : vcf/%.vcf vcf/%.vcf.idx
+vcf/%.eff.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@"))
 
 
-vcf/%.clinvar.vcf : vcf/%.vcf vcf/%.vcf.idx 
+vcf/%.clinvar.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		$(CLINVAR) $< > $@"))
 
-vcf/%.exac_nontcga.vcf : vcf/%.vcf vcf/%.vcf.idx 
+vcf/%.exac_nontcga.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		-info ExAC_AF $(EXAC_NONTCGA) $< > $@"))
 
@@ -67,9 +67,8 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call ad-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
 ANNOVAR_PROTOCOL ?= refGene$(,)cytoBand$(,)genomicSuperDups$(,)esp6500siv2_all$(,)1000g2014oct_all$(,)1000g2014oct_afr$(,)1000g2014oct_eas$(,)1000g2014oct_eur$(,)snp138$(,)ljb26_all
 ANNOVAR_OPERATION ?= g$(,)r$(,)r$(,)f$(,)f$(,)f$(,)f$(,)f$(,)f$(,)f
 ANNOVAR_OPTS = --dot2underline -remove -protocol $(ANNOVAR_PROTOCOL) -operation $(ANNOVAR_OPERATION) -nastring . -vcfinput -buildver $(ANNOVAR_REF)
 vcf/%.$(ANNOVAR_REF)_multianno.vcf : vcf/%.vcf
-	$(call LSCRIPT_CHECK_MEM,7G,9G,"$(ANNOVAR) -out $* $(ANNOVAR_OPTS) $< $(ANNOVAR_DB)")
+	$(call LSCRIPT_CHECK_MEM,7G,9G,"$(ANNOVAR) -out $(@D)/$* $(ANNOVAR_OPTS) $< $(ANNOVAR_DB)")

@@ -16,6 +16,9 @@ bam_fix_rg: false
 bam_phred64: false
 bam_reprocess: false
 
+snv_type: mutect_snps #mutect
+indel_type: somatic_indels #strelka_varscan_indels
+
 vcf_post_ann_filter_expression: ExAC_AF > 0.05
 
 # vcf annotations

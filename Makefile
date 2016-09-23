@@ -28,7 +28,7 @@ $(QMAKE) -e -f $1 -j $2 $(TARGET) && \
 	touch completed_tasks/$@
 endef
 
-RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
+RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
 
 
 #####
@@ -157,6 +157,10 @@ tvcTN:
 
 TARGETS += somatic_indels
 somatic_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
+
+TARGETS += somatic_variants
+somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
 
 #####
