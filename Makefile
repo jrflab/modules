@@ -161,7 +161,7 @@ somatic_indels:
 
 TARGETS += somatic_variants
 somatic_variants:
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 
 #####
 # copy number
