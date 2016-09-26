@@ -3,7 +3,6 @@
 ##### DEFAULTS ######
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/somatic/mutect.inc
 
 CLONEHD = $(HOME)/share/usr/bin/cloneHD
 FILTERHD = $(HOME)/share/usr/bin/filterHD
@@ -81,4 +80,4 @@ endef
 $(foreach s,$(SAMPLE_SETS),$(eval $(call clonehd-set-tumors-normal,$s,$(tumor.$s),$(normal.$s))))
 
 
-
+include modules/variant_callers/somatic/mutect.mk

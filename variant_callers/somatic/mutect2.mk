@@ -2,10 +2,10 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-MUTECT_MAX_ALT_IN_NORMAL ?= 500
-MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
+MUTECT2_MAX_ALT_IN_NORMAL ?= 500
+MUTECT2_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT2_FILTERS = DuplicateRead FailsVendorQualityCheck NotPrimaryAlignment BadMate MappingQualityUnavailable UnmappedRead BadCigar
-MUTECT2_OPTS ?= --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT2_FILTERS),-rf $(ft))
+MUTECT2_OPTS ?= --max_alt_alleles_in_normal_count $(MUTECT2_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT2_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT2_FILTERS),-rf $(ft))
 MUTECT2 = $(call GATK_MEM2,10G) -T MuTect2 $(MUTECT2_OPTS)
 
 SPLIT_SNPS_INDELS_VCF = python modules/vcf_tools/split_snps_indels_vcf.py

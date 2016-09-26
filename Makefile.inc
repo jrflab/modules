@@ -187,16 +187,16 @@ WALLTIMES = MEM SHORT LONG
 PBS_SHORT = -l mem=$2 -l walltime=1:00:00
 PBS_MEM = -l mem=$2 -l walltime=24:00:00
 PBS_LONG = -l mem=$2 -l walltime=128:00:00
-PBS_PARALLEL_MEM_WALLTIME = -l nodes=1:ppn=$1 -l walltime=$3  -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
+PBS_PARALLEL_MEM_WALLTIME = -l nodes=1:ppn=$1 -l walltime=$3  -l mem=$(shell unit=`echo $2 | sed 's/[^A-Za-z]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g; s/\..*//;' | bc | sed 's/$$/'$$unit'/')
 PBS_PARALLEL_MEM = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,12:00:00)
 PBS_PARALLEL_SHORT = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,1:00:00)
-PBS_PARALLEL_LONG = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,128:00:00)
+PBS_PARALLEL_LONG = $(call PBS_PARALLEL_MEM_WALLTIME,$1,$3,256:00:00)
 PBS_QSUB_ARGS = -o $(LOG) -j oe -d $(PWD)
 PBS_QSUB_SCRIPT = python modules/scripts/qsub_pbs.py
 PBS_DOCKER_MEM = -l mem=$2 -l walltime=24:00:00 -l nodes=1:docker -l mem=$2
 PBS_DOCKER_SHORT = -l mem=$2 -l walltime=1:00:00 -l nodes=1:docker -l mem=$2
 PBS_DOCKER_LONG = -l mem=$2 -l walltime=128:00:00 -l nodes=1:docker -l mem=$2
-PBS_DOCKER_PARALLEL_MEM_WALLTIME = -l nodes=1:docker:ppn=$1 -l walltime=$3 -l mem=$(shell unit=`echo $2 | sed 's/[0-9]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g' | bc | sed 's/$$/'$$unit'/')
+PBS_DOCKER_PARALLEL_MEM_WALLTIME = -l nodes=1:docker:ppn=$1 -l walltime=$3 -l mem=$(shell unit=`echo $2 | sed 's/^[A-Za-z]//g'`; echo "$1 * $2" | sed 's/[A-Za-z]//g; s/\..*//;' | bc | sed 's/$$/'$$unit'/')
 PBS_DOCKER_PARALLEL_MEM = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$3,12:00:00)
 PBS_DOCKER_PARALLEL_SHORT = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$3,1:00:00)
 PBS_DOCKER_PARALLEL_LONG = $(call PBS_DOCKER_PARALLEL_MEM_WALLTIME,$1,$3,128:00:00)
@@ -277,7 +277,7 @@ else
 LS = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
 $(foreach wt,$(WALLTIMES),\
 	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
-	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
+	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$2,$$2,$$3,$$4)) \
 	$(eval LSCRIPT_NAMED_PARALLEL_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_PARALLEL_$(wt),$$2,$$3,$$4),$$5)) \
 	$(eval LSCRIPT_NAMED_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_$(wt),$$2,$$3),$$4)) \
 	$(eval LSCRIPT_CHECK_PARALLEL_$(wt) = $$(call LSCRIPT_CHECK_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \

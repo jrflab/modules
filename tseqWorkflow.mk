@@ -19,7 +19,7 @@ tseq_workflow : $(TSEQ_WORKFLOW)
 
 include modules/aligners/bwamemAligner.mk
 include modules/variant_callers/gatkVariantCaller.mk
-include modules/variant_callers/somatic/mutectVariantCaller.mk
+include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/strelka.mk
 include modules/variant_callers/somatic/varscanTN.mk
 include modules/variant_callers/somatic/mergeStrelkaVarscanIndels.mk

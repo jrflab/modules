@@ -105,7 +105,7 @@ merge_fastq :
 
 TARGETS += mutect
 mutect :
-	$(call RUN_MAKE,modules/variant_callers/somatic/mutectVariantCaller.mk)
+	$(call RUN_MAKE,modules/variant_callers/somatic/mutect.mk)
 
 TARGETS += mutect2
 mutect2 :
