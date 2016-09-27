@@ -16,7 +16,8 @@ import sys
 import requests
 import tempfile
 from subprocess import Popen
-if 'DRMAA_LIBRARY_PATH' in os.environ:
+if 'SGE_ROOT' in os.environ:
+    import drmaa
     import qsub
 import qsub_pbs
 import collections
@@ -64,7 +65,7 @@ class ProveanQuery:
                 sys.stderr.write('max attempts\n')
                 return None
 
-    def run_cluster(self, cluster_mode='sge', mem_per_thread='1.5G'):
+    def run_cluster(self, session=None, cluster_mode='SGE', mem_per_thread='1.5G'):
         sys.stderr.write('running provean on the cluster...\n')
         job = None
         if cluster_mode.lower() == 'pbs':
@@ -72,7 +73,8 @@ class ProveanQuery:
             job = qsub_pbs.Job(self._cmd, '-l nodes=1:ppn={} -l walltime=12:00:00 '
                                '-l mem={}'.format(self.num_threads, mem))
         elif cluster_mode.lower() == 'sge':
-            job = qsub.Job(self._cmd, '-pe smp {} -l h_vmem={}'.format(self.num_threads, mem_per_thread))
+            assert session is not None
+            job = qsub.Job(session, self._cmd, '-pe smp {} -l h_vmem={}'.format(self.num_threads, mem_per_thread))
         else:
             raise Exception("Invalid cluster mode\n")
         job.run_job()
@@ -117,7 +119,8 @@ def three_to_one_amino_acid_code(x):
 
 
 def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ensembl.org',
-                     provean_script='provean.sh', cluster_method='sge', mem_per_thread='1.5G', num_provean_threads=4):
+                     provean_script='provean.sh', cluster_method='sge',
+                     mem_per_thread='1.5G', num_provean_threads=4):
     """ add provean results using remote server or locally if necessary
     """
     query = ""
@@ -175,10 +178,10 @@ def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ense
                 record.INFO['provean_pred'] = '.'
                 record.INFO['provean_score'] = '.'
     else:
-        for record in records:
-            add_provean_info_local(record, rest_server=rest_server, provean_script=provean_script,
-                                   cluster_mode=cluster_method, mem_per_thread=mem_per_thread,
-                                   num_provean_threads=num_provean_threads)
+        add_provean_info_local(records, rest_server=rest_server, provean_script=provean_script,
+                               cluster_mode=cluster_method, mem_per_thread=mem_per_thread,
+                               num_provean_threads=num_provean_threads)
+
     return records
 
 
@@ -206,10 +209,14 @@ def get_hgvsp(record, max_retry=30, rest_server='http://grch37.rest.ensembl.org'
 
 
 def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org',
-                           provean_script='provean.sh', cluster_mode='sge',
+                           provean_script='provean.sh', cluster_mode='SGE',
                            num_provean_threads=4, mem_per_thread='1.5G', max_retry=30):
     """ run provean locally
     """
+    session = None
+    if cluster_mode.lower() == 'sge' and 'SGE_ROOT' in os.environ:
+        session = drmaa.Session()
+        session.initialize()
     provean_queries = collections.defaultdict(list)
     for record in records:
         hgvsp_ensps = get_hgvsp(record, rest_server=rest_server)
@@ -222,21 +229,21 @@ def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org'
             if 'fs' in hgvsp:
                 continue
             ensp_hgvsp[ensembl_id].append(hgvsp)
-        for ensp, hgvsps in ensp_hgvsp:
+        for ensp, hgvsps in ensp_hgvsp.iteritems():
             provean_queries[record].append(ProveanQuery(ensembl_id=ensp, hgvsps=hgvsps,
                                                         num_provean_threads=num_provean_threads,
                                                         provean_script=provean_script))
     jobs = []
-    for record, queries in provean_queries:
+    for record, queries in provean_queries.iteritems():
         for query in queries:
-            if cluster_mode == 'none' or 'DRMAA_LIBRARY_PATH' not in os.environ:
+            if cluster_mode.lower() == 'none' or 'SGE_ROOT' not in os.environ:
                 query.run_local()
             else:
-                jobs.append(query.run_cluster(cluster_mode=cluster_mode,
+                jobs.append(query.run_cluster(session=session, cluster_mode=cluster_mode,
                                               mem_per_thread=mem_per_thread))
     for job in jobs:
         job.wait()
-    for record, queries in provean_queries:
+    for record, queries in provean_queries.iteritems():
         scores = []
         for query in queries:
             scores.append(query.process())
@@ -246,6 +253,8 @@ def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org'
             record.INFO['provean_pred'] = 'Deleterious'
         else:
             record.INFO['provean_pred'] = 'Neutral'
+    if session is not None:
+        session.exit()
 
 
 def is_fs_splice_stop(record):

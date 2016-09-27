@@ -326,11 +326,12 @@ define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
 qw <- function(x) unlist(strsplit(x, "[[:space:]]+"))
 endef
-
+ifeq ($(USE_CLUSTER),true)
 ifeq ($(CLUSTER_ENGINE),SGE)
 export DRMAA_LIBRARY_PATH = /common/sge/lib/lx24-amd64/libdrmaa.so.1.0
 else
 export DRMAA_LIBRARY_PATH = /opt/torque/lib/libdrmaa.so.1
+endif
 endif
 
 

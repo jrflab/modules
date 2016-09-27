@@ -2,7 +2,10 @@
 
 PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
 CLASSIFY_PATHOGENICITY = python modules/scripts/classify_pathogenicity_vcf.py
-CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) --num_provean_threads 5 --mem_per_thread 1.5G 
+CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
+							  $(if $(findstring true,$(USE_CLUSTER)),--cluster_mode $(CLUSTER_ENGINE), \
+							  --cluster_mode none) \
+							  --num_provean_threads 6 --mem_per_thread 3G 
 vcf/%.pathogen.vcf : vcf/%.vcf
 	$(INIT) $(call CHECK_VCF,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
 
