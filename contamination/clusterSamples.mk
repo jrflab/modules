@@ -17,9 +17,9 @@ else
 DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 endif
 
-CLUSTER_VCF = $(RSCRIPT) modules/variant_callers/clusterVcf.R
+CLUSTER_VCF = $(RSCRIPT) modules/contamination/clusterSampleVcf.R
 
-all : snp_vcf/snps_filtered.sdp_ft.clust.png
+all : snp_vcf/snps_filtered.clust.png
 
 #snp_vcf/snps.vcf : $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 #$(call LSCRIPT_MEM,4G,8G,"$(SAMTOOLS) mpileup -f $(REF_FASTA) -g -l <(sed '/^#/d' $(DBSNP) | cut -f 1,2) $^ | $(BCFTOOLS) view -g - > $@")

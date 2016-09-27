@@ -30,14 +30,16 @@ vcfFile <- arguments$args[1]
 
 vcf <- readVcf(vcfFile, opt$genome)
 gt <- geno(vcf)$GT
+ad <- geno(vcf)$AD
+af <- structure(sapply(ad, function(x) x[2] / sum(x)), dim = dim(ad))
 X <- matrix(0, nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
-X[gt == "0/0"] <- 0
-X[gt == "0/1"] <- 1
-X[gt == "1/1"] <- 2
+X[is.na(af)] <- 0
+X[af > 0.45 & af < 0.55] <- 1
+X[af > 0.95] <- 2
 X[!gt %in% c("0/0", "0/1", "1/1")] <- NA
-plot(hclust(dist(t(X), method = 'manhattan')))
+#plot(hclust(dist(t(X), method = 'manhattan')))
 
-gt <- matrix(as.integer(factor(gt)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
+gt <- matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 
 fn <- paste(opt$outPrefix, ".clust.png", sep = '')
 png(fn, height = 900, width = 1500, type = 'cairo')

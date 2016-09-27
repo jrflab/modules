@@ -82,10 +82,6 @@ TARGETS += samtools_het
 samtools_het :
 	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
-TARGETS += snpcaller
-snpcaller :
-	$(call RUN_MAKE,modules/variant_callers/snpCaller.mk)
-
 
 TARGETS += hotspot
 hotspot: 
@@ -401,6 +397,10 @@ emu :
 ###
 # misc
 ###
+
+TARGETS += cluster_samples
+cluster_samples :
+	$(call RUN_MAKE,modules/contamination/clusterSamples.mk)
 
 TARGETS += contest
 contest :
