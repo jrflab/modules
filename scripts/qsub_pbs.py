@@ -152,7 +152,7 @@ class Job:
                 break
             if self.qstat['job_state'] == "H" or self.qstat['job_state'] == "S":
                 raise Exception('job halted')
-            time.sleep(random.randint(self.poll_interval, self.poll_interval + 60))
+            time.sleep(random.randint(self.poll_interval, self.poll_interval + 20))
             if self._kill_now:
                 sys.stderr.write("registering job for deletion\n")
                 subprocess.Popen("qdel {}".format(self.job_id), shell=True)
@@ -306,7 +306,7 @@ if __name__ == '__main__':
             exit_status += 66
 
     i = 0
-    while i < args.max_restarts and exit_status != 0 and \
+    while i < args.max_restarts and exit_status != 0 and not job._kill_now \
             (job.hit_walltime_limit() or job.hit_mem_limit()):
         sys.stderr.write("job hit resource limit\n")
         sys.stderr.write("restarting job\n")
