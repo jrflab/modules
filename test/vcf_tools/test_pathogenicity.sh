@@ -4,7 +4,7 @@ source ${DIR}/../test_functions.sh
 set -e
 
 OUT_DIR=${DIR}/output
-SCRIPT_DIR=${DIR}/../../vcf_tools
+SCRIPT_DIR=${DIR}/../../scripts
 TEST_DATA_DIR=${DIR}/test_data
 TEST_DATA_OUT_DIR=${DIR}/test_data/output
 

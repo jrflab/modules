@@ -16,6 +16,91 @@ import sys
 import requests
 import tempfile
 from subprocess import Popen
+import qsub
+import qsub_pbs
+import collections
+
+
+class ProveanQuery:
+    def __init__(self, ensembl_id, hgvsps, provean_script, num_provean_threads,
+                 rest_server='http://grch37.rest.ensembl.org'):
+        self.ensembl_id = ensembl_id
+        self.fasta = self._get_fasta(ensembl_id, rest_server=rest_server)
+
+        self.hgvsps = hgvsps
+        self.provean_script = provean_script
+        self.num_threads = num_provean_threads
+
+        self._fasta_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
+        self._fasta_file.write(self.fasta)
+        self._fasta_file.close()
+
+        self._var_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
+        for var in hgvsps:
+            self._var_file.write(var + "\n")
+        self._var_file.close()
+        self._out_file = tempfile.mktemp()
+        self._cmd = '{} --num_threads {} -q {} -v {} |' \
+            'sed "1,/PROVEAN scores/d" > {}'.format(provean_script, self.num_threads,
+                                                    self._fasta_file.name, self._var_file.name,
+                                                    self._out_file)
+
+    def _get_fasta(self, ensembl_id, max_retry=30, rest_server='http://grch37.rest.ensembl.org'):
+        """ get fasta sequence from ensembl
+        """
+        ext = '/sequence/id/{}?'.format(ensembl_id)
+        for attempt in range(max_retry):
+            try:
+                sys.stderr.write("querying {}\n".format(rest_server + ext))
+                r = requests.get(rest_server + ext, headers={"Content-Type": "text/x-fasta"})
+                if not r.ok:
+                    r.raise_for_status()
+                return r.text
+            except:
+                sys.stderr.write("attempt {} failed...\n".format(attempt))
+                time.sleep(10)
+            else:
+                sys.stderr.write('max attempts\n')
+                return None
+
+    def run_cluster(self, cluster_mode='sge', mem_per_thread='1.5G'):
+        sys.stderr.write('running provean on the cluster...\n')
+        job = None
+        if cluster_mode.lower() == 'pbs':
+            mem = qsub_pbs.human2bytes(mem_per_thread) * self.num_threads
+            job = qsub_pbs.Job(self._cmd, '-l nodes=1:ppn={} -l walltime=12:00:00 '
+                               '-l mem={}'.format(self.num_threads, mem))
+        elif cluster_mode.lower() == 'sge':
+            job = qsub.Job(self._cmd, '-pe smp {} -l h_vmem={}'.format(self.num_threads, mem_per_thread))
+        else:
+            raise Exception("Invalid cluster mode\n")
+        job.run_job()
+        return job
+
+    def run_local(self):
+        sys.stderr.write('running provean locally...\n')
+        process = Popen(self._cmd, shell=True)
+        process.wait()
+        if process.returncode != 0:
+            sys.stderr.write('non-zero exit code; provean query failed: {} {}\n'.format(self.ensembl_id,
+                                                                                        ",".join(self.hgvsps)))
+            return None
+
+    def process(self, max_retry=10):
+        for attempt in range(max_retry):
+            try:
+                assert os.stat(self._out_file).st_size > 0
+                df = pd.read_table(self._out_file)
+                assert len(df) > 0
+                df.columns = ['hgvsp', 'score']
+                return min(df['score'])
+            except:
+                sys.stderr.write('file is 0\n')
+                time.sleep(10)
+            else:
+                sys.stderr.write('max attempts\n')
+                sys.stderr.write('provean query failed: {} {}\n'.format(self.ensembl_id, ','.join(self.hgvsps)))
+                return None
 
 
 def three_to_one_amino_acid_code(x):
@@ -31,8 +116,7 @@ def three_to_one_amino_acid_code(x):
 
 
 def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ensembl.org',
-                     provean_script='provean.sh', qsub_script='perl modules/qsub.pl', qsub_queue='jrf.q,all.q',
-                     mem_per_thread='1.5G', num_provean_threads=4):
+                     provean_script='provean.sh', cluster_method='sge', mem_per_thread='1.5G', num_provean_threads=4):
     """ add provean results using remote server or locally if necessary
     """
     query = ""
@@ -52,6 +136,9 @@ def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ense
             br.submit()
             job_url = br.geturl()
             sys.stderr.write("job url: {}\n".format(job_url))
+            if 'genome_prg_2' in job_url:
+                job_url = None
+                break
             if 'jobid' not in job_url:
                 raise Exception("jobid not in job url")
             break
@@ -87,10 +174,9 @@ def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ense
                 record.INFO['provean_pred'] = '.'
                 record.INFO['provean_score'] = '.'
     else:
-        raise(Exception("Local Provean not implemented."))
         for record in records:
             add_provean_info_local(record, rest_server=rest_server, provean_script=provean_script,
-                                   qsub_script=qsub_script, qsub_queue=qsub_queue, mem_per_thread=mem_per_thread,
+                                   cluster_mode=cluster_method, mem_per_thread=mem_per_thread,
                                    num_provean_threads=num_provean_threads)
     return records
 
@@ -118,118 +204,47 @@ def get_hgvsp(record, max_retry=30, rest_server='http://grch37.rest.ensembl.org'
             return None
 
 
-def get_fasta(ensembl_id, max_retry=30, rest_server='http://grch37.rest.ensembl.org'):
-    """ get fasta sequence from ensembl
-    """
-    ext = '/sequence/id/{}?'.format(ensembl_id)
-    for attempt in range(max_retry):
-        try:
-            sys.stderr.write("querying {}\n".format(rest_server + ext))
-            r = requests.get(rest_server + ext, headers={"Content-Type": "text/x-fasta"})
-            if not r.ok:
-                r.raise_for_status()
-            return r.text
-        except:
-            sys.stderr.write("attempt {} failed...\n".format(attempt))
-            time.sleep(10)
-        else:
-            sys.stderr.write('max attempts\n')
-            return None
-
-
 def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org',
-                           provean_script='provean.sh', qsub_script='perl modules/scripts/qsub.pl',
-                           qsub_queue='jrf.q,all.q', num_provean_threads=4, mem_per_thread='1.5G', max_retry=30):
+                           provean_script='provean.sh', cluster_mode='sge',
+                           num_provean_threads=4, mem_per_thread='1.5G', max_retry=30):
     """ run provean locally
     """
-    provean_queries = []
+    provean_queries = collections.defaultdict(list)
     for record in records:
-        provean_queries.extend(run_provean_query(record))
-    process_provean_queries(provean_queries, max_retry)
-
-
-def run_provean_query(record, rest_server='http://grch37.rest.ensembl.org',
-                      provean_script='provean.sh', qsub_script='perl modules/scripts/qsub.pl',
-                      qsub_queue='jrf.q,all.q', num_provean_threads=4, mem_per_thread='1.5G'):
-    sys.stderr.write('running provean locally...\n')
-    hgvsp_ensps = get_hgvsp(record, rest_server=rest_server)
-    ensp_hgvsp = {}
-    for hgvsp_ensp in hgvsp_ensps:
-        ensembl_id = hgvsp_ensp.split(":p.")[0]
-        hgvsp = three_to_one_amino_acid_code(hgvsp_ensp.split(":p.")[1])
-        # ignore frameshifts
-        if 'fs' in hgvsp:
-            continue
-        if ensembl_id not in ensp_hgvsp:
-            ensp_hgvsp[ensembl_id] = []
-        ensp_hgvsp[ensembl_id].append(hgvsp)
-    provean_queries = []
-    for ensp in ensp_hgvsp:
-        fasta = get_fasta(ensp, rest_server=rest_server)
-        tmp_fasta = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        tmp_fasta.write(fasta)
-        tmp_var = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        for var in ensp_hgvsp[ensp]:
-            tmp_var.write(var + "\n")
-        tmp_fasta.close()
-        tmp_var.close()
-        tmp_out = tempfile.mktemp()
-        cmd = 'echo "{} --num_threads {} -q {} -v {} |' \
-            'sed \\"1,/PROVEAN scores/d\\" > {}"'.format(provean_script, num_provean_threads,
-                                                         tmp_fasta.name, tmp_var.name, tmp_out)
-        if qsub_script is not None:
-            cmd += '| {} -- -j y -q {} -V -b n -o err.test -pe smp {} -l h_vmem={}'.format(qsub_script, qsub_queue,
-                                                                                           num_provean_threads,
-                                                                                           mem_per_thread)
+        hgvsp_ensps = get_hgvsp(record, rest_server=rest_server)
+        # get ensembl id -> HGVSp
+        ensp_hgvsp = collections.defaultdict(list)
+        for hgvsp_ensp in hgvsp_ensps:
+            ensembl_id = hgvsp_ensp.split(":p.")[0]
+            hgvsp = three_to_one_amino_acid_code(hgvsp_ensp.split(":p.")[1])
+            # ignore frameshifts
+            if 'fs' in hgvsp:
+                continue
+            ensp_hgvsp[ensembl_id].append(hgvsp)
+        for ensp, hgvsps in ensp_hgvsp:
+            provean_queries[record].append(ProveanQuery(ensembl_id=ensp, hgvsps=hgvsps,
+                                                        num_provean_threads=num_provean_threads,
+                                                        provean_script=provean_script))
+    jobs = []
+    for record, queries in provean_queries:
+        for query in queries:
+            if cluster_mode == 'none':
+                query.run_local()
+            else:
+                jobs.append(query.run_cluster(cluster_mode=cluster_mode,
+                                              mem_per_thread=mem_per_thread))
+    for job in jobs:
+        job.wait()
+    for record, queries in provean_queries:
+        scores = []
+        for query in queries:
+            scores.append(query.process())
+        record.INFO['provean_protein_id'] = query.ensembl_id
+        record.INFO['provean_score'] = min(scores)
+        if min(scores) < -2.5:
+            record.INFO['provean_pred'] = 'Deleterious'
         else:
-            cmd += "| bash"
-        sys.stderr.write('running: {}\n'.format(cmd))
-        process = Popen(cmd, shell=True)
-        query = {'record': record,
-                 'out': tmp_out,
-                 'process': process,
-                 'ensp': ensp,
-                 'hgvsp': ensp_hgvsp[ensp],
-                 'files': [tmp_fasta, tmp_var, tmp_out]}
-        provean_queries.append(query)
-    return provean_queries
-
-
-def process_provean_query(query, max_retry=30):
-    query['process'].wait()
-    if query['process'].returncode != 0:
-        sys.stderr.write('non-zero exit code; provean query failed: {} {}\n'.format(query['ensp'], query['hgvsp']))
-        return None
-    for attempt in range(max_retry):
-        try:
-            assert os.stat(query['out']).st_size > 0
-            df = pd.read_table(query['out'])
-            assert len(df) > 0
-            break
-        except:
-            sys.stderr.write('file is 0\n')
-            time.sleep(10)
-        else:
-            sys.stderr.write('max attempts\n')
-            sys.stderr.write('provean query failed: {} {}\n'.format(query['ensp'], query['hgvsp']))
-            return None
-    df.columns = ['hgvsp', 'score']
-    if 'provean_protein_id' not in record.INFO:
-        record.INFO['provean_protein_id'] = []
-        record.INFO['provean_score'] = []
-        record.INFO['provean_pred'] = []
-    record.INFO['provean_protein_id'].extend(query['ensp'])
-    record.INFO['provean_score'].extend(df['score'].tolist())
-    for x in df['score']:
-        if x < -2.5:
-            record.INFO['provean_pred'].append('Deleterious')
-        else:
-            record.INFO['provean_pred'].append('Neutral')
-
-
-def process_provean_queries(provean_queries, max_retry=30):
-    for query in provean_queries:
-        process_provean_query(query, max_retry)
+            record.INFO['provean_pred'] = 'Neutral'
 
 
 def is_fs_splice_stop(record):
@@ -351,7 +366,7 @@ if __name__ == "__main__":
     parser.add_argument('vcf_infile')
     parser.add_argument('--mem_per_thread', nargs='?', default='1.5G', help='memory per provean thread')
     parser.add_argument('--provean_script', nargs='?', default='provean.sh', help='provean script')
-    parser.add_argument('--qsub_script', nargs='?', default='perl modules/scripts/qsub.pl', help='qsub script')
+    parser.add_argument('--cluster_mode', nargs='?', default='SGE', help='cluster mode')
     parser.add_argument('--qsub_queue', nargs='?', default='jrf.q,all.q', help='qsub queue')
     parser.add_argument('--num_provean_threads', nargs='?', default=4, type=int, help='number of provean threads')
     parser.add_argument('--run_local', action='store_true', default=False, help='run provean locally')
@@ -387,12 +402,16 @@ if __name__ == "__main__":
         if should_run_provean(record):
             provean_records.append(record)
         records.append(record)
-    if args.run_local:
-        add_provean_info_local(provean_records, mem_per_thread=args.mem_per_thread, provean_script=args.provean_script,
-                               qsub_script=args.qsub_script, num_provean_threads=args.num_provean_threads)
-    else:
-        add_provean_info(provean_records, mem_per_thread=args.mem_per_thread, provean_script=args.provean_script,
-                         qsub_script=args.qsub_script, num_provean_threads=args.num_provean_threads)
+    if len(provean_records) > 0:
+        if args.run_local:
+            add_provean_info_local(provean_records, mem_per_thread=args.mem_per_thread,
+                                   provean_script=args.provean_script,
+                                   cluster_mode=args.cluster_mode,
+                                   num_provean_threads=args.num_provean_threads)
+        else:
+            add_provean_info(provean_records, mem_per_thread=args.mem_per_thread,
+                             provean_script=args.provean_script,
+                             num_provean_threads=args.num_provean_threads)
 
     for record in records:
         classify_pathogenicity(record)
