@@ -55,8 +55,10 @@ flush.console()
 
 #First, we replace any missing values from the exonic function column with values from the more general function column.
 func <- sapply(info(vcf)$ExonicFunc_refGene, function(x) x[1])
-func[func == '.'] <- sapply(info(vcf)[func == '.', 'Func_refGene'], function(x) x[1])
-func[func == '.'] <- NA
+if (any(func == '.')) {
+    func[func == '.'] <- sapply(info(vcf)[func == '.', 'Func_refGene'], function(x) x[1])
+    func[func == '.'] <- NA
+}
 
 #In some cases, the gene and exonic function will contain two or more terms separated by a semicolon. These are removed.
 
