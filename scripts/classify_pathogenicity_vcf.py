@@ -16,7 +16,8 @@ import sys
 import requests
 import tempfile
 from subprocess import Popen
-import qsub
+if 'DRMAA_LIBRARY_PATH' in os.environ:
+    import qsub
 import qsub_pbs
 import collections
 
@@ -228,7 +229,7 @@ def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org'
     jobs = []
     for record, queries in provean_queries:
         for query in queries:
-            if cluster_mode == 'none':
+            if cluster_mode == 'none' or 'DRMAA_LIBRARY_PATH' not in os.environ:
                 query.run_local()
             else:
                 jobs.append(query.run_cluster(cluster_mode=cluster_mode,
@@ -268,11 +269,11 @@ def get_fs_splice_stop_pathogenicity(record):
 
 def is_mt_pathogenic(record):
     pathogenic = False
-    if 'MutationTaster_pred' in record.INFO:
-        pathogenic = any(['disease' in info for info in record.INFO['MutationTaster_pred']])
-    elif 'dbNSFP_MutationTaster_pred' in record.INFO:
+    if 'dbNSFP_MutationTaster_pred' in record.INFO:
         pathogenic = 'D' in record.INFO['dbNSFP_MutationTaster_pred'] or \
             'A' in record.INFO['dbNSFP_MutationTaster_pred']
+    elif 'MutationTaster_pred' in record.INFO and not all(x is None for x in record.INFO['MutationTaster_pred']):
+        pathogenic = any(['disease' in info for info in record.INFO['MutationTaster_pred']])
     return pathogenic
 
 
