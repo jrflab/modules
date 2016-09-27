@@ -33,10 +33,10 @@ for attempt in range(2):
                                                                                server_info['port'],
                                                                                server_info['docker_repo'])
         print docker_cmd + "\n"
-        job = Job(docker_cmd, '-l nodes=1:docker -l host={}'.format(server_info['host']))
-        job.run_job()
-        job.wait()
-        time.sleep(90) # wait for mysqld to start
+        #job = Job(docker_cmd, '-I -l nodes=1:docker -l host={}'.format(server_info['host']))
+        #job.run_job()
+        #job.wait()
+        #time.sleep(90) # wait for mysqld to start
 
 if not con:
     print "Failed to initialize mysql server"
