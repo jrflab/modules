@@ -277,7 +277,7 @@ else
 LS = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
 $(foreach wt,$(WALLTIMES),\
 	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
-	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$2,$$2,$$3,$$4)) \
+	$(eval LSCRIPT_PARALLEL_$(wt) = $$(call LSCRIPT_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
 	$(eval LSCRIPT_NAMED_PARALLEL_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_PARALLEL_$(wt),$$2,$$3,$$4),$$5)) \
 	$(eval LSCRIPT_NAMED_$(wt) = $$(call LS,$$(QSUB),$$1,$$($$(CLUSTER_ENGINE)_QSUB_ARGS) $$(call $$(CLUSTER_ENGINE)_$(wt),$$2,$$3),$$4)) \
 	$(eval LSCRIPT_CHECK_PARALLEL_$(wt) = $$(call LSCRIPT_CHECK_NAMED_PARALLEL_$(wt),$$(@F),$$1,$$2,$$3,$$4)) \
@@ -293,7 +293,6 @@ LSCRIPT = $(call LSCRIPT_NAMED_MEM,$(@F),1G,2G,$1)
 LSCRIPT_NAMED = $(call LS,$(QSUB),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
 
 LSCRIPT_CHECK = $(call LSCRIPT_CHECK_NAMED,$(@F),$1)
-LSCRIPT_CHECK_PARALLEL_MEM = $(call LSCRIPT_CHECK_NAMED_PARALLEL_MEM,$(@F),$1,$2,$3,$4)
 
 LSCRIPT_CHECK_NAMED = $(call LS,$(QSUB_CHECK),$1,$($(CLUSTER_ENGINE)_QSUB_ARGS) $(call $(CLUSTER_ENGINE)_MEM,1G,2G),$2)
 endif
