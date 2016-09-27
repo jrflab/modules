@@ -95,23 +95,23 @@ GATK_JAR2 ?= $(JARDIR)/GenomeAnalysisTK-3.6.jar
 VT ?= $(HOME)/share/usr/bin/vt
 TABIX ?= $(HOME)/share/usr/bin/tabix
 
-MYSQLDB_HOST ?= $(if $(findstring PBS,$(CLUSTER_ENGINE)),gg03,e01)
+ifeq ($(CLUSTER_ENGINE),PBS)
+MYSQLDB_HOST = gg03
+EMBL_MYSQLDB_HOST = gg03
+EMBL_MYSQLDB_PORT = 9992
+EMBL_MYSQLDB_USER = embl
+EMBL_MYSQLDB_PW = embl
+EMBL_MYSQLDB_DB = homo_sapiens_core_85_37
+else
+MYSQLDB_HOST = e01
+EMBL_MYSQLDB_HOST = e01
+EMBL_MYSQLDB_PORT = 38493
+EMBL_MYSQLDB_USER = embl
+EMBL_MYSQLDB_PW = embl
+EMBL_MYSQLDB_DB = homo_sapiens_core_75_37
+endif
 SNVBOX_CONF = $(PWD)/modules/db/snv_box-$(MYSQLDB_HOST).conf
 FATHMM_CONF = $(PWD)/modules/db/fathmm_config-$(MYSQLDB_HOST).ini
-
-EMBL_MYSQLDB_HOST ?= $(MYSQLDB_HOST)
-ifeq ($(CLUSTER_ENGINE),"PBS")
-EMBL_MYSQLDB_PORT ?= 9992
-EMBL_MYSQLDB_USER ?= embl
-EMBL_MYSQLDB_PW ?= embl
-EMBL_MYSQLDB_DB ?= homo_sapiens_core_85_37
-else
-EMBL_MYSQLDB_HOST ?= 10.0.200.71
-EMBL_MYSQLDB_PORT ?= 38493
-EMBL_MYSQLDB_USER ?= embl
-EMBL_MYSQLDB_PW ?= embl
-EMBL_MYSQLDB_DB ?= homo_sapiens_core_75_37
-endif
 
 INTEGRATE ?= $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
 
