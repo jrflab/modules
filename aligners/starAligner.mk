@@ -19,7 +19,7 @@ STAR_CHIMERIC_OPTS = --twopassMode Basic --outReadsUnmapped None --chimSegmentMi
 					 --alignSJDBoverhangMin 10 --alignMatesGapMax 200000 --alignIntronMax 200000 \
 					 --chimSegmentReadGapMax parameter 3 --alignSJstitchMismatchNmax 5 -1 5 5 \
 					 --chimOutType WithinBAM
-STAR = $(HOME)/share/usr/bin/STAR
+STAR = STAR
 STAR_OPTS = --genomeDir $(STAR_REF_DIR) --outSAMtype BAM SortedByCoordinate \
 			$(if $(findstring true,$(STAR_CHIMERIC)),$(STAR_CHIMERIC_OPTS)) \
 			--quantMode GeneCounts
