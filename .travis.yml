@@ -33,6 +33,6 @@ script:
   - source activate jrflab
   - bash -x test/vcf_tools/test_common_filter.sh
   - bash -x test/vcf_tools/test_hotspot.sh
-  - bash -x test/vcf_tools/test_pathogenicity.sh
+#- bash -x test/vcf_tools/test_pathogenicity.sh
   - bash -x test/scripts/test_create_sample_yaml.sh
   - bash -x test/scripts/test_configure.sh
