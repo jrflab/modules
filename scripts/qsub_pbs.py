@@ -306,7 +306,7 @@ if __name__ == '__main__':
             exit_status += 66
 
     i = 0
-    while i < args.max_restarts and exit_status != 0 and not job._kill_now \
+    while i < args.max_restarts and exit_status != 0 and not job._kill_now and \
             (job.hit_walltime_limit() or job.hit_mem_limit()):
         sys.stderr.write("job hit resource limit\n")
         sys.stderr.write("restarting job\n")
