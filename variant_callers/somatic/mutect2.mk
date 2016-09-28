@@ -25,21 +25,39 @@ mutect2_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vc
 .SECONDARY: 
 .PHONY : $(PHONY)
 
+SPLIT_BED = python modules/scripts/split_bed.py
+NUM_CHUNKS = 200
+CHUNKS = $(shell seq -w 1 $(NUM_CHUNKS))
+
+ifdef TARGETS_FILE
+mutect2/interval_chunk/chunk.timestamp : $(TARGETS_FILE)
+	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_CHUNKS) $<  && touch $@
+else
+genome_sliding_window.bed : $(REF_DICT)
+	$(INIT) bedtools makewindows -g <('s/.*SN:\([^\s]\+\)\sLN:\([0-9]\+\).*/\1\t\2/' $<) -w 10000 -s 9900 > $@
+mutect2/interval_chunk/chunk.timestamp : genome_sliding_window.bed
+	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk $(NUM_CHUNKS) $<  && touch $@
+endif
+
+define interval-chunk
+mutect2/interval_chunk/chunk$1.bed : mutect2/interval_chunk/chunk.timestamp
+endef
+$(foreach i,$(CHUNKS),$(eval $(call interval-chunk,$i)))
 
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
-define mutect2-tumor-normal-chr
-mutect2/chr_vcf/$1_$2.$3.mutect_snps_indels.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,15G,17G,"$$(MUTECT2) --intervals $3 -I:tumor $$< -I:normal $$(<<) -o $$@")
+define mutect2-tumor-normal-chunk
+mutect2/chunk_vcf/$1_$2.chunk$3.mutect_snps_indels.vcf.gz : mutect2/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_CHECK_MEM,12G,12G,"$$(MUTECT2) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) | bgzip -c > $$@ ")
 endef
-$(foreach chr,$(CHROMOSOMES), \
+$(foreach chunk,$(CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
-			$(eval $(call mutect2-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
+			$(eval $(call mutect2-tumor-normal-chunk,$(tumor.$(pair)),$(normal.$(pair)),$(chunk)))))
 
 define mutect2-tumor-normal
-mutect2/vcf/$1_$2.mutect_snps_indels.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect2/chr_vcf/$1_$2.$$(chr).mutect_snps_indels.vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $$< | sed 's/^##\(.*\),Number=R/##\1,Number=A/'; \
-		cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) > $$@")
+mutect2/vcf/$1_$2.mutect_snps_indels.vcf : $$(foreach chunk,$$(CHUNKS),mutect2/chunk_vcf/$1_$2.chunk$$(chunk).mutect_snps_indels.vcf.gz \
+	mutect2/chunk_vcf/$1_$2.chunk$$(chunk).mutect_snps_indels.vcf.gz.tbi)
+	$$(call LSCRIPT_MEM,4G,8G,"$$(BCFTOOLS) concat -D -a -o $$@ -O v $$(filter %.vcf.gz,$$^)")
 
 vcf/$1_$2.%.vcf : mutect2/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@

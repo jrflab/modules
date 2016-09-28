@@ -41,7 +41,7 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 		bgzip -c > $@")
 
 %.vcf.gz.tbi : %.vcf.gz
-	$(call LSCRIPT_MEM,3G,5G,"$(BCFTOOLS2) index -t -f $<")
+	$(call LSCRIPT_CHECK_SHORT,3G,5G,"$(BCFTOOLS2) index -t -f $<")
 
 %.vcf.gz : %.vcf
 	$(call LSCRIPT_MEM,2G,3G,"bgzip -c $< > $@")

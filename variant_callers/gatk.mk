@@ -32,7 +32,7 @@ ifeq ($(SPLIT_CHR),true)
 ## call sample sets
 ifdef SAMPLE_SET_PAIRS
 define hapcall-vcf-sets-chr
-gatk/chr_vcf/$1.$2.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/chr_vcf/$$(sample).$2.variants.intervals) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam bam/$$(sample).bai)
+gatk/chr_vcf/$1.$2.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/chr_vcf/$$(sample).$2.variants.intervals) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam)
 	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller $$(HAPLOTYPE_CALLER_OPTS) \
 		$$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach intervals,$$(filter %.intervals,$$^),-L $$(intervals) ) -o $$@")
 endef
@@ -47,7 +47,7 @@ $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call merge-chr-variants-sets,$(set)))
 endif # def SAMPLE_SETS
 
 define chr-variants
-gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam bam/%.bai
+gatk/chr_vcf/%.$1.variants.vcf : bam/%.bam  #bam/%.bai
 	$$(call LSCRIPT_CHECK_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
 	-L $1 -I $$< -o $$@ \
 	$$(HAPLOTYPE_CALLER_OPTS)")
@@ -65,14 +65,14 @@ else #### no splitting by chr ####
 ## call sample sets
 ifdef SAMPLE_SETS
 define hapcall-vcf-sets
-gatk/vcf/$1.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/vcf/$$(sample).variants.vcf) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam bam/$$(sample).bai)
+gatk/vcf/$1.variants.vcf : $$(foreach sample,$$(samples.$1),gatk/vcf/$$(sample).variants.vcf) $$(foreach sample,$$(samples.$1),bam/$$(sample).bam)
 	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller -R $$(REF_FASTA) --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) $$(foreach vcf,$$(filter %.vcf,$$^),-L $$(vcf) ) -o $$@")
 endef
 $(foreach set,$(SAMPLE_SET_PAIRS),$(eval $(call hapcall-vcf-sets,$(set))))
 endif
 
 define hapcall-vcf
-gatk/vcf/$1.variants.vcf : bam/$1.bam bam/$1.bai
+gatk/vcf/$1.variants.vcf : bam/$1.bam
 	$$(call LSCRIPT_CHECK_MEM,8G,12G,"$$(call GATK_MEM,8G) -T HaplotypeCaller \
 	-I $$< --dbsnp $$(DBSNP) -o $$@  -rf BadCigar \
 	-stand_call_conf $$(VARIANT_CALL_THRESHOLD) -stand_emit_conf $$(VARIANT_EMIT_THRESHOLD) -R $$(REF_FASTA)")
