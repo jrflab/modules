@@ -239,7 +239,7 @@ RUN_FIRST = $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$
 ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV)";
 
 # run locally
-INIT = $(RUN_FIRST); umask $(UMASK); set -o pipefail;
+INIT = $(RUN_FIRST); $(ACTIVATE_JRFLAB_MODULES_ENV); umask $(UMASK); set -o pipefail;
 
 CLUSTER_ENGINE ?= SGE
 USE_CLUSTER ?= true

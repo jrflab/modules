@@ -40,8 +40,6 @@ EXCEL_MAX_EXAC_AF ?= 1
 mutation_summary: summary/mutation_summary.xlsx
 
 summary/mutation_summary.xlsx : $(ALLTABLES_HIGH_MODERATE_SNVS) $(ALLTABLES_LOW_MODIFIER_SNVS) $(ALLTABLES_SYNONYMOUS_SNVS) $(ALLTABLES_NONSYNONYMOUS_SNVS) $(ALLTABLES_HIGH_MODERATE_INDELS) $(ALLTABLES_LOW_MODIFIER_INDELS) $(ALLTABLES_SYNONYMOUS_INDELS) $(ALLTABLES_NONSYNONYMOUS_INDELS) $(HOTSPOT_TABLE) $(ABSOLUTE_SOMATIC_TXTS) $(ABSOLUTE_SEGMENTS) $(EXCEL_FACETS_LOH) $(EXCEL_ANNOTATION)
-	$(INIT) unset PYTHONPATH; \
-	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV); \
-	python modules/summary/mutation_summary_excel.py --max_exac_af $(EXCEL_MAX_EXAC_AF) --output_tsv_dir $(@D)/tsv $(EXCEL_ABSOLUTE_PARAMS) $(EXCEL_FACETS_LOH_PARAMS) $(EXCEL_ANNOTATION_PARAMS) $(filter alltables/allTN.%,$^) $@
+	$(INIT) python modules/summary/mutation_summary_excel.py --max_exac_af $(EXCEL_MAX_EXAC_AF) --output_tsv_dir $(@D)/tsv $(EXCEL_ABSOLUTE_PARAMS) $(EXCEL_FACETS_LOH_PARAMS) $(EXCEL_ANNOTATION_PARAMS) $(filter alltables/allTN.%,$^) $@
 
 include modules/vcf_tools/vcftools.mk
