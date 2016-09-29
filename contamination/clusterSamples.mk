@@ -1,6 +1,6 @@
-# Run samtools mpileup on all snp positions and bams
+# Run unified genotyper on snp positions and cluster samples using results
 ##### DEFAULTS ######
-LOGDIR = log/snpCaller.$(NOW)
+LOGDIR = log/cluster_samples.$(NOW)
 
 ##### MAKE INCLUDES #####
 include modules/Makefile.inc

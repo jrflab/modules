@@ -72,12 +72,13 @@ class ProveanQuery:
             mem = qsub_pbs.human2bytes(mem_per_thread) * self.num_threads
             job = qsub_pbs.Job(self._cmd, '-l nodes=1:ppn={} -l walltime=12:00:00 '
                                '-l mem={}'.format(self.num_threads, mem))
+            job.run_job()
         elif cluster_mode.lower() == 'sge':
             assert session is not None
-            job = qsub.Job(session, self._cmd, '-pe smp {} -l h_vmem={}'.format(self.num_threads, mem_per_thread))
+            job = qsub.Job(session=session, job_script=self._cmd,
+                           qsub_args='-pe smp {} -l h_vmem={}'.format(self.num_threads, mem_per_thread))
         else:
             raise Exception("Invalid cluster mode\n")
-        job.run_job()
         return job
 
     def run_local(self):
@@ -118,7 +119,7 @@ def three_to_one_amino_acid_code(x):
     return x
 
 
-def add_provean_info(records, max_retry=30, rest_server='http://grch37.rest.ensembl.org',
+def add_provean_info(records, max_retry=3, rest_server='http://grch37.rest.ensembl.org',
                      provean_script='provean.sh', cluster_method='sge',
                      mem_per_thread='1.5G', num_provean_threads=4):
     """ add provean results using remote server or locally if necessary
@@ -214,7 +215,7 @@ def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org'
     """ run provean locally
     """
     session = None
-    if cluster_mode.lower() == 'sge' and 'SGE_ROOT' in os.environ:
+    if cluster_mode.lower() == 'sge':
         session = drmaa.Session()
         session.initialize()
     provean_queries = collections.defaultdict(list)
@@ -236,7 +237,7 @@ def add_provean_info_local(records, rest_server='http://grch37.rest.ensembl.org'
     jobs = []
     for record, queries in provean_queries.iteritems():
         for query in queries:
-            if cluster_mode.lower() == 'none' or 'SGE_ROOT' not in os.environ:
+            if cluster_mode.lower() == 'none':
                 query.run_local()
             else:
                 jobs.append(query.run_cluster(session=session, cluster_mode=cluster_mode,

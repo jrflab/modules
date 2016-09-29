@@ -35,7 +35,7 @@ class Job:
         jt.joinFiles = True
         jt.nativeSpecification = qsub_args
         self.id = session.runJob(jt)
-        s.deleteJobTemplate(jt)
+        session.deleteJobTemplate(jt)
 
         signal.signal(signal.SIGINT, self.__exit_gracefully)
         signal.signal(signal.SIGTERM, self.__exit_gracefully)
