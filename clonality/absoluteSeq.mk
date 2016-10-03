@@ -1,5 +1,6 @@
 # run absolute using strelka,mutect,scalpel,titan,oncoscan OR varscan_cnv
 include modules/Makefile.inc
+include modules/vcf_tools/vcftools.mk
 
 LOGDIR = log/absoluteSeq.$(NOW)
 MEM := 4G
@@ -31,10 +32,12 @@ USE_ONCOSCAN_COPYNUM ?= false
 USE_FACETS_COPYNUM ?= true
 
 define LIB_INIT
-pacman::p_load(ABSOLUTE, dplyr, stringr, readr)
+for (lib in c("dplyr","stringr","readr","ABSOLUTE")) {
+    suppressPackageStartupMessages(library(lib, character.only=TRUE))
+}
 endef
 
-absolute/tables/%.somatic.txt : tables/%.mutect_snps.tab.txt tables/%.mutect_indels.tab.txt
+absolute/tables/%.somatic.txt : tables/%.mutect.tab.txt tables/%.strelka_varscan_indels.tab.txt
 
 	$(R_INIT)
 	$(LIB_INIT)

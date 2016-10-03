@@ -393,17 +393,13 @@ if __name__ == "__main__":
 
     # add necessary info headers
     vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=-1, type='String',
-                                                         desc="Classification of pathogenicity",
-                                                         source=None, version=None)
+                                                         desc="Classification of pathogenicity")
     vcf_reader.infos['provean_protein_id'] = vcf.parser._Info(id='provean_protein_id', num=-1, type='String',
-                                                              desc="provean protein id (run if necessary)",
-                                                              source=None, version=None)
+                                                              desc="provean protein id (run if necessary)")
     vcf_reader.infos['provean_pred'] = vcf.parser._Info(id='provean_pred', num=-1, type='String',
-                                                        desc="provean prediction (run if necessary)",
-                                                        source=None, version=None)
+                                                        desc="provean prediction (run if necessary)")
     vcf_reader.infos['provean_score'] = vcf.parser._Info(id='provean_score', num=-1, type='Float',
-                                                         desc="provean score (run if necessary)",
-                                                         source=None, version=None)
+                                                         desc="provean score (run if necessary)")
 
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 

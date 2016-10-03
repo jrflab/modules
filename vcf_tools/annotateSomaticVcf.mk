@@ -12,10 +12,14 @@ ifeq ($(CLUSTER_ENGINE),"PBS")
 ..DUMMY := $(shell python modules/scripts/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
 endif
 
+<<<<<<< Updated upstream
 SNV_TYPE ?= mutect_snps
 INDEL_TYPE ?= somatic_indels
 #strelka_indels varscan_indels strelka_varscan_indels
 VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
+=======
+VARIANT_TYPES ?= mutect strelka_varscan_indels # mutect_snps somatic_indels #strelka_indels varscan_indels strelka_varscan_indels
+>>>>>>> Stashed changes
 
 
 DEPTH_FILTER ?= 5
@@ -71,9 +75,10 @@ SOMATIC_ANN3 += pathogen
 endif
 
 PHONY += all somatic_vcfs merged_vcfs
-all : somatic_vcfs merged_vcfs
+all : somatic_vcfs merged_vcfs somatic_tables
 merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
+somatic_tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),tables/$(pair).$(type).tab.txt))
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
