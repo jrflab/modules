@@ -18,7 +18,7 @@ if __name__ == "__main__":
     intervals = intervals.rename(columns={0: 'chr', 1: 'start', 2: 'end'})
     trees = {}
     for chrom, interval in intervals.groupby('chr'):
-        trees[chrom] = intervaltree.IntervalTree.from_tuples(zip(interval.start - 10, interval.end + 10))
+        trees[chrom] = intervaltree.IntervalTree.from_tuples(zip(interval.start - 50, interval.end + 50))
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
     vcf_reader.filters['targetInterval'] = vcf.parser._Filter(id='targetInterval',
