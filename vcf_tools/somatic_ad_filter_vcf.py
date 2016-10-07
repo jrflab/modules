@@ -25,24 +25,20 @@ vcf_reader.filters['noAF'] = vcf.parser._Filter(id='noAF', desc='missing AF')
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
-    assert record.genotype(args.tumor).data.AF is not None
-    assert record.genotype(args.normal).data.AF is not None
+    assert record.genotype(args.tumor).data.AD is not None
+    assert record.genotype(args.normal).data.AD is not None
     assert len(record.genotype(args.normal).data.AD) >= 2
-    tumor_af = record.genotype(args.tumor).data.AF
-    normal_af = record.genotype(args.normal).data.AF
     normal_ao = record.genotype(args.normal).data.AD[1:]
     normal_dp = sum(record.genotype(args.normal).data.AD)
-    if tumor_af is not None and normal_af is not None:
-        if isinstance(tumor_af, list):
-            tumor_af = max(tumor_af)
-        if isinstance(normal_af, list):
-            normal_af = max(normal_af)
-        normal_ao = max(normal_ao)
-
+    tumor_ao = record.genotype(args.tumor).data.AD[1:]
+    tumor_dp = sum(record.genotype(args.tumor).data.AD)
+    if normal_dp != 0 and tumor_dp != 0:
+        max_tumor_af = max([float(x) / tumor_dp for x in tumor_ao])
+        max_normal_af = max([float(x) / normal_dp for x in normal_ao])
         if normal_dp > 20:
-            if normal_af > tumor_af / 5:
+            if max_normal_af > float(max_tumor_af) / 5:
                 record.FILTER.append('somaticAlleleDepth')
-        elif normal_ao > 1:
+        elif max(normal_ao) > 1:
             record.FILTER.append('somaticAlleleDepth')
     else:
         record.FILTER.append('noAF')
