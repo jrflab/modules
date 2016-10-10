@@ -29,7 +29,7 @@ JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.3
 ### Applications
 UNZIP ?= /usr/bin/unzip
 FASTQC ?= $(PERL) $(HOME)/share/usr/FastQC/fastqc
-MUTECT_JAR ?= $(JARDIR)/muTect-1.1.4.jar
+MUTECT_JAR ?= $(JARDIR)/muTect-1.1.7.jar
 BOWTIE ?= $(PERL) $(HOME)/share/usr/bowtie2-2.2.4/bowtie2
 BWA ?= bwa
 #PBWA ?= mpiexec $(HOME)/share/usr/bin/pBWA
