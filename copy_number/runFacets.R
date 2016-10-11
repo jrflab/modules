@@ -26,9 +26,10 @@ optList <- list(
                 make_option("--cval2", default = 50, type = 'integer', help = "starting critical value for segmentation (increases by 10 until success)"),
                 make_option("--max_cval", default = 5000, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
+                make_option("--het_threshold", default = 0.25, type = 'double', help = "AF threshold for heterozygous SNPs"),
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
                 make_option("--genome", default = 'b37', type = 'character', help = "genome of counts file"),
-                make_option("--outPrefix", default = NULL, help = "output prefix"))
+                make_option("--out_prefix", default = NULL, help = "output prefix"))
 
 parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList);
 
@@ -39,7 +40,7 @@ if (length(arguments$args) < 1) {
     cat("Need base counts file\n")
     print_help(parser);
     stop();
-} else if (is.null(opt$outPrefix)) {
+} else if (is.null(opt$out_prefix)) {
     cat("Need output prefix\n")
     print_help(parser);
     stop();
@@ -84,7 +85,7 @@ cat("\n")
 
 
 snpmat <- readSnpMatrix(snpPileupFile)
-preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, cval = opt$pre_cval, gbuild = facetsGenome)
+preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome)
 out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
@@ -109,11 +110,11 @@ if (!success) {
 }
 
 
-#CairoPNG(file = str_c(opt$outPrefix,".biseg.png"), height = 1000, width = 800)
+#CairoPNG(file = str_c(opt$out_prefix,".biseg.png"), height = 1000, width = 800)
 #plotSample(out2, chromlevels = chromLevels)
 #dev.off()
 
-#pdf(file = str_c(opt$outPrefix, ".biseg.pdf"), height = 12, width = 9)
+#pdf(file = str_c(opt$out_prefix, ".biseg.pdf"), height = 12, width = 9)
 #plotSample(out2, chromlevels = chromLevels)
 #dev.off()
 
@@ -134,9 +135,9 @@ formatSegmentOutput=function(out,sampID) {
 }
 id <- paste(tumorName, normalName, sep = '_')
 out2$IGV = formatSegmentOutput(out2, id)
-save(out2, fit, file = str_c(opt$outPrefix, ".Rdata"), compress=T)
+save(out2, fit, file = str_c(opt$out_prefix, ".Rdata"), compress=T)
 
-ff = str_c(opt$outPrefix, ".out")
+ff = str_c(opt$out_prefix, ".out")
 cat("# Version =", version, "\n", file = ff, append = T)
 cat("# Input =", basename(snpPileupFile), "\n", file = ff, append = T)
 cat("# tumor =", tumorName, "\n", file = ff, append = T)
@@ -152,24 +153,24 @@ cat("# dipLogR =", fit$dipLogR, "\n", file = ff, append = T)
 cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
-CairoPNG(file = str_c(opt$outPrefix, ".lrr.png"), height = 400, width = 850)
+CairoPNG(file = str_c(opt$out_prefix, ".lrr.png"), height = 400, width = 850)
 plotSampleLRR(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".lrr.pdf"), height = 3, width = 9)
+pdf(file = str_c(opt$out_prefix, ".lrr.pdf"), height = 3, width = 9)
 plotSampleLRR(out2, fit)
 dev.off()
 
-CairoPNG(file = str_c(opt$outPrefix, ".cncf.png"), height = 1100, width = 850)
+CairoPNG(file = str_c(opt$out_prefix, ".cncf.png"), height = 1100, width = 850)
 plotSample(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 9, width = 9)
+pdf(file = str_c(opt$out_prefix, ".cncf.pdf"), height = 9, width = 9)
 plotSample(out2, fit)
 dev.off()
 
 tab <- cbind(select(out2$IGV, ID:num.mark), select(fit$cncf, -start, -end, -chrom, -num.mark))
-write.table(tab, str_c(opt$outPrefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
+write.table(tab, str_c(opt$out_prefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
 
 warnings()
 
