@@ -10,7 +10,7 @@ MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_FILTERS = DuplicateRead FailsVendorQualityCheck NotPrimaryAlignment BadMate MappingQualityUnavailable UnmappedRead BadCigar
 MUTECT_OPTS ?= --enable_extended_output --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) \
 			   --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT_FILTERS),-rf $(ft))
-MUTECT = $(JAVA6) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
+MUTECT = $(JAVA7) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
 MUT_FREQ_REPORT = modules/variant_callers/somatic/mutectReport.Rmd
 
