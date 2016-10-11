@@ -171,6 +171,8 @@ do {
                     &slack($opt{c}, $slack_msg) if $opt{c};
                 }
                 &slack($err_slack, "$pipeline_channel_msg $slack_msg")
+                # wait a bit before retrying to allow cleanup
+                sleep 30;
             }
         }
     }
