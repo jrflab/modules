@@ -28,23 +28,23 @@ mut_report : mutect/report/index.html mutect/lowAFreport/index.html mutect/highA
 .PHONY : $(PHONY)
 
 SPLIT_BED = python modules/scripts/split_bed.py
-NUM_CHUNKS = 100
-CHUNKS = $(shell seq -w 1 $(NUM_CHUNKS))
+NUM_MUTECT_CHUNKS = 100
+MUTECT_CHUNKS = $(shell seq -w 1 $(NUM_MUTECT_CHUNKS))
 
 ifdef TARGETS_FILE
 mutect/interval_chunk/chunk.timestamp : $(TARGETS_FILE)
-	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_CHUNKS) $<  && touch $@
+	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_MUTECT_CHUNKS) $<  && touch $@
 else
 genome_sliding_window.bed : $(REF_DICT)
 	$(INIT) bedtools makewindows -g <('s/.*SN:\([^\s]\+\)\sLN:\([0-9]\+\).*/\1\t\2/' $<) -w 10000 -s 9900 > $@
 mutect/interval_chunk/chunk.timestamp : genome_sliding_window.bed
-	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk $(NUM_CHUNKS) $<  && touch $@
+	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk $(NUM_MUTECT_CHUNKS) $<  && touch $@
 endif
 
 define interval-chunk
 mutect/interval_chunk/chunk$1.bed : mutect/interval_chunk/chunk.timestamp
 endef
-$(foreach i,$(CHUNKS),$(eval $(call interval-chunk,$i)))
+$(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 
 # run mutect on each chunk
 #$(call mutect-tumor-normal-chunk,tumor,normal,chunk)
@@ -53,14 +53,14 @@ mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed ba
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables; \
 		$$(MUTECT) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@")
 endef
-$(foreach chunk,$(CHUNKS), \
+$(foreach chunk,$(MUTECT_CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
 			$(eval $(call mutect-tumor-normal-chunk,$(tumor.$(pair)),$(normal.$(pair)),$(chunk)))))
 
 
 # merge variant tables 
 define ext-mutect-tumor-normal
-mutect/tables/$1.mutect.txt : $$(foreach chunk,$$(CHUNKS),mutect/chunk_tables/$1.chunk$$(chunk).mutect.txt)
+mutect/tables/$1.mutect.txt : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_tables/$1.chunk$$(chunk).mutect.txt)
 	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
@@ -76,7 +76,7 @@ mutect/highAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(p
 
 # merge variants 
 define mutect-tumor-normal
-vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
+vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
 	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
