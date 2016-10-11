@@ -1,7 +1,7 @@
 # Run multiple indel callers and then merge them
 #
 include modules/Makefile.inc
-LOGDIR = log/strelkaVarscan.$(NOW)
+LOGDIR = log/somatic_variants.$(NOW)
 
 SNV_TYPE ?= mutect_snps
 INDEL_TYPE ?= somatic_indels
