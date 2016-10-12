@@ -85,7 +85,7 @@ d$VarClassT<-c(0, 1)[1 + (d$func %in% c("frameshift deletion", "frameshift inser
 #Now the B62 score is added. 
 #First, the amino acid positions are further parsed out. 
 aa<-gsub("(\\D+)(\\d+)(\\D+)", "\\1 \\3 \\2", d$AAChange, perl=T)
-aa[is.na(aa)]<-"UK UK UK"
+aa[is.na(aa) | aa == '.']<-"UK UK UK"
 aa<-as.data.frame(do.call("rbind", strsplit(aa, " ")), stringsAsFactors=F)
 colnames(aa)<-c("Old_AA", "New_AA", "Peptide_Position")
 
@@ -126,7 +126,9 @@ scoreCols <- c("SIFT_score",
 "GERP++_RS",
 "SiPhy_29way_logOdds")
 
-scores <- as.data.frame(apply(as.data.frame(info(vcf)[, scoreCols]), 2, function(x) as.numeric(sapply(x, function(y) y[1]))))
+X <- as.data.frame(info(vcf)[, scoreCols])
+scores <- structure(apply(X, 2, function(x) as.numeric(sapply(x, function(y) y[1]))), dim = dim(X))
+colnames(scores) <- make.names(scoreCols)
 
 d <- cbind(d, scores)
 
@@ -136,7 +138,8 @@ x<-d[rownames(scaling)]
 
 
 #We ensure that X is comletely numeric.
-x<-as.data.frame(apply(x, 2, function(i) as.numeric(as.character(i))))
+x<-as.data.frame(structure(apply(x, 2, function(i) as.numeric(as.character(i))), dim = dim(x)))
+colnames(x) <- rownames(scaling)
 
 
 #First, mutations that truncate the protrein (presumed to be loss-of-function changes, "lof"), or do not affect the protein (silent) are marked.
