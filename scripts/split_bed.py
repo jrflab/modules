@@ -17,7 +17,14 @@ if __name__ == "__main__":
     x = 1
     for i in range(0, len(bed), n):
         f = open(args.out_prefix + '{0:03d}.bed'.format(x), 'w')
-        for line in bed[i:i + n]:
-            f.write(line)
-        f.close()
+        if x == args.num_chunks:
+            # last chunk, write everything
+            for line in bed[i:]:
+                f.write(line)
+            f.close()
+            break
+        else:
+            for line in bed[i:i + n]:
+                f.write(line)
+            f.close()
         x = x + 1
