@@ -10,7 +10,7 @@ strelka_varscan_merge_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).strelka_
 #strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
 
 vcf/%.strelka_varscan_indels.vcf : vcf/%.varscan_indels.vcf vcf/%.strelka_indels.vcf
-	$(call LSCRIPT_MEM,9G,12G,"(grep -P '^#' $< > $@; $(BEDTOOLS) intersect -a $< -b $(<<)) | uniq > $@")
+	$(call LSCRIPT_MEM,9G,12G,"(grep -P '^#' $<; $(BEDTOOLS) intersect -a $< -b $(<<)) | uniq > $@")
 
 
 include modules/variant_callers/somatic/strelka.mk
