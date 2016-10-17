@@ -19,13 +19,13 @@ FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) --
 SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
 SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
 
-FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf.gz,$(DBSNP))
+FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
 
 
 # augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
 ifeq ($(FACETS_UNION_GATK_DBSNP),true)
-FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf.gz
+FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf
 else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
@@ -49,16 +49,16 @@ FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
 	facets/geneCN.txt facets/geneCN.pdf facets/geneCN.fill.txt
 
-facets/vcf/dbsnp_het_gatk.snps.vcf.gz : $(FACETS_DBSNP:.gz=) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) | gzip -c > $@")
+facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
 # flag homozygous calls
 %.het.vcf : %.vcf
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
 
 # no flag target definitions
-facets/vcf/targets_dbsnp.vcf.gz : $(TARGETS_FILE)
-	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< | gzip -c > $@
+facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
+	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 
 
 # normal is first, tumor is second
