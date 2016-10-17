@@ -64,7 +64,7 @@ facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 # normal is first, tumor is second
 define snp-pileup-tumor-normal
 facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
-	$$(call LSCRIPT_CHECK_MEM,8G,20G,"$$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) <(zcat $$(<<<)) $$@ $$(<<) $$(<)")
+	$$(call LSCRIPT_CHECK_MEM,8G,20G,"$$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
