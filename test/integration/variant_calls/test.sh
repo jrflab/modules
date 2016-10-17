@@ -21,17 +21,6 @@ echo "check files"
 for x in output/vcf_ann/*hotspot*.vcf; do
     compare_vcf $x vcf_ann/$(basename $x)
 done
-echo "==facets copy number=="
-echo "run"
-make -j8 facets && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-# can't check cncf files (non-deterministic)
-#for x in output/facets/cncf/*.txt; do
-    #diff_files $x facets/cncf/$(basename $x)
-#done
-#for x in output/facets/*.txt; do
-    #diff_files $x facets/$(basename $x)
-#done
 echo "==somatic annotations=="
 echo "run"
 make -j8 ann_somatic_vcf && echo "success" || (echo "failed" && exit 1)
