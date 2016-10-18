@@ -58,3 +58,7 @@ compare_bams() {
         echo "success, files the same: ${1} ${2}" \
     ) || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }
+
+compare_cncf() {
+    python modules/copy_number/compare_facets_cncf.py $1 $2
+}
