@@ -60,7 +60,7 @@ if __name__ == "__main__":
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 
     assert "ANN" in vcf_reader.infos
-    assert "HOTSPOT" in vcf_reader.infos
+    assert "HOTSPOT" in vcf_reader.infos or "hotspot" in vcf_reader.infos
     assert "fathmm_pred" in vcf_reader.infos
     assert "dbNSFP_MutationTaster_pred" in vcf_reader.infos
 
