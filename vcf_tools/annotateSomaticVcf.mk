@@ -29,7 +29,6 @@ ifeq ($(ANN_PATHOGEN),true)
 $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 	$(error non-hg19/b37 pathogen annotation unsupported))
 ANN_FACETS = true
-ANN_MUT_TASTE = true
 endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
@@ -67,10 +66,8 @@ SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun_ft))
 
 # final annotations (run last)
-ifeq ($(ANN_PATHOGEN),true)
-SOMATIC_INDEL_ANN3 += indel_pathogen
-endif
-SOMATIC_SNV_ANN3 = $(if $(findstring b37,$(REF)),snp_pathogen)
+SOMATIC_INDEL_ANN3 = $(if $(and $(findstring true,$(ANN_PATHOGEN)),$(findstring true,$(ANN_FACETS)),$(findstring b37,$(REF))),indel_pathogen)
+SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,$(REF))),snp_pathogen)
 
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 

@@ -101,6 +101,7 @@
 ##INFO=<ID=facetsLCN,Number=1,Type=Integer,Description="Facets lesser copy number">
 ##INFO=<ID=facetsLCN_EM,Number=1,Type=Integer,Description="Facets lesser copy number (EM)">
 ##INFO=<ID=facetsTCN,Number=1,Type=Integer,Description="Facets total copy number">
+##INFO=<ID=facetsLOH,Number=0,Type=Flag,Description="Facets LOH (LCN_EM = 0)">
 ##INFO=<ID=dbNSFP_MutationTaster_pred,Number=A,Type=String,Description="Field 'MutationTaster_pred' from dbNSFP">
 ##INFO=<ID=facetsTCN_EM,Number=1,Type=Integer,Description="Facets total copy number (EM)">
 ##INFO=<ID=fathmm_query,Number=A,Type=String,Description="fathmm query">

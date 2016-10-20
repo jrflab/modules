@@ -9,7 +9,7 @@ CLASSIFY_INDEL_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
 							  --cluster_mode none) \
 							  --num_provean_threads 6 --mem_per_thread 3G 
 vcf/%.snp_pathogen.vcf : vcf/%.vcf
-	$(INIT) $(call CHECK_VCF,$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,5G,8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@"))
 
 vcf/%.indel_pathogen.vcf : vcf/%.vcf
 	$(INIT) $(call CHECK_VCF,$(CLASSIFY_INDEL_PATHOGENICITY) $(CLASSIFY_INDEL_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
