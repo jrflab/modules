@@ -68,8 +68,11 @@ SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
 
 # final annotations (run last)
 ifeq ($(ANN_PATHOGEN),true)
-SOMATIC_ANN3 += pathogen
+SOMATIC_INDEL_ANN3 += indel_pathogen
 endif
+SOMATIC_SNV_ANN3 = $(if $(findstring b37,$(REF)),snp_pathogen)
+
+SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
 PHONY += all somatic_vcfs merged_vcfs
 all : somatic_vcfs merged_vcfs
