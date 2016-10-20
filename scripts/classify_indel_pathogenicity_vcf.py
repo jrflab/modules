@@ -29,7 +29,7 @@ def query_mutation_taster(record):
 
 
 def is_mt_pathogenic(record):
-    return any(['disease' in info for info in record.INFO['MutationTaster_pred']])
+    return any([info is not None and 'disease' in info for info in record.INFO['MutationTaster_pred']])
 
 
 def is_chasm_pathogenic(record):

@@ -18,7 +18,7 @@ def is_missense(record):
 
 
 def is_mt_passenger(record):
-    return 'P' in record.INFO['dbNSFP_MutationTaster_pred'] or \
+    return 'dbNSFP_MutationTaster_pred' not in record.INFO or 'P' in record.INFO['dbNSFP_MutationTaster_pred'] or \
         'N' in record.INFO['dbNSFP_MutationTaster_pred']
 
 
