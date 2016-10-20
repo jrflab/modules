@@ -1,13 +1,18 @@
 # annotations that have pre-req annotations and are run last or should be run after the 2nd round of filtering
 
 PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
-CLASSIFY_PATHOGENICITY = python modules/scripts/classify_pathogenicity_vcf.py
-CLASSIFY_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
+CLASSIFY_SNV_PATHOGENICITY = python modules/scripts/classify_snv_pathogenicity_vcf.py
+CLASSIFY_SNV_PATHOGENICITY_OPTS = 
+CLASSIFY_INDEL_PATHOGENICITY = python modules/scripts/classify_indel_pathogenicity_vcf.py
+CLASSIFY_INDEL_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
 							  $(if $(findstring true,$(USE_CLUSTER)),--cluster_mode $(CLUSTER_ENGINE), \
 							  --cluster_mode none) \
 							  --num_provean_threads 6 --mem_per_thread 3G 
-vcf/%.pathogen.vcf : vcf/%.vcf
-	$(INIT) $(call CHECK_VCF,$(CLASSIFY_PATHOGENICITY) $(CLASSIFY_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
+vcf/%.snp_pathogen.vcf : vcf/%.vcf
+	$(INIT) $(call CHECK_VCF,$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
+
+vcf/%.indel_pathogen.vcf : vcf/%.vcf
+	$(INIT) $(call CHECK_VCF,$(CLASSIFY_INDEL_PATHOGENICITY) $(CLASSIFY_INDEL_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
 
 MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 vcf/%.mut_taste.vcf : vcf/%.vcf

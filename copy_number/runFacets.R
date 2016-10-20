@@ -48,7 +48,7 @@ if (length(arguments$args) < 1) {
 }
 
 tumorName <- snpPileupFile %>% sub('.*/', '', .) %>% sub('_.*', '', .)
-normalName <- snpPileupFile %>% sub('.*/', '', .) %>% sub('.*_', '', .) %>% sub('\\..*', '', .)
+normalName <- snpPileupFile %>% sub('.*/', '', .) %>% sub('^.*_', '', .) %>% sub('\\..*', '', .)
 
 switch(opt$genome,
        b37={

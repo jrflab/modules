@@ -1,7 +1,7 @@
 ---
 cluster_engine: SGE # PBS
 
-use_cluster: true
+use_cluster: false
 
 ref: b37
 
@@ -17,16 +17,14 @@ bam_phred64: false
 bam_reprocess: false
 
 snv_type: mutect
-#mutect or mutect_snps
 indel_type: strelka_varscan_indels
-# somatic_indels or strelka_varscan_indels
 
 vcf_post_ann_filter_expression: ExAC_AF > 0.05
 
 # vcf annotations
-ann_facets: true
+ann_facets: false
 ann_mut_taste: false
-ann_pathogen: true
+ann_pathogen: false
 
 # targets_file: intervals.bed
 exome: true
@@ -34,18 +32,6 @@ exome: true
 # gatk options
 gatk_hard_filter_snps: true
 gatk_pool_snp_recal: false
-
-# facets options
-# pre-processing crit val
-facets_pre_cval: 50
-# crit val for estimating diploid log ratio
-facets_cval1: 150
-# starting crit val for segmentation 
-facets_cval2: 50
-# min number of het snps in a segment used for bivariate t-statistic during clustering of segement
-facets_min_nhet: 25
-# union of gatk and dbsnp for snp-pileup
-facets_union_gatk_dbsnp: false
 
 # slack_channel: 
 

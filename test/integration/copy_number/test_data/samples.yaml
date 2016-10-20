@@ -1,0 +1,3 @@
+- name: JRF-het-004-
+  normal: JRF-het-004-N
+  tumor: [JRF-het-004-T1, JRF-het-004-T3, JRF-het-004-T2]

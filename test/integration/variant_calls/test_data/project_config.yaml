@@ -26,7 +26,7 @@ ann_facets: false
 ann_mut_taste: false
 ann_pathogen: false
 
-# targets_file: intervals.bed
+#targets_file: $(HOME)/share/reference/target_panels/impact410.bed
 exome: true
 
 # gatk options
