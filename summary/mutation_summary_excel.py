@@ -86,19 +86,6 @@ def create_absolute_df(absolute_somatic_txts, absolute_segments):
     return absdf
 
 
-def add_loh(df):
-    rv = df.copy()
-    if len(df) > 0:
-        if "facetsLCN_EM" in df.columns:
-            rv["LOH"] = df.facetsLCN_EM.apply(lambda x: "true" if x == 0 or x =="0" else ".")
-        else:
-            rv["LOH"] = pd.Series(["N/A"] * len(df))
-    else:
-        rv["LOH"] = pd.Series()
-
-    return rv
-
-
 def add_maf(df):
     rv = df.copy()
     def f(x):
@@ -147,6 +134,9 @@ def add_cancer_gene(df):
                                  x["kandoth"] == "true" or
                                  x["lawrence"] == "true" else ".",
                                  axis=1)
+    rv["num_cancer_gene"] = df.apply(lambda x: sum([x["cancer_gene_census"] == "true",
+                                                    x['kandoth'] == 'true',
+                                                    x['lawrence'] == 'true']), axis=1)
     return rv
 
 
@@ -165,7 +155,6 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
     if len(df > 0):
         if all([c in df.columns for c in "cancer_gene_census kandoth lawrence".split()]):
             df = add_cancer_gene(df)
-        df = add_loh(df)
         if write_columns:
             df = df[[c for c in write_columns if c in df.columns]]
         df = df.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split())
@@ -204,7 +193,10 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C,ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,ExAC_AF,dbNSFP_MutationTaster_pred,fathmm_pred,dbNSFP_PROVEAN_pred,LOH,parssnp_score,pathogenicity,HOTSPOT".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C," \
+        "ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,ExAC_AF," \
+        "dbNSFP_MutationTaster_pred,MutationTaster_pred,provean_pred,fathmm_pred," \
+        "dbNSFP_PROVEAN_pred,facetsLOH,parssnp_score,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
