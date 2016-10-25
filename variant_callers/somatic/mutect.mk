@@ -12,6 +12,8 @@ MUTECT_OPTS ?= --enable_extended_output --max_alt_alleles_in_normal_count $(MUTE
 			   --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT_FILTERS),-rf $(ft))
 MUTECT = $(JAVA7) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
+MUTECT_SPLIT_CHR ?= false
+
 MUT_FREQ_REPORT = modules/variant_callers/somatic/mutectReport.Rmd
 
 ..DUMMY := $(shell mkdir -p version; echo "$(MUTECT) &> version/mutect.txt")
@@ -57,13 +59,46 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
 			$(eval $(call mutect-tumor-normal-chunk,$(tumor.$(pair)),$(normal.$(pair)),$(chunk)))))
 
+# run mutect on each chromosome
+#$(call mutect-tumor-normal-chr,tumor,normal,chr)
+define mutect-tumor-normal-chr
+mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables; \
+		$$(MUTECT) --intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt -vcf $$@")
+endef
+$(foreach chr,$(CHROMOSOMES), \
+	$(foreach pair,$(SAMPLE_PAIRS), \
+			$(eval $(call mutect-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
+
 
 # merge variant tables 
+ifeq ($(MUTECT_SPLIT_CHR),true)
+define ext-mutect-tumor-normal
+mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$1.$$(chr).mutect.txt)
+	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
+
+define mutect-tumor-normal
+vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
+	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+else
 define ext-mutect-tumor-normal
 mutect/tables/$1.mutect.txt : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_tables/$1.chunk$$(chunk).mutect.txt)
 	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
+
+define mutect-tumor-normal
+vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
+	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+endif
 
 mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 	$(call LSCRIPT_NAMED_MEM,mutect_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) $^")
@@ -73,14 +108,6 @@ mutect/lowAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pa
 
 mutect/highAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 	$(call LSCRIPT_NAMED_MEM,mutect_highaf_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --highAF $^")
-
-# merge variants 
-define mutect-tumor-normal
-vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
-endef
-$(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 include modules/vcf_tools/vcftools.mk
 
