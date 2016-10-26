@@ -16,8 +16,7 @@ def is_provean_pathogenic(record):
 
 
 def is_mt_pathogenic(record):
-    return any([info is not None and 'disease' in info for info in record.INFO['MutationTaster_pred']])
-
+    return 'MT_pred' in record.INFO and 'disease' in record.INFO['MT_pred']
 
 def is_dbnsfp_mt_passenger(record):
     return 'dbNSFP_MutationTaster_pred' not in record.INFO or 'P' in record.INFO['dbNSFP_MutationTaster_pred'] or \
@@ -89,7 +88,9 @@ def get_inframe_pathogenicity(record):
 def classify_pathogenicity(record):
     """ classify pathogenicity for a vcf record
     """
-    if is_fs_splice_stop(record):
+    if is_missense(record):
+        record.INFO['pathogenicity'] = get_missense_pathogenicity(record)
+    elif is_fs_splice_stop(record):
         record.INFO["pathogenicity"] = get_fs_splice_stop_pathogenicity(record)
     elif is_inframe(record):
         record.INFO["pathogenicity"] = get_inframe_pathogenicity(record)
