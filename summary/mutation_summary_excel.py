@@ -195,12 +195,12 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         annotdf = None
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C," \
         "ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,ExAC_AF," \
-        "dbNSFP_MutationTaster_pred,MutationTaster_pred,provean_pred,fathmm_pred," \
-        "dbNSFP_PROVEAN_pred,facetsLOH,parssnp_score,pathogenicity,HOTSPOT".split(",")
+        "dbNSFP_MutationTaster_pred,MT_pred,provean_pred,fathmm_pred," \
+        "dbNSFP_PROVEAN_pred,facetsLOH,facetsLCN_EM,parssnp_score,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
     # add gene annotations and chasm score columns
-    summary_columns += chasm_score_columns + "cancer_gene_census,kandoth,lawrence,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
+    summary_columns += chasm_score_columns + "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
 
     writer = pd.ExcelWriter(excel_file)
 

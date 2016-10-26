@@ -13,8 +13,8 @@ import classify_pathogenicity_vcf as cp
 
 def query_mutation_taster(record):
     prediction, score = mtq.query(record.CHROM, record.POS, record.REF, record.ALT[0])
-    record.INFO['MutationTaster_pred'] = [prediction]
-    record.INFO['MutationTaster_score'] = [score]
+    record.INFO['MT_pred'] = prediction
+    record.INFO['MT_score'] = score
 
 
 if __name__ == "__main__":
@@ -38,17 +38,23 @@ if __name__ == "__main__":
     assert "facetsLOH" in vcf_reader.infos
 
     # add necessary info headers
-    vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=-1, type='String',
+    vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=1, type='String',
                                                          desc="Classification of pathogenicity",
                                                          source=None, version=None)
-    vcf_reader.infos['provean_protein_id'] = vcf.parser._Info(id='provean_protein_id', num=-1, type='String',
+    vcf_reader.infos['provean_protein_id'] = vcf.parser._Info(id='provean_protein_id', num=1, type='String',
                                                               desc="provean protein id (run if necessary)",
                                                               source=None, version=None)
-    vcf_reader.infos['provean_pred'] = vcf.parser._Info(id='provean_pred', num=-1, type='String',
+    vcf_reader.infos['provean_pred'] = vcf.parser._Info(id='provean_pred', num=1, type='String',
                                                         desc="provean prediction (run if necessary)",
                                                         source=None, version=None)
-    vcf_reader.infos['provean_score'] = vcf.parser._Info(id='provean_score', num=-1, type='Float',
+    vcf_reader.infos['provean_score'] = vcf.parser._Info(id='provean_score', num=1, type='Float',
                                                          desc="provean score (run if necessary)",
+                                                         source=None, version=None)
+    vcf_reader.infos['MT_pred'] = vcf.parser._Info(id='MT_pred', num=1, type='String',
+                                                        desc="mutation taster prediction (run if necessary)",
+                                                        source=None, version=None)
+    vcf_reader.infos['MT_score'] = vcf.parser._Info(id='MT_score', num=1, type='Float',
+                                                         desc="mutation taster score (run if necessary)",
                                                          source=None, version=None)
 
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)

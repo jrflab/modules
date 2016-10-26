@@ -35,6 +35,8 @@ if (length(arguments$args) < 1) {
 
 # read file file
 facetsSeg <- read.table(opt$facetsFile, sep = '\t', header = T)
+facetsSeg$chrom <- as.character(facetsSeg$chrom)
+facetsSeg$chrom[facetsSeg$chrom == '23'] <- 'X'
 facetsGr <- with(facetsSeg, GRanges(seqnames = chrom,
                                     ranges = IRanges(start = loc.start, end = loc.end),
                                     CF_EM = cf.em, TCN_EM = tcn.em, LCN_EM = lcn.em, mafR = mafR))

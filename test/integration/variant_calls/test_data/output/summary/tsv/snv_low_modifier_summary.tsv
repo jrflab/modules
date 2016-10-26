@@ -1,27 +1,27 @@
-TUMOR_SAMPLE	NORMAL_SAMPLE	CHROM	POS	REF	ALT	ANN[*].GENE	ANN[*].HGVS_P	ANN[*].HGVS_C	ANN[*].EFFECT	TUMOR_MAF	NORMAL_MAF	TUMOR_DP	NORMAL_DP	ExAC_AF	dbNSFP_MutationTaster_pred	MutationTaster_pred	fathmm_pred	dbNSFP_PROVEAN_pred	facetsLOH	parssnp_score	pathogenicity	HOTSPOT	BRCA_chasm_score	cancer_gene_census	kandoth	lawrence	hap_insuf	ANN[*].IMPACT
-EMC8T	EMC8N	10	54076234	G	A	DKK1|PRKG1-AS1	.|.	c.547+39G>A|n.-1C>T	intron_variant|upstream_gene_variant	0.393442622951	0.0	61.0	76.0	.	.	.	.	.	.	0.0276536378798	.	.	.	.	.	.	.	MODIFIER|MODIFIER
-EMC8T	EMC8N	10	73048335	G	A	UNC5B	p.Ala304Ala	c.912G>A	synonymous_variant	0.356275303644	0.0	247.0	123.0	4.708e-05	.	.	.	.	.	0.0279576829041	passenger	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	17	46053334	A	G	CDK5RAP3	p.Glu276Glu	c.828A>G	synonymous_variant	0.0473684210526	0.008	190.0	125.0	0.007442	.	.	.	.	.	0.0472033368034	passenger	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	19	56896557	A	G	ZNF582	.	c.233-4T>C	splice_region_variant&intron_variant	0.157894736842	0.0	38.0	37.0	.	.	.	.	.	.	0.0268449714654	.	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	19	56896570	G	A	ZNF582	.	c.233-17C>T	intron_variant	0.16	0.0	25.0	32.0	.	.	.	.	.	.	0.0268449714654	.	.	.	.	.	.	.	MODIFIER
-EMC8T	EMC8N	2	152552202	A	C	NEB	.	c.1570-6T>G	splice_region_variant&intron_variant	0.139534883721	0.0222222222222	43.0	45.0	.	.	.	.	.	.	0.0306248211371	.	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	4	6878363	C	G	KIAA0232	.	c.3911-24C>G	intron_variant	0.425287356322	0.0	87.0	69.0	.	.	.	.	.	true	0.0451322590266	.	.	.	.	.	.	.	MODIFIER
-EMC8T	EMC8N	5	89938459	C	T	GPR98	p.Asn749Asn	c.2247C>T	synonymous_variant	0.388888888889	0.0	18.0	30.0	0.0003788	.	D	.	.	.	0.0295715035823	passenger	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	6	43008415	G	A	CUL7	p.Ile1376Ile	c.4128C>T	synonymous_variant	0.328205128205	0.0	195.0	92.0	0.0008097	.	.	.	.	.	0.0278910646567	passenger	.	.	.	.	.	.	LOW
-EMC8T	EMC8N	7	101870801	G	A	CUX1	p.Pro1106Pro	c.3318G>A	synonymous_variant	0.245614035088	0.0	57.0	69.0	4.708e-05	.	.	.	.	.	0.0441022950715	passenger	.	.	true	.	true	.	LOW
-AM5TC	AM5N	1	244755022	C	T	C1orf101	p.Tyr726Tyr	c.2178C>T	synonymous_variant	0.327586206897	0.020202020202	58.0	99.0	5.652e-05	.	.	.	.	.	0.0282354564799	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	10	74100864	G	T	DNAJB12	p.Gly208Gly	c.624C>A	synonymous_variant	0.153846153846	0.00507614213198	182.0	197.0	.	.	.	.	.	true	0.02835759976	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	13	28885846	G	T	FLT1	p.Ile1172Ile	c.3516C>A	synonymous_variant	0.387755102041	0.0	49.0	70.0	.	.	.	.	.	.	0.0289311450974	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	16	27659939	C	A	KIAA0556	p.Ile141Ile	c.423C>A	synonymous_variant	0.369458128079	0.0	203.0	124.0	.	.	.	.	.	.	0.0295816870257	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	16	58313591	G	T	PRSS54|CCDC113	.|.	c.*1583C>A|c.1048-4G>T	downstream_gene_variant|splice_region_variant&intron_variant	0.177777777778	0.0344827586207	45.0	29.0	.	.	.	.	.	.	0.0359237171972	.	.	.	.	.	.	.	MODIFIER|LOW
-AM5TC	AM5N	16	58314194	C	T	CCDC113|PRSS54	.|p.Arg374Arg	c.*513C>T|c.1122G>A	3_prime_UTR_variant|synonymous_variant	0.361788617886	0.00485436893204	246.0	206.0	.	.	.	.	.	.	0.038183480637	passenger	.	.	.	.	.	.	MODIFIER|LOW
-AM5TC	AM5N	18	3534412	G	A	DLGAP1	p.Ala753Ala	c.2259C>T	synonymous_variant	0.302681992337	0.00641025641026	261.0	156.0	9.415e-06	.	.	.	.	.	0.0303092493033	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	19	17291713	G	A	MYO9B	.	c.2220-23G>A	intron_variant	0.368421052632	0.0	209.0	136.0	.	.	.	.	.	.	0.0282258209341	.	.	.	.	.	.	.	MODIFIER
-AM5TC	AM5N	19	33119808	A	G	ANKRD27	.	c.1210-53T>C	intron_variant	0.0909090909091	0.0	55.0	50.0	.	.	.	.	.	.	0.0281695651822	.	.	.	.	.	.	.	MODIFIER
-AM5TC	AM5N	2	179416547	A	G	TTN-AS1|MIR548N|TTN	.|.|p.His30360His	n.2043+9459A>G|n.37-76968A>G|c.91080T>C	intron_variant|intron_variant|synonymous_variant	0.340659340659	0.0	91.0	149.0	.	.	.	.	.	.	0.0259171065625	passenger	.	.	.	.	.	.	MODIFIER|MODIFIER|LOW
-AM5TC	AM5N	22	37414752	G	T	MPST|TST	.|p.Arg8Arg	c.-88G>T|c.22C>A	upstream_gene_variant|synonymous_variant	0.378378378378	0.0	370.0	249.0	.	.	.	.	.	.	0.0300937896062	passenger	.	.	.	.	.	.	MODIFIER|LOW
-AM5TC	AM5N	4	55131048	G	A	PDGFRA	.	c.629-38G>A	intron_variant	0.245901639344	0.0	61.0	76.0	.	.	.	.	.	.	0.0338900199797	.	.	.	true	true	.	.	MODIFIER
-AM5TC	AM5N	5	96503722	A	G	RIOK2	.	c.873-27T>C	intron_variant	0.3125	0.0	48.0	62.0	.	.	.	.	.	.	0.0301408726236	.	.	.	.	.	.	.	MODIFIER
-AM5TC	AM5N	6	122768041	C	T	SERINC1	p.Gly368Gly	c.1104G>A	synonymous_variant	0.4	0.0	95.0	187.0	.	.	.	.	.	.	0.030075940138	passenger	.	.	.	.	.	.	LOW
-AM5TC	AM5N	9	104356907	G	A	GRIN3A|PPP3R2	.|p.Tyr102Tyr	c.2767-15265C>T|c.306C>T	intron_variant|synonymous_variant	0.212290502793	0.0	358.0	274.0	9.415e-06	.	.	.	.	.	0.0286306624253	passenger	.	.	.	.	.	.	MODIFIER|LOW
-AM5TC	AM5N	9	139981571	G	A	UAP1L1|MAN1B1-AS1|MAN1B1	.|.|p.Pro40Pro	c.*1556G>A|n.-1C>T|c.120G>A	downstream_gene_variant|upstream_gene_variant|synonymous_variant	0.0740740740741	0.00704225352113	81.0	142.0	.	.	D	.	.	true	0.0303982584796	passenger	.	.	.	.	.	.	MODIFIER|MODIFIER|LOW
+TUMOR_SAMPLE	NORMAL_SAMPLE	CHROM	POS	REF	ALT	ANN[*].GENE	ANN[*].HGVS_P	ANN[*].HGVS_C	ANN[*].EFFECT	TUMOR_MAF	NORMAL_MAF	TUMOR_DP	NORMAL_DP	ExAC_AF	dbNSFP_MutationTaster_pred	fathmm_pred	dbNSFP_PROVEAN_pred	facetsLOH	facetsLCN_EM	parssnp_score	pathogenicity	HOTSPOT	BRCA_chasm_score	cancer_gene_census	kandoth	lawrence	num_cancer_gene	hap_insuf	ANN[*].IMPACT
+EMC8T	EMC8N	10	54076234	G	A	DKK1|PRKG1-AS1	.|.	c.547+39G>A|n.-1C>T	intron_variant|upstream_gene_variant	0.393442622951	0.0	61.0	76.0	.	.	.	.	.	1	0.0276536378798	.	.	.	.	.	.	0	.	MODIFIER|MODIFIER
+EMC8T	EMC8N	10	73048335	G	A	UNC5B	p.Ala304Ala	c.912G>A	synonymous_variant	0.356275303644	0.0	247.0	123.0	4.708e-05	.	.	.	.	1	0.0279576829041	passenger	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	17	46053334	A	G	CDK5RAP3	p.Glu276Glu	c.828A>G	synonymous_variant	0.0473684210526	0.008	190.0	125.0	0.007442	.	.	.	.	1	0.0472033368034	passenger	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	19	56896557	A	G	ZNF582	.	c.233-4T>C	splice_region_variant&intron_variant	0.157894736842	0.0	38.0	37.0	.	.	.	.	.	1	0.0268449714654	.	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	19	56896570	G	A	ZNF582	.	c.233-17C>T	intron_variant	0.16	0.0	25.0	32.0	.	.	.	.	.	1	0.0268449714654	.	.	.	.	.	.	0	.	MODIFIER
+EMC8T	EMC8N	2	152552202	A	C	NEB	.	c.1570-6T>G	splice_region_variant&intron_variant	0.139534883721	0.0222222222222	43.0	45.0	.	.	.	.	.	1	0.0306248211371	.	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	4	6878363	C	G	KIAA0232	.	c.3911-24C>G	intron_variant	0.425287356322	0.0	87.0	69.0	.	.	.	.	true	0	0.0451322590266	.	.	.	.	.	.	0	.	MODIFIER
+EMC8T	EMC8N	5	89938459	C	T	GPR98	p.Asn749Asn	c.2247C>T	synonymous_variant	0.388888888889	0.0	18.0	30.0	0.0003788	.	.	.	.	1	0.0295715035823	passenger	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	6	43008415	G	A	CUL7	p.Ile1376Ile	c.4128C>T	synonymous_variant	0.328205128205	0.0	195.0	92.0	0.0008097	.	.	.	.	1	0.0278910646567	passenger	.	.	.	.	.	0	.	LOW
+EMC8T	EMC8N	7	101870801	G	A	CUX1	p.Pro1106Pro	c.3318G>A	synonymous_variant	0.245614035088	0.0	57.0	69.0	4.708e-05	.	.	.	.	1	0.0441022950715	passenger	.	.	true	.	true	2	.	LOW
+AM5TC	AM5N	1	244755022	C	T	C1orf101	p.Tyr726Tyr	c.2178C>T	synonymous_variant	0.327586206897	0.020202020202	58.0	99.0	5.652e-05	.	.	.	.	.	0.0282354564799	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	10	74100864	G	T	DNAJB12	p.Gly208Gly	c.624C>A	synonymous_variant	0.153846153846	0.00507614213198	182.0	197.0	.	.	.	.	true	0	0.02835759976	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	13	28885846	G	T	FLT1	p.Ile1172Ile	c.3516C>A	synonymous_variant	0.387755102041	0.0	49.0	70.0	.	.	.	.	.	1	0.0289311450974	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	16	27659939	C	A	KIAA0556	p.Ile141Ile	c.423C>A	synonymous_variant	0.369458128079	0.0	203.0	124.0	.	.	.	.	.	1	0.0295816870257	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	16	58313591	G	T	PRSS54|CCDC113	.|.	c.*1583C>A|c.1048-4G>T	downstream_gene_variant|splice_region_variant&intron_variant	0.177777777778	0.0344827586207	45.0	29.0	.	.	.	.	.	1	0.0359237171972	.	.	.	.	.	.	0	.	MODIFIER|LOW
+AM5TC	AM5N	16	58314194	C	T	CCDC113|PRSS54	.|p.Arg374Arg	c.*513C>T|c.1122G>A	3_prime_UTR_variant|synonymous_variant	0.361788617886	0.00485436893204	246.0	206.0	.	.	.	.	.	1	0.038183480637	passenger	.	.	.	.	.	0	.	MODIFIER|LOW
+AM5TC	AM5N	18	3534412	G	A	DLGAP1	p.Ala753Ala	c.2259C>T	synonymous_variant	0.302681992337	0.00641025641026	261.0	156.0	9.415e-06	.	.	.	.	1	0.0303092493033	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	19	17291713	G	A	MYO9B	.	c.2220-23G>A	intron_variant	0.368421052632	0.0	209.0	136.0	.	.	.	.	.	1	0.0282258209341	.	.	.	.	.	.	0	.	MODIFIER
+AM5TC	AM5N	19	33119808	A	G	ANKRD27	.	c.1210-53T>C	intron_variant	0.0909090909091	0.0	55.0	50.0	.	.	.	.	.	1	0.0281695651822	.	.	.	.	.	.	0	.	MODIFIER
+AM5TC	AM5N	2	179416547	A	G	TTN-AS1|MIR548N|TTN	.|.|p.His30360His	n.2043+9459A>G|n.37-76968A>G|c.91080T>C	intron_variant|intron_variant|synonymous_variant	0.340659340659	0.0	91.0	149.0	.	.	.	.	.	1	0.0259171065625	passenger	.	.	.	.	.	0	.	MODIFIER|MODIFIER|LOW
+AM5TC	AM5N	22	37414752	G	T	MPST|TST	.|p.Arg8Arg	c.-88G>T|c.22C>A	upstream_gene_variant|synonymous_variant	0.378378378378	0.0	370.0	249.0	.	.	.	.	.	1	0.0300937896062	passenger	.	.	.	.	.	0	.	MODIFIER|LOW
+AM5TC	AM5N	4	55131048	G	A	PDGFRA	.	c.629-38G>A	intron_variant	0.245901639344	0.0	61.0	76.0	.	.	.	.	.	1	0.0338900199797	.	.	.	true	true	.	2	.	MODIFIER
+AM5TC	AM5N	5	96503722	A	G	RIOK2	.	c.873-27T>C	intron_variant	0.3125	0.0	48.0	62.0	.	.	.	.	.	1	0.0301408726236	.	.	.	.	.	.	0	.	MODIFIER
+AM5TC	AM5N	6	122768041	C	T	SERINC1	p.Gly368Gly	c.1104G>A	synonymous_variant	0.4	0.0	95.0	187.0	.	.	.	.	.	1	0.030075940138	passenger	.	.	.	.	.	0	.	LOW
+AM5TC	AM5N	9	104356907	G	A	GRIN3A|PPP3R2	.|p.Tyr102Tyr	c.2767-15265C>T|c.306C>T	intron_variant|synonymous_variant	0.212290502793	0.0	358.0	274.0	9.415e-06	.	.	.	.	1	0.0286306624253	passenger	.	.	.	.	.	0	.	MODIFIER|LOW
+AM5TC	AM5N	9	139981571	G	A	UAP1L1|MAN1B1-AS1|MAN1B1	.|.|p.Pro40Pro	c.*1556G>A|n.-1C>T|c.120G>A	downstream_gene_variant|upstream_gene_variant|synonymous_variant	0.0740740740741	0.00704225352113	81.0	142.0	.	.	.	.	true	0	0.0303982584796	passenger	.	.	.	.	.	0	.	MODIFIER|MODIFIER|LOW
