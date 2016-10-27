@@ -117,6 +117,8 @@ CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/ann
 
 PARSSNP_RESOURCES = $(REF_DIR)/ParsSNP_resources.Rdata
 
+REF_MSI = $(REF_DIR)/GATK_bundle/2.3/b37_msi.list
+
 endif
 B37_INC = true
 

@@ -78,6 +78,10 @@ star_fusion_aligner:
 # variant callers
 ####
 
+TARGETS += msisensor
+msisensor :
+	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)
+
 TARGETS += samtools_het
 samtools_het :
 	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
