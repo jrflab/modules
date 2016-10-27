@@ -21,6 +21,8 @@ ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 # SUFAM python environment
 SUFAM_ENV ?= /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 
+SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.1
+
 JARDIR ?= $(HOME)/share/usr/lib/java
 
 # jrflab modules environment
