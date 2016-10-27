@@ -2,10 +2,6 @@
 # convert a vcf file to a VRanges Rdata object
 library("optparse");
 library("VariantAnnotation");
-library("BSgenome.Hsapiens.UCSC.hg19");
-library("BSgenome.Mmusculus.UCSC.mm10");
-library("TxDb.Hsapiens.UCSC.hg19.knownGene")
-library("TxDb.Mmusculus.UCSC.mm10.knownGene")
 library("reshape")
 library("boot")
 library("plyr")
@@ -34,11 +30,15 @@ if (length(arguments$args) != 1) {
 vcfFile <- arguments$args[1]
 outFile <- opt$outFile
 if (opt$genome == "b37" || opt$genome == "hg19") {
+    library("BSgenome.Hsapiens.UCSC.hg19");
+    library("TxDb.Hsapiens.UCSC.hg19.knownGene")
     genome <- BSgenome.Hsapiens.UCSC.hg19
     txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
     genomeName <- 'hg19'
     chromosomes <- c(1:22, "X", "Y")
 } else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
+    library("BSgenome.Mmusculus.UCSC.mm10");
+    library("TxDb.Mmusculus.UCSC.mm10.knownGene")
     genome <- BSgenome.Mmusculus.UCSC.mm10
     txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
     genomeName <- 'mm10'
