@@ -1,6 +1,8 @@
 def is_fs_splice_stop(record):
     ann_effect = get_ann_effect(record)
-    return any([c in ef for ef in ann_effect for c in ["frameshift", "splice_donor", "splice_acceptor", "stop_gained"]])
+    return any([c in ef for ef in ann_effect for c in ["frameshift", "splice_donor", "splice_acceptor",
+                                                       "stop_gained", "stop_lost", "start_gained", "start_lost"]])
+
 
 def is_synonymous(record):
     ann_effect = get_ann_effect(record)
@@ -17,6 +19,7 @@ def is_provean_pathogenic(record):
 
 def is_mt_pathogenic(record):
     return 'MT_pred' in record.INFO and 'disease' in record.INFO['MT_pred']
+
 
 def is_dbnsfp_mt_passenger(record):
     return 'dbNSFP_MutationTaster_pred' not in record.INFO or 'P' in record.INFO['dbNSFP_MutationTaster_pred'] or \
