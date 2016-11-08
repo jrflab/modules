@@ -36,13 +36,14 @@ $(if $(SAMPLE_PAIRS),$(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach i,$(HOTSPOT_VCF_SEQ),\
 		$(eval $(call hotspot-vcf-tumor-normal-i,$(tumor.$(pair)),$(normal.$(pair)),$i)))))
 
-define hotspot-vcf-i
-hotspot/%.hotspot.$1.vcf : bam/%.bam bam/%.bam.bai
+define hotspot-vcf-sample-i
+hotspot/$1.hotspot.$2.vcf : bam/$1.bam bam/$1.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) \
 		-T UnifiedGenotyper $$(HOTSPOT_GATK_OPTS) -I $$(<) \
-		-alleles $$(HOTSPOT_VCF.$1) -L $$(HOTSPOT_VCF.$1) -o $$@")
+		-alleles $$(HOTSPOT_VCF.$2) -L $$(HOTSPOT_VCF.$2) -o $$@")
 endef
-$(foreach i,$(HOTSPOT_VCF_SEQ),\
-	$(eval $(call hotspot-vcf-i,$(sample),$i)))
+$(foreach sample,$(SAMPLES),\
+	$(foreach i,$(HOTSPOT_VCF_SEQ),\
+		$(eval $(call hotspot-vcf-sample-i,$(sample),$i))))
 
 include modules/vcf_tools/vcftools.mk
