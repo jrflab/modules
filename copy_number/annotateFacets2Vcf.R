@@ -61,6 +61,7 @@ while(nrow(vcf <- readVcf(tab, 'hg19'))) {
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Float", Description = "Facets log ratio", row.names = "facetsMafR"))
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets total copy number (EM)", row.names = "facetsTCN_EM"))
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer", Description = "Facets lesser copy number (EM)", row.names = "facetsLCN_EM"))
+    info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "String", Description = "Facets call", row.names = "facetsLOHCall"))
     info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "0", Type = "Flag", Description = "Facets LOH", row.names = "facetsLOH"))
 
     seqlevels(vcf) <- sub('chr', '', seqlevels(vcf))
@@ -71,9 +72,11 @@ while(nrow(vcf <- readVcf(tab, 'hg19'))) {
         info(vcf)$facetsLCN_EM[!is.na(ol)] <- facetsGr$LCN_EM[ol[!is.na(ol)]]
         info(vcf)$facetsMafR[!is.na(ol)] <- facetsGr$mafR[ol[!is.na(ol)]]
         info(vcf)$facetsLOH[!is.na(ol)] <- facetsGr$LCN_EM[ol[!is.na(ol)]] == 0
+        info(vcf)$facetsLOHCall[!is.na(ol)] <- ifelse(facetsGr$LCN_EM[ol[!is.na(ol)]] == 0, 'true', 'false')
         x <- is.na(info(vcf)$facetsLOH[!is.na(ol)])
         if (sum(x) > 0) {
             info(vcf)$facetsLOH[!is.na(ol)][x] <- facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR
+            info(vcf)$facetsLOHCall[!is.na(ol)][x] <- ifelse(facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR, 'true', 'false')
         }
     }
 
