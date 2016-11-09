@@ -17,13 +17,21 @@ def is_provean_pathogenic(record):
     return 'provean_pred' in record.INFO and record.INFO['provean_pred'] == 'Deleterious'
 
 
+def is_provean_missing(record):
+    return 'provean_pred' in record.INFO and record.INFO['provean_pred'] == 'none'
+
+
 def is_mt_pathogenic(record):
     return 'MT_pred' in record.INFO and 'disease' in record.INFO['MT_pred']
 
 
-def is_dbnsfp_mt_passenger(record):
-    return 'dbNSFP_MutationTaster_pred' not in record.INFO or 'P' in record.INFO['dbNSFP_MutationTaster_pred'] or \
-        'N' in record.INFO['dbNSFP_MutationTaster_pred']
+def is_mt_missing(record):
+    return 'MT_pred' in record.INFO and record.INFO['MT_pred'] == "none"
+
+
+def is_mt_passenger(record):
+    return 'MutationTaster_pred' not in record.INFO or record.INFO['MutationTaster_pred'] == 'P' or \
+        record.INFO['MutationTaster_pred'] == "N"
 
 
 def is_chasm_pathogenic(record):
@@ -72,7 +80,7 @@ def get_fs_splice_stop_pathogenicity(record):
 def get_missense_pathogenicity(record):
     if is_chasm_pathogenic(record):
         return "likely_pathogenic"
-    elif is_dbnsfp_mt_passenger(record):
+    elif is_mt_passenger(record):
         return "passenger"
     elif is_fathmm_pathogenic(record) or is_hotspot(record):
         return "likely_pathogenic"
@@ -82,7 +90,9 @@ def get_missense_pathogenicity(record):
 
 def get_inframe_pathogenicity(record):
     if (is_loh(record) or is_hap_insuf(record) or is_cancer_gene(record)) and \
-            is_mt_pathogenic(record) and is_provean_pathogenic(record):
+            (is_mt_pathogenic(record) and is_provean_pathogenic(record)) or \
+            (is_mt_missing(record) and is_provean_pathogenic(record)) or \
+            (is_mt_pathogenic(record) and is_provean_missing(record)):
         return 'likely_pathogenic'
     else:
         return 'passenger'

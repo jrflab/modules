@@ -67,5 +67,5 @@ class RemoteProveanQuery:
                 record.INFO['provean_score'] = df.ix[idx, 'SCORE']
             else:
                 record.INFO['provean_protein_id'] = '.'
-                record.INFO['provean_pred'] = '.'
+                record.INFO['provean_pred'] = 'none'
                 record.INFO['provean_score'] = '.'

@@ -21,7 +21,7 @@ if __name__ == "__main__":
     assert "HOTSPOT" in vcf_reader.infos or "hotspot" in vcf_reader.infos
     assert "fathmm_pred" in vcf_reader.infos
     assert "facetsLOH" in vcf_reader.infos
-    assert "dbNSFP_MutationTaster_pred" in vcf_reader.infos
+    assert "MutationTaster_pred" in vcf_reader.infos
 
     # add necessary info headers
     vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=-1, type='String',
