@@ -207,7 +207,8 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
     def read_tsv(tsv):
         df = pd.read_csv(tsv, sep="\t", dtype={"CHROM": str})
         for col in df.select_dtypes(include=['object']):
-            df[col] = df[col].str.decode('unicode_escape').str.encode('ascii', 'ignore')
+            if len(df.index) > 0 and type(df.ix[0, col]).__name__ == 'str':
+                df[col] = df[col].str.decode('unicode_escape').str.encode('ascii', 'ignore')
         return df
 
     # add summaries
