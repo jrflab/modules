@@ -1,0 +1,915 @@
+##fileformat=VCFv4.1
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=LowQual,Description="Low quality">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##GATKCommandLine=<ID=UnifiedGenotyper,Version=3.1-1-gcfc45fd,Date="Fri Nov 11 02:03:29 EST 2016",Epoch=1478847809273,CommandLineOptions="analysis_type=UnifiedGenotyper input_file=[bam/EMC8T.bam, bam/EMC8N.bam] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[] intervals=[/home/debruiji/share/reference/hotspot//hotspot1.vcf] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=250 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false genotype_likelihoods_model=SNP pcr_error_rate=1.0E-4 computeSLOD=false annotateNDA=false pair_hmm_implementation=LOGLESS_CACHING min_base_quality_score=17 max_deletion_fraction=0.05 allSitePLs=false min_indel_count_for_genotyping=5 min_indel_fraction_per_sample=0.25 indelGapContinuationPenalty=10 indelGapOpenPenalty=45 indelHaplotypeSize=80 indelDebug=false ignoreSNPAlleles=false allReadsSP=false ignoreLaneInfo=false reference_sample_calls=(RodBinding name= source=UNBOUND) reference_sample_name=null sample_ploidy=2 min_quality_score=1 max_quality_score=40 site_quality_prior=20 min_power_threshold_for_calling=0.95 min_reference_depth=100 exclude_filtered_reference_sites=false output_mode=EMIT_ALL_SITES heterozygosity=0.001 indel_heterozygosity=1.25E-4 genotyping_mode=GENOTYPE_GIVEN_ALLELES standard_min_confidence_threshold_for_calling=0.0 standard_min_confidence_threshold_for_emitting=0.0 alleles=(RodBinding name=alleles source=/home/debruiji/share/reference/hotspot//hotspot1.vcf) max_alternate_alleles=6 input_prior=[] contamination_fraction_to_filter=0.0 contamination_fraction_per_sample_file=null p_nonref_model=EXACT_INDEPENDENT exactcallslog=null dbsnp=(RodBinding name= source=UNBOUND) comp=[] out=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub onlyEmitSamples=[] debug_file=null metrics_file=null annotation=[] excludeAnnotation=[] filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth; some reads may have been filtered">
+##INFO=<ID=DS,Number=0,Type=Flag,Description="Were any of the samples downsampled?">
+##INFO=<ID=Dels,Number=1,Type=Float,Description="Fraction of Reads Containing Spanning Deletions">
+##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+##INFO=<ID=HaplotypeScore,Number=1,Type=Float,Description="Consistency of the site with at most two segregating haplotypes">
+##INFO=<ID=InbreedingCoeff,Number=1,Type=Float,Description="Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
+##INFO=<ID=MLEAC,Number=A,Type=Integer,Description="Maximum likelihood expectation (MLE) for the allele counts (not necessarily the same as the AC), for each ALT allele, in the same order as listed">
+##INFO=<ID=MLEAF,Number=A,Type=Float,Description="Maximum likelihood expectation (MLE) for the allele frequency (not necessarily the same as the AF), for each ALT allele, in the same order as listed">
+##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
+##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
+##INFO=<ID=QD,Number=1,Type=Float,Description="Variant Confidence/Quality by Depth">
+##INFO=<ID=RPA,Number=.,Type=Integer,Description="Number of times tandem repeat unit is repeated, for each allele (including reference)">
+##INFO=<ID=RU,Number=1,Type=String,Description="Tandem repeat unit (bases)">
+##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
+##INFO=<ID=STR,Number=0,Type=Flag,Description="Variant is a short tandem repeat">
+##contig=<ID=1,length=249250621,assembly=b37>
+##contig=<ID=2,length=243199373,assembly=b37>
+##contig=<ID=3,length=198022430,assembly=b37>
+##contig=<ID=4,length=191154276,assembly=b37>
+##contig=<ID=5,length=180915260,assembly=b37>
+##contig=<ID=6,length=171115067,assembly=b37>
+##contig=<ID=7,length=159138663,assembly=b37>
+##contig=<ID=8,length=146364022,assembly=b37>
+##contig=<ID=9,length=141213431,assembly=b37>
+##contig=<ID=10,length=135534747,assembly=b37>
+##contig=<ID=11,length=135006516,assembly=b37>
+##contig=<ID=12,length=133851895,assembly=b37>
+##contig=<ID=13,length=115169878,assembly=b37>
+##contig=<ID=14,length=107349540,assembly=b37>
+##contig=<ID=15,length=102531392,assembly=b37>
+##contig=<ID=16,length=90354753,assembly=b37>
+##contig=<ID=17,length=81195210,assembly=b37>
+##contig=<ID=18,length=78077248,assembly=b37>
+##contig=<ID=19,length=59128983,assembly=b37>
+##contig=<ID=20,length=63025520,assembly=b37>
+##contig=<ID=21,length=48129895,assembly=b37>
+##contig=<ID=22,length=51304566,assembly=b37>
+##contig=<ID=X,length=155270560,assembly=b37>
+##contig=<ID=Y,length=59373566,assembly=b37>
+##contig=<ID=MT,length=16569,assembly=b37>
+##contig=<ID=GL000207.1,length=4262,assembly=b37>
+##contig=<ID=GL000226.1,length=15008,assembly=b37>
+##contig=<ID=GL000229.1,length=19913,assembly=b37>
+##contig=<ID=GL000231.1,length=27386,assembly=b37>
+##contig=<ID=GL000210.1,length=27682,assembly=b37>
+##contig=<ID=GL000239.1,length=33824,assembly=b37>
+##contig=<ID=GL000235.1,length=34474,assembly=b37>
+##contig=<ID=GL000201.1,length=36148,assembly=b37>
+##contig=<ID=GL000247.1,length=36422,assembly=b37>
+##contig=<ID=GL000245.1,length=36651,assembly=b37>
+##contig=<ID=GL000197.1,length=37175,assembly=b37>
+##contig=<ID=GL000203.1,length=37498,assembly=b37>
+##contig=<ID=GL000246.1,length=38154,assembly=b37>
+##contig=<ID=GL000249.1,length=38502,assembly=b37>
+##contig=<ID=GL000196.1,length=38914,assembly=b37>
+##contig=<ID=GL000248.1,length=39786,assembly=b37>
+##contig=<ID=GL000244.1,length=39929,assembly=b37>
+##contig=<ID=GL000238.1,length=39939,assembly=b37>
+##contig=<ID=GL000202.1,length=40103,assembly=b37>
+##contig=<ID=GL000234.1,length=40531,assembly=b37>
+##contig=<ID=GL000232.1,length=40652,assembly=b37>
+##contig=<ID=GL000206.1,length=41001,assembly=b37>
+##contig=<ID=GL000240.1,length=41933,assembly=b37>
+##contig=<ID=GL000236.1,length=41934,assembly=b37>
+##contig=<ID=GL000241.1,length=42152,assembly=b37>
+##contig=<ID=GL000243.1,length=43341,assembly=b37>
+##contig=<ID=GL000242.1,length=43523,assembly=b37>
+##contig=<ID=GL000230.1,length=43691,assembly=b37>
+##contig=<ID=GL000237.1,length=45867,assembly=b37>
+##contig=<ID=GL000233.1,length=45941,assembly=b37>
+##contig=<ID=GL000204.1,length=81310,assembly=b37>
+##contig=<ID=GL000198.1,length=90085,assembly=b37>
+##contig=<ID=GL000208.1,length=92689,assembly=b37>
+##contig=<ID=GL000191.1,length=106433,assembly=b37>
+##contig=<ID=GL000227.1,length=128374,assembly=b37>
+##contig=<ID=GL000228.1,length=129120,assembly=b37>
+##contig=<ID=GL000214.1,length=137718,assembly=b37>
+##contig=<ID=GL000221.1,length=155397,assembly=b37>
+##contig=<ID=GL000209.1,length=159169,assembly=b37>
+##contig=<ID=GL000218.1,length=161147,assembly=b37>
+##contig=<ID=GL000220.1,length=161802,assembly=b37>
+##contig=<ID=GL000213.1,length=164239,assembly=b37>
+##contig=<ID=GL000211.1,length=166566,assembly=b37>
+##contig=<ID=GL000199.1,length=169874,assembly=b37>
+##contig=<ID=GL000217.1,length=172149,assembly=b37>
+##contig=<ID=GL000216.1,length=172294,assembly=b37>
+##contig=<ID=GL000215.1,length=172545,assembly=b37>
+##contig=<ID=GL000205.1,length=174588,assembly=b37>
+##contig=<ID=GL000219.1,length=179198,assembly=b37>
+##contig=<ID=GL000224.1,length=179693,assembly=b37>
+##contig=<ID=GL000223.1,length=180455,assembly=b37>
+##contig=<ID=GL000195.1,length=182896,assembly=b37>
+##contig=<ID=GL000212.1,length=186858,assembly=b37>
+##contig=<ID=GL000222.1,length=186861,assembly=b37>
+##contig=<ID=GL000200.1,length=187035,assembly=b37>
+##contig=<ID=GL000193.1,length=189789,assembly=b37>
+##contig=<ID=GL000194.1,length=191469,assembly=b37>
+##contig=<ID=GL000225.1,length=211173,assembly=b37>
+##contig=<ID=GL000192.1,length=547496,assembly=b37>
+##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##bcftools_concatVersion=1.3.1+htslib-1.3.1
+##bcftools_concatCommand=concat -a hotspot/EMC8T_EMC8N.hotspot.1.vcf.gz hotspot/EMC8T_EMC8N.hotspot.2.vcf.gz
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
+1	11169375	.	A	C	.	.	FS=0	GT	./.	./.
+1	11169377	.	T	A	.	.	FS=0	GT	./.	./.
+1	11184573	.	G	A,T	.	.	FS=0	GT	./.	./.
+1	11184574	.	A	T	.	.	FS=0	GT	./.	./.
+1	11217229	.	G	C	.	.	FS=0	GT	./.	./.
+1	11217230	.	C	A,T	.	.	FS=0	GT	./.	./.
+1	11217231	.	A	G	.	.	FS=0	GT	./.	./.
+1	27087503	.	C	T	.	.	FS=0	GT	./.	./.
+1	27100207	.	C	T	.	.	FS=0	GT	./.	./.
+1	27106354	.	C	T	.	.	FS=0	GT	./.	./.
+1	47395874	.	A	C	.	.	FS=0	GT	./.	./.
+1	47395875	.	A	G	.	.	FS=0	GT	./.	./.
+1	53692748	.	A	G	.	.	FS=0	GT	./.	./.
+1	54871665	.	T	C	.	.	FS=0	GT	./.	./.
+1	79470894	.	G	A	.	.	FS=0	GT	./.	./.
+1	79470895	.	G	A	.	.	FS=0	GT	./.	./.
+1	79470896	.	A	G	.	.	FS=0	GT	./.	./.
+1	115217379	.	T	A	.	.	FS=0	GT	./.	./.
+1	115217381	.	A	C	.	.	FS=0	GT	./.	./.
+1	115256528	.	T	A	.	.	FS=0	GT	./.	./.
+1	115256529	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+1	115256530	.	G	T	.	.	FS=0	GT	./.	./.
+1	115258744	.	C	A,T	.	.	FS=0	GT	./.	./.
+1	115258745	.	C	G	.	.	FS=0	GT	./.	./.
+1	115258747	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+1	115258748	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+1	147142085	.	A	C	.	.	FS=0	GT	./.	./.
+1	152748927	.	C	A,T	.	.	FS=0	GT	./.	./.
+1	152748928	.	G	A	.	.	FS=0	GT	./.	./.
+1	152800031	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+1	153362715	.	T	C	.	.	FS=0	GT	./.	./.
+1	153520173	.	G	A	.	.	FS=0	GT	./.	./.
+1	153520175	.	G	A	.	.	FS=0	GT	./.	./.
+1	156897772	.	A	G	.	.	FS=0	GT	./.	./.
+1	158606546	.	T	G	.	.	FS=0	GT	./.	./.
+1	183087213	.	C	T	.	.	FS=0	GT	./.	./.
+1	183087214	.	T	C	.	.	FS=0	GT	./.	./.
+1	197390846	.	T	G	.	.	FS=0	GT	./.	./.
+1	197390847	.	T	C	.	.	FS=0	GT	./.	./.
+1	203186950	.	C	T	.	.	FS=0	GT	./.	./.
+1	207758215	.	C	T	.	.	FS=0	GT	./.	./.
+1	207758216	.	G	A	.	.	FS=0	GT	./.	./.
+1	209879200	.	G	A,T	.	.	FS=0	GT	./.	./.
+1	209879201	.	G	A,T	.	.	FS=0	GT	./.	./.
+1	209879202	.	G	A	.	.	FS=0	GT	./.	./.
+1	226252135	.	A	T	.	.	FS=0	GT	./.	./.
+1	226252155	.	G	A	.	.	FS=0	GT	./.	./.
+1	226567666	.	C	T	.	.	FS=0	GT	./.	./.
+1	245862231	.	C	A,T	.	.	FS=0	GT	./.	./.
+1	245862232	.	G	A	.	.	FS=0	GT	./.	./.
+2	1926933	.	T	C,G	.	.	FS=0	GT	./.	./.
+2	16082317	.	C	T	.	.	FS=0	GT	./.	./.
+2	25457242	.	C	G,T	.	.	FS=0	GT	./.	./.
+2	25457243	.	G	A	.	.	FS=0	GT	./.	./.
+2	29432664	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	29432665	.	G	A	.	.	FS=0	GT	./.	./.
+2	29443695	.	G	T	.	.	FS=0	GT	./.	./.
+2	29443696	.	A	C	.	.	FS=0	GT	./.	./.
+2	29443697	.	A	C	.	.	FS=0	GT	./.	./.
+2	39281778	.	T	A	.	.	FS=0	GT	./.	./.
+2	61719471	.	T	A,G	.	.	FS=0	GT	./.	./.
+2	61719472	.	C	T	.	.	FS=0	GT	./.	./.
+2	70315180	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+2	98409038	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+2	105883951	.	G	A	.	.	FS=0	GT	./.	./.
+2	105883952	.	G	A	.	.	FS=0	GT	./.	./.
+2	105883952	.	GG	AA	.	.	.	GT	./.	./.
+2	105883953	.	G	A	.	.	FS=0	GT	./.	./.
+2	137928454	.	G	A	.	.	FS=0	GT	./.	./.
+2	137928455	.	G	A,T	.	.	FS=0	GT	./.	./.
+2	138373853	.	G	A	.	.	FS=0	GT	./.	./.
+2	138762705	.	C	T	.	.	FS=0	GT	./.	./.
+2	158622516	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	158626897	.	C	A	.	.	FS=0	GT	./.	./.
+2	158626898	.	T	C	.	.	FS=0	GT	./.	./.
+2	178098799	.	T	A	.	.	FS=0	GT	./.	./.
+2	178098800	.	T	C,G	.	.	FS=0	GT	./.	./.
+2	178098801	.	C	G	.	.	FS=0	GT	./.	./.
+2	178098803	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	178098804	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	178098806	.	G	C,T	.	.	FS=0	GT	./.	./.
+2	178098807	.	T	C,G	.	.	FS=0	GT	./.	./.
+2	178098808	.	C	A	.	.	FS=0	GT	./.	./.
+2	178098809	.	T	A	.	.	FS=0	GT	./.	./.
+2	178098810	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+2	178098944	.	C	G,T	.	.	FS=0	GT	./.	./.
+2	178098945	.	G	C	.	.	FS=0	GT	./.	./.
+2	178098953	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+2	178098954	.	C	T	.	.	FS=0	GT	./.	./.
+2	178098956	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+2	178098957	.	G	A	.	.	FS=0	GT	./.	./.
+2	178098959	.	T	C	.	.	FS=0	GT	./.	./.
+2	178098960	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+2	178098967	.	T	G	.	.	FS=0	GT	./.	./.
+2	178098968	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+2	178098969	.	G	T	.	.	FS=0	GT	./.	./.
+2	198265476	.	T	C,G	.	.	FS=0	GT	./.	./.
+2	198265477	.	C	T	.	.	FS=0	GT	./.	./.
+2	198266611	.	C	T	.	.	FS=0	GT	./.	./.
+2	198266833	.	T	C	.	.	FS=0	GT	./.	./.
+2	198266834	.	T	C	.	.	FS=0	GT	./.	./.
+2	198267360	.	T	G	.	.	FS=0	GT	./.	./.
+2	198267361	.	T	C,G	.	.	FS=0	GT	./.	./.
+2	198267481	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+2	198267483	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	198267484	.	G	A,C	.	.	FS=0	GT	./.	./.
+2	209113112	.	C	A,T	.	.	FS=0	GT	./.	./.
+2	209113113	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+2	219447748	.	T	C	.	.	FS=0	GT	./.	./.
+2	219447749	.	C	G	.	.	FS=0	GT	./.	./.
+2	219449405	.	C	T	.	.	FS=0	GT	./.	./.
+2	219449406	.	C	T	.	.	FS=0	GT	./.	./.
+2	220100575	.	C	T	.	.	FS=0	GT	./.	./.
+2	220100576	.	C	T	.	.	FS=0	GT	./.	./.
+3	10183763	.	A	G,T	.	.	FS=0	GT	./.	./.
+3	10183764	.	A	G	.	.	FS=0	GT	./.	./.
+3	10191469	.	A	G	.	.	FS=0	GT	./.	./.
+3	12645699	.	G	A,C	.	.	FS=0	GT	./.	./.
+3	25668727	.	C	T	.	.	FS=0	GT	./.	./.
+3	30732969	.	C	T	.	.	FS=0	GT	./.	./.
+3	30732970	.	G	A,T	.	.	FS=0	GT	./.	./.
+3	38182641	.	T	C	.	.	FS=0	GT	./.	./.
+3	41266097	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+3	41266098	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+3	41266100	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+3	41266101	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+3	41266103	.	G	A,T	.	.	FS=0	GT	./.	./.
+3	41266104	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+3	41266109	.	C	T	.	.	FS=0	GT	./.	./.
+3	41266110	.	A	C	.	.	FS=0	GT	./.	./.
+3	41266112	.	T	C,G	.	.	FS=0	GT	./.	./.
+3	41266113	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+3	41266124	.	A	G	.	.	FS=0	GT	./.	./.
+3	41266125	.	C	A,T	.	.	FS=0	GT	./.	./.
+3	41266136	.	T	C	.	.	FS=0	GT	./.	./.
+3	41266137	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+3	41266138	.	T	C	.	.	FS=0	GT	./.	./.
+3	41268766	.	A	C,T	.	.	FS=0	GT	./.	./.
+3	41274909	.	A	T	.	.	FS=0	GT	./.	./.
+3	41274910	.	A	T	.	.	FS=0	GT	./.	./.
+3	41274911	.	T	A	.	.	FS=0	GT	./.	./.
+3	47618421	.	C	T	.	.	FS=0	GT	./.	./.
+3	47618422	.	C	T	.	.	FS=0	GT	./.	./.
+3	47618423	.	G	A	.	.	FS=0	GT	./.	./.
+3	49412898	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+3	49412898	.	TA	AT	.	.	.	GT	./.	./.
+3	49412905	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+3	49413009	.	C	A,T	.	.	FS=0	GT	./.	./.
+3	49413010	.	G	A	.	.	FS=0	GT	./.	./.
+3	69245537	.	G	A	.	.	FS=0	GT	./.	./.
+3	69245537	.	GG	AA	.	.	.	GT	./.	./.
+3	69245538	.	G	A	.	.	FS=0	GT	./.	./.
+3	113049451	.	A	C	.	.	FS=0	GT	./.	./.
+3	134256013	.	C	T	.	.	FS=0	GT	./.	./.
+3	134256014	.	G	A	.	.	FS=0	GT	./.	./.
+3	138374244	.	T	A,G	.	.	FS=0	GT	./.	./.
+3	138374245	.	C	A	.	.	FS=0	GT	./.	./.
+3	150176284	.	C	A,T	.	.	FS=0	GT	./.	./.
+3	178916725	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+3	178916726	.	G	A,T	.	.	FS=0	GT	./.	./.
+3	178916854	.	G	A,T	.	.	FS=0	GT	./.	./.
+3	178916876	.	G	A	.	.	FS=0	GT	./.	./.
+3	178916929	.	G	C	.	.	FS=0	GT	./.	./.
+3	178916930	.	G	T	.	.	FS=0	GT	./.	./.
+3	178916944	.	A	G	.	.	FS=0	GT	./.	./.
+3	178916945	.	A	G	.	.	FS=0	GT	./.	./.
+3	178916946	.	G	C	.	.	FS=0	GT	./.	./.
+3	178917478	.	G	A	.	.	FS=0	GT	./.	./.
+3	178921548	.	G	A	.	.	FS=0	GT	./.	./.
+3	178921549	.	T	C,G	.	.	FS=0	GT	./.	./.
+3	178921551	.	A	C	.	.	FS=0	GT	./.	./.
+3	178921552	.	A	C,T	.	.	FS=0	GT	./.	./.
+3	178921553	.	T	A	.	.	FS=0	GT	./.	./.
+3	178922363	.	T	C	.	.	FS=0	GT	./.	./.
+3	178922364	.	G	A,T	.	.	FS=0	GT	./.	./.
+3	178927980	.	T	C,G	.	.	FS=0	GT	./.	./.
+3	178928079	.	G	A,C	.	.	FS=0	GT	./.	./.
+3	178928081	.	A	C	.	.	FS=0	GT	./.	./.
+3	178936082	.	G	A,C	.	.	FS=0	GT	./.	./.
+3	178936083	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+3	178936091	.	G	A,C	.	.	FS=0	GT	./.	./.
+3	178936092	.	A	C,G	.	.	FS=0	GT	./.	./.
+3	178936093	.	G	C	.	.	FS=0	GT	./.	./.
+3	178936094	.	C	A,G	.	.	FS=0	GT	./.	./.
+3	178936095	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+3	178936096	.	G	T	.	.	FS=0	GT	./.	./.
+3	178938934	.	G	A	.	.	FS=0	GT	./.	./.
+3	178938935	.	A	C	.	.	FS=0	GT	./.	./.
+3	178952006	.	T	C	.	.	FS=0	GT	./.	./.
+3	178952007	.	A	G	.	.	FS=0	GT	./.	./.
+3	178952072	.	A	G,T	.	.	FS=0	GT	./.	./.
+3	178952073	.	T	C	.	.	FS=0	GT	./.	./.
+3	178952074	.	G	A	.	.	FS=0	GT	./.	./.
+3	178952075	.	A	T	.	.	FS=0	GT	./.	./.
+3	178952077	.	T	A	.	.	FS=0	GT	./.	./.
+3	178952084	.	C	T	.	.	FS=0	GT	./.	./.
+3	178952085	.	A	G,T	.	.	FS=0	GT	./.	./.
+3	178952086	.	T	A	.	.	FS=0	GT	./.	./.
+3	184870595	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+4	1730378	.	C	T	.	.	FS=0	GT	./.	./.
+4	1730380	.	G	C	.	.	FS=0	GT	./.	./.
+4	1803564	.	C	T	.	.	FS=0	GT	./.	./.
+4	1803568	.	C	G	.	.	FS=0	GT	./.	./.
+4	1806099	.	A	G	.	.	FS=0	GT	./.	./.
+4	17616296	.	G	T	.	.	FS=0	GT	./.	./.
+4	17616298	.	T	G	.	.	FS=0	GT	./.	./.
+4	41265263	.	C	T	.	.	FS=0	GT	./.	./.
+4	55594221	.	A	G	.	.	FS=0	GT	./.	./.
+4	55594223	.	A	C	.	.	FS=0	GT	./.	./.
+4	103730859	.	C	A	.	.	FS=0	GT	./.	./.
+4	103730949	.	T	C	.	.	FS=0	GT	./.	./.
+4	106621161	.	A	G	.	.	FS=0	GT	./.	./.
+4	106621162	.	T	C,G	.	.	FS=0	GT	./.	./.
+4	119626803	.	G	A,C	.	.	FS=0	GT	./.	./.
+4	153244184	.	C	T	.	.	FS=0	GT	./.	./.
+4	153244185	.	G	A,T	.	.	FS=0	GT	./.	./.
+4	153247288	.	C	A,T	.	.	FS=0	GT	./.	./.
+4	153247289	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+4	153247366	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+4	153247367	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+4	153249384	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+4	153249385	.	G	A,C	.	.	FS=0	GT	./.	./.
+4	153251907	.	G	A	.	.	FS=0	GT	./.	./.
+5	7832018	.	T	G	.	.	FS=0	GT	./.	./.
+5	35876392	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+5	35876393	.	G	A,T	.	.	FS=0	GT	./.	./.
+5	41149516	.	T	C,G	.	.	FS=0	GT	./.	./.
+5	67588951	.	C	T	.	.	FS=0	GT	./.	./.
+5	67589138	.	G	A	.	.	FS=0	GT	./.	./.
+5	67591097	.	A	G	.	.	FS=0	GT	./.	./.
+5	67591106	.	A	G	.	.	FS=0	GT	./.	./.
+5	67591246	.	A	G	.	.	FS=0	GT	./.	./.
+5	112116592	.	C	T	.	.	FS=0	GT	./.	./.
+5	112128143	.	C	T	.	.	FS=0	GT	./.	./.
+5	112128191	.	C	T	.	.	FS=0	GT	./.	./.
+5	112162891	.	C	T	.	.	FS=0	GT	./.	./.
+5	112164616	.	C	T	.	.	FS=0	GT	./.	./.
+5	112173917	.	C	T	.	.	FS=0	GT	./.	./.
+5	112173918	.	G	A	.	.	FS=0	GT	./.	./.
+5	112174096	.	C	A	.	.	FS=0	GT	./.	./.
+5	112174631	.	C	T	.	.	FS=0	GT	./.	./.
+5	112175303	.	C	T	.	.	FS=0	GT	./.	./.
+5	112175423	.	C	T	.	.	FS=0	GT	./.	./.
+5	112175507	.	C	T	.	.	FS=0	GT	./.	./.
+5	112175513	.	G	T	.	.	FS=0	GT	./.	./.
+5	112175576	.	C	T	.	.	FS=0	GT	./.	./.
+5	112175577	.	A	G	.	.	FS=0	GT	./.	./.
+5	112175639	.	C	T	.	.	FS=0	GT	./.	./.
+5	132160935	.	G	T	.	.	FS=0	GT	./.	./.
+5	140237249	.	G	C,T	.	.	FS=0	GT	./.	./.
+5	167988433	.	T	A	.	.	FS=0	GT	./.	./.
+6	26032206	.	T	A	.	.	FS=0	GT	./.	./.
+6	26032207	.	T	C	.	.	FS=0	GT	./.	./.
+6	26045748	.	A	T	.	.	FS=0	GT	./.	./.
+6	31940123	.	G	A	.	.	FS=0	GT	./.	./.
+6	31940125	.	C	T	.	.	FS=0	GT	./.	./.
+6	43403588	.	C	T	.	.	FS=0	GT	./.	./.
+6	43403589	.	G	A,T	.	.	FS=0	GT	./.	./.
+6	72678732	.	A	C,G	.	.	FS=0	GT	./.	./.
+6	73787509	.	G	A	.	.	FS=0	GT	./.	./.
+6	73787510	.	G	A	.	.	FS=0	GT	./.	./.
+6	84567050	.	C	G,T	.	.	FS=0	GT	./.	./.
+6	133783489	.	C	A,G	.	.	FS=0	GT	./.	./.
+6	133783490	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+6	135784313	.	T	C	.	.	FS=0	GT	./.	./.
+7	2472309	.	T	G	.	.	FS=0	GT	./.	./.
+7	6426892	.	C	A,T	.	.	FS=0	GT	./.	./.
+7	6426893	.	C	T	.	.	FS=0	GT	./.	./.
+7	6441974	.	C	T	.	.	FS=0	GT	./.	./.
+7	30795310	.	C	T	.	.	FS=0	GT	./.	./.
+7	30795311	.	C	T	.	.	FS=0	GT	./.	./.
+7	33054388	.	T	C	.	.	FS=0	GT	./.	./.
+7	51098573	.	T	A	.	.	FS=0	GT	./.	./.
+7	55211079	.	A	G	.	.	FS=0	GT	./.	./.
+7	55211080	.	G	A	.	.	FS=0	GT	./.	./.
+7	55221821	.	G	A	.	.	FS=0	GT	./.	./.
+7	55221821	.	GC	AA,AT	.	.	.	GT	./.	./.
+7	55221822	.	C	A,T	.	.	FS=0	GT	./.	./.
+7	55233043	.	G	C,T	.	.	FS=0	GT	./.	./.
+7	55241707	.	G	T	.	.	FS=0	GT	./.	./.
+7	55241708	.	G	A,C	.	.	FS=0	GT	./.	./.
+7	55259515	.	T	G	.	.	FS=0	GT	./.	./.
+7	55259524	.	T	A	.	.	FS=0	GT	./.	./.
+7	72398976	.	A	G	.	.	FS=0	GT	./.	./.
+7	77379331	.	T	G	.	.	FS=0	GT	./.	./.
+7	77885499	.	A	C,G	.	.	FS=0	GT	./.	./.
+7	105177177	.	A	C	.	.	FS=0	GT	./.	./.
+7	105177178	.	A	T	.	.	FS=0	GT	./.	./.
+7	116412044	.	G	A	.	.	FS=0	GT	./.	./.
+7	131241055	.	A	G	.	.	FS=0	GT	./.	./.
+7	136938369	.	T	A,G	.	.	FS=0	GT	./.	./.
+7	140453132	.	T	A	.	.	FS=0	GT	./.	./.
+7	140453133	.	T	G	.	.	FS=0	GT	./.	./.
+7	140453134	.	T	C	.	.	FS=0	GT	./.	./.
+7	140453135	.	C	T	.	.	FS=0	GT	./.	./.
+7	140453135	.	CA	TT	.	.	.	GT	./.	./.
+7	140453136	.	AC	CT,TT	.	.	.	GT	./.	./.
+7	140453145	.	A	C,T	.	.	FS=0	GT	./.	./.
+7	140453145	.	AG	GA	.	.	.	GT	./.	./.
+7	140453148	.	C	A,T	.	.	FS=0	GT	./.	./.
+7	140453149	.	C	G,T	.	.	FS=0	GT	./.	./.
+7	140453154	.	T	C	.	.	FS=0	GT	./.	./.
+7	140453155	.	C	G,T	.	.	FS=0	GT	./.	./.
+7	140453193	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+7	140453987	.	T	G	.	.	FS=0	GT	./.	./.
+7	140481402	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+7	140481402	.	CC	GA	.	.	.	GT	./.	./.
+7	140481403	.	C	A,T	.	.	FS=0	GT	./.	./.
+7	140481411	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+7	148508726	.	GT	AA	.	.	.	GT	./.	./.
+7	148508727	.	T	G	.	.	FS=0	GT	./.	./.
+7	148508728	.	A	G,T	.	.	FS=0	GT	./.	./.
+7	151188049	.	T	C	.	.	FS=0	GT	./.	./.
+7	151188050	.	A	T	.	.	FS=0	GT	./.	./.
+8	20072455	.	C	T	.	.	FS=0	GT	./.	./.
+8	20072457	.	T	C	.	.	FS=0	GT	./.	./.
+8	25718576	.	C	A,T	.	.	FS=0	GT	./.	./.
+8	38272306	.	C	A,T	.	.	FS=0	GT	./.	./.
+8	38272308	.	T	A,C	.	.	FS=0	GT	./.	./.
+8	38274849	.	G	C	.	.	FS=0	GT	./.	./.
+8	38274851	.	T	C	.	.	FS=0	GT	./.	./.
+8	52732960	.	G	A	.	.	FS=0	GT	./.	./.
+8	65527645	.	T	G	.	.	FS=0	GT	./.	./.
+8	74858967	.	G	T	.	.	FS=0	GT	./.	./.
+8	74858968	.	T	A,G	.	.	FS=0	GT	./.	./.
+8	74858969	.	A	T	.	.	FS=0	GT	./.	./.
+8	104427572	.	T	A	.	.	FS=0	GT	./.	./.
+8	104898096	.	T	A	.	.	FS=0	GT	./.	./.
+8	128750680	.	A	C	.	.	FS=0	GT	./.	./.
+8	128750681	.	C	T	.	.	FS=0	GT	./.	./.
+8	128750945	.	C	T	.	.	FS=0	GT	./.	./.
+8	144733541	.	C	A	.	.	FS=0	GT	./.	./.
+9	2837296	.	T	C	.	.	FS=0	GT	./.	./.
+9	16436468	.	C	A	.	.	FS=0	GT	./.	./.
+9	16436469	.	T	G	.	.	FS=0	GT	./.	./.
+9	21970969	.	A	C,T	.	.	FS=0	GT	./.	./.
+9	21970970	.	G	C	.	.	FS=0	GT	./.	./.
+9	21971017	.	G	A,T	.	.	FS=0	GT	./.	./.
+9	21971018	.	G	T	.	.	FS=0	GT	./.	./.
+9	21971028	.	C	T	.	.	FS=0	GT	./.	./.
+9	21971096	.	C	A,T	.	.	FS=0	GT	./.	./.
+9	21971109	.	G	C	.	.	FS=0	GT	./.	./.
+9	21971110	.	T	C	.	.	FS=0	GT	./.	./.
+9	21971111	.	G	A,C	.	.	FS=0	GT	./.	./.
+9	21971119	.	C	T	.	.	FS=0	GT	./.	./.
+9	21971120	.	G	A	.	.	FS=0	GT	./.	./.
+9	21971184	.	T	G	.	.	FS=0	GT	./.	./.
+9	21971186	.	G	A	.	.	FS=0	GT	./.	./.
+9	21971208	.	C	A	.	.	FS=0	GT	./.	./.
+9	21974677	.	C	A,T	.	.	FS=0	GT	./.	./.
+9	21974678	.	T	C	.	.	FS=0	GT	./.	./.
+9	21974679	.	G	A	.	.	FS=0	GT	./.	./.
+9	37919970	.	C	T	.	.	FS=0	GT	./.	./.
+9	78848417	.	G	A,T	.	.	FS=0	GT	./.	./.
+9	80537112	.	T	A	.	.	FS=0	GT	./.	./.
+9	121929509	.	C	G	.	.	FS=0	GT	./.	./.
+9	127912080	.	G	A	.	.	FS=0	GT	./.	./.
+9	130952718	.	A	G	.	.	FS=0	GT	./.	./.
+9	131038524	.	C	T	.	.	FS=0	GT	./.	./.
+9	136081795	.	A	G	.	.	FS=0	GT	./.	./.
+9	137328351	.	C	A,T	.	.	FS=0	GT	./.	./.
+9	140637837	.	G	T	.	.	FS=0	GT	./.	./.
+10	64022543	.	C	T	.	.	FS=0	GT	./.	./.
+10	64022544	.	G	A	.	.	FS=0	GT	./.	./.
+10	89692904	.	C	G,T	.	.	FS=0	GT	./.	./.
+10	89692905	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+10	89692922	.	T	C	.	.	FS=0	GT	./.	./.
+10	89692923	.	G	A,T	.	.	FS=0	GT	./.	./.
+10	89692924	.	T	A	.	.	FS=0	GT	./.	./.
+10	89717672	.	C	T	.	.	FS=0	GT	./.	./.
+10	89717673	.	G	A	.	.	FS=0	GT	./.	./.
+10	96798740	.	G	A	.	.	FS=0	GT	./.	./.
+10	96798741	.	G	A	.	.	FS=0	GT	./.	./.
+10	116698112	.	A	C	.	.	FS=0	GT	./.	./.
+10	118236283	.	A	C,G	.	.	FS=0	GT	./.	./.
+10	123258034	.	A	C	.	.	FS=0	GT	./.	./.
+10	123258036	.	T	G	.	.	FS=0	GT	./.	./.
+10	123274773	.	C	T	.	.	FS=0	GT	./.	./.
+10	123274774	.	A	G	.	.	FS=0	GT	./.	./.
+10	123279676	.	C	T	.	.	FS=0	GT	./.	./.
+10	123279677	.	G	C	.	.	FS=0	GT	./.	./.
+10	127585221	.	C	T	.	.	FS=0	GT	./.	./.
+11	533873	.	C	A	0	.	AC=0;AF=0;AN=4;DP=418;Dels=0;FS=0;HaplotypeScore=7.846;MLEAC=0;MLEAF=0;MQ=59.62;MQ0=0	GT:AD:DP:GQ:PL	0/0:168,0:168:99:0,430,5591	0/0:250,0:250:99:0,656,8359
+11	533874	.	T	A,C	3800.19	.	AC=0,1;AF=0,0.25;AN=4;BaseQRankSum=-1.239;DP=417;Dels=0;FS=1.546;HaplotypeScore=7.0356;MLEAC=0,1;MLEAF=0,0.25;MQ=59.62;MQ0=0;MQRankSum=0.344;QD=15.2;ReadPosRankSum=-0.575	GT:AD:DP:GQ:PL	0/0:166,0,1:167:99:0,427,5437,427,5437,5437	0/2:108,1,140:250:99:3830,4113,7341,0,3228,2864
+11	533875	.	G	T	0	.	AC=0;AF=0;AN=4;DP=418;Dels=0;FS=0;HaplotypeScore=7.846;MLEAC=0;MLEAF=0;MQ=59.62;MQ0=0	GT:AD:DP:GQ:PL	0/0:168,0:168:99:0,421,5500	0/0:250,0:250:99:0,644,8067
+11	534285	.	C	A,T	.	.	FS=0	GT	./.	./.
+11	534285	.	CC	AT	.	.	.	GT	./.	./.
+11	534286	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+11	534288	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+11	534288	.	CC	TT	.	.	.	GT	./.	./.
+11	534289	.	C	A,T	.	.	FS=0	GT	./.	./.
+11	14316389	.	T	A	.	.	FS=0	GT	./.	./.
+11	14316390	.	T	A	.	.	FS=0	GT	./.	./.
+11	45274136	.	G	A,T	.	.	FS=0	GT	./.	./.
+11	64032495	.	A	C	.	.	FS=0	GT	./.	./.
+11	68216515	.	T	C	.	.	FS=0	GT	./.	./.
+11	68216517	.	C	T	.	.	FS=0	GT	./.	./.
+11	69456211	.	T	C,G	.	.	FS=0	GT	./.	./.
+11	69456212	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+11	69456213	.	C	G	.	.	FS=0	GT	./.	./.
+11	69466021	.	C	A,T	.	.	FS=0	GT	./.	./.
+11	69466022	.	C	T	.	.	FS=0	GT	./.	./.
+11	71949087	.	C	A	.	.	FS=0	GT	./.	./.
+11	108117798	.	C	T	.	.	FS=0	GT	./.	./.
+11	108117799	.	G	A	.	.	FS=0	GT	./.	./.
+11	108218045	.	A	C,G	.	.	FS=0	GT	./.	./.
+11	108218046	.	T	A	.	.	FS=0	GT	./.	./.
+12	12630318	.	G	A	.	.	FS=0	GT	./.	./.
+12	21168708	.	G	A	.	.	FS=0	GT	./.	./.
+12	21242919	.	G	A,C	.	.	FS=0	GT	./.	./.
+12	21242920	.	G	A	.	.	FS=0	GT	./.	./.
+12	21918681	.	TC	GT	.	.	.	GT	./.	./.
+12	21918682	.	C	T	.	.	FS=0	GT	./.	./.
+12	21918683	.	C	T	.	.	FS=0	GT	./.	./.
+12	25378561	.	G	A	.	.	FS=0	GT	./.	./.
+12	25378562	.	C	G,T	.	.	FS=0	GT	./.	./.
+12	25378647	.	T	A	.	.	FS=0	GT	./.	./.
+12	25380275	.	T	A	.	.	FS=0	GT	./.	./.
+12	25380276	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+12	25380277	.	G	C,T	.	.	FS=0	GT	./.	./.
+12	25380278	.	A	G	.	.	FS=0	GT	./.	./.
+12	25380279	.	C	T	.	.	FS=0	GT	./.	./.
+12	25398280	.	G	A	.	.	FS=0	GT	./.	./.
+12	25398280	.	GC	AA	.	.	.	GT	./.	./.
+12	25398281	.	C	G,T	.	.	FS=0	GT	./.	./.
+12	25398282	.	C	A,G	.	.	FS=0	GT	./.	./.
+12	25398283	.	A	C	.	.	FS=0	GT	./.	./.
+12	25398284	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+12	25398284	.	CC	AA	.	.	.	GT	./.	./.
+12	25398285	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+12	46230641	.	C	T	.	.	FS=0	GT	./.	./.
+12	47629873	.	T	C	.	.	FS=0	GT	./.	./.
+12	47629874	.	C	A,T	.	.	FS=0	GT	./.	./.
+12	49724313	.	G	T	.	.	FS=0	GT	./.	./.
+12	52385715	.	C	T	.	.	FS=0	GT	./.	./.
+12	53898557	.	G	T	.	.	FS=0	GT	./.	./.
+12	53898559	.	A	G	.	.	FS=0	GT	./.	./.
+12	56477631	.	T	A,G	.	.	FS=0	GT	./.	./.
+12	56478854	.	G	A,C	.	.	FS=0	GT	./.	./.
+12	56482341	.	G	A,T	.	.	FS=0	GT	./.	./.
+12	56482342	.	A	T	.	.	FS=0	GT	./.	./.
+12	57566959	.	C	A	.	.	FS=0	GT	./.	./.
+12	57566960	.	C	T	.	.	FS=0	GT	./.	./.
+12	58145430	.	C	A,T	.	.	FS=0	GT	./.	./.
+12	58145431	.	G	A,T	.	.	FS=0	GT	./.	./.
+12	58145436	.	T	A	.	.	FS=0	GT	./.	./.
+12	58145437	.	T	G	.	.	FS=0	GT	./.	./.
+12	108045467	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+12	112888198	.	G	A	.	.	FS=0	GT	./.	./.
+12	112888199	.	C	A,T	.	.	FS=0	GT	./.	./.
+12	112888210	.	G	A	.	.	FS=0	GT	./.	./.
+12	112888211	.	A	C,G	.	.	FS=0	GT	./.	./.
+12	112926888	.	G	T	.	.	FS=0	GT	./.	./.
+12	112926889	.	G	T	.	.	FS=0	GT	./.	./.
+12	112926908	.	C	G	.	.	FS=0	GT	./.	./.
+12	112926909	.	A	T	.	.	FS=0	GT	./.	./.
+12	112926910	.	G	C	.	.	FS=0	GT	./.	./.
+12	121176677	.	C	T	.	.	FS=0	GT	./.	./.
+12	121176678	.	G	A	.	.	FS=0	GT	./.	./.
+12	123351949	.	T	G	.	.	FS=0	GT	./.	./.
+12	130647553	.	C	A	.	.	FS=0	GT	./.	./.
+12	133250289	.	C	A	.	.	FS=0	GT	./.	./.
+12	133253184	.	G	C,T	.	.	FS=0	GT	./.	./.
+12	133253185	.	G	A	.	.	FS=0	GT	./.	./.
+13	20056686	.	T	C	.	.	FS=0	GT	./.	./.
+13	28592640	.	A	C	.	.	FS=0	GT	./.	./.
+13	28592641	.	T	A	.	.	FS=0	GT	./.	./.
+13	28592642	.	C	A,G	.	.	FS=0	GT	./.	./.
+13	73649905	.	G	A,C	.	.	FS=0	GT	./.	./.
+13	111372025	.	C	T	.	.	FS=0	GT	./.	./.
+14	23235899	.	C	T	.	.	FS=0	GT	./.	./.
+14	24424420	.	C	T	.	.	FS=0	GT	./.	./.
+14	31926584	.	G	A	.	.	FS=0	GT	./.	./.
+14	38061461	.	G	C	.	.	FS=0	GT	./.	./.
+14	38061463	.	T	C	.	.	FS=0	GT	./.	./.
+14	38724649	.	G	A	.	.	FS=0	GT	./.	./.
+14	38724650	.	C	T	.	.	FS=0	GT	./.	./.
+14	38724651	.	G	A	.	.	FS=0	GT	./.	./.
+14	47120473	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+14	52156572	.	T	C	.	.	FS=0	GT	./.	./.
+14	52156603	.	A	T	.	.	FS=0	GT	./.	./.
+14	52156604	.	G	T	.	.	FS=0	GT	./.	./.
+14	52156605	.	T	C	.	.	FS=0	GT	./.	./.
+14	63453898	.	C	T	.	.	FS=0	GT	./.	./.
+14	65544747	.	C	T	.	.	FS=0	GT	./.	./.
+14	65560514	.	T	C	.	.	FS=0	GT	./.	./.
+14	95557629	.	T	C,G	.	.	FS=0	GT	./.	./.
+14	95557630	.	C	G	.	.	FS=0	GT	./.	./.
+14	105246551	.	C	T	.	.	FS=0	GT	./.	./.
+14	105818768	.	A	C,G	.	.	FS=0	GT	./.	./.
+15	40675107	.	C	T	.	.	FS=0	GT	./.	./.
+15	43663574	.	G	A	.	.	FS=0	GT	./.	./.
+15	43663575	.	C	A	.	.	FS=0	GT	./.	./.
+15	45003745	.	A	C,G	.	.	FS=0	GT	./.	./.
+15	45003746	.	T	C,G	.	.	FS=0	GT	./.	./.
+15	45003747	.	G	A	.	.	FS=0	GT	./.	./.
+15	66727441	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+15	66727454	.	A	C	.	.	FS=0	GT	./.	./.
+15	66727455	.	G	C	.	.	FS=0	GT	./.	./.
+15	66729162	.	C	T	.	.	FS=0	GT	./.	./.
+15	66729162	.	CC	TT	.	.	.	GT	./.	./.
+15	66729163	.	C	A	.	.	FS=0	GT	./.	./.
+15	66729164	.	G	A	.	.	FS=0	GT	./.	./.
+15	72190944	.	A	G	.	.	FS=0	GT	./.	./.
+15	72190945	.	G	A	.	.	FS=0	GT	./.	./.
+15	72190946	.	G	A	.	.	FS=0	GT	./.	./.
+15	72873082	.	C	A	.	.	FS=0	GT	./.	./.
+15	85186892	.	C	T	.	.	FS=0	GT	./.	./.
+15	90631837	.	C	A	.	.	FS=0	GT	./.	./.
+15	90631838	.	C	A,T	.	.	FS=0	GT	./.	./.
+15	90631839	.	T	A,C	.	.	FS=0	GT	./.	./.
+15	90631934	.	C	A,T	.	.	FS=0	GT	./.	./.
+15	90631935	.	G	A	.	.	FS=0	GT	./.	./.
+15	90764695	.	C	T	.	.	FS=0	GT	./.	./.
+15	90764696	.	C	T	.	.	FS=0	GT	./.	./.
+15	100211761	.	C	T	.	.	FS=0	GT	./.	./.
+15	100211780	.	A	G	.	.	FS=0	GT	./.	./.
+16	1306346	.	C	G	.	.	FS=0	GT	./.	./.
+16	1306347	.	G	C	.	.	FS=0	GT	./.	./.
+16	2762757	.	A	C	.	.	FS=0	GT	./.	./.
+16	3788617	.	C	A,T	.	.	FS=0	GT	./.	./.
+16	3788618	.	G	A,C	.	.	FS=0	GT	./.	./.
+16	28167671	.	A	G	.	.	FS=0	GT	./.	./.
+16	28167672	.	T	C	.	.	FS=0	GT	./.	./.
+16	31131665	.	C	T	.	.	FS=0	GT	./.	./.
+16	31131666	.	G	A	.	.	FS=0	GT	./.	./.
+16	50357576	.	A	C	.	.	FS=0	GT	./.	./.
+16	56782199	.	G	A	.	.	FS=0	GT	./.	./.
+16	56782200	.	A	G	.	.	FS=0	GT	./.	./.
+16	56782202	.	C	T	.	.	FS=0	GT	./.	./.
+16	58149339	.	C	T	.	.	FS=0	GT	./.	./.
+16	58149340	.	G	A	.	.	FS=0	GT	./.	./.
+16	68055780	.	G	A	.	.	FS=0	GT	./.	./.
+16	68055781	.	G	A	.	.	FS=0	GT	./.	./.
+16	68772218	.	C	T	.	.	FS=0	GT	./.	./.
+17	4496467	.	G	T	.	.	FS=0	GT	./.	./.
+17	6941599	.	T	C	.	.	FS=0	GT	./.	./.
+17	7576851	.	A	C	.	.	FS=0	GT	./.	./.
+17	7577081	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7577082	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577092	.	C	G	.	.	FS=0	GT	./.	./.
+17	7577093	.	C	G,T	.	.	FS=0	GT	./.	./.
+17	7577094	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	7577094	.	GG	AA	.	.	.	GT	./.	./.
+17	7577095	.	G	C	.	.	FS=0	GT	./.	./.
+17	7577096	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7577096	.	TC	GG	.	.	.	GT	./.	./.
+17	7577097	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577098	.	T	A	.	.	FS=0	GT	./.	./.
+17	7577099	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577100	.	T	A,C	.	.	FS=0	GT	./.	./.
+17	7577105	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7577106	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7577113	.	A	T	.	.	FS=0	GT	./.	./.
+17	7577114	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577115	.	A	G	.	.	FS=0	GT	./.	./.
+17	7577117	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7577118	.	C	A,G	.	.	FS=0	GT	./.	./.
+17	7577120	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577121	.	G	A,T	.	.	FS=0	GT	./.	./.
+17	7577121	.	GC	TT	.	.	.	GT	./.	./.
+17	7577123	.	A	C,T	.	.	FS=0	GT	./.	./.
+17	7577123	.	AC	TT	.	.	.	GT	./.	./.
+17	7577124	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7577128	.	A	C	.	.	FS=0	GT	./.	./.
+17	7577129	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7577130	.	A	C,T	.	.	FS=0	GT	./.	./.
+17	7577141	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7577142	.	C	A,G	.	.	FS=0	GT	./.	./.
+17	7577517	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7577518	.	T	A	.	.	FS=0	GT	./.	./.
+17	7577534	.	C	A	.	.	FS=0	GT	./.	./.
+17	7577535	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577536	.	T	A,C	.	.	FS=0	GT	./.	./.
+17	7577537	.	CC	TT	.	.	.	GT	./.	./.
+17	7577538	.	C	A,G	.	.	FS=0	GT	./.	./.
+17	7577539	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	7577547	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577548	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577549	.	G	A	.	.	FS=0	GT	./.	./.
+17	7577550	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7577551	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577555	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	7577556	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577557	.	A	C	.	.	FS=0	GT	./.	./.
+17	7577559	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7577560	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7577565	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	7577566	.	T	C	.	.	FS=0	GT	./.	./.
+17	7577568	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7577569	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7577570	.	C	A	.	.	FS=0	GT	./.	./.
+17	7577571	.	A	T	.	.	FS=0	GT	./.	./.
+17	7577572	.	T	C	.	.	FS=0	GT	./.	./.
+17	7577573	.	G	C	.	.	FS=0	GT	./.	./.
+17	7577574	.	T	C	.	.	FS=0	GT	./.	./.
+17	7577575	.	A	C,T	.	.	FS=0	GT	./.	./.
+17	7577579	.	G	C	.	.	FS=0	GT	./.	./.
+17	7577580	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	7577581	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7577609	.	C	A	.	.	FS=0	GT	./.	./.
+17	7578175	.	A	C	.	.	FS=0	GT	./.	./.
+17	7578190	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	7578191	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578202	.	A	C,T	.	.	FS=0	GT	./.	./.
+17	7578203	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7578204	.	A	C	.	.	FS=0	GT	./.	./.
+17	7578205	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7578206	.	T	C	.	.	FS=0	GT	./.	./.
+17	7578208	.	T	A,C	.	.	FS=0	GT	./.	./.
+17	7578211	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7578212	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	7578234	.	A	T	.	.	FS=0	GT	./.	./.
+17	7578235	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7578236	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578262	.	C	G	.	.	FS=0	GT	./.	./.
+17	7578263	.	G	A	.	.	FS=0	GT	./.	./.
+17	7578264	.	G	C	.	.	FS=0	GT	./.	./.
+17	7578265	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578266	.	T	A	.	.	FS=0	GT	./.	./.
+17	7578268	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578269	.	G	A	.	.	FS=0	GT	./.	./.
+17	7578271	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7578272	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7578369	.	A	C	.	.	FS=0	GT	./.	./.
+17	7578393	.	A	C	.	.	FS=0	GT	./.	./.
+17	7578394	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7578395	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7578402	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7578403	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7578404	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7578406	.	C	T	.	.	FS=0	GT	./.	./.
+17	7578407	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	7578412	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578413	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	7578441	.	G	C	.	.	FS=0	GT	./.	./.
+17	7578442	.	T	C	.	.	FS=0	GT	./.	./.
+17	7578443	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7578478	.	G	C,T	.	.	FS=0	GT	./.	./.
+17	7578478	.	GG	AA	.	.	.	GT	./.	./.
+17	7578479	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7578498	.	C	A	.	.	FS=0	GT	./.	./.
+17	7578499	.	T	A,G	.	.	FS=0	GT	./.	./.
+17	7578500	.	G	A	.	.	FS=0	GT	./.	./.
+17	7578507	.	G	C,T	.	.	FS=0	GT	./.	./.
+17	7578508	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7578509	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7578525	.	G	C,T	.	.	FS=0	GT	./.	./.
+17	7578526	.	C	A,G,T	.	.	FS=0	GT	./.	./.
+17	7578527	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	7578534	.	C	A	.	.	FS=0	GT	./.	./.
+17	7578535	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+17	7578536	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	7578555	.	C	A	.	.	FS=0	GT	./.	./.
+17	7579310	.	A	C	.	.	FS=0	GT	./.	./.
+17	7579312	.	C	A	.	.	FS=0	GT	./.	./.
+17	7579313	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	7579314	.	T	G	.	.	FS=0	GT	./.	./.
+17	7579355	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+17	7579591	.	C	A	.	.	FS=0	GT	./.	./.
+17	7796794	.	A	C	.	.	FS=0	GT	./.	./.
+17	11666863	.	G	A	.	.	FS=0	GT	./.	./.
+17	11666865	.	A	C	.	.	FS=0	GT	./.	./.
+17	19285118	.	C	A	.	.	FS=0	GT	./.	./.
+17	21319942	.	G	T	.	.	FS=0	GT	./.	./.
+17	27437604	.	G	T	.	.	FS=0	GT	./.	./.
+17	27437605	.	C	G	.	.	FS=0	GT	./.	./.
+17	37868208	.	C	A,T	.	.	FS=0	GT	./.	./.
+17	37879658	.	G	A	.	.	FS=0	GT	./.	./.
+17	37880219	.	T	A	.	.	FS=0	GT	./.	./.
+17	37880219	.	TT	CC	.	.	.	GT	./.	./.
+17	37880220	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	37880261	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+17	37881000	.	G	A,C	.	.	FS=0	GT	./.	./.
+17	37881332	.	G	A	.	.	FS=0	GT	./.	./.
+17	38240101	.	G	A	.	.	FS=0	GT	./.	./.
+17	38510602	.	T	A	.	.	FS=0	GT	./.	./.
+17	38510603	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	40481576	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	46620496	.	A	G	.	.	FS=0	GT	./.	./.
+17	47696424	.	G	C	.	.	FS=0	GT	./.	./.
+17	47696425	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	47696426	.	A	C,T	.	.	FS=0	GT	./.	./.
+17	47696430	.	C	A	.	.	FS=0	GT	./.	./.
+17	47696431	.	C	G	.	.	FS=0	GT	./.	./.
+17	47696432	.	A	C,G	.	.	FS=0	GT	./.	./.
+17	47696642	.	G	C	.	.	FS=0	GT	./.	./.
+17	47696643	.	A	C	.	.	FS=0	GT	./.	./.
+17	47696644	.	A	C	.	.	FS=0	GT	./.	./.
+17	47696688	.	T	C,G	.	.	FS=0	GT	./.	./.
+17	47696689	.	A	T	.	.	FS=0	GT	./.	./.
+17	59479224	.	G	T	.	.	FS=0	GT	./.	./.
+17	60814506	.	T	A	.	.	FS=0	GT	./.	./.
+17	60814507	.	C	T	.	.	FS=0	GT	./.	./.
+17	60814508	.	C	T	.	.	FS=0	GT	./.	./.
+17	73887266	.	T	A	.	.	FS=0	GT	./.	./.
+17	73887267	.	G	T	.	.	FS=0	GT	./.	./.
+17	76993313	.	T	C	.	.	FS=0	GT	./.	./.
+17	79650840	.	C	T	.	.	FS=0	GT	./.	./.
+17	80400154	.	A	C	.	.	FS=0	GT	./.	./.
+18	5892007	.	C	T	.	.	FS=0	GT	./.	./.
+18	5892008	.	G	A,T	.	.	FS=0	GT	./.	./.
+18	6882152	.	T	C,G	.	.	FS=0	GT	./.	./.
+18	31537451	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+18	45368211	.	G	C	.	.	FS=0	GT	./.	./.
+18	48591888	.	G	C,T	.	.	FS=0	GT	./.	./.
+18	48591889	.	A	C,G	.	.	FS=0	GT	./.	./.
+18	48591918	.	C	G,T	.	.	FS=0	GT	./.	./.
+18	48591919	.	G	A,C	.	.	FS=0	GT	./.	./.
+18	48593405	.	G	A,T	.	.	FS=0	GT	./.	./.
+18	48593406	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+18	48604787	.	G	C,T	.	.	FS=0	GT	./.	./.
+18	48604788	.	A	G,T	.	.	FS=0	GT	./.	./.
+18	48604789	.	C	A	.	.	FS=0	GT	./.	./.
+18	59919898	.	C	A	.	.	FS=0	GT	./.	./.
+18	74154244	.	G	T	.	.	FS=0	GT	./.	./.
+19	971952	.	A	G	.	.	FS=0	GT	./.	./.
+19	3118942	.	A	T	.	.	FS=0	GT	./.	./.
+19	3449068	.	T	C	.	.	FS=0	GT	./.	./.
+19	4048233	.	C	A	.	.	FS=0	GT	./.	./.
+19	4048234	.	T	G	.	.	FS=0	GT	./.	./.
+19	4117549	.	A	C	.	.	FS=0	GT	./.	./.
+19	4117551	.	A	C	.	.	FS=0	GT	./.	./.
+19	6177251	.	T	G	.	.	FS=0	GT	./.	./.
+19	11144113	.	G	A,T	.	.	FS=0	GT	./.	./.
+19	11144114	.	G	T	.	.	FS=0	GT	./.	./.
+19	12874530	.	G	A	.	.	FS=0	GT	./.	./.
+19	12874530	.	GG	AA	.	.	.	GT	./.	./.
+19	12874532	.	A	C	.	.	FS=0	GT	./.	./.
+19	14247206	.	G	A	.	.	FS=0	GT	./.	./.
+19	14247206	.	GG	AA	.	.	.	GT	./.	./.
+19	14627500	.	T	C	.	.	FS=0	GT	./.	./.
+19	33444555	.	C	A	.	.	FS=0	GT	./.	./.
+19	34710328	.	C	T	.	.	FS=0	GT	./.	./.
+19	34710329	.	G	A	.	.	FS=0	GT	./.	./.
+19	36037641	.	C	T	.	.	FS=0	GT	./.	./.
+19	36037642	.	C	T	.	.	FS=0	GT	./.	./.
+19	36278842	.	A	C	.	.	FS=0	GT	./.	./.
+19	43699348	.	C	T	.	.	FS=0	GT	./.	./.
+19	47535945	.	C	G,T	.	.	FS=0	GT	./.	./.
+19	50169104	.	C	T	.	.	FS=0	GT	./.	./.
+19	50169131	.	C	T	.	.	FS=0	GT	./.	./.
+19	50169132	.	C	T	.	.	FS=0	GT	./.	./.
+19	52394795	.	T	G	.	.	FS=0	GT	./.	./.
+19	52394796	.	C	A,T	.	.	FS=0	GT	./.	./.
+19	52715971	.	C	G,T	.	.	FS=0	GT	./.	./.
+19	52715982	.	C	G,T	.	.	FS=0	GT	./.	./.
+19	52715983	.	G	A	.	.	FS=0	GT	./.	./.
+19	54967251	.	T	G	.	.	FS=0	GT	./.	./.
+19	55417934	.	G	A	.	.	FS=0	GT	./.	./.
+19	55417935	.	A	G	.	.	FS=0	GT	./.	./.
+19	55417936	.	A	G	.	.	FS=0	GT	./.	./.
+19	59010864	.	G	A	.	.	FS=0	GT	./.	./.
+19	59010864	.	GG	AA	.	.	.	GT	./.	./.
+20	3209652	.	A	C	.	.	FS=0	GT	./.	./.
+20	20033086	.	G	A	.	.	FS=0	GT	./.	./.
+20	20033087	.	G	A	.	.	FS=0	GT	./.	./.
+20	23028480	.	G	A	.	.	FS=0	GT	./.	./.
+20	33762727	.	G	T	.	.	FS=0	GT	./.	./.
+20	34302144	.	T	A	.	.	FS=0	GT	./.	./.
+20	34302145	.	G	A	.	.	FS=0	GT	./.	./.
+20	39832810	.	G	T	.	.	FS=0	GT	./.	./.
+20	57484420	.	C	T	.	.	FS=0	GT	./.	./.
+20	57484421	.	G	A,T	.	.	FS=0	GT	./.	./.
+21	30365209	.	G	A,T	.	.	FS=0	GT	./.	./.
+21	30440001	.	A	G	.	.	FS=0	GT	./.	./.
+21	44514777	.	T	C,G	.	.	FS=0	GT	./.	./.
+21	44524456	.	G	A,T	.	.	FS=0	GT	./.	./.
+21	44524486	.	A	G	.	.	FS=0	GT	./.	./.
+21	44524487	.	T	C	.	.	FS=0	GT	./.	./.
+22	22127164	.	C	A,T	.	.	FS=0	GT	./.	./.
+22	24964111	.	G	A,C,T	.	.	FS=0	GT	./.	./.
+22	24964112	.	G	T	.	.	FS=0	GT	./.	./.
+22	26228956	.	C	A,T	.	.	FS=0	GT	./.	./.
+22	26228957	.	C	T	.	.	FS=0	GT	./.	./.
+22	26228958	.	C	T	.	.	FS=0	GT	./.	./.
+22	41565529	.	G	A,T	.	.	FS=0	GT	./.	./.
+22	41566475	.	A	C,G,T	.	.	FS=0	GT	./.	./.
+22	41566476	.	T	C	.	.	FS=0	GT	./.	./.
+22	42608868	.	G	A	.	.	FS=0	GT	./.	./.
+22	42608869	.	G	A	.	.	FS=0	GT	./.	./.
+22	46790129	.	C	A	.	.	FS=0	GT	./.	./.
+22	46790131	.	A	C	.	.	FS=0	GT	./.	./.
+22	50659212	.	A	C	.	.	FS=0	GT	./.	./.
+X	3241350	.	C	T	.	.	FS=0	GT	./.	./.
+X	17705940	.	T	C	.	.	FS=0	GT	./.	./.
+X	19369427	.	G	A	.	.	FS=0	GT	./.	./.
+X	44922802	.	C	T	.	.	FS=0	GT	./.	./.
+X	47426120	.	T	G	.	.	FS=0	GT	./.	./.
+X	47426121	.	C	G,T	.	.	FS=0	GT	./.	./.
+X	47426122	.	C	T	.	.	FS=0	GT	./.	./.
+X	70349258	.	C	G,T	.	.	FS=0	GT	./.	./.
+X	79698243	.	A	C,G	.	.	FS=0	GT	./.	./.
+X	92926798	.	C	A,T	.	.	FS=0	GT	./.	./.
+X	92926799	.	T	A,C,G	.	.	FS=0	GT	./.	./.
+X	140996328	.	A	C	.	.	FS=0	GT	./.	./.
+X	150832763	.	G	A	.	.	FS=0	GT	./.	./.
+X	152860004	.	C	A	.	.	FS=0	GT	./.	./.
