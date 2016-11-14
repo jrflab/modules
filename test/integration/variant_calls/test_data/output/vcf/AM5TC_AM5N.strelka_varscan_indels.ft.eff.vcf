@@ -1,0 +1,117 @@
+##fileformat=VCFv4.1
+##fileDate=Fri Nov 11 02:02:39 2016
+##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
+##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
+##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=AD,Number=A,Type=Integer,Description="allelic depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
+##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
+##FILTER=<ID=targetInterval,Description="no overlap with intervals">
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##SnpEffVersion="4.1e (build 2015-04-22), by Pablo Cingolani"
+##SnpEffCmd="SnpEff  -i vcf -o vcf hg19 -s vcf/AM5TC_AM5N.strelka_varscan_indels.ft.eff_summary.html vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf "
+##INFO=<ID=ANN,Number=.,Type=String,Description="Functional annotations: 'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO' ">
+##INFO=<ID=LOF,Number=.,Type=String,Description="Predicted loss of function effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected' ">
+##INFO=<ID=NMD,Number=.,Type=String,Description="Predicted nonsense mediated decay effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected' ">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
+2	54128702	.	G	GA	.	PASS	SS=Somatic;DP=117;VARPVAL=1.0;SOMPVAL=0.0300023399436;ANN=GA|splice_region_variant&intron_variant|LOW|PSME4|PSME4|transcript|NM_014614.2|Coding|27/46|c.3076-7_3076-6insT||||||	GT:DP:AD:VAF	0/1:40:34,6:0.15	0/0:49:48,1:0.0204
+2	110325590	.	AT	A	.	PASS	SS=Somatic;DP=146;VARPVAL=1.0;SOMPVAL=0.0159381329738;ANN=A|intron_variant|MODIFIER|SEPT10|SEPT10|transcript|NM_144710.3|Coding|5/10|c.601-38delA||||||	GT:DP:AD:VAF	0/1:50:43,7:0.14	0/0:60:59,1:0.0167
+2	120567392	.	A	AT	.	PASS	SS=Somatic;DP=106;VARPVAL=1.0;SOMPVAL=0.0223154453716;ANN=AT|intron_variant|MODIFIER|PTPN4|PTPN4|transcript|NM_002830.3|Coding|1/26|c.-17-21_-17-20insT||||||	GT:DP:AD:VAF	0/1:39:27,12:0.3077	0/0:52:46,6:0.1154
+5	54701447	.	A	AT	.	PASS	SS=Somatic;DP=123;VARPVAL=1.0;SOMPVAL=0.0104890931336;ANN=AT|intron_variant|MODIFIER|SKIV2L2|SKIV2L2|transcript|NM_015360.4|Coding|22/26|c.2645+31_2645+32insT||||||	GT:DP:AD:VAF	0/1:39:34,5:0.1282	0/0:55:55,0:0.0
+5	67591103	.	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=318;VARPVAL=1.0;SOMPVAL=4.01879376268e-12;ANN=A|disruptive_inframe_deletion|MODERATE|PIK3R1|PIK3R1|transcript|NM_181523.2|Coding|13/16|c.1700_1711delAACCAGACCTTA|p.Lys567_Leu570del|2280/6975|1700/2175|567/724||INFO_REALIGN_3_PRIME	GT:DP:AD:VAF	0/1:94:71,23:0.2447	0/0:176:176,0:0.0
+5	67591283	.	TGA	T	.	PASS	SS=Somatic;DP=299;VARPVAL=1.0;SOMPVAL=3.19412999781e-21;ANN=T|frameshift_variant|HIGH|PIK3R1|PIK3R1|transcript|NM_181523.2|Coding|14/16|c.1782_1783delGA|p.Leu594fs|2362/6975|1782/2175|594/724||;LOF=(PIK3R1|PIK3R1|1|1.00)	GT:DP:AD:VAF	0/1:105:63,42:0.4	0/0:173:173,0:0.0
+5	77745862	.	G	GT	.	PASS	SS=Somatic;DP=72;VARPVAL=1.0;SOMPVAL=0.0190593890045;ANN=GT|splice_region_variant&intron_variant|LOW|SCAMP1|SCAMP1|transcript|NM_004866.5|Coding|7/8|c.733+5_733+6insT||||||	GT:DP:AD:VAF	0/1:25:19,6:0.24	0/0:34:33,1:0.0294
+6	73102522	.	A	AT	.	PASS	SS=Somatic;DP=89;VARPVAL=1.0;SOMPVAL=0.0436577311577;ANN=AT|intron_variant|MODIFIER|RIMS1|RIMS1|transcript|NM_014989.5|Coding|31/33|c.4618+10_4618+11insT||||||	GT:DP:AD:VAF	0/1:31:27,4:0.129	0/0:35:35,0:0.0
+7	47925659	.	CA	C	.	PASS	SS=Somatic;DP=184;VARPVAL=1.0;SOMPVAL=2.13372471975e-10;ANN=C|splice_region_variant&intron_variant|LOW|PKD1L1|PKD1L1|transcript|NM_138295.3|Coding|17/56|c.2837-8delT||||||	GT:DP:AD:VAF	0/1:88:56,32:0.3636	0/0:72:72,0:0.0
+7	91714092	.	AT	A	.	PASS	SS=Somatic;DP=34;VARPVAL=1.0;SOMPVAL=0.0161017688499;ANN=A|intron_variant|MODIFIER|AKAP9|AKAP9|transcript|NM_005751.4|Coding|34/49|c.8711-40delT||||||	GT:DP:AD:VAF	0/1:13:6,7:0.5385	0/0:22:19,3:0.1364
+8	6673269	.	TA	T	.	PASS	SS=Somatic;DP=162;VARPVAL=1.0;SOMPVAL=0.0329388851733;ANN=T|intron_variant|MODIFIER|XKR5|XKR5|transcript|NM_207411.4|Coding|7/7|c.919+58delT||||||	GT:DP:AD:VAF	0/1:66:54,12:0.1818	0/0:54:51,3:0.0556
+9	139410466	.	C	CG	.	PASS	SS=Somatic;DP=45;VARPVAL=1.0;SOMPVAL=1.47659222364e-09;ANN=CG|frameshift_variant|HIGH|NOTCH1|NOTCH1|transcript|NM_017617.3|Coding|10/34|c.1635dupC|p.Gly546fs|1635/9295|1635/7668|545/2555||,CG|downstream_gene_variant|MODIFIER|MIR4673|MIR4673|transcript|NR_039820.1|Noncoding||n.*59dupC|||||3553|;LOF=(NOTCH1|NOTCH1|1|1.00)	GT:DP:AD:VAF	0/1:26:6,20:0.7692	0/0:33:32,1:0.0303
+10	98273390	.	GGCA	G	.	PASS	SS=Somatic;DP=133;VARPVAL=1.0;SOMPVAL=0.0151840081303;ANN=G|disruptive_inframe_deletion|MODERATE|TLL2|TLL2|transcript|NM_012465.3|Coding|1/21|c.50_52delTGC|p.Leu17del|293/6771|50/3048|17/1015||,G|downstream_gene_variant|MODIFIER|TM9SF3|TM9SF3|transcript|NM_020123.3|Coding||c.*1987_*1987delTGC|||||4476|	GT:DP:AD:VAF	0/1:44:39,5:0.1136	0/0:55:55,0:0.0
+10	124457552	.	G	GT	.	PASS	SS=Somatic;DP=346;VARPVAL=1.0;SOMPVAL=3.98314739659e-13;ANN=GT|frameshift_variant|HIGH|C10orf120|C10orf120|transcript|NM_001010912.2|Coding|3/3|c.704dupA|p.Asn235fs|736/1064|704/1008|235/335||;LOF=(C10orf120|C10orf120|1|1.00)	GT:DP:AD:VAF	0/1:130:94,36:0.2769	0/0:158:157,1:0.0063
+11	112832391	.	AT	A	.	PASS	SS=Somatic;DP=162;VARPVAL=1.0;SOMPVAL=0.0477259814061;ANN=A|splice_region_variant&intron_variant|LOW|NCAM1|NCAM1|transcript|NM_001242607.1|Coding|2/20|c.52+6delT||||||,A|intron_variant|MODIFIER|LOC101928847|LOC101928847|transcript|NR_120563.1|Noncoding|1/2|n.252-194delA||||||	GT:DP:AD:VAF	0/1:69:58,11:0.1594	0/0:46:44,2:0.0435
+X	135049596	.	A	AAT	.	PASS	SS=Somatic;DP=140;VARPVAL=1.0;SOMPVAL=8.81606388459e-09;ANN=AAT|frameshift_variant|HIGH|MMGT1|MMGT1|transcript|NM_173470.1|Coding|3/4|c.187_188dupAT|p.Ala64fs|488/3648|188/396|63/131||;LOF=(MMGT1|MMGT1|1|1.00)	GT:DP:AD:VAF	0/1:53:34,19:0.3585	0/0:72:72,0:0.0

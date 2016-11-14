@@ -1,0 +1,265 @@
+##fileformat=VCFv4.1
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/dbsnp_138.b37.gmaf.vcf vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
+##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
+##fileDate=20161111
+##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##INFO=<ID=1000g2014oct_afr,Number=1,Type=Float,Description="1000g2014oct_afr annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_all,Number=1,Type=Float,Description="1000g2014oct_all annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_eas,Number=1,Type=Float,Description="1000g2014oct_eas annotation provided by ANNOVAR">
+##INFO=<ID=1000g2014oct_eur,Number=1,Type=Float,Description="1000g2014oct_eur annotation provided by ANNOVAR">
+##INFO=<ID=AA,Number=1,Type=String,Description="Peptide annotation">
+##INFO=<ID=AAChange_refGene,Number=.,Type=String,Description="AAChange_refGene annotation provided by ANNOVAR">
+##INFO=<ID=ALLELE_END,Number=0,Type=Flag,Description="Flag the end of ANNOVAR annotation for one alternative allele">
+##INFO=<ID=ANN,Number=.,Type=String,Description="Functional annotations: 'Allele | Annotation | Annotation_Impact | Gene_Name | Gene_ID | Feature_Type | Feature_ID | Transcript_BioType | Rank | HGVS.c | HGVS.p | cDNA.pos / cDNA.length | CDS.pos / CDS.length | AA.pos / AA.length | Distance | ERRORS / WARNINGS / INFO'">
+##INFO=<ID=ANNOVAR_DATE,Number=1,Type=String,Description="Flag the start of ANNOVAR annotation for one alternative allele">
+##INFO=<ID=ASP,Number=0,Type=Flag,Description="Is Assembly specific. This is set if the variant only maps to one assembly">
+##INFO=<ID=ASS,Number=0,Type=Flag,Description="In acceptor splice site FxnCode = 73">
+##INFO=<ID=CADD_phred,Number=.,Type=String,Description="CADD_phred annotation provided by ANNOVAR">
+##INFO=<ID=CADD_raw,Number=.,Type=String,Description="CADD_raw annotation provided by ANNOVAR">
+##INFO=<ID=CAF,Number=.,Type=String,Description="An ordered, comma delimited list of allele frequencies based on 1000Genomes, starting with the reference allele followed by alternate alleles as ordered in the ALT column. Where a 1000Genomes alternate allele is not in the dbSNPs alternate allele set, the allele is added to the ALT column.  The minor allele is the second largest value in the list, and was previuosly reported in VCF as the GMAF.  This is the GMAF reported on the RefSNP and EntrezSNP pages and VariationReporter">
+##INFO=<ID=CDA,Number=0,Type=Flag,Description="Variation is interrogated in a clinical diagnostic assay">
+##INFO=<ID=CDS,Number=1,Type=String,Description="CDS annotation">
+##INFO=<ID=CFL,Number=0,Type=Flag,Description="Has Assembly conflict. This is for weight 1 and 2 variant that maps to different chromosomes on different assemblies.">
+##INFO=<ID=CLNACC,Number=.,Type=String,Description="Variant Accession and Versions">
+##INFO=<ID=CLNALLE,Number=.,Type=Integer,Description="Variant alleles from REF or ALT columns.  0 is REF, 1 is the first ALT allele, etc.  This is used to match alleles with other corresponding clinical (CLN) INFO tags.  A value of -1 indicates that no allele was found to match a corresponding HGVS allele name.">
+##INFO=<ID=CLNDBN,Number=.,Type=String,Description="Variant disease name">
+##INFO=<ID=CLNDSDB,Number=.,Type=String,Description="Variant disease database name">
+##INFO=<ID=CLNDSDBID,Number=.,Type=String,Description="Variant disease database ID">
+##INFO=<ID=CLNHGVS,Number=.,Type=String,Description="Variant names from HGVS.    The order of these variants corresponds to the order of the info in the other clinical  INFO tags.">
+##INFO=<ID=CLNORIGIN,Number=.,Type=String,Description="Allele Origin. One or more of the following values may be added: 0 - unknown; 1 - germline; 2 - somatic; 4 - inherited; 8 - paternal; 16 - maternal; 32 - de-novo; 64 - biparental; 128 - uniparental; 256 - not-tested; 512 - tested-inconclusive; 1073741824 - other">
+##INFO=<ID=CLNREVSTAT,Number=.,Type=String,Description="ClinVar Review Status, mult - Classified by multiple submitters, single - Classified by single submitter, not - Not classified by submitter, exp - Reviewed by expert panel, prof - Reviewed by professional society">
+##INFO=<ID=CLNSIG,Number=.,Type=String,Description="Variant Clinical Significance, 0 - unknown, 1 - untested, 2 - non-pathogenic, 3 - probable-non-pathogenic, 4 - probable-pathogenic, 5 - pathogenic, 6 - drug-response, 7 - histocompatibility, 255 - other">
+##INFO=<ID=CLNSRC,Number=.,Type=String,Description="Variant Clinical Chanels">
+##INFO=<ID=CLNSRCID,Number=.,Type=String,Description="Variant Clinical Channel IDs">
+##INFO=<ID=CNT,Number=1,Type=Integer,Description="How many samples have this mutation">
+##INFO=<ID=COMMON,Number=1,Type=Integer,Description="RS is a common SNP.  A common SNP is one that has at least one 1000Genomes population with a minor allele of frequency >= 1% and for which 2 or more founders contribute to that minor allele frequency.">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
+##INFO=<ID=DSS,Number=0,Type=Flag,Description="In donor splice-site FxnCode = 75">
+##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=ExonicFunc_refGene,Number=.,Type=String,Description="ExonicFunc_refGene annotation provided by ANNOVAR">
+##INFO=<ID=FATHMM_pred,Number=.,Type=String,Description="FATHMM_pred annotation provided by ANNOVAR">
+##INFO=<ID=FATHMM_score,Number=.,Type=String,Description="FATHMM_score annotation provided by ANNOVAR">
+##INFO=<ID=Func_refGene,Number=.,Type=String,Description="Func_refGene annotation provided by ANNOVAR">
+##INFO=<ID=G5,Number=0,Type=Flag,Description=">5% minor allele frequency in 1+ populations">
+##INFO=<ID=G5A,Number=0,Type=Flag,Description=">5% minor allele frequency in each and all populations">
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">
+##INFO=<ID=GENEINFO,Number=1,Type=String,Description="Pairs each of gene symbol:gene id.  The gene symbol and id are delimited by a colon (:) and each pair is delimited by a vertical bar (|)">
+##INFO=<ID=GERP++_RS,Number=.,Type=String,Description="GERP++_RS annotation provided by ANNOVAR">
+##INFO=<ID=GMAF,Number=1,Type=Float,Description="global minor allele frequency from 1000g">
+##INFO=<ID=GNO,Number=0,Type=Flag,Description="Genotypes available. The variant has individual genotype (in SubInd table).">
+##INFO=<ID=GeneDetail_refGene,Number=.,Type=String,Description="GeneDetail_refGene annotation provided by ANNOVAR">
+##INFO=<ID=Gene_refGene,Number=.,Type=String,Description="Gene_refGene annotation provided by ANNOVAR">
+##INFO=<ID=HD,Number=0,Type=Flag,Description="Marker is on high density genotyping kit (50K density or greater).  The variant may have phenotype associations present in dbGaP.">
+##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
+##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
+##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
+##INFO=<ID=INT,Number=0,Type=Flag,Description="In Intron FxnCode = 6">
+##INFO=<ID=KGPROD,Number=0,Type=Flag,Description="Has 1000 Genome submission">
+##INFO=<ID=KGPhase1,Number=0,Type=Flag,Description="1000 Genome phase 1 (incl. June Interim phase 1)">
+##INFO=<ID=KGPhase3,Number=0,Type=Flag,Description="1000 Genome phase 3">
+##INFO=<ID=KGPilot123,Number=0,Type=Flag,Description="1000 Genome discovery all pilots 2010(1,2,3)">
+##INFO=<ID=KGValidated,Number=0,Type=Flag,Description="1000 Genome validated">
+##INFO=<ID=LOF,Number=.,Type=String,Description="Predicted loss of function effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
+##INFO=<ID=LRT_pred,Number=.,Type=String,Description="LRT_pred annotation provided by ANNOVAR">
+##INFO=<ID=LRT_score,Number=.,Type=String,Description="LRT_score annotation provided by ANNOVAR">
+##INFO=<ID=LR_pred,Number=.,Type=String,Description="LR_pred annotation provided by ANNOVAR">
+##INFO=<ID=LR_score,Number=.,Type=String,Description="LR_score annotation provided by ANNOVAR">
+##INFO=<ID=LSD,Number=0,Type=Flag,Description="Submitted from a locus-specific database">
+##INFO=<ID=MTP,Number=0,Type=Flag,Description="Microattribution/third-party annotation(TPA:GWAS,PAGE)">
+##INFO=<ID=MUT,Number=0,Type=Flag,Description="Is mutation (journal citation, explicit fact): a low frequency variation that is cited in journal and other reputable sources">
+##INFO=<ID=MutationAssessor_pred,Number=.,Type=String,Description="MutationAssessor_pred annotation provided by ANNOVAR">
+##INFO=<ID=MutationAssessor_score,Number=.,Type=String,Description="MutationAssessor_score annotation provided by ANNOVAR">
+##INFO=<ID=MutationTaster_pred,Number=.,Type=String,Description="MutationTaster_pred annotation provided by ANNOVAR">
+##INFO=<ID=MutationTaster_score,Number=.,Type=String,Description="MutationTaster_score annotation provided by ANNOVAR">
+##INFO=<ID=NMD,Number=.,Type=String,Description="Predicted nonsense mediated decay effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected'">
+##INFO=<ID=NOC,Number=0,Type=Flag,Description="Contig allele not present in variant allele list. The reference sequence allele at the mapped position is not present in the variant allele list, adjusted for orientation.">
+##INFO=<ID=NOV,Number=0,Type=Flag,Description="Rs cluster has non-overlapping allele sets. True when rs set has more than 2 alleles from different submissions and these sets share no alleles in common.">
+##INFO=<ID=NSF,Number=0,Type=Flag,Description="Has non-synonymous frameshift A coding region variation where one allele in the set changes all downstream amino acids. FxnClass = 44">
+##INFO=<ID=NSM,Number=0,Type=Flag,Description="Has non-synonymous missense A coding region variation where one allele in the set changes protein peptide. FxnClass = 42">
+##INFO=<ID=NSN,Number=0,Type=Flag,Description="Has non-synonymous nonsense A coding region variation where one allele in the set changes to STOP codon (TER). FxnClass = 41">
+##INFO=<ID=OM,Number=0,Type=Flag,Description="Has OMIM/OMIA">
+##INFO=<ID=OTH,Number=0,Type=Flag,Description="Has other variant with exactly the same set of mapped positions on NCBI refernce assembly.">
+##INFO=<ID=OTHERKG,Number=0,Type=Flag,Description="non-1000 Genome submission">
+##INFO=<ID=PH3,Number=0,Type=Flag,Description="HAP_MAP Phase 3 genotyped: filtered, non-redundant">
+##INFO=<ID=PM,Number=0,Type=Flag,Description="Variant is Precious(Clinical,Pubmed Cited)">
+##INFO=<ID=PMC,Number=0,Type=Flag,Description="Links exist to PubMed Central article">
+##INFO=<ID=Polyphen2_HDIV_pred,Number=.,Type=String,Description="Polyphen2_HDIV_pred annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HDIV_score,Number=.,Type=String,Description="Polyphen2_HDIV_score annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HVAR_pred,Number=.,Type=String,Description="Polyphen2_HVAR_pred annotation provided by ANNOVAR">
+##INFO=<ID=Polyphen2_HVAR_score,Number=.,Type=String,Description="Polyphen2_HVAR_score annotation provided by ANNOVAR">
+##INFO=<ID=R3,Number=0,Type=Flag,Description="In 3' gene region FxnCode = 13">
+##INFO=<ID=R5,Number=0,Type=Flag,Description="In 5' gene region FxnCode = 15">
+##INFO=<ID=REF,Number=0,Type=Flag,Description="Has reference A coding region variation where one allele in the set is identical to the reference sequence. FxnCode = 8">
+##INFO=<ID=RS,Number=1,Type=Integer,Description="dbSNP ID (i.e. rs number)">
+##INFO=<ID=RSPOS,Number=1,Type=Integer,Description="Chr position reported in dbSNP">
+##INFO=<ID=RV,Number=0,Type=Flag,Description="RS orientation is reversed">
+##INFO=<ID=RadialSVM_pred,Number=.,Type=String,Description="RadialSVM_pred annotation provided by ANNOVAR">
+##INFO=<ID=RadialSVM_score,Number=.,Type=String,Description="RadialSVM_score annotation provided by ANNOVAR">
+##INFO=<ID=S3D,Number=0,Type=Flag,Description="Has 3D structure - SNP3D table">
+##INFO=<ID=SAO,Number=1,Type=Integer,Description="Variant Allele Origin: 0 - unspecified, 1 - Germline, 2 - Somatic, 3 - Both">
+##INFO=<ID=SIFT_pred,Number=.,Type=String,Description="SIFT_pred annotation provided by ANNOVAR">
+##INFO=<ID=SIFT_score,Number=.,Type=String,Description="SIFT_score annotation provided by ANNOVAR">
+##INFO=<ID=SLO,Number=0,Type=Flag,Description="Has SubmitterLinkOut - From SNP->SubSNP->Batch.link_out">
+##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
+##INFO=<ID=SSR,Number=1,Type=Integer,Description="Variant Suspect Reason Codes (may be more than one value added together) 0 - unspecified, 1 - Paralog, 2 - byEST, 4 - oldAlign, 8 - Para_EST, 16 - 1kg_failed, 1024 - other">
+##INFO=<ID=STRAND,Number=1,Type=String,Description="Gene strand">
+##INFO=<ID=SYN,Number=0,Type=Flag,Description="Has synonymous A coding region variation where one allele in the set does not change the encoded amino acid. FxnCode = 3">
+##INFO=<ID=SiPhy_29way_logOdds,Number=.,Type=String,Description="SiPhy_29way_logOdds annotation provided by ANNOVAR">
+##INFO=<ID=TPA,Number=0,Type=Flag,Description="Provisional Third Party Annotation(TPA) (currently rs from PHARMGKB who will give phenotype data)">
+##INFO=<ID=U3,Number=0,Type=Flag,Description="In 3' UTR Location is in an untranslated region (UTR). FxnCode = 53">
+##INFO=<ID=U5,Number=0,Type=Flag,Description="In 5' UTR Location is in an untranslated region (UTR). FxnCode = 55">
+##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
+##INFO=<ID=VC,Number=1,Type=String,Description="Variation Class">
+##INFO=<ID=VEST3_score,Number=.,Type=String,Description="VEST3_score annotation provided by ANNOVAR">
+##INFO=<ID=VLD,Number=0,Type=Flag,Description="Is Validated.  This bit is set if the variant has 2+ minor allele count based on frequency or genotype data.">
+##INFO=<ID=VP,Number=1,Type=String,Description="Variation Property.  Documentation is at ftp://ftp.ncbi.nlm.nih.gov/snp/specs/dbSNP_BitField_latest.pdf">
+##INFO=<ID=WGT,Number=1,Type=Integer,Description="Weight, 00 - unmapped, 1 - weight 1, 2 - weight 2, 3 - weight 3 or more">
+##INFO=<ID=WTD,Number=0,Type=Flag,Description="Is Withdrawn by submitter If one member ss is withdrawn by submitter, then this bit is set.  If all member ss' are withdrawn, then the rs is deleted to SNPHistory">
+##INFO=<ID=breast_ER_negative,Number=0,Type=Flag,Description="breast_ER_negative: variant is in gene list">
+##INFO=<ID=breast_ER_positive,Number=0,Type=Flag,Description="breast_ER_positive: variant is in gene list">
+##INFO=<ID=breast_HER2_postitive,Number=0,Type=Flag,Description="breast_HER2_postitive: variant is in gene list">
+##INFO=<ID=breast_Pam50_Basal,Number=0,Type=Flag,Description="breast_Pam50_Basal: variant is in gene list">
+##INFO=<ID=breast_Pam50_Her2,Number=0,Type=Flag,Description="breast_Pam50_Her2: variant is in gene list">
+##INFO=<ID=breast_Pam50_LumA,Number=0,Type=Flag,Description="breast_Pam50_LumA: variant is in gene list">
+##INFO=<ID=breast_Pam50_LumB,Number=0,Type=Flag,Description="breast_Pam50_LumB: variant is in gene list">
+##INFO=<ID=breast_Pam50_Normal,Number=0,Type=Flag,Description="breast_Pam50_Normal: variant is in gene list">
+##INFO=<ID=breast_Triple_negative,Number=0,Type=Flag,Description="breast_Triple_negative: variant is in gene list">
+##INFO=<ID=cancer_gene_census,Number=0,Type=Flag,Description="cancer_gene_census: variant is in gene list">
+##INFO=<ID=cytoBand,Number=.,Type=String,Description="cytoBand annotation provided by ANNOVAR">
+##INFO=<ID=dbSNPBuildID,Number=1,Type=Integer,Description="First dbSNP Build for RS">
+##INFO=<ID=endometrial_CN_high,Number=0,Type=Flag,Description="endometrial_CN_high: variant is in gene list">
+##INFO=<ID=endometrial_CN_low,Number=0,Type=Flag,Description="endometrial_CN_low: variant is in gene list">
+##INFO=<ID=endometrial_Endometrioid,Number=0,Type=Flag,Description="endometrial_Endometrioid: variant is in gene list">
+##INFO=<ID=endometrial_Endometrioid_MSI_H,Number=0,Type=Flag,Description="endometrial_Endometrioid_MSI_H: variant is in gene list">
+##INFO=<ID=endometrial_Endometrioid_MSS,Number=0,Type=Flag,Description="endometrial_Endometrioid_MSS: variant is in gene list">
+##INFO=<ID=endometrial_MSI,Number=0,Type=Flag,Description="endometrial_MSI: variant is in gene list">
+##INFO=<ID=endometrial_POLE,Number=0,Type=Flag,Description="endometrial_POLE: variant is in gene list">
+##INFO=<ID=endometrial_Serous,Number=0,Type=Flag,Description="endometrial_Serous: variant is in gene list">
+##INFO=<ID=esp6500siv2_all,Number=1,Type=Float,Description="esp6500siv2_all annotation provided by ANNOVAR">
+##INFO=<ID=genomicSuperDups,Number=.,Type=String,Description="genomicSuperDups annotation provided by ANNOVAR">
+##INFO=<ID=hap_insuf,Number=0,Type=Flag,Description="hap_insuf: variant is in gene list">
+##INFO=<ID=kandoth,Number=0,Type=Flag,Description="kandoth: variant is in gene list">
+##INFO=<ID=lawrence,Number=0,Type=Flag,Description="lawrence: variant is in gene list">
+##INFO=<ID=phyloP100way_vertebrate,Number=.,Type=String,Description="phyloP100way_vertebrate annotation provided by ANNOVAR">
+##INFO=<ID=phyloP46way_placental,Number=.,Type=String,Description="phyloP46way_placental annotation provided by ANNOVAR">
+##INFO=<ID=snp138,Number=.,Type=String,Description="snp138 annotation provided by ANNOVAR">
+##INFO=<ID=facetsCF_EM,Number=1,Type=Float,Description="Facets cellular fraction (EM)">
+##INFO=<ID=facetsMafR,Number=1,Type=Float,Description="Facets log ratio">
+##INFO=<ID=facetsTCN_EM,Number=1,Type=Integer,Description="Facets total copy number (EM)">
+##INFO=<ID=facetsLCN_EM,Number=1,Type=Integer,Description="Facets lesser copy number (EM)">
+##INFO=<ID=facetsLOHCall,Number=1,Type=String,Description="Facets call">
+##INFO=<ID=facetsLOH,Number=0,Type=Flag,Description="Facets LOH">
+##INFO=<ID=pathogenicity,Number=1,Type=String,Description="Classification of pathogenicity">
+##INFO=<ID=provean_protein_id,Number=1,Type=String,Description="provean protein id (run if necessary)">
+##INFO=<ID=provean_pred,Number=1,Type=String,Description="provean prediction (run if necessary)">
+##INFO=<ID=provean_score,Number=1,Type=Float,Description="provean score (run if necessary)">
+##INFO=<ID=MT_pred,Number=1,Type=String,Description="mutation taster prediction (run if necessary)">
+##INFO=<ID=MT_score,Number=1,Type=Float,Description="mutation taster score (run if necessary)">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
+##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
+##FILTER=<ID=customFilter,Description="ExAC_AF > 0.05">
+##FILTER=<ID=targetInterval,Description="no overlap with intervals">
+##FILTER=<ID=Common,Description="no cosmic id, or has dbsnp ID and GMAF is > 0.01">
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
+2	54128702	2:54128702_G/GA	G	GA	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=GA|splice_region_variant&intron_variant|LOW|PSME4|PSME4|transcript|NM_014614.2|Coding|27/46|c.3076-7_3076-6insT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=117;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=PSME4;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0300023399436;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative;cytoBand=2p16.2;endometrial_CN_high;endometrial_Endometrioid;endometrial_Endometrioid_MSS;endometrial_POLE;endometrial_Serous;esp6500siv2_all=0.0041;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=0.00218702345647;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:34,6:40:0.15	0/0:48,1:49:0.0204
+2	110325590	2:110325590_AT/A	AT	A	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=A|intron_variant|MODIFIER|SEPT10|SEPT10|transcript|NM_144710.3|Coding|5/10|c.601-38delA||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=146;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=SEPT10;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0159381329738;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=2q13;esp6500siv2_all=0.1206;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.000211609750735;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:43,7:50:0.14	0/0:59,1:60:0.0167
+2	120567392	2:120567392_A/AT	A	AT	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=AT|intron_variant|MODIFIER|PTPN4|PTPN4|transcript|NM_002830.3|Coding|1/26|c.-17-21_-17-20insT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=106;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=PTPN4;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0223154453716;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=2q14.2;endometrial_CN_high;endometrial_POLE;endometrial_Serous;esp6500siv2_all=0.0446;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.000211609750735;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:27,12:39:0.3077	0/0:46,6:52:0.1154
+5	54701447	5:54701447_A/AT	A	AT	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=AT|intron_variant|MODIFIER|SKIV2L2|SKIV2L2|transcript|NM_015360.4|Coding|22/26|c.2645+31_2645+32insT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=123;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=SKIV2L2;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0104890931336;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=5q11.2;endometrial_CN_high;endometrial_Endometrioid;endometrial_Endometrioid_MSI_H;endometrial_POLE;endometrial_Serous;esp6500siv2_all=0.0085;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.00150210957441;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:34,5:39:0.1282	0/0:55,0:55:0.0
+5	67591103	COSM1134239,COSM1134240,COSM449998;5:67591103_ATTAAACCAGACC/A	ATTAAACCAGACC	A	.	PASS	AA=p.K297_L300delKPDL;AAChange_refGene=PIK3R1:NM_001242466:exon6:c.608_619del:p.203_207del,PIK3R1:NM_181504:exon7:c.887_898del:p.296_300del,PIK3R1:NM_181524:exon7:c.797_808del:p.266_270del,PIK3R1:NM_181523:exon13:c.1697_1708del:p.566_570del;ALLELE_END;ANN=A|disruptive_inframe_deletion|MODERATE|PIK3R1|PIK3R1|transcript|NM_181523.2|Coding|13/16|c.1700_1711delAACCAGACCTTA|p.Lys567_Leu570del|2280/6975|1700/2175|567/724||INFO_REALIGN_3_PRIME;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;CDS=c.887_898del12;CNT=1;DP=318;ExonicFunc_refGene=nonframeshift_deletion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GENE=PIK3R1_ENST00000336483;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=PIK3R1;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=4.01879376268e-12;SS=Somatic;STRAND=+;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative;cancer_gene_census;cytoBand=5q13.1;genomicSuperDups=.;hap_insuf;kandoth;lawrence;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.00150210957441;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=passenger;provean_protein_id=ENSP00000379855;provean_pred=Deleterious;provean_score=-24.22	GT:AD:DP:VAF	0/1:71,23:94:0.2447	0/0:176,0:176:0.0
+5	67591283	5:67591283_TGA/T	TGA	T	.	PASS	AAChange_refGene=PIK3R1:NM_001242466:exon7:c.693_694del:p.L231fs,PIK3R1:NM_181504:exon8:c.972_973del:p.L324fs,PIK3R1:NM_181524:exon8:c.882_883del:p.L294fs,PIK3R1:NM_181523:exon14:c.1782_1783del:p.L594fs;ALLELE_END;ANN=T|frameshift_variant|HIGH|PIK3R1|PIK3R1|transcript|NM_181523.2|Coding|14/16|c.1782_1783delGA|p.Leu594fs|2362/6975|1782/2175|594/724||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=299;ExonicFunc_refGene=frameshift_deletion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=PIK3R1;HOTSPOT_HGVSp=.;LOF=(PIK3R1|PIK3R1|1|1.00);LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=3.19412999781e-21;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative;cancer_gene_census;cytoBand=5q13.1;genomicSuperDups=.;hap_insuf;kandoth;lawrence;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.00150210957441;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=likely_pathogenic	GT:AD:DP:VAF	0/1:63,42:105:0.4	0/0:173,0:173:0.0
+6	73102522	6:73102522_A/AT	A	AT	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=AT|intron_variant|MODIFIER|RIMS1|RIMS1|transcript|NM_014989.5|Coding|31/33|c.4618+10_4618+11insT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=89;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=RIMS1;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0436577311577;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=6q13;esp6500siv2_all=0.0217;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=-0.000829438113841;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:27,4:31:0.129	0/0:35,0:35:0.0
+7	47925659	7:47925659_CA/C	CA	C	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=C|splice_region_variant&intron_variant|LOW|PKD1L1|PKD1L1|transcript|NM_138295.3|Coding|17/56|c.2837-8delT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=184;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=PKD1L1;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=2.13372471975e-10;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=7p12.3;endometrial_CN_high;endometrial_Endometrioid;endometrial_Endometrioid_MSS;endometrial_POLE;endometrial_Serous;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=0.00198434317035;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:56,32:88:0.3636	0/0:72,0:72:0.0
+7	91714092	7:91714092_AT/A	AT	A	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=A|intron_variant|MODIFIER|AKAP9|AKAP9|transcript|NM_005751.4|Coding|34/49|c.8711-40delT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=34;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=AKAP9;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0161017688499;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cancer_gene_census;cytoBand=7q21.2;endometrial_CN_high;endometrial_POLE;endometrial_Serous;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsMafR=-0.0752750100947;facetsTCN_EM=2;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:6,7:13:0.5385	0/0:19,3:22:0.1364
+8	6673269	8:6673269_TA/T	TA	T	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=T|intron_variant|MODIFIER|XKR5|XKR5|transcript|NM_207411.4|Coding|7/7|c.919+58delT||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=162;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=XKR5;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0329388851733;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=8p23.1;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=0.00565233100266;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:54,12:66:0.1818	0/0:51,3:54:0.0556
+9	139410466	9:139410466_C/CG	C	CG	.	PASS	AAChange_refGene=NOTCH1:NM_017617:exon10:c.1635dupC:p.G546fs;ALLELE_END;ANN=CG|frameshift_variant|HIGH|NOTCH1|NOTCH1|transcript|NM_017617.3|Coding|10/34|c.1635dupC|p.Gly546fs|1635/9295|1635/7668|545/2555||,CG|downstream_gene_variant|MODIFIER|MIR4673|MIR4673|transcript|NR_039820.1|Noncoding||n.*59dupC|||||3553|;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=45;ExonicFunc_refGene=frameshift_insertion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=NOTCH1;HOTSPOT_HGVSp=.;LOF=(NOTCH1|NOTCH1|1|1.00);LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=1.47659222364e-09;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;breast_Pam50_LumB;cancer_gene_census;cytoBand=9q34.3;endometrial_CN_high;endometrial_Endometrioid;endometrial_Endometrioid_MSS;endometrial_POLE;endometrial_Serous;genomicSuperDups=.;hap_insuf;kandoth;lawrence;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=0.741324395331;facetsMafR=1.86473397477;facetsTCN_EM=1;facetsLCN_EM=0;facetsLOHCall=true;facetsLOH;pathogenicity=likely_pathogenic	GT:AD:DP:VAF	0/1:6,20:26:0.7692	0/0:32,1:33:0.0303
+10	98273390	10:98273390_GGCA/G	GGCA	G	.	PASS	AAChange_refGene=TLL2:NM_012465:exon1:c.50_52del:p.17_18del;ALLELE_END;ANN=G|disruptive_inframe_deletion|MODERATE|TLL2|TLL2|transcript|NM_012465.3|Coding|1/21|c.50_52delTGC|p.Leu17del|293/6771|50/3048|17/1015||,G|downstream_gene_variant|MODIFIER|TM9SF3|TM9SF3|transcript|NM_020123.3|Coding||c.*1987_*1987delTGC|||||4476|;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=133;ExAC_AF=0.0009442;ExonicFunc_refGene=nonframeshift_deletion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=TLL2;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0151840081303;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=10q24.1;endometrial_CN_high;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=0.53803108459;facetsMafR=0.521766607943;facetsTCN_EM=1;facetsLCN_EM=0;facetsLOHCall=true;facetsLOH;pathogenicity=passenger;provean_protein_id=ENSP00000350630;provean_pred=Neutral;provean_score=-1.57	GT:AD:DP:VAF	0/1:39,5:44:0.1136	0/0:55,0:55:0.0
+10	124457552	10:124457552_G/GT	G	GT	.	PASS	AAChange_refGene=C10orf120:NM_001010912:exon3:c.704dupA:p.N235fs;ALLELE_END;ANN=GT|frameshift_variant|HIGH|C10orf120|C10orf120|transcript|NM_001010912.2|Coding|3/3|c.704dupA|p.Asn235fs|736/1064|704/1008|235/335||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=346;ExonicFunc_refGene=frameshift_insertion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=C10orf120;HOTSPOT_HGVSp=.;LOF=(C10orf120|C10orf120|1|1.00);LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=3.98314739659e-13;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=10q26.13;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=0.53803108459;facetsMafR=0.68626351088;facetsTCN_EM=1;facetsLCN_EM=0;facetsLOHCall=true;facetsLOH;pathogenicity=likely_pathogenic	GT:AD:DP:VAF	0/1:94,36:130:0.2769	0/0:157,1:158:0.0063
+11	112832391	11:112832391_AT/A	AT	A	.	PASS	AAChange_refGene=.;ALLELE_END;ANN=A|splice_region_variant&intron_variant|LOW|NCAM1|NCAM1|transcript|NM_001242607.1|Coding|2/20|c.52+6delT||||||,A|intron_variant|MODIFIER|LOC101928847|LOC101928847|transcript|NR_120563.1|Noncoding|1/2|n.252-194delA||||||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=162;ExonicFunc_refGene=.;FATHMM_pred=.;FATHMM_score=.;Func_refGene=ncRNA_intronic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=LOC101928847;HOTSPOT_HGVSp=.;LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=0.0477259814061;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=11q23.2;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=0.00528891526035;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=.	GT:AD:DP:VAF	0/1:58,11:69:0.1594	0/0:44,2:46:0.0435
+X	135049596	X:135049596_A/AAT	A	AAT	.	PASS	AAChange_refGene=MMGT1:NM_173470:exon3:c.188_189insAT:p.I63fs;ALLELE_END;ANN=AAT|frameshift_variant|HIGH|MMGT1|MMGT1|transcript|NM_173470.1|Coding|3/4|c.187_188dupAT|p.Ala64fs|488/3648|188/396|63/131||;ANNOVAR_DATE=2016-02-01;CADD_phred=.;CADD_raw=.;DP=140;ExonicFunc_refGene=frameshift_insertion;FATHMM_pred=.;FATHMM_score=.;Func_refGene=exonic;GERP++_RS=.;GeneDetail_refGene=.;Gene_refGene=MMGT1;HOTSPOT_HGVSp=.;LOF=(MMGT1|MMGT1|1|1.00);LRT_pred=.;LRT_score=.;LR_pred=.;LR_score=.;MutationAssessor_pred=.;MutationAssessor_score=.;MutationTaster_pred=.;MutationTaster_score=.;Polyphen2_HDIV_pred=.;Polyphen2_HDIV_score=.;Polyphen2_HVAR_pred=.;Polyphen2_HVAR_score=.;RadialSVM_pred=.;RadialSVM_score=.;SIFT_pred=.;SIFT_score=.;SOMPVAL=8.81606388459e-09;SS=Somatic;SiPhy_29way_logOdds=.;VARPVAL=1.0;VEST3_score=.;cytoBand=Xq26.3;genomicSuperDups=.;phyloP100way_vertebrate=.;phyloP46way_placental=.;snp138=.;facetsCF_EM=1.0;facetsMafR=0.106514664273;facetsTCN_EM=2;facetsLCN_EM=1;facetsLOHCall=false;pathogenicity=passenger	GT:AD:DP:VAF	0/1:34,19:53:0.3585	0/0:72,0:72:0.0
