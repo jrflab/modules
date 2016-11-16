@@ -10,21 +10,16 @@ python modules/configure.py
 echo "==somatic_variants: mutect + strelka + varscan=="
 echo "run"
 make -j8 somatic_variants && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/vcf/*.vcf; do
-    compare_vcf $x vcf/$(basename $x)
-done
 echo "==hotspot=="
 echo "run"
 make -j8 hotspot && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/vcf_ann/*hotspot*.vcf; do
-    compare_vcf $x vcf_ann/$(basename $x)
-done
 echo "==somatic annotations=="
 echo "run"
 make -j8 ann_somatic_vcf && echo "success" || (echo "failed" && exit 1)
 echo "check files"
+for x in output/vcf/*.vcf; do
+    compare_vcf $x vcf/$(basename $x)
+done
 for x in output/vcf_ann/*.vcf; do
     compare_vcf $x vcf_ann/$(basename $x)
 done
