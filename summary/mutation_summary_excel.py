@@ -178,7 +178,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
                            absolute_segments,
                            output_tsv_dir,
                            annotation_tsv,
-                           max_exac_af):
+                           include_all):
     # create output tsv dir if required
     if output_tsv_dir:
         mkdir_p(output_tsv_dir)
@@ -193,32 +193,52 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t")
     else:
         annotdf = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P,ANN[*].HGVS_C," \
-        "ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,ExAC_AF," \
-        "dbNSFP_MutationTaster_pred,MT_pred,provean_pred,fathmm_pred," \
-        "dbNSFP_PROVEAN_pred,facetsLOHCall,parssnp_score,pathogenicity,HOTSPOT".split(",")
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P" \
+        "ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
+        "MutationTaster_pred,provean_pred,fathmm_pred," \
+        "facetsLOHCall,parssnp_score,parssnp_pred,pathogenicity,HOTSPOT".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
+    chasm_pred_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_pred" in c]
     # add gene annotations and chasm score columns
-    summary_columns += chasm_score_columns + "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
+    summary_columns += chasm_score_columns + chasm_pred_columns + "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
 
     writer = pd.ExcelWriter(excel_file)
+
+    # merge mutation taster and provean columns
+    def merge_ann_cols(df):
+        if 'MutationTaster_pred' in df and 'MT_pred' in df:
+            df.ix[df['MutationTaster_pred'] == '.', 'MutationTaster_pred'] = df.ix[df['MutationTaster_pred'] == '.', 'MT_pred']
+            df.ix[df['MutationTaster_pred'].str.contains('disease'), 'MutationTaster_pred'] = 'D'
+            df.ix[df['MutationTaster_pred'].str.contains('poly'), 'MutationTaster_pred'] = 'N'
+        if 'dbNSFP_PROVEAN_pred' in df:
+            df['provean_pred'] = df['dbNSFP_PROVEAN_pred']
+        if 'provean_pred' in df:
+            df.ix[df['provean_pred'].str.contains('N'), 'provean_pred'] = 'N'
+            df.ix[df['provean_pred'].str.contains('D'), 'provean_pred'] = 'D'
+        return df
 
     def read_tsv(tsv):
         df = pd.read_csv(tsv, sep="\t", dtype={"CHROM": str})
         for col in df.select_dtypes(include=['object']):
             if len(df.index) > 0 and type(df.ix[0, col]).__name__ == 'str':
                 df[col] = df[col].str.decode('unicode_escape').str.encode('ascii', 'ignore')
-        return df
+        return merge_ann_cols(df)
 
     # add summaries
     required_columns = summary_columns + "NORMAL.AD TUMOR.AD facetsLCN_EM".split()
-    mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
-                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
-                        add_non_existent_columns(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
-                        ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
-    exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
-    add_columns_write_excel(mutsdf[exac_af_sel], writer, "MUTATION_SUMMARY", absdf,
+    if include_all:
+        mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_low_modifier), "LOW|MODIFIER"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
+                            ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
+    else:
+        mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
+                            ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
+    #exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
+    add_columns_write_excel(mutsdf, writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
         annotdf=annotdf)
     add_columns_write_excel(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"),
@@ -265,7 +285,8 @@ def main():
     parser.add_argument("--absolute_segments", default=None, type=str, help="TSV comma separated list of absolute mutations output")
     parser.add_argument("--output_tsv_dir", default=None, type=str, help="Output raw sheets as tsv in given directory")
     parser.add_argument("--annotation_tsv", default=None, type=str, help="File with TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT, plus other columns of choice for annotation")
-    parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
+    #parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
+    parser.add_argument("--include_all", help="include all mutations in the complete summary")
     args = parser.parse_args()
     if args.absolute_somatic_txts and args.absolute_segments:
         absolute_somatic_txts = args.absolute_somatic_txts.split(",")
@@ -289,7 +310,7 @@ def main():
                            absolute_segments,
                            args.output_tsv_dir,
                            args.annotation_tsv,
-                           args.max_exac_af)
+                           args.include_all)
 
 if __name__ == "__main__":
     main()

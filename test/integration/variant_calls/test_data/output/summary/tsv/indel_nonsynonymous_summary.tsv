@@ -1,8 +1,8 @@
-TUMOR_SAMPLE	NORMAL_SAMPLE	CHROM	POS	REF	ALT	ANN[*].GENE	ANN[*].HGVS_P	ANN[*].HGVS_C	ANN[*].EFFECT	TUMOR_MAF	NORMAL_MAF	TUMOR_DP	NORMAL_DP	ExAC_AF	MT_pred	provean_pred	facetsLOHCall	pathogenicity	HOTSPOT	cancer_gene_census	kandoth	lawrence	num_cancer_gene	hap_insuf	ANN[*].IMPACT
-AM5TC	AM5N	10	98273390	GGCA	G	TLL2	p.Leu17del	c.50_52delTGC	disruptive_inframe_deletion	0.113636363636	0.0	44.0	55.0	0.0009442	.	Neutral	True	passenger	.	.	.	.	0	.	MODERATE
-AM5TC	AM5N	10	124457552	G	GT	C10orf120	p.Asn235fs	c.704dupA	frameshift_variant	0.276923076923	0.00632911392405	130.0	158.0	.	.	.	True	likely_pathogenic	.	.	.	.	0	.	HIGH
-AM5TC	AM5N	5	67591103	ATTAAACCAGACC	A	PIK3R1	p.Lys567_Leu570del	c.1700_1711delAACCAGACCTTA	disruptive_inframe_deletion	0.244680851064	0.0	94.0	176.0	.	.	Deleterious	False	passenger	.	true	true	true	3	true	MODERATE
-AM5TC	AM5N	5	67591283	TGA	T	PIK3R1	p.Leu594fs	c.1782_1783delGA	frameshift_variant	0.4	0.0	105.0	173.0	.	.	.	False	likely_pathogenic	.	true	true	true	3	true	HIGH
-AM5TC	AM5N	9	139410466	C	CG	NOTCH1	p.Gly546fs	c.1635dupC	frameshift_variant	0.769230769231	0.030303030303	26.0	33.0	.	.	.	True	likely_pathogenic	.	true	true	true	3	true	HIGH
-AM5TC	AM5N	X	135049596	A	AAT	MMGT1	p.Ala64fs	c.187_188dupAT	frameshift_variant	0.358490566038	0.0	53.0	72.0	.	.	.	False	passenger	.	.	.	.	0	.	HIGH
-EMC8T	EMC8N	11	46917758	C	CA	LRP4	.	c.1048+2_1048+3insT	splice_donor_variant&intron_variant	0.345238095238	0.0	84.0	42.0	.	.	.	False	passenger	.	.	.	.	0	.	HIGH
+TUMOR_SAMPLE	NORMAL_SAMPLE	CHROM	POS	REF	ALT	ANN[*].GENE	TUMOR_MAF	NORMAL_MAF	TUMOR_DP	NORMAL_DP	MutationTaster_pred	provean_pred	facetsLOHCall	pathogenicity	HOTSPOT	cancer_gene_census	kandoth	lawrence	num_cancer_gene	hap_insuf	ANN[*].IMPACT
+AM5TC	AM5N	10	98273390	GGCA	G	TLL2	0.113636363636	0.0	44.0	55.0	N	N	True	passenger	.	.	.	.	0	.	MODERATE
+AM5TC	AM5N	10	124457552	G	GT	C10orf120	0.276923076923	0.00632911392405	130.0	158.0	D	.	True	likely_pathogenic	.	.	.	.	0	.	HIGH
+AM5TC	AM5N	5	67591103	ATTAAACCAGACC	A	PIK3R1	0.244680851064	0.0	94.0	176.0	D	D	False	likely_pathogenic	.	true	true	true	3	true	MODERATE
+AM5TC	AM5N	5	67591283	TGA	T	PIK3R1	0.4	0.0	105.0	173.0	D	.	False	likely_pathogenic	.	true	true	true	3	true	HIGH
+AM5TC	AM5N	9	139410466	C	CG	NOTCH1	0.769230769231	0.030303030303	26.0	33.0	D	.	True	likely_pathogenic	.	true	true	true	3	true	HIGH
+AM5TC	AM5N	X	135049596	A	AAT	MMGT1	0.358490566038	0.0	53.0	72.0	D	.	False	passenger	.	.	.	.	0	.	HIGH
+EMC8T	EMC8N	11	46917758	C	CA	LRP4	0.345238095238	0.0	84.0	42.0	.	.	False	passenger	.	.	.	.	0	.	HIGH

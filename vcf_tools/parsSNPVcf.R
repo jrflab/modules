@@ -37,6 +37,7 @@ vcfHeader <- scanVcfHeader(fn)
 hinfo <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
 rownames(hinfo) <- rownames(info(vcfHeader))
 hinfo <- rbind(hinfo, parssnp_score = c("A", "Float", "parsSNP score"))
+hinfo <- rbind(hinfo, parssnp_pred = c("A", "String", "parsSNP prediction"))
 hinfo <- DataFrame(hinfo, row.names = rownames(hinfo))
 hlist <- header(vcfHeader)
 hlist$INFO <- hinfo
@@ -203,7 +204,9 @@ x<-sweep(x, 2, scaling[,1]-scaling[,2], "/")
 #Finally, missing values are replaced.
 x[is.na(x)]<-do.call("rbind", rep(missing, nrow(x)))[is.na(x)]
 
-info(vcf)$parssnp_score <- as.numeric(predict(ParsSNP, x))
+score <- as.numeric(predict(ParsSNP, x))
+info(vcf)$parssnp_score <- score
+info(vcf)$parssnp_pred <- ifelse(score <= 0.08, 'Driver', ifelse(score < 0.16, 'Indeterminate', 'Passenger'))
 
 outfn <- opt$outFile
 null <- suppressWarnings(file.remove(outfn))
