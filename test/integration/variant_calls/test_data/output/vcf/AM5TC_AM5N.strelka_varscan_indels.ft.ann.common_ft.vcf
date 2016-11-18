@@ -1,7 +1,7 @@
 ##fileformat=VCFv4.1
-##fileDate=Fri Nov 11 02:02:39 2016
+##fileDate=Thu Nov 17 03:34:16 2016
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/dbsnp_138.b37.gmaf.vcf vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
+##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/dbsnp_138.b37.gmaf.vcf vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">

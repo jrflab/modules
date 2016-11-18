@@ -12,9 +12,13 @@ import classify_pathogenicity_vcf as cp
 
 
 def query_mutation_taster(record):
-    prediction, score = mtq.query(record.CHROM, record.POS, record.REF, record.ALT[0])
-    record.INFO['MT_pred'] = prediction
-    record.INFO['MT_score'] = score
+    try:
+        prediction, score = mtq.query(record.CHROM, record.POS, record.REF, record.ALT[0])
+        record.INFO['MT_pred'] = prediction
+        record.INFO['MT_score'] = score
+    except:
+        record.INFO['MT_pred'] = 'none'
+
 
 
 if __name__ == "__main__":
@@ -68,7 +72,7 @@ if __name__ == "__main__":
     if len(query_records) > 0:
         # run mutation taster
         for record in records:
-            if 'MutationTaster_pred' not in record.INFO:
+            if 'MT_pred' not in record.INFO:
                 query_mutation_taster(record)
         if args.run_local:
             import provean_query
