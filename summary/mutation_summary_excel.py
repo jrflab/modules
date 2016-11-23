@@ -286,7 +286,8 @@ def main():
     parser.add_argument("--output_tsv_dir", default=None, type=str, help="Output raw sheets as tsv in given directory")
     parser.add_argument("--annotation_tsv", default=None, type=str, help="File with TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT, plus other columns of choice for annotation")
     #parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
-    parser.add_argument("--include_all", help="include all mutations in the complete summary")
+    parser.add_argument("--include_all", default=False, action='store_true',
+                        help="include all mutations in the complete summary")
     args = parser.parse_args()
     if args.absolute_somatic_txts and args.absolute_segments:
         absolute_somatic_txts = args.absolute_somatic_txts.split(",")
