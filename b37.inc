@@ -99,7 +99,7 @@ HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
 
 # we need two hotspot vcfs unfortunately due to limitations of UnifiedGenotyper and multiple variants at a position
 HOTSPOT_VCF_SEQ = 1 2
-HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot/
+HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
 HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.vcf
 HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
 HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf

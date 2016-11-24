@@ -103,7 +103,7 @@
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/hotspot//hotspot_unmerged.vcf vcf/AM5TC_AM5N.mutect.ft.vcf"
+##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/hotspot.new//hotspot_unmerged.vcf vcf/AM5TC_AM5N.mutect.ft.vcf"
 ##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
 ##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
 ##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
