@@ -1,8 +1,8 @@
 ##fileformat=VCFv4.1
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/dbsnp_138.b37.gmaf.vcf vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/dbsnp_138.b37.gmaf.vcf vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##fileDate=20161117
-##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##fileDate=20161123
+##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=1000g2014oct_afr,Number=1,Type=Float,Description="1000g2014oct_afr annotation provided by ANNOVAR">
 ##INFO=<ID=1000g2014oct_all,Number=1,Type=Float,Description="1000g2014oct_all annotation provided by ANNOVAR">
 ##INFO=<ID=1000g2014oct_eas,Number=1,Type=Float,Description="1000g2014oct_eas annotation provided by ANNOVAR">
