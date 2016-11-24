@@ -95,7 +95,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                 infoprime <- info(vcf)
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_mut", sep = "_")] <- as.character(results$Mutation)
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_score", sep = "_")] <- results$CHASM
-                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pred", sep = "_")] <- ifelse(results$CHASM <= 0.3, 'Passenger', 'Driver')
+                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pred", sep = "_")] <- ifelse(results$CHASM <= 0.3, 'Driver', 'Passenger')
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pval", sep = "_")] <- results$PValue
                 if (nrow(results) > 10) {
                     infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_fdr", sep = "_")] <- results$BHFDR

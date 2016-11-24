@@ -206,7 +206,7 @@ x[is.na(x)]<-do.call("rbind", rep(missing, nrow(x)))[is.na(x)]
 
 score <- as.numeric(predict(ParsSNP, x))
 info(vcf)$parssnp_score <- score
-info(vcf)$parssnp_pred <- ifelse(score <= 0.08, 'Driver', ifelse(score < 0.16, 'Indeterminate', 'Passenger'))
+info(vcf)$parssnp_pred <- ifelse(score <= 0.08, 'Passenger', ifelse(score < 0.16, 'Indeterminate', 'Driver'))
 
 outfn <- opt$outFile
 null <- suppressWarnings(file.remove(outfn))
