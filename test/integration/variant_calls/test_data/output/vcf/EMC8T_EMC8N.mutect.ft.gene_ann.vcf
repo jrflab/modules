@@ -1,6 +1,6 @@
 ##fileformat=VCFv4.1
 ##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
-##fileDate=20161123
+##fileDate=20161125
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
