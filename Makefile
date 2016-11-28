@@ -294,6 +294,9 @@ TARGETS += crest
 crest :
 	$(call RUN_MAKE,modules/sv_callers/crest.mk)
 
+TARGETS += delly
+delly :
+	$(call RUN_MAKE,modules/sv_callers/delly.mk)
 
 ###
 # pre-processing
