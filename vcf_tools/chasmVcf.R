@@ -47,6 +47,7 @@ for (cl in classifiers) {
     X <- rbind(chasm_mut = c("A", "String", paste(cln, "CHASM mutation")),
                chasm_pval = c("A", "Float", paste(cln, "CHASM p-value")),
                chasm_score = c("A", "Float", paste(cln, "CHASM score")),
+               chasm_pred = c("A", "String", paste(cln, "CHASM prediction")),
                chasm_fdr = c("A", "Float", paste(cln, "CHASM B-H FDR")))
     rownames(X) <- paste(cln, rownames(X), sep = "_")
     hinfoprime <- rbind(hinfoprime, X)
@@ -94,6 +95,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
                 infoprime <- info(vcf)
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_mut", sep = "_")] <- as.character(results$Mutation)
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_score", sep = "_")] <- results$CHASM
+                infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pred", sep = "_")] <- ifelse(results$CHASM <= 0.3, 'Driver', 'Passenger')
                 infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_pval", sep = "_")] <- results$PValue
                 if (nrow(results) > 10) {
                     infoprime[as.integer(as.character(results$MutationID)), paste(cln, "chasm_fdr", sep = "_")] <- results$BHFDR

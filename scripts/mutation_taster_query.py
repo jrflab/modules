@@ -9,7 +9,7 @@ _prediction_priority = ['disease_causing_automatic',
 
 
 def query(chrom, pos, ref, alt):
-    pred = None
+    pred = 'none'
     score = None
     url = "http://www.mutationtaster.org/cgi-bin/MutationTaster/MT_ChrPos.cgi" \
         "?chromosome={}&position={}&ref={}&alt={}".format(chrom, pos, ref, alt)

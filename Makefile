@@ -78,6 +78,10 @@ star_fusion_aligner:
 # variant callers
 ####
 
+TARGETS += msisensor
+msisensor :
+	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)
+
 TARGETS += samtools_het
 samtools_het :
 	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
@@ -290,6 +294,9 @@ TARGETS += crest
 crest :
 	$(call RUN_MAKE,modules/sv_callers/crest.mk)
 
+TARGETS += delly
+delly :
+	$(call RUN_MAKE,modules/sv_callers/delly.mk)
 
 ###
 # pre-processing

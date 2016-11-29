@@ -10,6 +10,8 @@ MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_OPTS = --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION)
 MUTECT = $(JAVA6) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
+MUTECT_SPLIT_CHR ?= false
+
 MUT_FREQ_REPORT = modules/variant_callers/somatic/mutectReport.Rmd
 
 ..DUMMY := $(shell mkdir -p version; echo "$(MUTECT) &> version/mutect.txt")
@@ -41,11 +43,33 @@ $(foreach chr,$(CHROMOSOMES), \
 			$(eval $(call mutect-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
 
 # merge variant tables 
+ifeq ($(MUTECT_SPLIT_CHR),true)
 define ext-mutect-tumor-normal
 mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$1.$$(chr).mutect.txt)
 	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
+
+define mutect-tumor-normal
+vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
+	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+else
+define ext-mutect-tumor-normal
+mutect/tables/$1.mutect.txt : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_tables/$1.$$(chr).mutect.txt)
+	$$(INIT) head -2 $$< > $$@; for table in $$^; do sed '1,2d' $$$$table >> $$@; done
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
+
+define mutect-tumor-normal
+vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
+	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+endif
 
 mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
 	$(call LSCRIPT_NAMED_MEM,mutect_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) $^")

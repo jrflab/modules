@@ -21,10 +21,13 @@ ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 # SUFAM python environment
 SUFAM_ENV ?= /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
 
+SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.1
+MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
+
 JARDIR ?= $(HOME)/share/usr/lib/java
 
 # jrflab modules environment
-JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.3
+JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
 
 ### Applications
 UNZIP ?= /usr/bin/unzip
@@ -80,7 +83,7 @@ NORMAL_FILTER ?= $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF ?= $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
 #JAVA_TMP := $(HOME)/tmp
-JAVA_BIN ?=  java
+JAVA_BIN ?=  $(JAVA8_BIN)
 JAVA6_BIN ?= $(HOME)/share/usr/jdk1.6.0_45/bin/java
 JAVA7_BIN ?= $(HOME)/share/usr/jdk1.7.0_45/bin/java
 JAVA8_BIN ?= $(HOME)/share/usr/jdk1.8.0_74/bin/java

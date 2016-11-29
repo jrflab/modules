@@ -12,6 +12,7 @@ MUTSIG_REPORT_OPTS = --name $(PROJECT_NAME) \
 					 --alexandrovData $(ALEXANDROV_DATA) \
 					 $(if $(TARGETS_FILE),--targetBed $(TARGETS_FILE))
 
+SNV_TYPE ?= mutect
 
 .SECONDARY:
 .DELETE_ON_ERROR:
@@ -19,16 +20,10 @@ MUTSIG_REPORT_OPTS = --name $(PROJECT_NAME) \
 
 mutect_mutsig_reports : mutsig_report/mutect/mutsig_report.timestamp
 
-mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).mutect_snps.VRanges.Rdata)
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,mutect_mutsig_report,4,3G,5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
+mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).$(SNV_TYPE).VRanges.Rdata)
+	$(call LSCRIPT_ENV_NAMED_PARALLEL_MEM,$(MUTSIG_REPORT_ENV),mutect_mutsig_report,4,3G,5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
 
 mutsig_report/vrange/%.VRanges.Rdata : vcf/%.vcf
-	$(call LSCRIPT_MEM,7G,10G,"$(VCF2VRANGES) --genome $(REF) --outFile $@ $<")
-
-#MAKE_TRINUC_MAF = $(PYTHON) $(HOME)/share/usr/mutation-signatures/make_trinuc_maf.py
-#MUT_SIG_MAIN = $(PYTHON) $(HOME)/share/usr/mutation-signatures/main.py
-#MUT_SIGS = $(HOME)/share/usr/mutation-signatures/Stratton_signatures30.txt
-#mutsig_report2/mutect_mutsig_report.timestamp : allmaf/allTN.mutect.$(call SOMATIC_FILTER_SUFFIX,mutect).pass.trinuc.maf
-	#$(call LSCRIPT_NAMED_MEM,$*_mutect_mutsig_report2,8G,12G,"$(MUT_SIG_MAIN) $(MUT_SIGS) $< $(@D)/mutect && touch $@")
+	$(call LSCRIPT_ENV_MEM,$(MUTSIG_REPORT_ENV),7G,10G,"$(VCF2VRANGES) --genome $(REF) --outFile $@ $<")
 
 include modules/vcf_tools/vcftools.mk

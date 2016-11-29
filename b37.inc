@@ -99,7 +99,7 @@ HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
 
 # we need two hotspot vcfs unfortunately due to limitations of UnifiedGenotyper and multiple variants at a position
 HOTSPOT_VCF_SEQ = 1 2
-HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot/
+HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
 HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.vcf
 HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
 HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf
@@ -116,6 +116,8 @@ CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/ref
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 
 PARSSNP_RESOURCES = $(REF_DIR)/ParsSNP_resources.Rdata
+
+REF_MSI = $(REF_DIR)/GATK_bundle/2.3/b37_msi.list
 
 endif
 B37_INC = true

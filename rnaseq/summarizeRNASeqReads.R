@@ -4,7 +4,6 @@
 # Authors: Raymond Lim and Fong Chun Chan <fongchunchan@gmail.com>
 suppressPackageStartupMessages(library(optparse));
 suppressPackageStartupMessages(library(GenomicFeatures));
-suppressPackageStartupMessages(library(rbamtools));
 suppressPackageStartupMessages(library(Rsamtools));
 suppressPackageStartupMessages(library(GenomicAlignments));
 suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
@@ -15,7 +14,7 @@ suppressPackageStartupMessages(library(org.Mm.eg.db))
 optionList <- list(
 	#make_option(c('-a', '--addChr'), action='store_true', default = TRUE, help = 'Set the flag to add chr as a prefix to each seqlevel. Necessarily when the bamFile has read containing the chr prefix and the txdbFile does not [%default]'),
 	make_option(c('-i', '--intronListFile'), action='store', default = NULL, help = 'Set a file containing intronIDs to include in the summarization [%default]'),
-	make_option(c('-g', '--genome'), action='store', default = 'b37', help = 'genome to use [%default]'),
+	make_option('--genome', action='store', default = 'b37', help = 'genome to use [%default]'),
 	make_option(c('-o', '--outFile'), action='store', default = NULL, help = 'output file'),
 	make_option(c('-w', '--intronWindow'), action='store', type = 'integer', default = NULL, help = 'Set the intronic window to be first x bases from the start [%default]')
 	)

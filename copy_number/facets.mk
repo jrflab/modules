@@ -13,8 +13,12 @@ FACETS_PRE_CVAL ?= 50
 FACETS_CVAL1 ?= 150
 FACETS_CVAL2 ?= 50
 FACETS_MIN_NHET ?= 25
+FACETS_HET_THRESHOLD ?= 0.25
 FACETS_GATK_VARIANTS ?= false
-FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) --min_nhet $(FACETS_MIN_NHET) --pre_cval $(FACETS_PRE_CVAL)
+FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
+			  --het_threshold $(FACETS_HET_THRESHOLD) \
+			  --min_nhet $(FACETS_MIN_NHET) \
+			  --pre_cval $(FACETS_PRE_CVAL)
 
 SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
 SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
@@ -64,12 +68,12 @@ facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 # normal is first, tumor is second
 define snp-pileup-tumor-normal
 facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
-	$$(call LSCRIPT_CHECK_MEM,8G,20G,"$$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
+	$$(call LSCRIPT_CHECK_MEM,8G,20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 facets/cncf/%.cncf.txt : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --outPrefix $(@D)/$* $<")
+	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --out_prefix $(@D)/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")

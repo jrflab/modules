@@ -12,11 +12,10 @@ ifeq ($(CLUSTER_ENGINE),"PBS")
 ..DUMMY := $(shell python modules/scripts/launcher_sql_db.py modules/db/ensembl-hs-core-85-37_db.yaml)
 endif
 
-SNV_TYPE ?= mutect_snps
-INDEL_TYPE ?= somatic_indels
+SNV_TYPE ?= mutect
+INDEL_TYPE ?= strelka_varscan_indels
 #strelka_indels varscan_indels strelka_varscan_indels
 VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
-
 
 DEPTH_FILTER ?= 5
 HRUN ?= false
@@ -29,7 +28,6 @@ ifeq ($(ANN_PATHOGEN),true)
 $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 	$(error non-hg19/b37 pathogen annotation unsupported))
 ANN_FACETS = true
-ANN_MUT_TASTE = true
 endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
@@ -67,17 +65,16 @@ SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun_ft))
 
 # final annotations (run last)
-ifeq ($(ANN_PATHOGEN),true)
-SOMATIC_INDEL_ANN3 += indel_pathogen
-endif
-SOMATIC_SNV_ANN3 = $(if $(findstring b37,$(REF)),snp_pathogen)
+SOMATIC_INDEL_ANN3 = $(if $(and $(findstring true,$(ANN_PATHOGEN)),$(findstring true,$(ANN_FACETS)),$(findstring b37,$(REF))),indel_pathogen)
+SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,$(REF))),snp_pathogen)
 
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
 PHONY += all somatic_vcfs merged_vcfs
-all : somatic_vcfs merged_vcfs
+all : somatic_vcfs merged_vcfs somatic_tables
 merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
+somatic_tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),tables/$(pair).$(type).tab.txt))
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
