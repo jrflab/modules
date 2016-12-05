@@ -214,6 +214,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         if 'dbNSFP_PROVEAN_pred' in df:
             df['provean_pred'] = df['dbNSFP_PROVEAN_pred']
         if 'provean_pred' in df:
+            df['provean_pred'] = df['provean_pred'].fillna('Failed')
             df.ix[df['provean_pred'].str.contains('N'), 'provean_pred'] = 'N'
             df.ix[df['provean_pred'].str.contains('D'), 'provean_pred'] = 'D'
         return df
