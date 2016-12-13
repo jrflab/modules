@@ -78,7 +78,7 @@ def get_fs_splice_stop_pathogenicity(record):
 
 
 def get_missense_pathogenicity(record):
-    if not is_chasm_pathogenic(record) or is_mt_passenger(record):
+    if not is_chasm_pathogenic(record) and is_mt_passenger(record):
         return "passenger"
     elif is_chasm_pathogenic(record) or is_fathmm_pathogenic(record) or is_hotspot(record):
         return "likely_pathogenic"

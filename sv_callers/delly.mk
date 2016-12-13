@@ -5,7 +5,7 @@ include modules/Makefile.inc
 
 DELLY_ENV = $(HOME)/share/usr/anaconda-envs/delly-0.7.6
 
-SUAVE_BAM_TO_H5 = python $(HOME)/usr/delly/vis/suave/suave_bam_to_h5.py
+SUAVE_BAM_TO_H5 = python $(HOME)/share/usr/delly/vis/suave/suave_bam_to_h5.py
 
 DELLY_TYPES = DEL DUP INV TRA INS
 

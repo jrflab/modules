@@ -20,11 +20,15 @@ vcf_reader.filters['somaticAlleleDepth'] = vcf.parser._Filter(id='somaticAlleleD
                                                               desc='filter if normal depth > 20 '
                                                               'and normal VAF > 1/5 * tumor VAF '
                                                               'or normal variant depth greater than 1')
+vcf_reader.filters['depth'] = vcf.parser._Filter(id='depth',
+                                                 desc='filter if normal depth < 5 or tumor depth < 5')
 vcf_reader.filters['noAF'] = vcf.parser._Filter(id='noAF', desc='missing AF')
 
 vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
 for record in vcf_reader:
+    if record.FILTER is None:
+        record.FILTER = []
     if record.genotype(args.tumor).data.AD is None or record.genotype(args.normal).data.AD is None or \
             sum(record.genotype(args.normal).data.AD) == 0 or sum(record.genotype(args.tumor).data.AD) == 0:
         record.FILTER.append('noAF')
@@ -34,6 +38,8 @@ for record in vcf_reader:
         normal_dp = sum(record.genotype(args.normal).data.AD)
         tumor_ao = record.genotype(args.tumor).data.AD[1:]
         tumor_dp = sum(record.genotype(args.tumor).data.AD)
+        if tumor_dp < 5 or normal_dp < 5:
+            record.FILTER.append('depth')
         if normal_dp != 0 and tumor_dp != 0:
             max_tumor_af = max([float(x) / tumor_dp for x in tumor_ao])
             max_normal_af = max([float(x) / normal_dp for x in normal_ao])
