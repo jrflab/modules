@@ -121,6 +121,8 @@ VALIDATE_SAM = $(JAVA) -Xmx$(PICARD_MEM) -jar $(PICARD_DIR)/ValidateSamFile.jar 
 
 PICARD = $(JAVA8) -Xmx$2 -jar $(PICARD2_JAR) $1 $(PICARD_OPTS)
 
+VARSCAN = $(JAVA8) -Xmx10G -jar $(VARSCAN_JAR)
+
 # SNP EFF
 SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
 SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR)

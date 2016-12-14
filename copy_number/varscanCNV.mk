@@ -26,11 +26,13 @@ VARSCAN_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlDb $(EMBL_MYSQLDB_DB)
 MPILEUP_OPTS = -q 1 $(if $(TARGETS_FILE),-l $(TARGETS_FILE))
 
+VARSCAN_CNV_ENV = $(HOME)/share/usr/anaconda-envs/varscan-cnv-0.0.1
+
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: all copycalls segments cnv
 
-all : copycalls segments geneCN #cghcalls
+all : copycalls segments geneCN cghcalls
 
 CGHCALLS := $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).cgh_call.txt)
 ifeq ($(MULTIPARAM_SEGMENT),true) 
@@ -44,6 +46,7 @@ endif
 segments : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).segment.Rdata)
 copycalls : $(foreach pair,$(SAMPLE_PAIRS),varscan/copycall/$(pair).copycall)
 cghcalls : $(CGHCALLS)
+
 geneCN : varscan/segment/geneCN.txt
 
 define varscan-copynum-tumor-normal
@@ -63,14 +66,14 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	fi; \
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
-varscan/segment/%.segment.Rdata : varscan/copycall/%.copycall
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+varscan/segment/%.segment.Rdata varscan/segment/%.seg.txt varscan/segment/%.collapsed_seg.txt : varscan/copycall/%.copycall
+	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 varscan/segment/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).collapsed_seg.txt)
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(VARSCAN_GENE_CN) $(VARSCAN_GENE_CN_OPTS) --outFile $@ $^")	
+	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(VARSCAN_GENE_CN) $(VARSCAN_GENE_CN_OPTS) --outFile $@ $^")	
 
 varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 define varscan-segment-sd-alpha-smooth
 varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata : varscan/copycall/%.copycall

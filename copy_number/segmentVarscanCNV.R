@@ -77,7 +77,7 @@ if (!is.null(opt$centromereFile)) {
 }
 dev.off()
 
-png(paste(opt$prefix,".seg_plot.png", sep=""), type = 'cairo-png', height=400, width=2000)
+pdf(paste(opt$prefix,".seg_plot.pdf", sep=""), height=4, width=20)
 plot(as.numeric(Data[,4]), pch=20, xlab='Position', ylab="Copy number", xaxt='n', ylim=ylim)
 points(as.numeric(Data[,5]), pch = 20, col = 'blue')
 abline(v=cumsum(rle(Data$Chr)$lengths), col="red", lty=3)
@@ -105,7 +105,7 @@ for (chr in chroms) {
     if (nrow(chrData) > 0) {
         ylim <- c(min(as.numeric(chrData[,4])), max(as.numeric(chrData[,4])))
         ylim[2] <- ylim[2]+0.5
-        png(paste(opt$prefix,".seg_plot.", chr, ".png", sep=""), type = 'cairo-png', height=500, width=500)
+        pdf(paste(opt$prefix,".seg_plot.", chr, ".pdf", sep=""), height=7, width=7)
         plot(as.numeric(chrData[,4]), pch=20, xlab='Position', ylab="Copy number", ylim=ylim, main = paste('Chromosome', chr))
         points(as.numeric(chrData[,5]), pch = 20, col = 'blue')
 
