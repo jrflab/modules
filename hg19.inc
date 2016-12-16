@@ -42,6 +42,8 @@ EXAC_NONTCGA ?= $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.hg19.vcf.gz
 COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.hg19.vcf.gz
 
 REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
+NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
+CHR_REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf
 KNOWN_INDELS ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/Mills_and_1000G_gold_standard.indels.hg19.vcf
 OMNI ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/1000G_omni2.5.hg19.vcf
@@ -97,6 +99,13 @@ CN_ENDOMETRIAL_SUBTYPES = CN_high CN_low Endometrioid_MSI_H Endometrioid_MSS End
 CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_Her2 Pam50_LumA Pam50_LumB Pam50_Normal Triple_negative
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
+
+HOTSPOT_VCF_SEQ = 1 2
+HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
+HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.hg19.vcf
+HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.hg19.vcf
+HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.hg19.vcf
+HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.hg19.vcf
 
 endif
 HG19_INC = true

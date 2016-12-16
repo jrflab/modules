@@ -47,6 +47,8 @@ BWAMEM_REF_FASTA ?= $(REF_DIR)/pdx/combined_Mus_musculus_GRCm38_human_g1k_v37.fa
 endif
 
 REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
+NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
+CHR_REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
 DBSNP ?= $(REF_DIR)/dbsnp_138.b37.gmaf.vcf
 KNOWN_INDELS ?= $(REF_DIR)/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
