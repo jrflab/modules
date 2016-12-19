@@ -1,10 +1,10 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,12G) annotate \
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,15G) annotate $(SNP_SIFT_OPTS) \
 		$(HOTSPOT_UNMERGED_VCF) $< > $@"))
 
 # mouse genome project dbsnp
