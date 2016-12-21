@@ -19,7 +19,8 @@ FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 			  --het_threshold $(FACETS_HET_THRESHOLD) \
 			  --min_nhet $(FACETS_MIN_NHET) \
-			  --pre_cval $(FACETS_PRE_CVAL)
+			  --pre_cval $(FACETS_PRE_CVAL) \
+			  --use_emcncf2
 
 SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
 SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
@@ -38,7 +39,6 @@ endif
 MERGE_TN = python modules/copy_number/facets_merge_tn.py
 
 FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
-FACETS_FILL_GENE_CN = $(RSCRIPT) modules/copy_number/facetsFillGeneCN.R
 FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
 					  --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
@@ -48,7 +48,7 @@ FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
-	facets/geneCN.txt facets/geneCN.pdf facets/geneCN.fill.txt facets/copynum_summary.tsv
+	facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
 
 facets/copynum_summary.tsv : $(foreach sample,$(SAMPLES),facets/cncf/$(sample).Rdata)
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
