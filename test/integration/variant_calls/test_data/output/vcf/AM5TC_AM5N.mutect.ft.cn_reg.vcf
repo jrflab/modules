@@ -1,6 +1,6 @@
 ##fileformat=VCFv4.1
 ##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
-##fileDate=20161125
+##fileDate=20161219
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
@@ -34,6 +34,7 @@
 ##FILTER=<ID=REJECT,Description="Rejected as a confident somatic mutation">
 ##FILTER=<ID=targetInterval,Description="no overlap with intervals">
 ##FILTER=<ID=somaticAlleleDepth,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
+##FILTER=<ID=depth,Description="filter if normal depth < 5 or tumor depth < 5">
 ##FILTER=<ID=noAF,Description="missing AF">
 ##contig=<ID=1,length=249250621,assembly="b37">
 ##contig=<ID=2,length=243199373,assembly="b37">

@@ -48,9 +48,9 @@ FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
-	facets/geneCN.txt facets/geneCN.pdf facets/geneCN.fill.txt facets/summary.tsv
+	facets/geneCN.txt facets/geneCN.pdf facets/geneCN.fill.txt facets/copynum_summary.tsv
 
-facets/summary.tsv : $(foreach sample,$(PRIMARY_TUMORS) $(CFDNA_SAMPLES),facets/cncf/$(sample).Rdata)
+facets/copynum_summary.tsv : $(foreach sample,$(SAMPLES),facets/cncf/$(sample).Rdata)
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
 
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)

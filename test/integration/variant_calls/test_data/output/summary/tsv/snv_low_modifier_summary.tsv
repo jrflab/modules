@@ -7,7 +7,6 @@ EMC8T	EMC8N	19	56896570	G	A	ZNF582	.	intron_variant	0.16	0.0	25.0	32.0	.	.	.	Fal
 EMC8T	EMC8N	2	152552202	A	C	NEB	.	splice_region_variant&intron_variant	0.139534883721	0.0222222222222	43.0	45.0	.	.	.	False	Passenger	.	.	.	.	.	.	0	.	LOW
 EMC8T	EMC8N	4	6878363	C	G	KIAA0232	.	intron_variant	0.425287356322	0.0	87.0	69.0	.	.	.	True	Passenger	.	.	.	.	.	.	0	.	MODIFIER
 EMC8T	EMC8N	5	89938459	C	T	GPR98	p.Asn749Asn	synonymous_variant	0.388888888889	0.0	18.0	30.0	D	.	.	False	Passenger	passenger	.	.	.	.	.	0	.	LOW
-EMC8T	EMC8N	6	43008415	G	A	CUL7	p.Ile1376Ile	synonymous_variant	0.328205128205	0.0	195.0	92.0	.	.	.	False	Passenger	passenger	.	.	.	.	.	0	.	LOW
 EMC8T	EMC8N	7	101870801	G	A	CUX1	p.Pro1106Pro	synonymous_variant	0.245614035088	0.0	57.0	69.0	.	.	.	False	Passenger	passenger	.	.	true	.	true	2	.	LOW
 AM5TC	AM5N	1	244755022	C	T	C1orf101	p.Tyr726Tyr	synonymous_variant	0.327586206897	0.020202020202	58.0	99.0	.	.	.	False	Passenger	passenger	.	.	.	.	.	0	.	LOW
 AM5TC	AM5N	10	74100864	G	T	DNAJB12	p.Gly208Gly	synonymous_variant	0.153846153846	0.00507614213198	182.0	197.0	.	.	.	True	Passenger	passenger	.	.	.	.	.	0	.	LOW
