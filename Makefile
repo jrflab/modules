@@ -356,6 +356,10 @@ TARGETS += qualimap
 qualimap :
 	$(call RUN_MAKE,modules/qc/qualimap.mk)
 
+TARGETS += bam_stats
+bam_stats :
+	$(call RUN_MAKE,modules/qc/bamStats.mk)
+
 
 ###
 # RNAseq

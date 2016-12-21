@@ -6,6 +6,9 @@ ifneq ("$(wildcard project_config.inc)", "")
 include project_config.inc
 endif
 include modules/config.inc
+ifdef PROJECT_CONFIG
+include $(PROJECT_CONFIG)
+endif
 
 # default reference: 
 REF ?= hg19
