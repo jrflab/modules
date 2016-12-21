@@ -48,7 +48,6 @@ for (facetsFile in facetsFiles) {
     Df[n, 'ploidy'] <- fit$ploidy
     Df[n, 'dipLogR'] <- fit$dipLogR
 }
-Df <- mutate(Df, bad = purity < 0.3)
+Df <- mutate(Df, bad = purity < 0.3 | is.na(purity))
 
 write.table(Df, file = opt$outFile, sep = '\t', quote = F, row.names = F)
-
