@@ -111,7 +111,7 @@ mm <- lapply(facetsFiles, function(f) {
 	df$GL[df$tcn.em > ploidy] <- 1
 	df$GL[df$tcn.em >= ploidy + 4] <- 2
 
-	load(gsub("cncf.txt", "Rdata", f, fixed=T))
+	load(f)
 	noise <- median(abs(out2$jointseg$cnlr-  unlist(apply(out2$out[,c("cnlr.median", "num.mark")], 1, function(x) {rep(x[1], each=x[2])}))))
 
 	lrr <- sort(out2$jointseg$cnlr)
