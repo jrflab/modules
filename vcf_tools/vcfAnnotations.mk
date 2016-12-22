@@ -1,6 +1,6 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,12G) annotate \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,17G,30G,"$(call SNP_SIFT_MEM,16G) annotate \
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
