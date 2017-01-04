@@ -1,0 +1,20 @@
+# The following table is formatted as tab separated values. 
+#GeneName	GeneId	TranscriptId	BioType	variants_impact_HIGH	variants_impact_LOW	variants_impact_MODERATE	variants_impact_MODIFIER	variants_effect_disruptive_inframe_deletion	variants_effect_downstream_gene_variant	variants_effect_frameshift_variant	variants_effect_intron_variant	variants_effect_splice_region_variant+intron_variant	bases_affected_DOWNSTREAM	total_score_DOWNSTREAM	length_DOWNSTREAM	bases_affected_EXON	total_score_EXON	length_EXON	bases_affected_INTRON	total_score_INTRON	length_INTRON	bases_affected_SPLICE_SITE_REGION	total_score_SPLICE_SITE_REGION	length_SPLICE_SITE_REGION
+AKAP9	AKAP9	NM_005751.4		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	115	0	0	0
+C10orf120	C10orf120	NM_001010912.2		1	0	0	0	0	0	1	0	0	0	0	0	1	0	780	0	0	0	0	0	0
+LOC101928847	LOC101928847	NR_120563.1		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	1733	0	0	0
+MIR4673	MIR4673	NR_039820.1		0	0	0	1	0	1	0	0	0	1	0	5000	0	0	0	0	0	0	0	0	0
+MMGT1	MMGT1	NM_173470.1		1	0	0	0	0	0	1	0	0	0	0	0	1	0	104	0	0	0	0	0	0
+NCAM1	NCAM1	NM_001242607.1		0	1	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	6
+NOTCH1	NOTCH1	NM_017617.3		1	0	0	0	0	0	1	0	0	0	0	0	1	0	114	0	0	0	0	0	0
+PIK3R1	PIK3R1	NM_181523.2		1	0	1	0	1	0	1	0	0	0	0	0	2	0	69	0	0	0	0	0	0
+PKD1L1	PKD1L1	NM_138295.3		0	1	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	6
+PSME4	PSME4	NM_014614.2		0	1	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	6
+PTPN4	PTPN4	NM_002830.3		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	49452	0	0	0
+RIMS1	RIMS1	NM_014989.5		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	5438	0	0	0
+SCAMP1	SCAMP1	NM_004866.5		0	1	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	6
+SEPT10	SEPT10	NM_144710.3		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	6604	0	0	0
+SKIV2L2	SKIV2L2	NM_015360.4		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	4935	0	0	0
+TLL2	TLL2	NM_012465.3		0	0	1	0	1	0	0	0	0	0	0	0	1	0	416	0	0	0	0	0	0
+TM9SF3	TM9SF3	NM_020123.3		0	0	0	1	0	1	0	0	0	1	0	5000	0	0	0	0	0	0	0	0	0
+XKR5	XKR5	NM_207411.4		0	0	0	1	0	0	0	1	0	0	0	0	0	0	0	1	0	3467	0	0	0
