@@ -99,8 +99,8 @@ VT ?= $(HOME)/share/usr/bin/vt
 TABIX ?= $(HOME)/share/usr/bin/tabix
 
 ifeq ($(CLUSTER_ENGINE),PBS)
-MYSQLDB_HOST = gpu-2-17
-EMBL_MYSQLDB_HOST = gpu-2-17
+MYSQLDB_HOST = cpu-6-2
+EMBL_MYSQLDB_HOST = cpu-6-2
 EMBL_MYSQLDB_PORT = 9992
 EMBL_MYSQLDB_USER = embl
 EMBL_MYSQLDB_PW = embl
