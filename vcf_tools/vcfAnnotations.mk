@@ -1,21 +1,21 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate \
-		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,22G,30G,"$(call SNP_SIFT_MEM,20G) annotate \
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && grep -q '^#CHROM' $@"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,15G) annotate $(SNP_SIFT_OPTS) \
+		$(HOTSPOT_UNMERGED_VCF) $< > $@ && grep -q '^#CHROM' $@"))
 
 # mouse genome project dbsnp
 vcf/%.mgp_dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
-		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@"))
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && grep -q '^#CHROM' $@"))
 
 vcf/%.cosmic.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
-		$(COSMIC) $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+		$(COSMIC) $< > $@ && grep -q '^#CHROM' $@"))
 
 TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
@@ -30,15 +30,15 @@ vcf/%.exondist.vcf : vcf/%.vcf
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 vcf/%.eff.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,14G,"$(call SNP_EFF_MEM,8G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_EFF_MEM,8G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@"))
 
 
 vcf/%.clinvar.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		$(CLINVAR) $< > $@"))
 
 vcf/%.exac_nontcga.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
 		-info ExAC_AF $(EXAC_NONTCGA) $< > $@"))
 
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed

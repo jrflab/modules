@@ -91,10 +91,11 @@ cat(paste("Filtering to", nrow(genes), "records\n"))
 genesGR <- genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
 			
 mm <- lapply(facetsFiles, function(f) {
-	tab <- read.delim(f, as.is=T)
+    load(f)
+    tab <- fit$cncf
 	tab$chrom[which(tab$chrom==23)] <- "X"
 
-	tabGR <- tab %$% GRanges(seqnames = chrom, ranges = IRanges(loc.start, loc.end))
+	tabGR <- tab %$% GRanges(seqnames = chrom, ranges = IRanges(start, end))
 	mcols(tabGR) <- tab %>% select(cnlr.median:lcn.em)
 
 	fo <- findOverlaps(tabGR, genesGR)
@@ -111,7 +112,7 @@ mm <- lapply(facetsFiles, function(f) {
 	df$GL[df$tcn.em > ploidy] <- 1
 	df$GL[df$tcn.em >= ploidy + 4] <- 2
 
-	load(gsub("cncf.txt", "Rdata", f, fixed=T))
+	load(f)
 	noise <- median(abs(out2$jointseg$cnlr-  unlist(apply(out2$out[,c("cnlr.median", "num.mark")], 1, function(x) {rep(x[1], each=x[2])}))))
 
 	lrr <- sort(out2$jointseg$cnlr)

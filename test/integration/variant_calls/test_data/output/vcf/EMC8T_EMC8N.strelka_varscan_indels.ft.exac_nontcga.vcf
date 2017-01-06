@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Fri Nov 25 01:29:22 2016
+##fileDate=Wed Jan  4 01:25:51 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -94,7 +94,7 @@
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
 ##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate -info ExAC_AF /home/debruiji/share/reference/ExAC.r0.3.nonTCGA.sites.vep.2.vcf vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
+##SnpSiftCmd="SnpSift annotate -info ExAC_AF /home/limr/share/reference/ExAC.r0.3.nonTCGA.sites.vep.2.vcf vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
 ##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
 2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=51;VARPVAL=1.0;SOMPVAL=0.00276649964682	GT:DP:AD:VAF	0/1:23:15,8:0.3478	0/0:21:21,0:0.0

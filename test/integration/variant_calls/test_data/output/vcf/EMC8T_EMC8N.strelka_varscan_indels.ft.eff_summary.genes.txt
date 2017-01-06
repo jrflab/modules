@@ -1,0 +1,4 @@
+# The following table is formatted as tab separated values. 
+#GeneName	GeneId	TranscriptId	BioType	variants_impact_HIGH	variants_impact_LOW	variants_effect_splice_donor_variant+intron_variant	variants_effect_splice_region_variant+intron_variant	bases_affected_SPLICE_SITE_DONOR	total_score_SPLICE_SITE_DONOR	length_SPLICE_SITE_DONOR	bases_affected_SPLICE_SITE_REGION	total_score_SPLICE_SITE_REGION	length_SPLICE_SITE_REGION
+LRP4	LRP4	NM_002334.3		1	0	1	0	1	0	2	0	0	0
+MRPS5	MRPS5	NM_031902.3		0	1	0	1	0	0	0	1	0	6

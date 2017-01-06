@@ -27,6 +27,7 @@ optList <- list(
                 make_option("--max_cval", default = 5000, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--het_threshold", default = 0.25, type = 'double', help = "AF threshold for heterozygous SNPs"),
+                make_option("--use_emcncf2", default = F, action = 'store_true', help = "use emcncf version 2"),
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
                 make_option("--genome", default = 'b37', type = 'character', help = "genome of counts file"),
                 make_option("--out_prefix", default = NULL, help = "output prefix"))
@@ -94,7 +95,11 @@ while (!success && cval < opt$max_cval) {
     out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
     print(str_c("attempting to run emncf() with cval2 = ", cval))
     fit <- tryCatch({
-        out2 %>% emcncf2
+        if (opt$use_emcncf2) {
+            out2 %>% emcncf2
+        } else {
+            out2 %>% emcncf
+        }
     }, error = function(e) {
         print(paste("Error:", e))
         return(NULL)

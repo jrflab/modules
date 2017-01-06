@@ -71,10 +71,12 @@ SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
 PHONY += all somatic_vcfs merged_vcfs
-all : somatic_vcfs merged_vcfs somatic_tables
-merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
+all : somatic_vcfs somatic_tables #merged_vcfs
+#merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
-somatic_tables : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),tables/$(pair).$(type).tab.txt))
+somatic_tables : $(foreach type,$(VARIANT_TYPES),\
+	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
+	alltables/allTN.$(type).tab.txt)
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")

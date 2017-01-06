@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import numpy as np
 import intervaltree
+import re
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='interval_filter_vcf.py',
@@ -18,6 +19,7 @@ if __name__ == "__main__":
     intervals = intervals.rename(columns={0: 'chr', 1: 'start', 2: 'end'})
     trees = {}
     for chrom, interval in intervals.groupby('chr'):
+        chrom = re.sub(r'chr', '', chrom)
         trees[chrom] = intervaltree.IntervalTree.from_tuples(zip(interval.start - 50, interval.end + 50))
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
@@ -26,10 +28,13 @@ if __name__ == "__main__":
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
     for record in vcf_reader:
-        if record.CHROM not in trees:
+        chrom = re.sub(r'chr', '', record.CHROM)
+        if record.FILTER is None:
+            record.FILTER = []
+        if chrom not in trees:
             record.FILTER.append('targetInterval')
         else:
-            query = trees[record.CHROM].search(record.POS)
+            query = trees[chrom].search(record.POS)
             if len(query) == 0:
                 record.FILTER.append('targetInterval')
         vcf_writer.write_record(record)

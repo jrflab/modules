@@ -18,7 +18,7 @@ vcf_readers = [vcf.Reader(open(f, 'r')) for f in args.vcf_files]
 vcf_reader = vcf_readers[0]
 # merge header
 if len(vcf_readers) > 1:
-    for vcf_reader2 in vcf_readers[1:]:
+    for vcf_reader2 in vcf_readers:
         for inf in vcf_reader2.infos:
             if inf not in vcf_reader.infos:
                 vcf_reader.infos[inf] = vcf_reader2.infos[inf]
@@ -34,13 +34,17 @@ for records in izip_longest(*vcf_readers, fillvalue=sentinel):
         raise ValueError('vcf files have different lengths')
     record = records[0]
     if len(records) > 1:
-        assert all([r.CHROM == record.CHROM and r.POS == record.POS for r in records[1:]])
+        assert all([r.CHROM == record.CHROM and r.POS == record.POS for r in records])
+        for record in records:
+            if record.FILTER is None:
+                record.FILTER = []
+
         ids = [r.ID for r in records]
         ids = [x.strip() for x in filter(None, ids)]
         ids = set(chain.from_iterable([i.split(';') for i in ids]))
         ids = filter(lambda x: x != '.', ids)
         record.ID = ';'.join(ids) if len(ids) > 0 else '.'
-        for record2 in records[1:]:
+        for record2 in records:
             # merge filters in
             for f in record2.FILTER:
                 if f not in record.FILTER:

@@ -92,7 +92,7 @@ class Job:
                                     local_file_size))
                     break
                 except ValueError as e:
-                    sys.stderr.write(e + "\n")
+                    sys.stderr.write(str(e) + "\n")
                     time.sleep(10)
                 except:
                     sys.stderr.write("{}: failed remote file size check\n"
