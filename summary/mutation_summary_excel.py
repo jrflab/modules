@@ -89,12 +89,12 @@ def create_absolute_df(absolute_somatic_txts, absolute_segments):
 def add_maf(df):
     rv = df.copy()
     def f(x):
-        if "," in x["TUMOR.AD"]:
+        if "," in x["TUMOR.AD"] and sum(map(float, x["TUMOR.AD"].split(','))) > 0:
             return float(x["TUMOR.AD"].split(",")[1]) / sum(map(float, x["TUMOR.AD"].split(',')))
         else:
             return float('nan')
     def g(x):
-        if "," in x["NORMAL.AD"]:
+        if "," in x["NORMAL.AD"] and sum(map(float, x["NORMAL.AD"].split(','))) > 0:
             return float(x["NORMAL.AD"].split(",")[1]) / sum(map(float, x["NORMAL.AD"].split(',')))
         else:
             return float('nan')
