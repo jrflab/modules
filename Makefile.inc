@@ -128,8 +128,8 @@ VARSCAN = $(JAVA8) -Xmx10G -jar $(VARSCAN_JAR)
 
 # SNP EFF
 SNP_EFF = $(call SNP_EFF_MEM,$(DEFAULT_JAVA_MEM))
-SNP_EFF_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_EFF_JAR)
-SNP_SIFT_MEM = $(JAVA7) -Xmx$1 -jar $(SNP_SIFT_JAR)
+SNP_EFF_MEM = $(JAVA8) -Xmx$1 -jar $(SNP_EFF_JAR)
+SNP_SIFT_MEM = $(JAVA8) -Xmx$1 -jar $(SNP_SIFT_JAR)
 SNP_SIFT = $(call SNP_SIFT_MEM,$(DEFAULT_JAVA_MEM))
 VCF_EFF_ONE_PER_LINE = $(HOME)/share/usr/snpEff-4.1/scripts/vcfEffOnePerLine.pl
 VCF_JOIN_EFF = modules/scripts/joinEff.pl

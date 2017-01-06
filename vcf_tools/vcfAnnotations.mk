@@ -1,21 +1,21 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,17G,30G,"$(call SNP_SIFT_MEM,16G) annotate \
-		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,22G,30G,"$(call SNP_SIFT_MEM,20G) annotate \
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && grep -q '^#CHROM' $@"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,15G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@"))
+		$(HOTSPOT_UNMERGED_VCF) $< > $@ && grep -q '^#CHROM' $@"))
 
 # mouse genome project dbsnp
 vcf/%.mgp_dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,33G,65G,"$(call SNP_SIFT_MEM,45G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
-		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@"))
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@ && grep -q '^#CHROM' $@"))
 
 vcf/%.cosmic.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,18G,"$(call SNP_SIFT_MEM,8G) annotate $(SNP_SIFT_OPTS) \
-		$(COSMIC) $< > $@"))
+		$(COSMIC) $< > $@ && grep -q '^#CHROM' $@"))
 
 TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
