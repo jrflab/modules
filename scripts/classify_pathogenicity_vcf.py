@@ -86,8 +86,13 @@ def get_missense_pathogenicity(record):
         return "passenger"
 
 
-def get_inframe_pathogenicity(record):
-    if (is_loh(record) or is_hap_insuf(record) or is_cancer_gene(record)) and \
+def get_inframe_pathogenicity(record, no_remote):
+    if no_remote:
+        if is_loh(record) or is_hap_insuf(record) or is_cancer_gene(record):
+            return 'potentially_pathogenic'
+        else:
+            return 'passenger'
+    elif (is_loh(record) or is_hap_insuf(record) or is_cancer_gene(record)) and \
             (is_mt_pathogenic(record) and is_provean_pathogenic(record)) or \
             (is_mt_missing(record) and is_provean_pathogenic(record)) or \
             (is_mt_pathogenic(record) and is_provean_missing(record)):
@@ -96,7 +101,7 @@ def get_inframe_pathogenicity(record):
         return 'passenger'
 
 
-def classify_pathogenicity(record):
+def classify_pathogenicity(record, no_remote=False):
     """ classify pathogenicity for a vcf record
     """
     if is_missense(record):
@@ -104,7 +109,7 @@ def classify_pathogenicity(record):
     elif is_fs_splice_stop(record):
         record.INFO["pathogenicity"] = get_fs_splice_stop_pathogenicity(record)
     elif is_inframe(record):
-        record.INFO["pathogenicity"] = get_inframe_pathogenicity(record)
+        record.INFO["pathogenicity"] = get_inframe_pathogenicity(record, no_remote)
     elif is_synonymous(record):
         record.INFO["pathogenicity"] = 'passenger'
     else:

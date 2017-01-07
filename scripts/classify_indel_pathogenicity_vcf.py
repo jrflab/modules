@@ -31,6 +31,8 @@ if __name__ == "__main__":
     parser.add_argument('--qsub_queue', nargs='?', default='jrf.q,all.q', help='qsub queue')
     parser.add_argument('--num_provean_threads', nargs='?', default=4, type=int, help='number of provean threads')
     parser.add_argument('--run_local', action='store_true', default=False, help='run provean locally')
+    parser.add_argument('--no_remote', action='store_true', default=False, help='no remote queries: can only call potentially pathogenic')
+    parser.add_argument('--no_mt_provean', action='store_true', default=False, help='do not run mutation taster / provean')
     args = parser.parse_args()
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
@@ -69,7 +71,7 @@ if __name__ == "__main__":
         if cp.requires_mt_provean(record):
             query_records.append(record)
         records.append(record)
-    if len(query_records) > 0:
+    if len(query_records) > 0 and not args.no_remote:
         # run mutation taster
         for record in records:
             if 'MT_pred' not in record.INFO:
@@ -85,6 +87,6 @@ if __name__ == "__main__":
             query.run_query()
 
     for record in records:
-        cp.classify_pathogenicity(record)
+        cp.classify_pathogenicity(record, no_remote=args.no_remote)
         vcf_writer.write_record(record)
     vcf_writer.close()
