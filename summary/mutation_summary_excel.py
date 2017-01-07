@@ -190,7 +190,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         absdf = None
     # create annotation df
     if annotation_tsv:
-        annotdf = pd.read_csv(annotation_tsv, sep="\t")
+        annotdf = pd.read_csv(annotation_tsv, sep="\t", encoding='utf-8')
     else:
         annotdf = None
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P," \
@@ -203,20 +203,21 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
     # add gene annotations and chasm score columns
     summary_columns += chasm_pred_columns + "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,REF,ALT,ANN[*].IMPACT".split(",")
 
-    writer = pd.ExcelWriter(excel_file)
+    writer = pd.ExcelWriter(excel_file, options={'encoding':'utf-8'})
+    writer.book.use_zip64()
 
     # merge mutation taster and provean columns
     def merge_ann_cols(df):
         if 'MutationTaster_pred' in df and 'MT_pred' in df:
             df.ix[df['MutationTaster_pred'] == '.', 'MutationTaster_pred'] = df.ix[df['MutationTaster_pred'] == '.', 'MT_pred']
-            df.ix[df['MutationTaster_pred'].str.contains('disease'), 'MutationTaster_pred'] = 'D'
-            df.ix[df['MutationTaster_pred'].str.contains('poly'), 'MutationTaster_pred'] = 'N'
+            df.ix[df['MutationTaster_pred'].str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
+            df.ix[df['MutationTaster_pred'].str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
         if 'dbNSFP_PROVEAN_pred' in df:
             df['provean_pred'] = df['dbNSFP_PROVEAN_pred']
         if 'provean_pred' in df:
             df['provean_pred'] = df['provean_pred'].fillna('Failed')
-            df.ix[df['provean_pred'].str.contains('N'), 'provean_pred'] = 'N'
-            df.ix[df['provean_pred'].str.contains('D'), 'provean_pred'] = 'D'
+            df.ix[df['provean_pred'].str.contains('N').fillna(False), 'provean_pred'] = 'N'
+            df.ix[df['provean_pred'].str.contains('D').fillna(False), 'provean_pred'] = 'D'
         return df
 
     def read_tsv(tsv):
