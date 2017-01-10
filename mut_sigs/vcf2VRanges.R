@@ -36,6 +36,7 @@ if (opt$genome == "b37" || opt$genome == "hg19") {
     txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
     genomeName <- 'hg19'
     chromosomes <- c(1:22, "X", "Y")
+    chromosomes <- c(chromosomes, paste('chr', chromosomes, sep = ''))
 } else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
     library("BSgenome.Mmusculus.UCSC.mm10");
     library("TxDb.Mmusculus.UCSC.mm10.knownGene")
@@ -43,6 +44,7 @@ if (opt$genome == "b37" || opt$genome == "hg19") {
     txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
     genomeName <- 'mm10'
     chromosomes <- c(1:19, "X", "Y")
+    chromosomes <- c(chromosomes, paste('chr', chromosomes, sep = ''))
 }
 
 txByGenes <- transcriptsBy(txdb, 'gene')
