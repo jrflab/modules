@@ -8,6 +8,7 @@ LOGDIR ?= log/facets.$(NOW)
 .DELETE_ON_ERROR:
 .PHONY : facets
 
+FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
 RUN_FACETS = $(RSCRIPT) modules/copy_number/runFacets.R
 CREATE_FACETS_SUMMARY = $(RSCRIPT) modules/copy_number/createFacetsSummary.R
 FACETS_PRE_CVAL ?= 50
@@ -26,6 +27,9 @@ SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
 SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
 
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
+
+# convert old facets basecount files to snp-pileup
+CONVERT_BASECOUNT ?= false
 
 
 # augment dbsnp with calls from heterozygous calls from gatk
@@ -64,16 +68,22 @@ facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES)
 facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 
-
+ifeq ($(CONVERT_BASECOUNT),true)
+CONVERT_BC_TO_SNP_PILEUP = python modules/copy_number/convert_basecount_to_snp_pileup.py
+facets/snp_pileup/%.snp_pileup.gz : facets/base_count/%.bc.gz
+	$(call LSCRIPT_MEM,12G,14G,"$(CONVERT_BC_TO_SNP_PILEUP) $< | gzip -c > $@")
+else
 # normal is first, tumor is second
 define snp-pileup-tumor-normal
 facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
 	$$(call LSCRIPT_CHECK_MEM,8G,20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+endif
+
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(RUN_FACETS) $(FACETS_OPTS) --out_prefix $(@D)/$* $<")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(FACETS_OPTS) --out_prefix $(@D)/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
