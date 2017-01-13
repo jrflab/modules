@@ -11,7 +11,7 @@ GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes
 ANNOVAR_REF = hg19
 
 CLINVAR = $(REF_DIR)/clinvar_20151102.vcf.gz
-EXAC_NONTCGA = $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.vcf
+EXAC_NONTCGA = $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.vcf.gz
 
 #UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
 #REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
@@ -50,11 +50,11 @@ REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
 NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
 CHR_REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
-DBSNP ?= $(REF_DIR)/dbsnp_138.b37.gmaf.vcf
-KNOWN_INDELS ?= $(REF_DIR)/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf
-OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf
-HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf
-COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.vcf
+DBSNP ?= $(REF_DIR)/dbsnp_138.b37.gmaf.vcf.gz
+KNOWN_INDELS ?= $(REF_DIR)/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf.gz
+OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf.gz
+HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf.gz
+COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.vcf.gz
 BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
 EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
 EXOME_BED_NOHEADER ?= $(REF_DIR)/target_panels/sure_select_exome_v4_b37.bed
@@ -105,7 +105,7 @@ HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
 HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.vcf
 HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
 HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf
-HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.vcf
+HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.vcf.gz
 
 HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.bed
 CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.b37.2016-10-14.bed
