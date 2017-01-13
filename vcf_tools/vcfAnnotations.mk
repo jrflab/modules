@@ -4,7 +4,7 @@ vcf/%.dbsnp.vcf : vcf/%.vcf
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@ && grep -q '^#CHROM' $@"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,23G,"$(call SNP_SIFT_MEM,15G) annotate $(SNP_SIFT_OPTS) \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,22G,30G,"$(call SNP_SIFT_MEM,20G) annotate $(SNP_SIFT_OPTS) \
 		$(HOTSPOT_UNMERGED_VCF) $< > $@ && grep -q '^#CHROM' $@"))
 
 # mouse genome project dbsnp
