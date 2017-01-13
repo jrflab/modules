@@ -39,7 +39,8 @@ def main():
         column_names = args.column_names.split(",")
     else:
         column_names = None
-    write_to_excel(args.tsv_file, args.excel_file, args.sheet_name, column_names, args.delimiter, args.overwrite)
+    sheet_name = (args.sheet_name[:25] + '..') if len(args.sheet_name) > 25 else args.sheet_name
+    write_to_excel(args.tsv_file, args.excel_file, sheet_name, column_names, args.delimiter, args.overwrite)
 
 if __name__ == "__main__":
     main()
