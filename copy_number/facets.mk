@@ -24,7 +24,7 @@ FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 			  --use_emcncf2
 
 SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
-SNP_PILEUP_OPTS = --min-map-quality=15 --min-base-quality=20 --gzip
+SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip
 
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
 
