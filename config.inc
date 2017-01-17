@@ -50,8 +50,8 @@ IGVTOOLS ?= $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS ?= $(HOME)/share/usr/bin/vcftools-0.1.10
 VCF_SORT ?= $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 
-SNP_EFF_JAR ?= $(JARDIR)/snpEff-4.1.jar
-SNP_SIFT_JAR ?= $(JARDIR)/SnpSift-4.1.jar
+SNP_EFF_JAR ?= $(JARDIR)/snpEff-4.3.jar
+SNP_SIFT_JAR ?= $(JARDIR)/SnpSift-4.3.jar
 SNP_EFF_CONFIG ?= modules/snpEff.config
 #DB_NSFP ?= $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
 DB_NSFP ?= $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
