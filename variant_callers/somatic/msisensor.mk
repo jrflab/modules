@@ -11,10 +11,13 @@ PHONY += msisensor
 .SECONDARY: 
 .PHONY : $(PHONY)
 
-msisensor: $(foreach pair,$(SAMPLE_PAIRS),msisensor/$(pair).msi)
+msisensor: msisensor/msi.tsv
 
 define msisensor-tumor-normal
 msisensor/$1_$2.msi : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$$(MSISENSOR) msi $$(MSISENSOR_OPTS) -n $$(<<) -t $$< -b 8 -o $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call msisensor-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+
+msisensor/msi.tsv : $(foreach pair,$(SAMPLE_PAIRS),msisensor/$(pair).msi)
+	$(INIT) (head -1 $^ | sed 's/^/sample\t/'; for x in $<; do sed "1d; s/^/$$x\t/" $$x; done | sed 's/_.*msi//' ) > $@
