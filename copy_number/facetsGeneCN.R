@@ -9,7 +9,8 @@
 #---------------
 
 # load base libraries
-for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr","stringr","tidyr","magrittr","foreach","Cairo","rtracklayer","grid","rlist", "RMySQL")) {
+for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr", 
+              "stringr","tidyr","magrittr","foreach", "rtracklayer","grid","rlist", "RMySQL")) {
     suppressPackageStartupMessages(library(lib, character.only=TRUE))
 }
 
