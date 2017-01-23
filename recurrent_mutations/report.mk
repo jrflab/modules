@@ -2,8 +2,8 @@ include modules/Makefile.inc
 
 LOGDIR = log/recurrent_mutations.$(NOW)
 
-EXCEL_NONSYNONYMOUS_MUTECT_SNPS ?= summary/tsv/mutect_snps_nonsynonymous.tsv
-EXCEL_NONSYNONYMOUS_MUTECT_INDELS ?= summary/tsv/mutect_indels_nonsynonymous.tsv
+EXCEL_NONSYNONYMOUS_MUTECT_SNPS ?= summary/tsv/snv_nonsynonymous_summary.tsv
+EXCEL_NONSYNONYMOUS_MUTECT_INDELS ?= summary/tsv/indel_nonsynonymous_summary.tsv
 
 # sufam plot parameters
 SUFAM_PLOT_MIN_NR_SAMPLES_WITH_MUTATION?=2

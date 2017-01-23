@@ -41,7 +41,7 @@ def mkdir_p(path):
 
 def simplify(df):
     df = df.rename(columns={"#CHROM": "CHROM"})
-    return df["TUMOR_SAMPLE CHROM POS ID REF ALT ANN[*].GENE ANN[*].HGVS_P ANN[*].EFFECT ANN[*].IMPACT TUMOR.DP TUMOR.AD dbNSFP_ExAC_Adj_AF dbNSFP_ESP6500_AA_AF dbNSFP_ESP6500_EA_AF dbNSFP_1000Gp3_AF G5 G5A GMAF".split()]
+    return df["TUMOR_SAMPLE CHROM POS ID REF ALT ANN[*].GENE ANN[*].HGVS_P ANN[*].EFFECT ANN[*].IMPACT TUMOR_DP TUMOR.AD dbNSFP_ExAC_Adj_AF dbNSFP_ESP6500_AA_AF dbNSFP_ESP6500_EA_AF dbNSFP_1000Gp3_AF G5 G5A GMAF".split()]
 
 
 def split_multi_value_columns_to_records(df, columns, separator):
@@ -84,18 +84,19 @@ def make_most_severe_effect_column(mut_split):
     # in order of keys, the most severe change is applied last
     normalize = OrderedDict([
         ("Silent", ".*(silent|synonymous|intron|intragenic|utr|igr|rna|non_coding|noncoding).*"),
-        ("Upstream, start/stop, or de novo modification", ".*(start|stop).*"),
+        ("Up/downstream variant", ".*(upstream|downstream).*"),
+        ("Start or Stop codon change", ".*(start|stop).*"),
         ("Splice site variant", ".*splice.*"),
-        ("Inframe In-Del",  ".*(codon_deletion|codon_insertion|inframe|in_frame).*"),
         ("Missense SNV",  ".*(missense|non_synonymous|nonsynonymous).*"),
+        ("Inframe In-Del",  ".*(codon_deletion|codon_insertion|inframe|in_frame).*"),
         ("Frameshift In-Del", ".*shift.*"),
         ("Truncating SNV", ".*(trun|stop).*"),
     ])
     rv["MOST_SEVERE_EFFECT"] = [np.nan] * len(rv["ANN[*].EFFECT_SPLIT"])
 
     for i, (effect, pattern) in enumerate(normalize.iteritems()):
-        rv.MOST_SEVERE_EFFECT[rv["ANN[*].EFFECT_SPLIT"].str.match(re.compile(pattern, re.IGNORECASE)).astype(bool)] = i
-    rv.MOST_SEVERE_EFFECT[rv["HOTSPOT"] == "true"] = len(normalize)
+        rv.loc[rv["ANN[*].EFFECT_SPLIT"].str.match(re.compile(pattern, re.IGNORECASE)).astype(bool), 'MOST_SEVERE_EFFECT'] = i
+    rv.loc[rv["HOTSPOT"] == True, 'MOST_SEVERE_EFFECT'] = len(normalize)
 
     number_effect_mapping = dict(enumerate(normalize.keys()))
     number_effect_mapping[len(normalize)] = "Hotspot"
@@ -107,7 +108,6 @@ def output_recurrent_mutations_type_per_gene_single_figure(muts, mut_split, gene
     mut_eff_split, number_effect_mapping = make_most_severe_effect_column(mut_split)
     mut_eff_genes = mut_eff_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                                                   (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
-            .drop_duplicates(subset="TUMOR_SAMPLE CHROM POS REF ALT".split())\
             .groupby(["TUMOR_SAMPLE", "ANN[*].GENE_SPLIT"])["MOST_SEVERE_EFFECT"].max().unstack("TUMOR_SAMPLE").fillna(-1).astype(int)
 
     # create color map
@@ -202,13 +202,13 @@ def output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_
     # gene annotations
     gene_annotations = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                                                      (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
-            .groupby(["ANN[*].GENE_SPLIT"])["cancer_gene LOH clonality".split()].apply(
-                    lambda x: pd.Series({"cancer_gene": len(x[x.cancer_gene == "true"]) > 0}))
+            .groupby(["ANN[*].GENE_SPLIT"])["cancer_gene_census facetsLOHCall clonality".split()].apply(
+                    lambda x: pd.Series({"cancer_gene_census": len(x[x.cancer_gene_census == True]) > 0}))
     # gene annotations per gene per sample
     gene_ann_per_sample = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                         (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
-        .groupby(["ANN[*].GENE_SPLIT","TUMOR_SAMPLE"])["LOH clonality".split()].apply(
-            lambda x: pd.Series({"LOH": len(x[x.LOH == "true"]) > 0,
+        .groupby(["ANN[*].GENE_SPLIT","TUMOR_SAMPLE"])["facetsLOHCall clonality".split()].apply(
+            lambda x: pd.Series({"facetsLOHCall": len(x[x.facetsLOHCall == True]) > 0,
                                 "clonal": len(x[x.clonality == "clonal"]) > 0}))
 
     # draw the plot
@@ -243,7 +243,7 @@ def output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_
 
     # add gene annotations
     for i, y in enumerate(heatmap.yaxis.get_ticklocs()):
-        if gene_annotations.ix[gene_order[i]].cancer_gene:
+        if gene_annotations.ix[gene_order[i]].cancer_gene_census:
             heatmap.add_artist(matplotlib.patches.Ellipse((len(sample_order)+.2, len(gene_order)-y), .2,
                                                         .2,
                                                         color='k', clip_on=False))
@@ -258,7 +258,7 @@ def output_recurrent_mutations_ccf_per_gene_single_figure(muts, mut_split, gene_
                 heatmap.add_patch(
                     plt.Rectangle((x-.5, len(gene_order)-y-.5),
                                 1, 1, fill=False, edgecolor='goldenrod', linewidth=2, clip_on=False))
-            if not plot_maf and ann.LOH:
+            if not plot_maf and ann.facetsLOHCall:
                 heatmap.add_artist(plt.Line2D((i, i + 1), (len(gene_order)-j-1, len(gene_order)-j), 1, color='w'))
 
     # add legend
@@ -302,6 +302,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
     # mutation per gene count
     gene_count = mut_split[mut_split["ANN[*].IMPACT_SPLIT"].isin(["MODERATE", "HIGH"]) &
                            (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
+        .drop_duplicates(subset="TUMOR_SAMPLE CHROM POS REF ALT".split())\
         .groupby(["TUMOR_SAMPLE", "ANN[*].GENE_SPLIT"]).CHROM.count().unstack("TUMOR_SAMPLE").fillna(0)
     gene_count.astype(int).to_csv(outdir + "/nr_mutations_per_gene.tsv", sep="\t")
 
@@ -314,12 +315,12 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
 
     # output recurrent mutations
     rec_genes = list(gene_count.astype(bool)[gene_count.astype(bool).apply(lambda x: x.sum(), axis=1) > 1].index)
-    mut_split[mut_split["ANN[*].GENE_SPLIT"].isin(rec_genes)].ix[:, ["CHROM", "POS", "REF", "ALT", "TUMOR_SAMPLE", "ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT", "ANN[*].IMPACT_SPLIT", "TUMOR.DP", "TUMOR.AD"]]\
+    mut_split[mut_split["ANN[*].GENE_SPLIT"].isin(rec_genes)].ix[:, ["CHROM", "POS", "REF", "ALT", "TUMOR_SAMPLE", "ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT", "ANN[*].IMPACT_SPLIT", "TUMOR_DP", "TUMOR.AD"]]\
         .to_csv(outdir + "/recurrent_mutations.tsv", sep="\t", index=False)
 
     # recurrent identical mutations
     mut_count = muts\
-        .groupby(["TUMOR_SAMPLE", "CHROM", "POS", "REF", "ALT"])["TUMOR.DP"].count().unstack("TUMOR_SAMPLE").fillna(0)
+        .groupby(["TUMOR_SAMPLE", "CHROM", "POS", "REF", "ALT"])["TUMOR_DP"].count().unstack("TUMOR_SAMPLE").fillna(0)
     mut_count.astype(int).to_csv(outdir + "/nr_identical_mutations.tsv", sep="\t")
 
     # output identical recurrent mutation plot using MAF
@@ -349,7 +350,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
             f.savefig(outdir + "/recurrent_mutations_ccf.pdf")
 
     # output nonsilent mutations plot using ccf if all required annotations are available
-    if all([c in muts.columns for c in "cancer_gene pathogenicity LOH clonality".split()]):
+    if all([c in muts.columns for c in "cancer_gene_census pathogenicity facetsLOHCall clonality".split()]):
 
         # plot combined ccf plot for all mutations per gene with annotations
         with warnings.catch_warnings():
@@ -367,7 +368,7 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
         # mutation annotations
         annotations = mut_split[(mut_split["ANN[*].IMPACT_SPLIT"].isin(["HIGH", "MODERATE"])) &
                             (mut_split["ANN[*].HGVS_P_SPLIT"].str.contains("p."))]\
-            .groupby(["ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT"])["cancer_gene pathogenicity LOH clonality".split()].first()
+            .groupby(["ANN[*].GENE_SPLIT", "ANN[*].HGVS_P_SPLIT"])["cancer_gene_census pathogenicity facetsLOHCall clonality".split()].first()
 
         sns.set_context(context="poster", font_scale=0.2)
         sns.set_style("whitegrid")
@@ -406,9 +407,9 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir):
                         heatmap.add_patch(plt.Rectangle((x-.5, 0), 1, 1, fill=False, edgecolor='goldenrod', linewidth=2, clip_on=False))
                     if annotations.ix[sample_muts.index[i]].pathogenicity == "pathogenic":
                         heatmap.add_artist(plt.Circle((x, -.5), .5/height, color='r', clip_on=False))
-                    if annotations.ix[sample_muts.index[i]].cancer_gene == "true":
+                    if annotations.ix[sample_muts.index[i]].cancer_gene_census == True:
                         heatmap.add_artist(plt.Circle((x, -1), .5/height, color='k', clip_on=False))
-                    if annotations.ix[sample_muts.index[i]].LOH == "true":
+                    if annotations.ix[sample_muts.index[i]].facetsLOHCall == True:
                         heatmap.add_artist(plt.Line2D((i, i + 1), (0, 1), 1, color='w'))
 
                 # add legend
