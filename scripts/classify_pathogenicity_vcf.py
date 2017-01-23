@@ -30,8 +30,8 @@ def is_mt_missing(record):
 
 
 def is_mt_passenger(record):
-    return 'MutationTaster_pred' not in record.INFO or record.INFO['MutationTaster_pred'] == 'P' or \
-        record.INFO['MutationTaster_pred'] == "N"
+    return 'MutationTaster_pred' not in record.INFO or 'P' in record.INFO['MutationTaster_pred'] or \
+        'N' in record.INFO['MutationTaster_pred'] or None in record.INFO['MutationTaster_pred']
 
 
 def is_chasm_pathogenic(record):
