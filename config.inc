@@ -86,7 +86,7 @@ SOMATIC_FILTER_VCF ?= $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 JAVA_BIN ?=  $(JAVA8_BIN)
 JAVA6_BIN ?= $(HOME)/share/usr/jdk1.6.0_45/bin/java
 JAVA7_BIN ?= $(HOME)/share/usr/jdk1.7.0_45/bin/java
-JAVA8_BIN ?= $(HOME)/share/usr/jdk1.8.0_74/bin/java
+JAVA8_BIN ?= $(HOME)/share/usr/jdk1.8.0_121/bin/java
 #JAVA ?= /usr/bin/java $(JAVA_ARGS)
 
 GET_INSERT_SIZE ?= $(HOME)/share/usr/bin/getInsertSize.py
