@@ -43,7 +43,7 @@ absolute/tables/%.somatic.txt : tables/%.mutect.tab.txt tables/%.strelka_varscan
 	$(LIB_INIT)
 
 	tn <- unlist(strsplit("$*", '_'))
-	snvs <- read.table("$<", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
+	snvs <- read.delim("$<", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
 	snvs.tref <- c()
 	snvs.talt <- c()
 
@@ -52,7 +52,7 @@ absolute/tables/%.somatic.txt : tables/%.mutect.tab.txt tables/%.strelka_varscan
 		snvs.talt <- sapply(strsplit(snvs[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
 	}
 
-	indels <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
+	indels <- read.delim("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
 	indels.tref <- c()
 	indels.talt <- c()
 	if (nrow(indels) > 0) {
@@ -60,7 +60,7 @@ absolute/tables/%.somatic.txt : tables/%.mutect.tab.txt tables/%.strelka_varscan
 		indels.talt <- sapply(strsplit(indels[[paste(tn[1], ".AD", sep = '')]], ','), function (x) x[2])
 	}
 
-	chr       <- c(snvs[["#CHROM"]], indels[["#CHROM"]])
+	chr       <- c(snvs[["CHROM"]], indels[["CHROM"]])
 	chr       <- as.integer(sub('X', '23', chr))
 	ref       <- c(snvs[["REF"]], indels[["REF"]])
 	alt       <- c(snvs[["ALT"]], indels[["ALT"]])
@@ -90,7 +90,7 @@ absolute/tables/%.somatic.txt : tables/%.mutect.tab.txt tables/%.strelka_varscan
 absolute/maf/%.maf.txt : absolute/tables/%.somatic.txt
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$(<)", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
+	X <- read.delim("$(<)", header = T, sep = '\t', comment.char = '', as.is = T, check.names = F)
 	Data <- with(X, data.frame(Tumor_Sample_Barcode = Sample, Hugo_Symbol = Gene, t_ref_count = tRefCount, t_alt_count = tAltCount, dbSNP_Val_Status = "validated", Chromosome = Chromosome, Start_position = Position, stringsAsFactors = F))
 	write.table(Data, file = "$@", sep = '\t', quote = F, row.names = F)
 
@@ -98,7 +98,7 @@ ifeq ($(USE_TITAN_COPYNUM),true)
 absolute/segment/%.seg.txt : $(TITAN_RESULTS_DIR)/%.z*.titan.seg
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<", header = T, sep = '\t', as.is = T)[,-1]
+	X <- read.delim("$<", header = T, sep = '\t', as.is = T)[,-1]
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	X[,1] <- sub('X', '23', X[,1])
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
@@ -125,7 +125,7 @@ absolute/segment/%.seg.txt : facets/cncf/%.cncf.txt
 	$(R_INIT)
 	$(LIB_INIT)
 	cncf <-
-		read.table("$<", stringsAsFactors=F, header=T, sep="\t") %>%
+		read.delim("$<", stringsAsFactors=F, header=T, sep="\t") %>%
 		select(ID, Chromosome=chrom, Start=loc.start, End=loc.end, seg, Num_Probes=num.mark, nhet, Segment_Mean=cnlr.median, mafR, segclust, mafR.clust, cnlr.median.clust, cf.em, tcn.em, lcn.em)
 
 	cncf %>% write_tsv(path="$@")
@@ -133,7 +133,7 @@ else
 absolute/segment/%.seg.txt : varscan/segment/%.collapsed_seg.txt
 	$(R_INIT)
 	$(LIB_INIT)
-	X <- read.table("$<", header = T, sep = '\t', as.is = T, check.names = F)
+	X <- read.delim("$<", header = T, sep = '\t', as.is = T, check.names = F)
 	colnames(X) <- c('Chromosome', 'Start', 'End', 'Num_Probes', 'Segment_Mean')
 	write.table(X, file = "$@", row.names = F, quote = F, sep = '\t')
 endif
@@ -143,7 +143,7 @@ $(info absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/m
 absolute/results/%.ABSOLUTE.RData : absolute/segment/%.seg.txt absolute/maf/%.maf.txt $(TITAN_ESTIMATE_FILE)
 	$(R_INIT)
 	$(LIB_INIT)
-	titanResults <- read.table("$(<<<)", row.names = 1, header = T, check.names = F)
+	titanResults <- read.delim("$(<<<)", row.names = 1, header = T, check.names = F)
 	sigma.p <- 0
 	max.sigma.h <- 0.07
 	avgTumorPloidyEst <- titanResults["$*", "avgTumorPloidyEst"]
@@ -203,9 +203,9 @@ absolute/tables/%.absolute.txt : absolute/reviewed/all.seq.ABSOLUTE.table.txt ab
 	$(R_INIT)
 	$(LIB_INIT)
 	fn <- 'absolute/reviewed/SEG_MAF/$*_ABS_MAF.txt'
-	absData <- read.table(fn, sep = '\t', header = T, as.is = T, check.names = F)
+	absData <- read.delim(fn, sep = '\t', header = T, as.is = T, check.names = F)
 	tn <- absData[['sample']][1]
-	somatic <- read.table("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
+	somatic <- read.delim("$(<<)", header = T, sep = '\t', comment.char = '', as.is = T)
 	absData[, "refSeq"] <- somatic[, "Ref"]
 	absData[, "altSeq"] <- somatic[ ,"Alt"]
 	absData[, "type"] = somatic[, "Type"]
