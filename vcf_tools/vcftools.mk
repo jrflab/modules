@@ -90,7 +90,8 @@ tables/%.opl_tab.txt : vcf_ann/%.vcf
 		done; \
 	done; \
 	fields+=' '\$$(grep '^##INFO=<ID=' $< | grep -v '=REF,' | sed 's/GERP++/GERPpp/; s/.*ID=//; s/,.*//; s/\bANN\b/$(ANN_FIELDS)/; ' | tr '\n' ' '); \
-	sed 's/GERP++/GERPpp/' $< | $(VCF_EFF_ONE_PER_LINE) | $(call SNP_SIFT_MEM,8G) extractFields - \$$fields > $@; \
+	sed 's/GERP++/GERPpp/' $< | $(VCF_EFF_ONE_PER_LINE) | $(call SNP_SIFT_MEM,6G) extractFields - \$$fields > $@.tmp; \
+	if grep -q '^CHROM' $@.tmp; then mv $@.tmp $@; fi; \
 	for i in \`seq 0 \$$N\`; do \
 	S=\$$(grep '^#CHROM' $< | cut -f \$$((\$$i + 10))); \
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \
