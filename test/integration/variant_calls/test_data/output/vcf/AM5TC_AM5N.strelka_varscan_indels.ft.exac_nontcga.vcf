@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Wed Jan  4 01:25:54 2017
+##fileDate=Mon Jan 23 00:36:33 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -93,8 +93,8 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
-##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate -info ExAC_AF /home/limr/share/reference/ExAC.r0.3.nonTCGA.sites.vep.2.vcf vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
+##SnpSiftVersion="SnpSift 4.3i (build 2016-12-15 22:33), by Pablo Cingolani"
+##SnpSiftCmd="SnpSift annotate -info ExAC_AF /home/debruiji/share/reference/ExAC.r0.3.nonTCGA.sites.vep.2.vcf.gz vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
 ##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
 2	54128702	.	G	GA	.	PASS	SS=Somatic;DP=117;VARPVAL=1.0;SOMPVAL=0.0300023399436	GT:DP:AD:VAF	0/1:40:34,6:0.15	0/0:49:48,1:0.0204

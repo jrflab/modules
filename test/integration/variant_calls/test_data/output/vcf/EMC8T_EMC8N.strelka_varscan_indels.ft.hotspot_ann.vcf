@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Wed Jan  4 01:25:51 2017
+##fileDate=Mon Jan 23 00:36:26 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -93,11 +93,11 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
-##SnpSiftVersion="SnpSift 4.1e (build 2015-04-22), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/hotspot.new//hotspot_unmerged.vcf vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
+##SnpSiftVersion="SnpSift 4.3i (build 2016-12-15 22:33), by Pablo Cingolani"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/hotspot.new//hotspot_unmerged.vcf.gz vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
+##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
 ##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
 ##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
-##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
 2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=51;VARPVAL=1.0;SOMPVAL=0.00276649964682	GT:DP:AD:VAF	0/1:23:15,8:0.3478	0/0:21:21,0:0.0
 11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=152;VARPVAL=1.0;SOMPVAL=1.05852042517e-06	GT:DP:AD:VAF	0/1:84:55,29:0.3452	0/0:42:42,0:0.0
