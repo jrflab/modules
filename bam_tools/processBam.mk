@@ -74,6 +74,10 @@ endif
 %.dcov.bam : %.bam
 	$(call LSCRIPT_MEM,18G,24G,"$(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 50 -o $@")
 
+# limit coverage to 400
+%.dcov400.bam : %.bam
+	$(call LSCRIPT_MEM,18G,24G,"$(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 400 -o $@")
+	
 # limit coverage to 800
 %.dcov800.bam : %.bam
 	$(call LSCRIPT_MEM,18G,24G,"$(call GATK_MEM,18G) -T PrintReads -R $(REF_FASTA) -I $< -dcov 800 -o $@")
