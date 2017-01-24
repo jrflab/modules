@@ -107,6 +107,8 @@ HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.hg19.vcf
 HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.hg19.vcf
 HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.hg19.vcf.gz
 
+REF_MSI = $(REF_DIR)/ucsc_gatk_bundle_2.8/hg19_msi.list
+
 endif
 HG19_INC = true
 
