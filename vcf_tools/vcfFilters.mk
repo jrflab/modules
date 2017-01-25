@@ -90,6 +90,6 @@ vcf/%.nft.vcf : vcf/%.vcf
 
 # allele count filtering for hotspots: any alt allele count > 0
 vcf/%.ac_ft.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call SNP_SIFT_MEM,8G) filter \
-		$(SNP_SIFT_OPTS) \" ( AC[*] > 0 ) \" $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,12G,14G,"$(call SNP_SIFT_MEM,8G) filter \
+		$(SNP_SIFT_OPTS) \" ( AC[*] > 0 ) \" $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 endif

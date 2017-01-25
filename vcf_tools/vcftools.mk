@@ -20,7 +20,7 @@ MUT_ASS = $(RSCRIPT) modules/vcf_tools/mutAssVcf.R
 
 %.pass.vcf : %.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call SNP_SIFT_MEM,7G) filter $(SNP_SIFT_OPTS) \
-		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@"))
+		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && if grep -q '^#CHROM' $@.tmp; mv $@.tmp $@; else false; fi"))
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
@@ -38,7 +38,7 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 		$(VT) decompose -s - | \
 		$(VT) normalize -r $(REF_FASTA) - | \
 		$(call SNP_EFF_MEM,8G) ann -c $(SNP_EFF_CONFIG) $(SNP_EFF_GENOME) -formatEff -classic | \
-		bgzip -c > $@")
+		bgzip -c > $@.tmp && if zgrep -q '^#CHROM' $@.tmp; mv $@.tmp $@; else false; fi")
 
 %.vcf.gz.tbi : %.vcf.gz
 	$(call LSCRIPT_CHECK_SHORT,3G,5G,"$(BCFTOOLS2) index -t -f $<")
@@ -90,8 +90,8 @@ tables/%.opl_tab.txt : vcf_ann/%.vcf
 		done; \
 	done; \
 	fields+=' '\$$(grep '^##INFO=<ID=' $< | grep -v '=REF,' | sed 's/GERP++/GERPpp/; s/.*ID=//; s/,.*//; s/\bANN\b/$(ANN_FIELDS)/; ' | tr '\n' ' '); \
-	sed 's/GERP++/GERPpp/' $< | $(VCF_EFF_ONE_PER_LINE) | $(call SNP_SIFT_MEM,6G) extractFields - \$$fields > $@.tmp; \
-	if grep -q '^CHROM' $@.tmp; then mv $@.tmp $@; fi; \
+	sed 's/GERP++/GERPpp/' $< | $(VCF_EFF_ONE_PER_LINE) | $(call SNP_SIFT_MEM,6G) extractFields - \$$fields > $@.tmp && \
+	if grep -q '^CHROM' $@.tmp; then mv $@.tmp $@; else false; fi && \
 	for i in \`seq 0 \$$N\`; do \
 	S=\$$(grep '^#CHROM' $< | cut -f \$$((\$$i + 10))); \
 	sed -i \"1s/GEN\[\$$i\]/\$$S/g;\" $@; \

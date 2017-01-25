@@ -1,21 +1,21 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,25G,"$(call SNP_SIFT_MEM,10G) annotate \
-		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,23G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		$(HOTSPOT_UNMERGED_VCF) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 # mouse genome project dbsnp
 vcf/%.mgp_dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,13G,15G,"$(call SNP_SIFT_MEM,10G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
-		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 vcf/%.cosmic.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,24G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
-		$(COSMIC) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		$(COSMIC) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
@@ -30,16 +30,16 @@ vcf/%.exondist.vcf : vcf/%.vcf
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 vcf/%.eff.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 
 vcf/%.clinvar.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,23G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
-		$(CLINVAR) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		$(CLINVAR) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 vcf/%.exac_nontcga.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
-		-info ExAC_AF $(EXAC_NONTCGA) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; fi"))
+		-info ExAC_AF $(EXAC_NONTCGA) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 CANCER_GENE_CENSUS_BED = $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
