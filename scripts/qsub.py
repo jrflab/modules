@@ -58,14 +58,14 @@ class Job:
                 break
         return retval
 
-    def check_file(self, servers, max_connection_retry=10):
+    def check_file(self, servers, max_connection_retry=10, local_max_retry=3):
         """ checks the file size of file f on remote servers and returns True
         if it matches local file size
         """
         time.sleep(10)
         if self.out_file is None:
             return True
-        for attempt in range(max_connection_retry):
+        for attempt in range(local_max_retry):
             try:
                 local_file_size = subprocess.check_output('stat -c%s "{}"'.format(os.path.abspath(self.out_file)),
                                                         shell=True, stderr=DEVNULL).rstrip()
