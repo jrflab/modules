@@ -257,7 +257,8 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
 
     # add raw files both as excel and tsv
-    add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+    if hotspot is not None:
+        add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(snps_high_moderate), writer, "snps_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(snps_low_modifier), writer, "snps_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
     add_columns_write_excel(read_tsv(snps_synonymous), writer, "snps_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
@@ -281,8 +282,8 @@ def main():
     parser.add_argument("indels_low_modifier", type=str, help="TSV")
     parser.add_argument("indels_synonymous", type=str, help="TSV")
     parser.add_argument("indels_nonsynonymous", type=str, help="TSV")
-    parser.add_argument("hotspot", type=str, help="TSV")
     parser.add_argument("excel_file", type=str, help="mutation summary excel")
+    parser.add_argument("--hotspot", type=str, help="hotspot table", default=None)
     parser.add_argument("--absolute_somatic_txts", default=None, type=str, help="TSV comma separated list of somatic files of absolute input")
     parser.add_argument("--absolute_segments", default=None, type=str, help="TSV comma separated list of absolute mutations output")
     parser.add_argument("--output_tsv_dir", default=None, type=str, help="Output raw sheets as tsv in given directory")
