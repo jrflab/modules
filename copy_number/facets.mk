@@ -10,6 +10,7 @@ LOGDIR ?= log/facets.$(NOW)
 
 FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
 RUN_FACETS = $(RSCRIPT) modules/copy_number/runFacets.R
+PLOT_FACETS = $(RSCRIPT) modules/copy_number/plotFacets.R
 CREATE_FACETS_SUMMARY = $(RSCRIPT) modules/copy_number/createFacetsSummary.R
 FACETS_PRE_CVAL ?= 50
 FACETS_CVAL1 ?= 150
@@ -51,7 +52,7 @@ FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
-facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt) \
+facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt facets/plots/$(pair).cnlr_plot.pdf) \
 	facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
 
 facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
@@ -84,6 +85,9 @@ endif
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
 	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(FACETS_OPTS) --out_prefix $(@D)/$* $<")
+
+facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
+	$(call LSCRIPT_ENV_MEM,$(FACETS_ENV),4G,6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")

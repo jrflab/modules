@@ -11,9 +11,7 @@ suppressPackageStartupMessages(library("magrittr"));
 suppressPackageStartupMessages(library("facets"));
 suppressPackageStartupMessages(library("pctGCdata"));
 suppressPackageStartupMessages(library("foreach"));
-suppressPackageStartupMessages(library("Cairo"));
 
-source('modules/copy_number/facetsPlotSampleLRR.R')
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -158,24 +156,10 @@ cat("# dipLogR =", fit$dipLogR, "\n", file = ff, append = T)
 cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
-CairoPNG(file = str_c(opt$out_prefix, ".lrr.png"), height = 400, width = 850)
-plotSampleLRR(out2, fit)
-dev.off()
-
-pdf(file = str_c(opt$out_prefix, ".lrr.pdf"), height = 3, width = 9)
-plotSampleLRR(out2, fit)
-dev.off()
-
-CairoPNG(file = str_c(opt$out_prefix, ".cncf.png"), height = 1100, width = 850)
-plotSample(out2, fit)
-dev.off()
-
-pdf(file = str_c(opt$out_prefix, ".cncf.pdf"), height = 9, width = 9)
-plotSample(out2, fit)
-dev.off()
-
 tab <- cbind(select(out2$IGV, ID:num.mark), select(fit$cncf, -start, -end, -chrom, -num.mark))
 write.table(tab, str_c(opt$out_prefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
+
+write.table(out2$IGV, str_c(opt$out_prefix, '.facets.seg'), row.names = F, quote = F, sep = '\t')
 
 warnings()
 
