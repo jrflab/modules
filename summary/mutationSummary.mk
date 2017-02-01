@@ -15,6 +15,7 @@ ifeq ($(NO_HOTSPOTS),false)
 HOTSPOT_TABLE = alltables/allTN.hotspot.tab.txt
 TABLES += $(HOTSPOT_TABLE)
 endif
+SUMMARY_CONFIG = summary_config.yaml
 
 
 SNV_TABLES = alltables/allTN.$(SNV_TYPE).tab.high_moderate.txt alltables/allTN.$(SNV_TYPE).tab.low_modifier.txt \
@@ -26,7 +27,7 @@ TABLES += $(SNV_TABLES) $(INDEL_TABLES)
 
 # Add optional absolute results to excel
 # the $(wildcard x) syntax is used to check for existence of file
-MUTATION_SUMMARY_OPTS = $(if $(findstring false,$(EXOME)),--include_all) $(if $(HOTSPOT_TABLE), --hotspot $(HOTSPOT_TABLE))
+MUTATION_SUMMARY_OPTS = $(if $(findstring false,$(EXOME)),--include_all) $(if $(HOTSPOT_TABLE), --hotspot $(HOTSPOT_TABLE)) $(if $(SUMMARY_CONFIG), --summary_config $(SUMMARY_CONFIG))
 ABSOLUTE_SOMATIC_TXTS ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),absolute/tables/$(set).somatic.txt))
 ABSOLUTE_SEGMENTS ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),absolute/reviewed/SEG_MAF/$(set)_ABS_MAF.txt))
 ifneq ($(and $(ABSOLUTE_SOMATIC_TXTS),$(ABSOLUTE_SEGMENTS)),)

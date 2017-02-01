@@ -32,9 +32,13 @@ close OUT;
 unless (-e "project_config.yaml") {
     copy("modules/default_project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
 }
+unless (-e "summary_config.yaml") {
+    copy("modules/default_summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
+}
 close OUT;
 system "git add Makefile";
 system "git add project_config.yaml";
-system "git commit -m 'makefile, project_config.yaml'";
+system "git add summary_config.yaml";
+system "git commit -m 'makefile, summary_config.yaml, project_config.yaml'";
 system "git push --set-upstream origin master";
 

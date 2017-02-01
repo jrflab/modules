@@ -6,6 +6,7 @@ import argparse
 import pandas as pd
 import os
 import errno
+import yaml
 
 
 def mkdir_p(path):
@@ -31,8 +32,8 @@ def split_multi_value_columns_to_records(df, columns, separator):
     return df_split
 
 
-def filter_annotations_with_impact(df, impact, effect=".*"):
-    """Get only annotations with given impact"""
+def select_annotations_with_impact(df, impact, select_effect=".*", filter_effect=None, config=None):
+    """Get only annotations with given impact. Also exclude genes in blacklist."""
     # check if df is empty
     if len(df) == 0:
         return df
@@ -50,8 +51,14 @@ def filter_annotations_with_impact(df, impact, effect=".*"):
     df_split = split_multi_value_columns_to_records(df,
                                                     "ANN[*].GENE ANN[*].HGVS_P ANN[*].HGVS_C ANN[*].EFFECT ANN[*].IMPACT".split(),
                                                     "|")
-    # select only variants with given impact/effect
-    df_split = df_split[df_split["ANN[*].IMPACT_SPLIT"].str.match(impact) & df_split["ANN[*].EFFECT_SPLIT"].str.match(effect)]
+    # select only variants with given impact/effect and not in the blacklist
+    criteria = df_split["ANN[*].IMPACT_SPLIT"].str.match(impact) & \
+                df_split["ANN[*].EFFECT_SPLIT"].str.match(select_effect)
+    if filter_effect:
+        criteria = criteria & ~df_split["ANN[*].EFFECT_SPLIT"].str.match(filter_effect)
+    if config and 'gene_blacklist' in config:
+        criteria = criteria & ~df_split["ANN[*].GENE_SPLIT"].isin(config['gene_blacklist'])
+    df_split = df_split[criteria]
     # merge remaining variants back to | separated values
     imp_sel = df_split.groupby("TUMOR_SAMPLE CHROM POS REF ALT".split()).apply(lambda x: merge_impact(x, "|"))
     if imp_sel.empty:
@@ -148,7 +155,7 @@ def add_non_existent_columns(df, columns, fill_value):
     return rv
 
 
-def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, annotdf=None):
+def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=None, output_tsv_dir=None, annotdf=None, config=None):
     if all([c in df.columns for c in "TUMOR.AD NORMAL.AD".split()]):
         df = add_maf(df)
         df = add_dp(df)
@@ -162,9 +169,13 @@ def add_columns_write_excel(df, writer, sheetname, absdf=None, write_columns=Non
             df = df.join(absdf.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split()), how='left')
         if annotdf is not None:
             df = df.join(annotdf.set_index("TUMOR_SAMPLE NORMAL_SAMPLE CHROM POS REF ALT".split()), how='left')
-        df.reset_index().to_excel(writer, sheetname, index=False)
+        df = df.reset_index()
+        df.to_excel(writer, sheetname, index=False)
+        if config is not None and 'sample_rename' in config:
+            for k in config['sample_rename']:
+                df['TUMOR_SAMPLE'] = df['TUMOR_SAMPLE'].str.replace(k, config['sample_rename'][k])
         if output_tsv_dir:
-            df.to_csv(output_tsv_dir + "/" + sheetname.lower() + ".tsv", sep="\t", index=True)
+            df.to_csv(output_tsv_dir + "/" + sheetname.lower() + ".tsv", sep="\t", index=False)
 
 
 def write_mutation_summary(snps_high_moderate, snps_low_modifier,
@@ -178,7 +189,8 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
                            absolute_segments,
                            output_tsv_dir,
                            annotation_tsv,
-                           include_all):
+                           include_all,
+                           summary_config):
     # create output tsv dir if required
     if output_tsv_dir:
         mkdir_p(output_tsv_dir)
@@ -193,6 +205,10 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         annotdf = pd.read_csv(annotation_tsv, sep="\t", encoding='utf-8')
     else:
         annotdf = None
+    if summary_config:
+        config = yaml.load(open(summary_config))
+    else:
+        config = None
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].HGVS_P," \
         "ANN[*].EFFECT,TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
         "MutationTaster_pred,provean_pred,fathmm_pred," \
@@ -230,43 +246,43 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
     # add summaries
     required_columns = summary_columns + "NORMAL.AD TUMOR.AD facetsLCN_EM".split()
     if include_all:
-        mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
-                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_low_modifier), "LOW|MODIFIER"), required_columns, ".")[required_columns],
-                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
+        mutsdf = pd.concat([add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_low_modifier), "LOW|MODIFIER"), required_columns, ".")[required_columns],
+                            add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
                             ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
     else:
-        mutsdf = pd.concat([add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
-                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(snps_low_modifier), "LOW", effect=".*synonymous_variant.*"), required_columns, ".")[required_columns],
-                            add_non_existent_columns(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
+        mutsdf = pd.concat([add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE", filter_effect='.*structural_interaction_variant.*', config=config), required_columns, ".")[required_columns],
+                            add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_low_modifier), "LOW", select_effect=".*synonymous_variant.*", config=config), required_columns, ".")[required_columns],
+                            add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE", filter_effect='.*structural_interaction_variant.*', config=config), required_columns, ".")[required_columns]],
                             ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
     #exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
     add_columns_write_excel(mutsdf, writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
-        annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"),
-        writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(snps_nonsynonymous), "HIGH|MODERATE"),
-        writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"),
-        writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(filter_annotations_with_impact(read_tsv(indels_nonsynonymous), "HIGH|MODERATE"),
-        writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+        annotdf=annotdf, config=config)
+    add_columns_write_excel(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"),
+        writer, "SNV_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_low_modifier), writer, "SNV_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_synonymous), writer, "SNV_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(select_annotations_with_impact(read_tsv(snps_nonsynonymous), "HIGH|MODERATE"),
+        writer, "SNV_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"),
+        writer, "INDEL_HIGH_MODERATE_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_low_modifier), writer, "INDEL_LOW_MODIFIER_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_synonymous), writer, "INDEL_SYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(select_annotations_with_impact(read_tsv(indels_nonsynonymous), "HIGH|MODERATE"),
+        writer, "INDEL_NONSYNONYMOUS_SUMMARY", absdf, write_columns=summary_columns, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
 
     # add raw files both as excel and tsv
     if hotspot is not None:
-        add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_high_moderate), writer, "snps_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_low_modifier), writer, "snps_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_synonymous), writer, "snps_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(snps_nonsynonymous), writer, "snps_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_high_moderate), writer, "indels_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_low_modifier), writer, "indels_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_synonymous), writer, "indels_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
-    add_columns_write_excel(read_tsv(indels_nonsynonymous), writer, "indels_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf)
+        add_columns_write_excel(read_tsv(hotspot), writer, "hotspot", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_high_moderate), writer, "snps_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_low_modifier), writer, "snps_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_synonymous), writer, "snps_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(snps_nonsynonymous), writer, "snps_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_high_moderate), writer, "indels_high_moderate", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_low_modifier), writer, "indels_low_modifier", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_synonymous), writer, "indels_synonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
+    add_columns_write_excel(read_tsv(indels_nonsynonymous), writer, "indels_nonsynonymous", absdf, output_tsv_dir=output_tsv_dir, annotdf=annotdf, config=config)
 
     writer.close()
 
@@ -291,6 +307,8 @@ def main():
     #parser.add_argument("--max_exac_af", default=1, type=float, help="Set threshold for ExAC_AF column. Only applied to MUTATION_SUMMARY column.")
     parser.add_argument("--include_all", default=False, action='store_true',
                         help="include all mutations in the complete summary")
+    parser.add_argument("--summary_config", default=None, type=str,
+        help="Summary config yaml for summary/plotting options")
     args = parser.parse_args()
     if args.absolute_somatic_txts and args.absolute_segments:
         absolute_somatic_txts = args.absolute_somatic_txts.split(",")
@@ -314,7 +332,8 @@ def main():
                            absolute_segments,
                            args.output_tsv_dir,
                            args.annotation_tsv,
-                           args.include_all)
+                           args.include_all,
+                           args.summary_config)
 
 if __name__ == "__main__":
     main()
