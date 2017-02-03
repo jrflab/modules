@@ -10,6 +10,6 @@ TEST_DATA_OUT_DIR=${DIR}/test_data/output
 
 mkdir -p ${OUT_DIR}
 python ${SCRIPT_DIR}/merge_vcf.py --out_file ${OUT_DIR}/META31T_META31N.varscan_snps.ft.vcf ${TEST_DATA_DIR}/META31T_META31N.varscan_snps.som_ad_ft.vcf ${TEST_DATA_DIR}/META31T_META31N.varscan_snps.target_ft.vcf
-diff_files ${OUT_DIR}/META31T_META31N.varscan_snps.ft.vcf ${TEST_DATA_OUT_DIR}/META31T_META31N.varscan_snps.ft.vcf
+compare_files ${OUT_DIR}/META31T_META31N.varscan_snps.ft.vcf ${TEST_DATA_OUT_DIR}/META31T_META31N.varscan_snps.ft.vcf
 python ${SCRIPT_DIR}/merge_vcf.py --out_file ${OUT_DIR}/META31T_META31N.varscan_indels.ann2.vcf ${TEST_DATA_DIR}/META31T_META31N.varscan_indels.ft2.mut_taste.vcf
-diff_files ${OUT_DIR}/META31T_META31N.varscan_indels.ann2.vcf ${TEST_DATA_OUT_DIR}/META31T_META31N.varscan_indels.ann2.vcf
+compare_files ${OUT_DIR}/META31T_META31N.varscan_indels.ann2.vcf ${TEST_DATA_OUT_DIR}/META31T_META31N.varscan_indels.ann2.vcf

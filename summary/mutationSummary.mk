@@ -43,7 +43,7 @@ endif
 
 mutation_summary: summary/mutation_summary.xlsx
 
-summary/mutation_summary.xlsx : $(SNV_TABLES) $(INDEL_TABLES) $(ABSOLUTE_SOMATIC_TXTS) $(ABSOLUTE_SEGMENTS) $(EXCEL_FACETS_LOH) $(EXCEL_ANNOTATION)
+summary/mutation_summary.xlsx : $(SNV_TABLES) $(INDEL_TABLES) $(ABSOLUTE_SOMATIC_TXTS) $(ABSOLUTE_SEGMENTS) $(EXCEL_FACETS_LOH) $(EXCEL_ANNOTATION) $(if $(findstring false,$(NO_HOTSPOTS)),$(HOTSPOT_TABLE))
 	$(INIT) python modules/summary/mutation_summary_excel.py $(MUTATION_SUMMARY_OPTS) --output_tsv_dir $(@D)/tsv $(EXCEL_ABSOLUTE_PARAMS) $(EXCEL_FACETS_LOH_PARAMS) $(EXCEL_ANNOTATION_PARAMS) $(SNV_TABLES) $(INDEL_TABLES) $@
 
 include modules/vcf_tools/vcftools.mk
