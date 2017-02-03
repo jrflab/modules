@@ -10,15 +10,14 @@ PHONY += hotspot hotspot_vcfs hotspot_tables
 .SECONDARY:
 .PHONY: $(PHONY)
 
-HOTSPOT_GATK_OPTS = --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES -R $(REF_FASTA) -stand_call_conf 0 -stand_emit_conf 0
+HOTSPOT_GATK_OPTS = --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES -R $(REF_FASTA) -stand_call_conf 0 -stand_emit_conf 0 -dcov 1000
 
 
-hotspot : hotspot_vcfs # hotspot_tables
+hotspot : hotspot_vcfs hotspot_tables
 hotspot_vcfs : $(if $(SAMPLE_PAIRS),\
 	$(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).hotspot.vcf),\
 	$(foreach sample,$(SAMPLES),vcf_ann/$(sample).hotspot.vcf))
-hotspot_tables : $(if $(SAMPLE_PAIRS),alltables/allTN.hotspot.tab.txt\
-	alltables/all.hotspot.tab.txt)
+hotspot_tables : $(if $(SAMPLE_PAIRS),alltables/allTN.hotspot.tab.txt)
 
 vcf_ann/%.hotspot.vcf : vcf/%.hotspot.ac_ft.hotspot_ann.vcf
 	$(INIT) cp $< $@
