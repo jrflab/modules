@@ -69,7 +69,7 @@ colours[df$tcn == 0] <- "red"
 ylim <- c(min(df$cnlr), max(df$cnlr) + 0.5)
 ylim[2] <- ylim[2]+0.5
 pdf(paste(opt$outPrefix,".cnlr_plot.pdf", sep=""), height=5, width=18)
-plot(df$cnlr, pch=20, xlab='Index', ylab = "Copy number log-ratio", xaxt = 'n', col = colours, ylim = ylim)
+plot(df$cnlr, pch=20, xlab='Index', ylab = "Copy number log-ratio", col = colours, ylim = ylim)
 abline(v=cumsum(rle(df$chrom)$lengths), col = "red", lty = 3)
 text(cumsum(rle(df$chrom)$lengths)-((rle(df$chrom)$lengths)/2), ylim[2]-0.25, labels = unique(df$chrom))
 
@@ -98,7 +98,7 @@ for (chr in unique(df$chrom)) {
     if (nrow(chdf) > 0) {
         ylim <- c(min(chdf$cnlr), max(chdf$cnlr) + 0.5)
         pdf(paste(opt$outPrefix,".cnlr_plot.", chr, '.pdf', sep=""), height = 5, width = 6)
-        plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", xaxt='n', ylim=ylim, col = colours, main = paste('Chromosome', chr))
+        plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", ylim=ylim, col = colours, main = paste('Chromosome', chr))
         points(chdf$cnlr.median.clust, pch = 20, col = 'blue')
 
         if (!is.null(opt$centromereFile)) {
