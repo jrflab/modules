@@ -179,7 +179,8 @@ LOG = $(LOGDIR)/$(@).log
 UMASK = 002
 
 export PATH := $(JRFLAB_MODULES_ENV)/bin:$(PATH)
-ACTIVATE_JRFLAB_MODULES_ENV = unset PYTHONPATH; source $(JRFLAB_MODULES_ENV)/bin/activate $(JRFLAB_MODULES_ENV)
+ECHO_ACTIVATE_ENV = unset PYTHONPATH; tries=0; while [[ \$$tries -lt 10 ]] && ! source $1/bin/activate $1; do tries=`expr \$$tries + 1`; jitter=`expr \$$RANDOM % 10 + 1`; sleep `expr \$$jitter \* \$$tries`; done
+ACTIVATE_ENV = unset PYTHONPATH; tries=0; while [[ $$tries -lt 10 ]] && ! source $1/bin/activate $1; do tries=`expr $$tries + 1`; jitter=`expr $$RANDOM % 10 + 1`; sleep `expr $$jitter \* $$tries`; done
 
 # SGE variables
 #QUEUE ?= jrf.q all.q
@@ -241,12 +242,12 @@ JOBS := $(subst -j,,$(JOB_FLAG))
 
 #### no cluster
 RUN_FIRST = $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
-ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV)";
-ECHO_FIRST_ENV = echo "umask $(UMASK); set -o pipefail; source $1/bin/activate $1";
+ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$(JRFLAB_MODULES_ENV))";
+ECHO_FIRST_ENV = echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$1)";
 
 # run locally
-INIT = $(RUN_FIRST); $(ACTIVATE_JRFLAB_MODULES_ENV); umask $(UMASK); set -o pipefail;
-INIT_ENV = $(RUN_FIRST); source $1/bin/activate $1; umask $(UMASK); set -o pipefail;
+INIT = $(RUN_FIRST); $(call ACTIVATE_ENV,$(JRFLAB_MODULES_ENV)); umask $(UMASK); set -o pipefail;
+INIT_ENV = $(RUN_FIRST); $(call ACTIVATE_ENV,$1); umask $(UMASK); set -o pipefail;
 
 CLUSTER_ENGINE ?= SGE
 USE_CLUSTER ?= true
@@ -309,9 +310,9 @@ LSCRIPT_ENV_CHECK_NAMED_SHORT = $(call LSCRIPT_ENV_MEM,$1,$3,$4,$5)
 LSCRIPT_ENV_CHECK_NAMED_LONG = $(call LSCRIPT_ENV_MEM,$1,$3,$4,$5)
 else
 #$(call LS,qsub,name,qsub_args,script)
-LS = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(ACTIVATE_JRFLAB_MODULES_ENV);" $4) | $1 -N $(PROJECT_NAME)_$2 $3
+LS = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$(JRFLAB_MODULES_ENV));" $4) | $1 -N $(PROJECT_NAME)_$2 $3
 #$(call LS,env,qsub,name,qsub_args,script)
-LS_ENV = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; source $1/bin/activate $1;" $5) | $2 -N $(PROJECT_NAME)_$3 $4
+LS_ENV = $(RUN_FIRST); (echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$1);" $5) | $2 -N $(PROJECT_NAME)_$3 $4
 $(foreach wt,$(WALLTIMES),\
 	$(eval LSCRIPT_$(wt) = $$(call LSCRIPT_NAMED_$(wt),$$(@F),$$1,$$2,$$3)) \
 	$(eval LSCRIPT_ENV_$(wt) = $$(call LSCRIPT_ENV_NAMED_$(wt),$$1,$$(@F),$$2,$$3,$$4)) \
