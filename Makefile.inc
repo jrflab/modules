@@ -179,8 +179,8 @@ LOG = $(LOGDIR)/$(@).log
 UMASK = 002
 
 export PATH := $(JRFLAB_MODULES_ENV)/bin:$(PATH)
-ECHO_ACTIVATE_ENV = unset PYTHONPATH; tries=0; while [[ \$$tries -lt 10 ]] && ! source $1/bin/activate $1; do tries=`expr \$$tries + 1`; jitter=`expr \$$RANDOM % 10 + 1`; sleep `expr \$$jitter \* \$$tries`; done
-ACTIVATE_ENV = unset PYTHONPATH; tries=0; while [[ $$tries -lt 10 ]] && ! source $1/bin/activate $1; do tries=`expr $$tries + 1`; jitter=`expr $$RANDOM % 10 + 1`; sleep `expr $$jitter \* $$tries`; done
+ECHO_ACTIVATE_ENV = unset PYTHONPATH; OLDPATH=\$$PATH; tries=0; until [[ \$$tries -gt 10 ]] || source $1/bin/activate $1; do export PATH=\$$OLDPATH; tries=\`expr \$$tries + 1\`; jitter=\`expr \$$RANDOM % 10 + 1\`; sleep \`expr \$$jitter \\* \$$tries\`; done
+ACTIVATE_ENV = unset PYTHONPATH; OLDPATH=$$PATH; tries=0; until [[ $$tries -gt 10 ]] || source $1/bin/activate $1; do export PATH=$$OLDPATH; tries=`expr $$tries + 1`; jitter=`expr $$RANDOM % 10 + 1`; sleep `expr $$jitter \* $$tries`; done
 
 # SGE variables
 #QUEUE ?= jrf.q all.q
@@ -242,8 +242,8 @@ JOBS := $(subst -j,,$(JOB_FLAG))
 
 #### no cluster
 RUN_FIRST = $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
-ECHO_FIRST = echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$(JRFLAB_MODULES_ENV))";
-ECHO_FIRST_ENV = echo "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$1)";
+ECHO_FIRST = echo -n "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$(JRFLAB_MODULES_ENV)); ";
+ECHO_FIRST_ENV = echo -n "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$1); ";
 
 # run locally
 INIT = $(RUN_FIRST); $(call ACTIVATE_ENV,$(JRFLAB_MODULES_ENV)); umask $(UMASK); set -o pipefail;
