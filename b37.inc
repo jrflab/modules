@@ -56,13 +56,12 @@ OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf.gz
 HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf.gz
 COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.vcf.gz
 BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
-EXOME_BED ?= $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn.bed
-EXOME_BED_NOHEADER ?= $(REF_DIR)/target_panels/sure_select_exome_v4_b37.bed
+EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v3_v4.b37.bed
 MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
 
 EXOME ?= false
 ifeq ($(EXOME),true)
-TARGETS_FILE = $(EXOME_BED_NOHEADER)
+TARGETS_FILE = $(EXOME_BED)
 QUALIMAP_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr.bed
 EMU_TARGETS_FILE = $(REF_DIR)/SureSelect_50MB_S02972011_Regions_nochr_noAnn_noheader_numchr_spacedelim.bed
 endif
