@@ -35,9 +35,9 @@ for records in izip_longest(*vcf_readers, fillvalue=sentinel):
     record = records[0]
     if len(records) > 1:
         assert all([r.CHROM == record.CHROM and r.POS == record.POS for r in records])
-        for record in records:
-            if record.FILTER is None:
-                record.FILTER = []
+        for rec in records:
+            if rec.FILTER is None:
+                rec.FILTER = []
 
         ids = [r.ID for r in records]
         ids = [x.strip() for x in filter(None, ids)]
