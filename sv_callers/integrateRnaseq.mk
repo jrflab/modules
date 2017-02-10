@@ -23,7 +23,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 .PHONY:
 
 integrate_rnaseq/all.integrate.oncofuse.txt : $(foreach sample,$(SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt)
-	$(INIT) (head -1 $< | sed 's/^/sample\t/'; for x in $^; do sed "1d;s/^/$${x%%.oncofuse.txt}\t/" $$x; done)
+	$(INIT) (head -1 $< | sed 's/^/sample\t/'; for x in $^; do sed "1d;s/^/$$(basename $${x%%.oncofuse.txt})\t/" $$x; done) > $@
 
 integrate_rnaseq/reads/%.reads.txt integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv : bam/%.bam bam/%.bam.bai
 	$(call LSCRIPT_MEM,8G,40G,"mkdir -p integrate_rnaseq/reads integrate_rnaseq/sum integrate_rnaseq/exons integrate_rnaseq/breakpoints; $(INTEGRATE) fusion $(INTEGRATE_OPTS) -reads integrate_rnaseq/reads/$*.reads.txt -sum integrate_rnaseq/sum/$*.sum.tsv -ex integrate_rnaseq/exons/$*.exons.tsv -bk integrate_rnaseq/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $(<) $(<)")
