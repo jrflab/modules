@@ -20,7 +20,7 @@ MUT_ASS = $(RSCRIPT) modules/vcf_tools/mutAssVcf.R
 
 %.pass.vcf : %.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call SNP_SIFT_MEM,7G) filter $(SNP_SIFT_OPTS) \
-		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && if grep -q '^#CHROM' $@.tmp; mv $@.tmp $@; else false; fi"))
+		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf
@@ -38,7 +38,7 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 		$(VT) decompose -s - | \
 		$(VT) normalize -r $(REF_FASTA) - | \
 		$(call SNP_EFF_MEM,8G) ann -c $(SNP_EFF_CONFIG) $(SNP_EFF_GENOME) -formatEff -classic | \
-		bgzip -c > $@.tmp && if zgrep -q '^#CHROM' $@.tmp; mv $@.tmp $@; else false; fi")
+		bgzip -c > $@.tmp && if zgrep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi")
 
 %.vcf.gz.tbi : %.vcf.gz
 	$(call LSCRIPT_CHECK_SHORT,3G,5G,"$(BCFTOOLS2) index -t -f $<")
