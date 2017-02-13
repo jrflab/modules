@@ -53,7 +53,7 @@ $(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 define mutect-tumor-normal-chunk
 mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables; \
-		$$(MUTECT) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@")
+		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@")
 endef
 $(foreach chunk,$(MUTECT_CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
@@ -64,7 +64,7 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 define mutect-tumor-normal-chr
 mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables; \
-		$$(MUTECT) --intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt -vcf $$@")
+		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 --intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt -vcf $$@")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
