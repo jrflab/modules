@@ -18,7 +18,7 @@ vcf/%.somatic_indels.vcf : vcf/%.mutect_indels.vcf vcf/%.strelka_varscan_indels.
 	$(call LSCRIPT_MEM,9G,12G,"$(CONCAT_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
 
 vcf/%.strelka_varscan_indels.vcf : vcf/%.varscan_indels.vcf vcf/%.strelka_indels.vcf
-	$(call LSCRIPT_MEM,9G,12G,"(grep -P '^#' $<; $(BEDTOOLS) intersect -a $< -b $(<<)) | uniq > $@")
+	$(call LSCRIPT_MEM,9G,12G,"(grep -P '^#' $<; $(BEDTOOLS) intersect -a $< -b <($(PASS_FILTER_VCF) $(<<))) | uniq > $@")
 
 include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/mutect2.mk

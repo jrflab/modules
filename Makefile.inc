@@ -371,6 +371,7 @@ CHECK_MAF = mkdir -p $(@D); if [ `grep -v '^\#' $< | wc -l` -eq 1 ] && [ `grep '
 
 KNIT = $(RSCRIPT) modules/scripts/knit.R
 
+PASS_FILTER_VCF = python modules/vcf_tools/pass_filter_vcf.py
 
 define R_INIT
 dir.create('$(@D)', showWarnings = F, recursive = T)
