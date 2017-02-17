@@ -350,7 +350,7 @@ def output_recurrent_mutations_ccf_per_gene_single_figure(mut_split, gene_count,
     # ccf per gene/mutation
     ccf_column = "TUMOR_MAF" if plot_maf else "cancer_cell_frac"
     mut_ccf_genes, gene_annotations, mut_ann_per_sample = get_mutation_heatmap_dfs(mut_split, ccf_column, per_mutation=False)
-    gene_order, sample_order = get_heatmap_order(gene_count, gene_annotations, mut_ccf_genes)
+    gene_order, sample_order = get_heatmap_order(gene_count, gene_annotations, mut_ccf_genes, config=config)
 
     output_recurrent_mutations_ccf_single_figure_plot_only(mut_split, gene_order, sample_order, outputfile, plot_maf, per_mutation=False)
 
