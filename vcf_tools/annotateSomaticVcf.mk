@@ -47,8 +47,9 @@ SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_A
 ifeq ($(ANN_FACETS),true)
 $(if $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt)),,\
 	$(error no facets data available for annotations))
-SOMATIC_ANN2 += facets
+SOMATIC_ANN2 += facets_ccf
 endif
+
 
 # apply depth filter to varscan and mutect
 # fix vcf sample header for strelka

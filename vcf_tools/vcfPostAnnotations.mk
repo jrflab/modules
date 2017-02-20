@@ -1,5 +1,6 @@
 # annotations that have pre-req annotations and are run last or should be run after the 2nd round of filtering
 
+SUMMARY_NO_REMOTE ?= false
 PROVEAN_SCRIPT = $(HOME)/share/usr/bin/provean.sh
 CLASSIFY_SNV_PATHOGENICITY = python modules/scripts/classify_snv_pathogenicity_vcf.py
 CLASSIFY_SNV_PATHOGENICITY_OPTS = 
@@ -7,7 +8,7 @@ CLASSIFY_INDEL_PATHOGENICITY = python modules/scripts/classify_indel_pathogenici
 CLASSIFY_INDEL_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
 							  $(if $(findstring true,$(USE_CLUSTER)),--cluster_mode $(CLUSTER_ENGINE), \
 							  --cluster_mode none) \
-							  --num_provean_threads 6 --mem_per_thread 3G 
+							  --num_provean_threads 6 --mem_per_thread 3G $(if $(findstring true,$(SUMMARY_NO_REMOTE)),--no_remote)
 vcf/%.snp_pathogen.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,5G,8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@"))
 
@@ -71,6 +72,14 @@ ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
 define annotate-facets-pair
 vcf/$1.%.facets.vcf : vcf/$1.%.vcf facets/cncf/$1.cncf.txt
 	$$(call CHECK_VCF,$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@ $$<"))
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
+
+ANNOTATE_FACETS_CCF_VCF = $(RSCRIPT) modules/copy_number/annotateFacetsCCF2Vcf.R
+CCF_RSCRIPT = $(HOME)/share/usr/ccf.R
+define annotate-facets-pair
+vcf/$1.%.facets_ccf.vcf : vcf/$1.%.vcf facets/cncf/$1.Rdata
+	$$(call CHECK_VCF,$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_CCF_VCF) --tumor $$(tumor.$1) --ccfRscript $$(CCF_RSCRIPT) --facetsRdata $$(<<) --outFile $$@ $$<"))
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
 
