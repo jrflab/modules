@@ -35,6 +35,9 @@ unless (-e "project_config.yaml") {
 unless (-e "summary_config.yaml") {
     copy("modules/default_summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
 }
+unless (-e "sample_attr.yaml") {
+    copy("modules/default_sample_attr.yaml", "sample_attr.yaml") or die "Unable to create sample_attr.yaml: $!";
+}
 close OUT;
 system "git add Makefile";
 system "git add project_config.yaml";

@@ -69,6 +69,12 @@ def sample_yaml2mk(samples_file, out_file):
     for k, v in tumor_normal.iteritems():
         print("set.{}_{} = {} {}".format(k, v, " ".join(normal_tumors[v]), v), file=out_file)
 
+def sample_attr_yaml2mk(sample_attr_file, out_file):
+    print("\n# sample_attr_file", file=out_file)
+    sample_attr = yaml.load(open(sample_attr_file, 'r'))
+    for attr, m in sample_attr.iteritems():
+        for k, v in m.iteritems():
+            print("{}.{} = {}".format(attr, k, v), file=out_file)
 
 def sample_fastq_yaml2mk(sample_fastq_file, out_file):
     print("\n# sample_fastq_file", file=out_file)
@@ -103,6 +109,7 @@ if __name__ == '__main__':
     parser.add_argument('--project_config_file', help='project yaml config file',
                         default='project_config.yaml')
     parser.add_argument('--samples_file', help='yaml samples file', default='samples.yaml')
+    parser.add_argument('--sample_attr_file', help='yaml sample attr file', default='sample_attr.yaml')
     parser.add_argument('--sample_fastq_file', help='yaml sample fastq file mappings', default='sample.fastq.yaml')
     parser.add_argument('--sample_merge_file', help='yaml sample merge mappings')
     parser.add_argument('--out_file', help='project make include file', type=argparse.FileType('w', 0), nargs='?',
@@ -119,6 +126,11 @@ if __name__ == '__main__':
         sample_yaml2mk(args.samples_file, args.out_file)
     except IOError:
         print("Error loading {}, skipping".format(args.samples_file))
+
+    try:
+        sample_attr_yaml2mk(args.sample_attr_file, args.out_file)
+    except IOError:
+        print("Error loading {}, skipping".format(args.sample_attr_file))
 
     if args.sample_fastq_file is not None:
         try:

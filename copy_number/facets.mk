@@ -16,16 +16,22 @@ FACETS_PRE_CVAL ?= 50
 FACETS_CVAL1 ?= 150
 FACETS_CVAL2 ?= 50
 FACETS_MIN_NHET ?= 25
+FACETS_SNP_NBHD ?= 250
+FACETS_NDEPTH_MAX ?= 1000
 FACETS_HET_THRESHOLD ?= 0.25
 FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 			  --het_threshold $(FACETS_HET_THRESHOLD) \
 			  --min_nhet $(FACETS_MIN_NHET) \
+			  --snp_nbhd $(FACETS_SNP_NBHD) \
 			  --pre_cval $(FACETS_PRE_CVAL) \
-			  --use_emcncf2
+			  --ndepth_max $(FACETS_NDEPTH_MAX) \
+			  --use_emcncf2 \
+			  $(if $(facets_diplogr.$1),--diplogr $(facets_diplogr.$1)) \
+			  $(if $(facets_purity.$1),--purity $(facets_purity.$1))
 
 SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
-SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip
+SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=15000
 
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
 
@@ -84,7 +90,7 @@ endif
 
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(FACETS_OPTS) --out_prefix $(@D)/$* $<")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call $(FACETS_OPTS),$*) --out_prefix $(@D)/$* $<")
 
 facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
 	$(call LSCRIPT_ENV_MEM,$(FACETS_ENV),4G,6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
