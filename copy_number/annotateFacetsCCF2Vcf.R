@@ -126,11 +126,11 @@ if (sum(!is.na(ol)) > 0) {
     info(vcf)$facetsMafR[!is.na(ol)] <- facetsGr$mafR[ol[!is.na(ol)]]
     info(vcf)$facetsLOH[!is.na(ol)] <- facetsGr$lcn[ol[!is.na(ol)]] == 0
     info(vcf)$facetsLOHCall[!is.na(ol)] <- ifelse(facetsGr$lcn[ol[!is.na(ol)]] == 0, 'true', 'false')
+    info(vcf)$facetsMultiplicity[!is.na(ol)] <- ccfFit$multiplicity
     info(vcf)$ccf[!is.na(ol)] <- ccfFit$ccf
     info(vcf)$clonalStatus[!is.na(ol)] <- clonalStatus
     info(vcf)$ccfConfUpper[!is.na(ol)] <- ccfUpper
     info(vcf)$ccfConfLower[!is.na(ol)] <- ccfLower
-    info(vcf)$ccfMultiplicity[!is.na(ol)] <- ccfFit$multiplicity
     x <- is.na(info(vcf)$facetsLOH[!is.na(ol)])
     if (sum(x) > 0) {
         info(vcf)$facetsLOH[!is.na(ol)][x] <- facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR
