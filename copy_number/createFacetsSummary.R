@@ -42,7 +42,7 @@ for (facetsFile in facetsFiles) {
     n <- paste(tumorName, normalName, sep = '_')
     Df[n, 'tumorName'] <- tumorName
     if (tumorName != normalName) {
-        Df[n, 'normalName'] <- tumorName
+        Df[n, 'normalName'] <- normalName
     }
     Df[n, 'purity'] <- fit$purity
     Df[n, 'ploidy'] <- fit$ploidy
