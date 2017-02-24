@@ -48,6 +48,7 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 star/%.Aligned.sortedByCoord.out.bam star/%.Chimeric.out.junction : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(STAR) $(STAR_OPTS) \
 		--outFileNamePrefix star/$*. --runThreadN 4 \
+		--outSAMattrRGline \"ID:$*\" \"LB:$*\" \"SM:$*\" \"PL:${SEQ_PLATFORM}\" \
 		--readFilesIn $^ --readFilesCommand zcat")
 
 star/bam/%.star.sorted.bam : star/%.Aligned.sortedByCoord.out.bam
