@@ -15,7 +15,8 @@ ifeq ($(NO_HOTSPOTS),false)
 HOTSPOT_TABLE = alltables/allTN.hotspot.tab.txt
 TABLES += $(HOTSPOT_TABLE)
 endif
-SUMMARY_CONFIG = summary_config.yaml
+
+SUMMARY_CONFIG = $(wildcard summary_config.yaml)
 
 
 SNV_TABLES = alltables/allTN.$(SNV_TYPE).tab.high_moderate.txt alltables/allTN.$(SNV_TYPE).tab.low_modifier.txt \
