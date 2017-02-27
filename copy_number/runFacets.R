@@ -25,6 +25,7 @@ optList <- list(
                 make_option("--max_cval", default = 5000, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--het_threshold", default = 0.25, type = 'double', help = "AF threshold for heterozygous SNPs"),
+                make_option("--ndepth_max", default = 1000, type = 'integer', help = "normal depth max"),
                 make_option("--use_emcncf2", default = F, action = 'store_true', help = "use emcncf version 2"),
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
                 make_option("--genome", default = 'b37', type = 'character', help = "genome of counts file"),
@@ -84,7 +85,7 @@ cat("\n")
 
 
 snpmat <- readSnpMatrix(snpPileupFile)
-preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome)
+preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome, ndepthmax = opt$ndepth_max)
 out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
 cval <- opt$cval2
