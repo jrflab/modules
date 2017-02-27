@@ -19,7 +19,6 @@ FACETS_MIN_NHET ?= 25
 FACETS_SNP_NBHD ?= 250
 FACETS_NDEPTH_MAX ?= 1000
 FACETS_HET_THRESHOLD ?= 0.25
-FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 			  --het_threshold $(FACETS_HET_THRESHOLD) \
 			  --min_nhet $(FACETS_MIN_NHET) \
@@ -39,7 +38,7 @@ CONVERT_BASECOUNT ?= false
 
 # augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
-FACETS_SNP_VCF = $(DBSNP)
+FACETS_SNP_VCF = $(FACETS_DBSNP)
 ifeq ($(FACETS_UNION_GATK_DBSNP),true)
 FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf
 endif
@@ -68,10 +67,6 @@ facets/vcf/dbsnp_het_gatk.snps.vcf : $(DBSNP) $(foreach sample,$(SAMPLES),gatk/v
 %.het.vcf : %.vcf
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
 
-# no flag target definitions
-facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
-	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
-
 ifeq ($(CONVERT_BASECOUNT),true)
 CONVERT_BC_TO_SNP_PILEUP = python modules/copy_number/convert_basecount_to_snp_pileup.py
 facets/snp_pileup/%.snp_pileup.gz : facets/base_count/%.bc.gz
@@ -80,7 +75,7 @@ else
 # normal is first, tumor is second
 define snp-pileup-tumor-normal
 facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
-	$$(call LSCRIPT_CHECK_MEM,8G,20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
+	$$(call LSCRIPT_CHECK_MEM,8G,12G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
