@@ -25,6 +25,7 @@ optList <- list(
                 make_option("--max_cval", default = 5000, type = 'integer', help = "maximum critical value for segmentation (increases by 10 until success)"),
                 make_option("--min_nhet", default = 25, type = 'integer', help = "minimum number of heterozygote snps in a segment used for bivariate t-statistic during clustering of segment"),
                 make_option("--het_threshold", default = 0.25, type = 'double', help = "AF threshold for heterozygous SNPs"),
+                make_option("--diplogr", default = NULL, type = 'double', help = "override diploid log-ratio"),
                 make_option("--ndepth_max", default = 1000, type = 'integer', help = "normal depth max"),
                 make_option("--use_emcncf2", default = F, action = 'store_true', help = "use emcncf version 2"),
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
@@ -86,41 +87,36 @@ cat("\n")
 
 snpmat <- readSnpMatrix(snpPileupFile)
 preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome, ndepthmax = opt$ndepth_max)
-out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
+if (!is.null(opt$diplogr)) {
+    out2 <- preOut %>% procSample(cval = opt$cval2, min.nhet = opt$min_nhet, dipLogR = opt$diplogr)
+} else {
+    out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
 
-cval <- opt$cval2
-success <- F
-while (!success && cval < opt$max_cval) {
-    out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
-    print(str_c("attempting to run emncf() with cval2 = ", cval))
-    fit <- tryCatch({
-        if (opt$use_emcncf2) {
-            out2 %>% emcncf2
+    cval <- opt$cval2
+    success <- F
+    while (!success && cval < opt$max_cval) {
+        out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = out1$dipLogR)
+        print(str_c("attempting to run emncf() with cval2 = ", cval))
+        fit <- tryCatch({
+            if (opt$use_emcncf2) {
+                out2 %>% emcncf2
+            } else {
+                out2 %>% emcncf
+            }
+        }, error = function(e) {
+            print(paste("Error:", e))
+            return(NULL)
+        })
+        if (!is.null(fit)) {
+            success <- T
         } else {
-            out2 %>% emcncf
+            cval <- cval + 100
         }
-    }, error = function(e) {
-        print(paste("Error:", e))
-        return(NULL)
-    })
-    if (!is.null(fit)) {
-        success <- T
-    } else {
-        cval <- cval + 100
+    }
+    if (!success) {
+        stop("Failed to segment data\n")
     }
 }
-if (!success) {
-    stop("Failed to segment data\n")
-}
-
-
-#CairoPNG(file = str_c(opt$out_prefix,".biseg.png"), height = 1000, width = 800)
-#plotSample(out2, chromlevels = chromLevels)
-#dev.off()
-
-#pdf(file = str_c(opt$out_prefix, ".biseg.pdf"), height = 12, width = 9)
-#plotSample(out2, chromlevels = chromLevels)
-#dev.off()
 
 formatSegmentOutput=function(out,sampID) {
 	seg=list()
