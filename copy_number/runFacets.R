@@ -90,9 +90,9 @@ preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het
 if (!is.null(opt$diplogr)) {
     out2 <- preOut %>% procSample(cval = opt$cval2, min.nhet = opt$min_nhet, dipLogR = opt$diplogr)
     if (opt$use_emcncf2) {
-        out2 %>% emcncf2
+        fit <- out2 %>% emcncf2
     } else {
-        out2 %>% emcncf
+        fit <- out2 %>% emcncf
     }
 } else {
     out1 <- preOut %>% procSample(cval = opt$cval1, min.nhet = opt$min_nhet)
