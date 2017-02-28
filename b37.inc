@@ -10,7 +10,7 @@ GENES_GTF = $(REF_DIR)/Homo_sapiens/Ensembl/$(TOPHAT_REF)/Annotation/Genes/genes
 
 ANNOVAR_REF = hg19
 
-CLINVAR = $(REF_DIR)/clinvar_20151102.vcf.gz
+CLINVAR = $(REF_DIR)/clinvar_20160531.vcf.gz
 EXAC_NONTCGA = $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.vcf.gz
 
 #UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
