@@ -88,7 +88,8 @@ cat("\n")
 snpmat <- readSnpMatrix(snpPileupFile)
 preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome, ndepthmax = opt$ndepth_max)
 if (!is.null(opt$diplogr)) {
-    out2 <- preOut %>% procSample(cval = opt$cval2, min.nhet = opt$min_nhet, dipLogR = opt$diplogr)
+    cval <- opt$cval2
+    out2 <- preOut %>% procSample(cval = cval, min.nhet = opt$min_nhet, dipLogR = opt$diplogr)
     if (opt$use_emcncf2) {
         fit <- out2 %>% emcncf2
     } else {
