@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     try:
         sample_attr_yaml2mk(args.sample_attr_file, args.out_file)
-    except IOError:
+    except:
         print("Error loading {}, skipping".format(args.sample_attr_file))
 
     if args.sample_fastq_file is not None:
