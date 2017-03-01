@@ -3,8 +3,8 @@
 include modules/Makefile.inc
 LOGDIR = log/somatic_variants.$(NOW)
 
-SNV_TYPE ?= mutect_snps
-INDEL_TYPE ?= somatic_indels
+SNV_TYPE ?= mutect
+INDEL_TYPE ?= strelka_varscan_indels
 
 .PHONY : somatic_variants somatic_indels somatic_snvs
 somatic_variants: somatic_snvs somatic_indels
