@@ -20,7 +20,7 @@ recurrent_mutations_sufam: recurrent_mutations/sufam/all_mutations.vcf recurrent
 recurrent_mutations/recurrent_mutations.tsv: $(EXCEL_NONSYNONYMOUS_MUTECT_SNPS) $(EXCEL_NONSYNONYMOUS_MUTECT_INDELS)
 	$(INIT) unset PYTHONPATH && \
 	source $(ANACONDA_27_ENV)/bin/activate $(ANACONDA_27_ENV) && \
-	python --summary_config summary_config.yaml modules/scripts/recurrent_mutations_plot.py $^ $(@D)
+	python modules/scripts/recurrent_mutations_plot.py --summary_config summary_config.yaml $^ $(@D)
 
 recurrent_mutations/sufam/all_mutations.vcf: $(EXCEL_NONSYNONYMOUS_MUTECT_SNPS) $(EXCEL_NONSYNONYMOUS_MUTECT_INDELS)
 	$(INIT) unset PYTHONPATH && \
