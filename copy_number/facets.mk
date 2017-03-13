@@ -29,7 +29,7 @@ FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 			  $(if $(facets_diplogr.$1),--diplogr $(facets_diplogr.$1)) \
 			  $(if $(facets_purity.$1),--purity $(facets_purity.$1))
 
-SNP_PILEUP = $(HOME)/share/usr/bin/snp-pileup
+SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=0 --min-base-quality=0 --gzip --max-depth=15000
 
 # convert old facets basecount files to snp-pileup
