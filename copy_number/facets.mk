@@ -65,7 +65,7 @@ facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
 
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) $(if $(TARGETS_FILE),-L $(TARGETS_FILE)) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
 # flag homozygous calls
 %.het.vcf : %.vcf
