@@ -33,15 +33,18 @@ FACETS_OPTS = --cval2 $(FACETS_CVAL2) --cval1 $(FACETS_CVAL1) --genome $(REF) \
 SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=15000
 
+FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
+
 # convert old facets basecount files to snp-pileup
 CONVERT_BASECOUNT ?= false
 
 
 # augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
-FACETS_SNP_VCF = $(DBSNP)
 ifeq ($(FACETS_UNION_GATK_DBSNP),true)
 FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf
+else
+FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
 
 MERGE_TN = python modules/copy_number/facets_merge_tn.py
@@ -61,7 +64,7 @@ facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt facets/plot
 facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
 
-facets/vcf/dbsnp_het_gatk.snps.vcf : $(DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
+facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
 # flag homozygous calls
@@ -87,7 +90,7 @@ endif
 
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call $(FACETS_OPTS),$*) --out_prefix $(@D)/$* $<")
 
 facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
 	$(call LSCRIPT_ENV_MEM,$(FACETS_ENV),4G,6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
