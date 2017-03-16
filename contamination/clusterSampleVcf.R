@@ -41,8 +41,8 @@ X[!gt %in% c("0/0", "0/1", "1/1")] <- NA
 
 gt <- matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 
-fn <- paste(opt$outPrefix, ".clust.png", sep = '')
-png(fn, height = 900, width = 1500, type = 'cairo')
+fn <- paste(opt$outPrefix, ".clust.pdf", sep = '')
+pdf(fn, height = 9, width = 15)
 null <- plot(hclust(dist(t(gt)), method = 'ward'))
 dev.off()
 
