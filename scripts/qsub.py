@@ -61,6 +61,7 @@ class Job:
     def check_file(self, servers, max_connection_retry=10, local_max_retry=3):
         """ checks the file size of file f on remote servers and returns True
         if it matches local file size
+        returns False if file size is 0
         """
         time.sleep(10)
         if self.out_file is None:
@@ -102,7 +103,7 @@ class Job:
                     sys.stderr.write("max connection retries for "
                                      "remote file size check\n")
                     return False
-        return True
+        return local_file_size > 0
 
     def __exit_gracefully(self, signum, frame):
         print "received interrupt"
