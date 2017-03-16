@@ -221,7 +221,7 @@ SGE_MEM = -l virtual_free=$1,h_vmem=$2
 SGE_LONG = $(SGE_MEM)
 QSUB_PRIORITY ?= 0
 SGE_QSUB_ARGS = -V -wd $(PWD) -now n -notify -o $(LOG) -j y -S $(SHELL) -p $(QSUB_PRIORITY) -b n
-SGE_NODES = e01 e02 e03 e04 e06
+SGE_NODES = e01 e02 e04 e06
 SGE_QSUB_SCRIPT = python modules/scripts/qsub.py
 
 
