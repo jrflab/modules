@@ -130,7 +130,7 @@ TVC ?= $(HOME)/share/usr/bin/tvc
 
 ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
 
-ONCOTATOR_ENV = $(HOME)/share/venv/oncotator-1.9.2.0
+ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
 
 endif
 CONFIG_INC = true

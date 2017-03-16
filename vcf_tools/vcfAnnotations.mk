@@ -76,4 +76,6 @@ vcf/%.$(ANNOVAR_REF)_multianno.vcf : vcf/%.vcf
 ONCOTATOR = oncotator
 ONCOTATOR_OPTS = -v --db-dir $(ONCOTATOR_DB) $(if $(ONCOTATOR_TX_OVERRIDES),-c $(ONCOTATOR_TX_OVERRIDES))
 vcf/%.oncotator.vcf : vcf/%.vcf
-	$(call LSCRIPT_ENV_CHECK_MEM,$(ONCOTATOR_ENV),8G,12G,"$(ONCOTATOR) $(ONCOTATOR_OPTS) -i VCF -o VCF $< $@ $(ONCOTATOR_REF)")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(ONCOTATOR_ENV),8G,12G,"$(ONCOTATOR) $(ONCOTATOR_OPTS) -i VCF -o VCF $< $@.tmp $(ONCOTATOR_REF) && \
+		perl -lane 'if (/^#/) { print; } else { for \$$i (7 .. \$$#F) { \$$F[\$$i] =~ s/\|/$(,)/g; } print join \"\t\"$(,) @F;}' $@.tmp > $@ && \
+		rm $@.tmp")
