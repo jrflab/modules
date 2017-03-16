@@ -72,3 +72,8 @@ ANNOVAR_OPERATION ?= g$(,)r$(,)r$(,)f$(,)f$(,)f$(,)f$(,)f$(,)f$(,)f
 ANNOVAR_OPTS = --dot2underline -remove -protocol $(ANNOVAR_PROTOCOL) -operation $(ANNOVAR_OPERATION) -nastring . -vcfinput -buildver $(ANNOVAR_REF)
 vcf/%.$(ANNOVAR_REF)_multianno.vcf : vcf/%.vcf
 	$(call LSCRIPT_CHECK_MEM,7G,9G,"$(ANNOVAR) -out $(@D)/$* $(ANNOVAR_OPTS) $< $(ANNOVAR_DB)")
+
+ONCOTATOR = oncotator
+ONCOTATOR_OPTS = -v --db-dir $(ONCOTATOR_DB) $(if $(ONCOTATOR_TX_OVERRIDES),-c $(ONCOTATOR_TX_OVERRIDES))
+vcf/%.oncotator.vcf : vcf/%.vcf
+	$(call LSCRIPT_ENV_CHECK_MEM,$(ONCOTATOR_ENV),8G,12G,"$(ONCOTATOR) $(ONCOTATOR_OPTS) -i VCF -o VCF $< $@ $(ONCOTATOR_REF)")

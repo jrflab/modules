@@ -108,6 +108,10 @@ HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.hg19.vcf.gz
 
 REF_MSI = $(REF_DIR)/ucsc_gatk_bundle_2.8/hg19_msi.list
 
+ONCOTATOR_REF = hg19
+ONCOTATOR_DB = $(REF_DIR)/oncotator_v1_ds_April052016/
+ONCOTATOR_TX_OVERRIDES = $(REF_DIR)/tx_exact_uniprot_matches.AKT1_CRLF2_FGFR1.txt
+
 endif
 HG19_INC = true
 

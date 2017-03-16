@@ -120,6 +120,10 @@ PARSSNP_RESOURCES = $(REF_DIR)/ParsSNP_resources.Rdata
 
 REF_MSI = $(REF_DIR)/GATK_bundle/2.3/b37_msi.list
 
+ONCOTATOR_REF = hg19
+ONCOTATOR_DB = $(REF_DIR)/oncotator_v1_ds_April052016/
+ONCOTATOR_TX_OVERRIDES = $(REF_DIR)/tx_exact_uniprot_matches.AKT1_CRLF2_FGFR1.txt
+
 endif
 B37_INC = true
 

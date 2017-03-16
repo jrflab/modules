@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 # Read a vcf file and run provean on elegible variants
+# PROVEAN uses ANN annotation from snpEff
 
 suppressPackageStartupMessages(library("optparse"));
 suppressPackageStartupMessages(library("biomaRt"));
