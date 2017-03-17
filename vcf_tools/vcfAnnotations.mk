@@ -79,3 +79,8 @@ vcf/%.oncotator.vcf : vcf/%.vcf
 	$(call LSCRIPT_ENV_CHECK_MEM,$(ONCOTATOR_ENV),8G,12G,"$(ONCOTATOR) $(ONCOTATOR_OPTS) -i VCF -o VCF $< $@.tmp $(ONCOTATOR_REF) && \
 		perl -lane 'if (/^#/) { print; } else { for \$$i (7 .. \$$#F) { \$$F[\$$i] =~ s/\|/$(,)/g; } print join \"\t\"$(,) @F;}' $@.tmp > $@ && \
 		rm $@.tmp")
+
+CMO_ANN = python modules/vcf_tools/annotate_vcf2maf.py
+vcf/%.cmo_ann.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_PARALLEL_MEM,4,3G,3G,"$(CMO_ANN) --ref_fasta $(REF_FASTA) \
+		--filter_vcf $(EXAC_NONTCGA) --vep_forks 4 $< $(if $(CMO_HOTSPOT_FILE), --hotspot_list $(CMO_HOTSPOT_FILE)) > $@"))

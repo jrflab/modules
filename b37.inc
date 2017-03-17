@@ -124,6 +124,8 @@ ONCOTATOR_REF = hg19
 ONCOTATOR_DB = $(REF_DIR)/oncotator_v1_ds_April052016/
 ONCOTATOR_TX_OVERRIDES = $(REF_DIR)/tx_exact_uniprot_matches.AKT1_CRLF2_FGFR1.txt
 
+CMO_HOTSPOT_FILE = $(REF_DIR)/hotspot_list.txt
+
 endif
 B37_INC = true
 

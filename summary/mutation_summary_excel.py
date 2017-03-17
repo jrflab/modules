@@ -209,8 +209,9 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         config = yaml.load(open(summary_config))
     else:
         config = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].EFFECT," \
-        "gene,Ensembl_so_term,HGVS_protein_change,protein_change," \
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
+        "gene,Ensembl_so_term,protein_change," \
+        "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
         "ExAC_AF,MutationTaster_pred,provean_pred,fathmm_pred," \
         "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,clonalStatus,ccf".split(",")
@@ -252,7 +253,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
                             add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns]],
                             ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
     else:
-        mutsdf = pd.concat([add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE", filter_effect='.*(structural_interaction_variant|protein_protein_contact).*', config=config), required_columns, ".")[required_columns],
+        mutsdf = pd.concat([add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE", filter_effect='.*(sequence_feature|structural_interaction_variant|protein_protein_contact).*', config=config), required_columns, ".")[required_columns],
                             add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_low_modifier), "LOW", select_effect=".*synonymous_variant.*", config=config), required_columns, ".")[required_columns],
                             add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE", filter_effect='.*(structural_interaction_variant|protein_protein_contact).*', config=config), required_columns, ".")[required_columns]],
                             ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
