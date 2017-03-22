@@ -258,6 +258,14 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
                             add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE", filter_effect='.*(structural_interaction_variant|protein_protein_contact).*', config=config), required_columns, ".")[required_columns]],
                             ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
     #exac_af_sel = mutsdf["ExAC_AF"].apply(lambda x: x == "." or float(x) < max_exac_af)
+    alldf = pd.concat([add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                        add_non_existent_columns(select_annotations_with_impact(read_tsv(snps_low_modifier), "LOW|MODIFIER"), required_columns, ".")[required_columns],
+                        add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_high_moderate), "HIGH|MODERATE"), required_columns, ".")[required_columns],
+                        add_non_existent_columns(select_annotations_with_impact(read_tsv(indels_low_modifier), "LOW|MODIFIER"), required_columns, ".")[required_columns]],
+                        ignore_index=True).sort_values("TUMOR_SAMPLE CHROM POS".split())
+    add_columns_write_excel(alldf, writer, "ALL", absdf,
+        write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
+        annotdf=annotdf, config=config)
     add_columns_write_excel(mutsdf, writer, "MUTATION_SUMMARY", absdf,
         write_columns=summary_columns, output_tsv_dir=output_tsv_dir,
         annotdf=annotdf, config=config)
