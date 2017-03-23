@@ -7,6 +7,9 @@ echo "TEST VARIANT CALLING test_data"
 cd ${DIR}/test_data
 # create project_config.inc
 python modules/configure.py
+echo "==facets=="
+echo "run"
+make -j8 facets && echo "success" || (echo "failed" && exit 1)
 echo "==somatic_variants: mutect + strelka + varscan=="
 echo "run"
 make -j8 somatic_variants && echo "success" || (echo "failed" && exit 1)

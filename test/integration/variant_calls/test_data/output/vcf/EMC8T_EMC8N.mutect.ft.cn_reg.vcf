@@ -1,6 +1,6 @@
 ##fileformat=VCFv4.1
 ##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
-##fileDate=20170123
+##fileDate=20170323
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
@@ -121,6 +121,7 @@
 ##contig=<ID=GL000225.1,length=211173,assembly="b37">
 ##contig=<ID=GL000192.1,length=547496,assembly="b37">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
+1	149899046	1:149899046_T/G	T	G	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_CN_low;endometrial_Endometrioid_MSI_H;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_MSI;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:57,0:.:57:0:0	0/1:75,8:21:84:0.096:2
 1	214816368	1:214816368_C/T	C	T	.	PASS	SOMATIC;VT=SNP;endometrial_CN_low;endometrial_Endometrioid_MSI_H;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_MSI;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:BQ:DP:FA:SS	0:49,0:.:49:0:0	0/1:19,18:30:37:0.486:2
 2	152552202	2:152552202_A/C	A	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:44,1:.:46:0.022:0	0/1:37,6:19:43:0.14:2
 4	6878363	4:6878363_C/G	C	G	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0:0	0/1:50,37:33:88:0.425:2
@@ -134,6 +135,7 @@
 7	101870801	7:101870801_G/A	G	A	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid;endometrial_MSI;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0:0	0/1:43,14:31:57:0.246:2
 8	8869213	8:8869213_A/C	A	C	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:26,0:.:26:0:0	0/1:16,5:20:21:0.238:2
 8	22422842	8:22422842_T/C	T	C	.	PASS	SOMATIC;VT=SNP;endometrial_CN_low;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_MSI;endometrial_Serous;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Pam50_Normal	GT:AD:BQ:DP:FA:SS	0:67,0:.:67:0:0	0/1:156,42:33:198:0.212:2
+9	138376416	9:138376416_C/T	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:40,0:.:40:0:0	0/1:49,39:29:89:0.443:2
 10	53459175	10:53459175_G/T	G	T	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_CN_low;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE	GT:AD:BQ:DP:FA:SS	0:268,0:.:270:0:0	0/1:106,86:29:192:0.448:2
 10	54076234	10:54076234_G/A	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:76,0:.:76:0:0	0/1:37,24:30:61:0.393:2
 10	73048335	10:73048335_G/A	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:123,0:.:123:0:0	0/1:159,88:31:247:0.356:2
@@ -144,10 +146,13 @@
 11	118243280	11:118243280_T/C	T	C	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:60,0:.:60:0:0	0/1:75,31:34:107:0.292:2
 13	35733583	rs187172790	T	A	.	PASS	DB;SOMATIC;VT=SNP;breast_ER_negative;breast_ER_positive;breast_Pam50_Basal;breast_Pam50_LumA;breast_Pam50_LumB	GT:AD:BQ:DP:FA:SS	0:72,0:.:72:0:0	0/1:22,8:31:30:0.267:2
 13	46054278	13:46054278_G/C	G	C	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:21,0:.:21:0:0	0/1:17,9:33:26:0.346:2
+15	51503259	15:51503259_A/C	A	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:22,1:.:24:0.043:0	0/1:19,6:18:25:0.24:2
 16	705640	rs368151213	C	T	.	PASS	DB;SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:BQ:DP:FA:SS	0:182,0:.:183:0:0	0/1:271,419:32:690:0.607:2
+16	14342914	16:14342914_C/T	C	T	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_POLE;endometrial_Serous;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:BQ:DP:FA:SS	0:100,0:.:100:0:0	0/1:82,37:29:119:0.311:2
 17	8796933	17:8796933_A/G	A	G	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_CN_low;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:107,0:.:108:0:0	0/1:95,53:31:148:0.358:2
 17	46053334	rs202125432	A	G	.	PASS	DB;SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_POLE;endometrial_Serous;breast_ER_negative;breast_ER_positive;breast_Pam50_Basal;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:BQ:DP:FA:SS	0:124,1:.:125:0.008:0	0/1:181,9:34:190:0.047:2
 19	13476200	19:13476200_T/G	T	G	.	PASS	SOMATIC;VT=SNP;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:BQ:DP:FA:SS	0:42,0:.:42:0:0	0/1:35,20:34:55:0.364:2
+19	42260742	rs141329594	C	T	.	PASS	DB;SOMATIC;VT=SNP;endometrial_Endometrioid	GT:AD:BQ:DP:FA:SS	0:62,0:.:62:0:0	0/1:81,7:31:88:0.08:2
 19	51503494	19:51503494_C/T	C	T	.	PASS	SOMATIC;VT=SNP;endometrial_Endometrioid;breast_ER_negative;breast_ER_positive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:BQ:DP:FA:SS	0:102,1:.:103:0.009709:0	0/1:101,67:30:168:0.399:2
 19	56896557	19:56896557_A/G	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:37,0:.:37:0:0	0/1:32,6:32:38:0.158:2
 19	56896570	19:56896570_G/A	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:32,0:.:32:0:0	0/1:21,4:28:25:0.16:2
