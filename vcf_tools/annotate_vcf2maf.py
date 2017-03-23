@@ -89,15 +89,16 @@ if __name__ == '__main__':
 
     # run vcf2maf
     FNULL = open(os.devnull, 'w')
-    retcode = subprocess.call('{vcf2maf} {vcf2maf_opts}'
-                              ' --ref-fasta {ref_fasta}'
-                              ' --input-vcf {vcf}'
-                              ' --filter-vcf {filter_vcf}'
-                              ' --vep-forks {vep_forks}'
-                              ' --output-maf {maf}'.format(vcf2maf=args.vcf2maf, vcf2maf_opts=args.vcf2maf_opts,
-                                                           ref_fasta=args.ref_fasta, vcf=args.vcf_infile,
-                                                           vep_forks=args.vep_forks, filter_vcf=args.filter_vcf,
-                                                           maf=maf_file), shell=True, stdout=FNULL, stderr=FNULL)
+    cmd = '{vcf2maf} {vcf2maf_opts}' \
+        ' --ref-fasta {ref_fasta}' \
+        ' --input-vcf {vcf}' \
+        ' --filter-vcf {filter_vcf}' \
+        ' --vep-forks {vep_forks}' \
+        ' --output-maf {maf}'.format(vcf2maf=args.vcf2maf, vcf2maf_opts=args.vcf2maf_opts,
+                                     ref_fasta=args.ref_fasta, vcf=args.vcf_infile,
+                                     vep_forks=args.vep_forks, filter_vcf=args.filter_vcf,
+                                     maf=maf_file)
+    retcode = subprocess.call(cmd, shell=True, stdout=FNULL, stderr=FNULL)
     if retcode != 0:
         sys.stderr.write('vcf2maf failed\n')
         sys.exit(1)

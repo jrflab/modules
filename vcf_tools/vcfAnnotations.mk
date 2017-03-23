@@ -81,6 +81,13 @@ vcf/%.oncotator.vcf : vcf/%.vcf
 		rm $@.tmp")
 
 CMO_ANN = python modules/vcf_tools/annotate_vcf2maf.py
+CMO_ANN_OPTS = --vcf2maf '$(VCF2MAF)' \
+			   --vcf2maf_opts '--vep-path $(VEP_PATH) --vep-data $(VEP_DATA) --ncbi-build $(VEP_REF) \
+			   --maf-center mskcc.org --tmp-dir $(shell mktemp -d) \
+			   --custom-enst $(VEP_OVERRIDES) --species $(VEP_SPECIES)' \
+			   --filter_vcf $(EXAC_NONTCGA) --ref_fasta $(REF_FASTA) \
+			   $(if $(CMO_HOTSPOT_FILE), --hotspot_list $(CMO_HOTSPOT_FILE))
+
 vcf/%.cmo_ann.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_PARALLEL_MEM,4,3G,3G,"$(CMO_ANN) --ref_fasta $(REF_FASTA) \
-		--filter_vcf $(EXAC_NONTCGA) --vep_forks 4 $< $(if $(CMO_HOTSPOT_FILE), --hotspot_list $(CMO_HOTSPOT_FILE)) > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_ENV_CHECK_PARALLEL_MEM,$(VEP_ENV),4,3G,3G,"$(CMO_ANN) $(CMO_ANN_OPTS) \
+		 --vep_forks 4 $< > $@"))

@@ -114,6 +114,12 @@ ONCOTATOR_TX_OVERRIDES = $(REF_DIR)/tx_exact_uniprot_matches.AKT1_CRLF2_FGFR1.tx
 
 CMO_HOTSPOT_FILE = $(REF_DIR)/hotspot_list.txt
 
+VEP_REF = hg19
+VEP_DATA = $(REF_DIR)/vep/v86
+VEP_OVERRIDES = $(REF_DIR)/isoform_overrides_at_mskcc
+VEP_SPECIES = homo_sapiens
+
+
 endif
 HG19_INC = true
 

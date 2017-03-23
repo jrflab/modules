@@ -118,11 +118,9 @@ FATHMM_CONF = $(PWD)/modules/db/fathmm_config-$(MYSQLDB_HOST).ini
 
 INTEGRATE ?= $(HOME)/share/usr/Integrate_0.2.0/bin/Integrate
 
-VCF2MAF ?= $(PERL) $(HOME)/share/usr/vcf2maf.pl
-MAF2MAF ?= $(PERL) $(HOME)/share/usr/maf2maf.pl
-MAF2VCF ?= $(PERL) $(HOME)/share/usr/maf2vcf.pl
-VEP_PATH ?= /opt/common/CentOS_6/vep/v82
-VEP_DATA ?= /opt/common/CentOS_6/vep/v82
+VCF2MAF ?= $(PERL) $(HOME)/share/usr/bin/vcf2maf.pl
+MAF2MAF ?= $(PERL) $(HOME)/share/usr/bin/maf2maf.pl
+MAF2VCF ?= $(PERL) $(HOME)/share/usr/bin/maf2vcf.pl
 
 HISAT ?= $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
 
@@ -131,6 +129,9 @@ TVC ?= $(HOME)/share/usr/bin/tvc
 ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
 
 ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
+
+VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
+VEP_PATH = $(VEP_ENV)/bin
 
 endif
 CONFIG_INC = true
