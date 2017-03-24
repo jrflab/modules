@@ -90,7 +90,7 @@ endif
 
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call $(FACETS_OPTS),$*) --out_prefix $(@D)/$* $<")
+	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
 facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
 	$(call LSCRIPT_ENV_MEM,$(FACETS_ENV),4G,6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
