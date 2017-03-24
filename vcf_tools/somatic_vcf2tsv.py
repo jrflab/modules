@@ -60,7 +60,8 @@ def merge_ann_cols(df):
         rv.ix[rv['MutationTaster_pred'].str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
         rv.ix[rv['MutationTaster_pred'].str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
     if 'dbNSFP_PROVEAN_pred' in rv:
-        rv['PROVEAN_pred'] = rv['dbNSFP_PROVEAN_pred']
+        rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
+        rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
     if 'provean_pred' in rv:
         rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
         rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
