@@ -25,12 +25,12 @@ VARSCAN_OPTS = $(if $(findstring true,$(VALIDATION)),--validation 1 --strand-fil
 
 VPATH ?= bam
 
-VARIANT_TYPES = varscan_indels varscan_snps
+VARSCAN_VARIANT_TYPES = varscan_indels varscan_snps
 
 PHONY += varscan varscan_vcfs varscan_mafs
 varscan : varscan_vcfs #varscan_mafs
-varscan_vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
-varscan_mafs : $(foreach type,$(VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$(type).maf))
+varscan_vcfs : $(foreach type,$(VARSCAN_VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
+varscan_mafs : $(foreach type,$(VARSCAN_VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).$(type).maf))
 
 
 %.Somatic.txt : %.txt

@@ -4,10 +4,6 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/facets.$(NOW)
 
-#.SECONDARY:
-.DELETE_ON_ERROR:
-.PHONY : facets
-
 FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
 RUN_FACETS = $(RSCRIPT) modules/copy_number/runFacets.R
 PLOT_FACETS = $(RSCRIPT) modules/copy_number/plotFacets.R
@@ -60,6 +56,7 @@ FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
+PHONY += facets
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt facets/plots/$(pair).cnlr_plot.pdf) \
 	facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
 
@@ -107,3 +104,8 @@ facets/geneCN.pdf : facets/geneCN.txt
 
 include modules/variant_callers/gatk.mk
 include modules/bam_tools/processBam.mk
+
+.SECONDARY:
+.DELETE_ON_ERROR:
+.PHONY : $(PHONY)
+

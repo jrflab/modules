@@ -486,6 +486,9 @@ tseq_workflow_ann: tseq_workflow_post_align
 
 TARGETS += clean_variants
 clean_variants :
-	rm -rf mutect varscan strelka vcf tables alltables summary hotspot
+	rm -rf mutect varscan strelka vcf tables alltables summary hotspot tsv
+
+clean_vcf :
+	rm -rf vcf vcf_ann
 
 .PHONY : $(TARGETS)

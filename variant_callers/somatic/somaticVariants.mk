@@ -5,12 +5,10 @@ LOGDIR = log/somatic_variants.$(NOW)
 
 SNV_TYPE ?= mutect
 INDEL_TYPE ?= strelka_varscan_indels
+VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
 
-.PHONY : somatic_variants somatic_indels somatic_snvs
-somatic_variants: somatic_snvs somatic_indels
-somatic_snvs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(SNV_TYPE).vcf)
-somatic_indels : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(INDEL_TYPE).vcf)
-#strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
+PHONY += all_somatic
+all_somatic: somatic_vcfs somatic_tables facets
 
 CONCAT_VCF = python modules/vcf_tools/concat_vcf.py
 
@@ -24,3 +22,10 @@ include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/mutect2.mk
 include modules/variant_callers/somatic/strelka.mk
 include modules/variant_callers/somatic/varscanTN.mk
+include modules/copy_number/facets.mk
+include modules/vcf_tools/annotateSomaticVcf.mk
+
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY) 
+

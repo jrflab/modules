@@ -71,9 +71,8 @@ SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,
 
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
-PHONY += all somatic_vcfs merged_vcfs
-all : somatic_vcfs somatic_tables #merged_vcfs
-#merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).merged.vcf.gz)
+PHONY += ann_somatic_vcfs somatic_vcfs somatic_tables
+ann_somatic_vcfs : somatic_vcfs somatic_tables 
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
@@ -100,6 +99,7 @@ PHONY += $1_vcfs
 $1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf vcf/$$(pair).$1.ft2.vcf vcf/$$(pair).$1.ft.ann.vcf vcf/$$(pair).$1.ft.vcf)
 endef
 $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
+
 
 define somatic-merge-vcf-tumor-normal
 vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf.gz
