@@ -39,13 +39,23 @@ SAMPLE_SETS =
 
 # tumor.pair = tumor
 
+# tumors.set = tumors
+
 # normal.pair = normal
+
+# normal.set = normal
 
 # set.normal = set
 
 # set.tumor = set
 
 # set.pair = set
+
+# set.set = set
+
+# pairs.set = pairs
+
+# sample_attr_file
 
 # sample_fastq_file
 fq.GCT10T.0 = /home/limr/share/data/test/tseq/modules/test/scripts/test_data/rawdata/Project_06575_C/Sample_GCT10_T_IGO_06575_C_3/GCT10_T_IGO_06575_C_3_S7_L002_R1_001.fastq.gz /home/limr/share/data/test/tseq/modules/test/scripts/test_data/rawdata/Project_06575_C/Sample_GCT10_T_IGO_06575_C_3/GCT10_T_IGO_06575_C_3_S7_L002_R2_001.fastq.gz
