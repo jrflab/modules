@@ -10,7 +10,7 @@ optList <- list(
                 make_option("--normalLast", action = "store_true", default = F, help = "normal sample last [default %default]"),
                 make_option("--tumorNormal", action = "store_true", default = F, help = "add tumor-normal samplename column [default %default]"))
 
-parser <- OptionParser(usage = "%prog [options] vcf.file", option_list = optList);
+parser <- OptionParser(usage = "%prog [options] file[s]", option_list = optList);
 
 arguments <- parse_args(parser, positional_arguments = T);
 opt <- arguments$options;

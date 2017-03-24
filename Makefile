@@ -163,6 +163,10 @@ TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 
+TARGETS += sufam
+sufam:
+	$(call RUN_MAKE,modules/variant_callers/sufamSampleSet.mk)
+
 #####
 # copy number
 ####

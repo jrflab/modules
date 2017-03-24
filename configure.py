@@ -42,32 +42,55 @@ def sample_yaml2mk(samples_file, out_file):
         print("{}_{}".format(k, v), end=" ", file=out_file)
     print("", file=out_file)
     print("SAMPLE_SETS = ", end="", file=out_file)
-    for k, v in normal_tumors.iteritems():
-        print("{}_{}".format("_".join(v), k), end=" ", file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("{tumors}_{normal}".format(tumors="_".join(tumors), normal=normal), end=" ", file=out_file)
     print("", file=out_file)
 
     print("\n# tumor.normal = tumors", file=out_file)
-    for k, v in normal_tumors.iteritems():
-        print("tumor.{} = {}".format(k, " ".join(v)), file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("tumor.{normal} = {tumors}".format(normal=normal, tumors=" ".join(tumors)), file=out_file)
     print("\n# normal.tumor = normal", file=out_file)
-    for k, v in tumor_normal.iteritems():
-        print("normal.{} = {}".format(k, v), file=out_file)
+    for tumor, normal in tumor_normal.iteritems():
+        print("normal.{tumor} = {normal}".format(tumor=tumor, normal=normal), file=out_file)
     print("\n# tumor.pair = tumor", file=out_file)
-    for k, v in tumor_normal.iteritems():
-        print("tumor.{}_{} = {}".format(k, v, k), file=out_file)
+    for tumor, normal in tumor_normal.iteritems():
+        print("tumor.{tumor}_{normal} = {tumor}".format(tumor=tumor, normal=normal), file=out_file)
+    print("\n# tumors.set = tumors", file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("tumors.{tumors}_{normal} = {tumors_space}".format(tumors="_".join(tumors), normal=normal,
+                                                                 tumors_space=" ".join(tumors)), file=out_file)
     print("\n# normal.pair = normal", file=out_file)
-    for k, v in tumor_normal.iteritems():
-        print("normal.{}_{} = {}".format(k, v, v), file=out_file)
+    for tumor, normal in tumor_normal.iteritems():
+        print("normal.{tumor}_{normal} = {normal}".format(tumor=tumor, normal=normal), file=out_file)
+    print("\n# normal.set = normal", file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("normal.{tumors}_{normal} = {normal}".format(tumors="_".join(tumors), normal=normal), file=out_file)
 
     print("\n# set.normal = set", file=out_file)
-    for k, v in normal_tumors.iteritems():
-        print("set.{} = {} {}".format(k, " ".join(v), k), file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("set.{normal} = {tumors} {normal}".format(normal=normal, tumors=" ".join(tumors)), file=out_file)
     print("\n# set.tumor = set", file=out_file)
-    for k, v in tumor_normal.iteritems():
-        print("set.{} = {} {}".format(k, " ".join(normal_tumors[v]), v), file=out_file)
+    for tumor, normal in tumor_normal.iteritems():
+        print("set.{tumor} = {tumors} {normal}".format(tumor=tumor, tumors=" ".join(normal_tumors[normal]),
+                                                       normal=normal), file=out_file)
     print("\n# set.pair = set", file=out_file)
-    for k, v in tumor_normal.iteritems():
-        print("set.{}_{} = {} {}".format(k, v, " ".join(normal_tumors[v]), v), file=out_file)
+    for tumor, normal in tumor_normal.iteritems():
+        print("set.{tumor}_{normal} = {set}".format(tumor=tumor, normal=normal,
+                                                    set=" ".join(normal_tumors[normal])), file=out_file)
+
+    print("\n# set.set = set", file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("set.{tumors}_{normal} = {set}".format(tumors="_".join(tumors), normal=normal,
+                                                       set=" ".join(tumors + [normal])),
+              file=out_file)
+
+    print("\n# pairs.set = pairs", file=out_file)
+    for normal, tumors in normal_tumors.iteritems():
+        print("pairs.{tumors}_{normal} = {pairs}".format(tumors="_".join(tumors), normal=normal,
+                                                         pairs=" ".join(
+                                                             ["_".join([tumor, normal]) for tumor in tumors])),
+              file=out_file)
+
 
 def sample_attr_yaml2mk(sample_attr_file, out_file):
     print("\n# sample_attr_file", file=out_file)
@@ -75,6 +98,7 @@ def sample_attr_yaml2mk(sample_attr_file, out_file):
     for attr, m in sample_attr.iteritems():
         for k, v in m.iteritems():
             print("{}.{} = {}".format(attr, k, v), file=out_file)
+
 
 def sample_fastq_yaml2mk(sample_fastq_file, out_file):
     print("\n# sample_fastq_file", file=out_file)

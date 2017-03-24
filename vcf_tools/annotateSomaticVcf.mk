@@ -71,12 +71,15 @@ SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,
 
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
-PHONY += ann_somatic_vcfs somatic_vcfs somatic_tables
-ann_somatic_vcfs : somatic_vcfs somatic_tables 
+PHONY += ann_somatic_vcfs somatic_vcfs merged_vcfs variant_summary
+ann_somatic_vcfs : somatic_vcfs somatic_tables merged_vcfs variant_summary
+variant_summary: variant_count.tsv
+merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).somatic_variants.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
-	alltables/allTN.$(type).tab.txt)
+	alltables/allTN.$(type).tab.txt) \
+	tsv/somatic_variants.tsv
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
@@ -102,13 +105,22 @@ $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 
 
 define somatic-merge-vcf-tumor-normal
-vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf.gz
-	$$(call LSCRIPT_MEM,4G,5G,"$$(BCFTOOLS2) view -l 5 -s $1$$(,)$2 $$^ > $$@")
-vcf_ann/$1_$2.merged.vcf.gz : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
+vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf
+	$$(call LSCRIPT_MEM,4G,5G,"$$(BCFTOOLS2) view -l 5 -s $1$$(,)$2 -O z <(bgzip -c $$^) > $$@")
+vcf_ann/$1_$2.somatic_variants.vcf.gz : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
 	$$(call LSCRIPT_MEM,4G,6G,"$$(BCFTOOLS2) concat -O z -a -D $$(filter %.vcf.gz,$$^) > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call somatic-merge-vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
+variant_count.tsv : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf_ann/$(pair).$(type).vcf))
+	grep -c -v '^#' $^ | sed 's:.*/::; s/\.vcf//; s/:/\t/; s/\./\t/g;' > $@
+
+SOMATIC_VCF2TSV = python modules/vcf_tools/somatic_vcf2tsv.py
+tsv/%.somatic_variants.tsv : vcf_ann/%.somatic_variants.vcf.gz
+	$(call LSCRIPT_MEM,4G,6G,"$(SOMATIC_VCF2TSV)  --normal $(normal.$*) $< > $@")
+
+tsv/somatic_variants.tsv : $(foreach pair,$(SAMPLE_PAIRS),tsv/$(pair).somatic_variants.tsv)
+	$(call LSCRIPT_MEM,4G,6G,"(sed -n 1p $<; for x in $^; do sed 1d \$$x; done) > $@")
 
 .DELETE_ON_ERROR:
 .SECONDARY:

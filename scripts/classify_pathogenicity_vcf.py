@@ -1,12 +1,11 @@
 def is_fs_splice_stop(record):
-    ann_effect = get_ann_effect(record)
-    return any([c in ef for ef in ann_effect for c in ["frameshift", "splice_donor", "splice_acceptor",
-                                                       "stop_gained", "stop_lost", "start_gained", "start_lost"]])
+    return any([c in vc for vc in record.INFO['variant_classification'] for c in ["Frame_Shift", "Splice_Site",
+                                                                                  "Nonsense", "Translation_Start_Site",
+                                                                                  "Nonstop"]])
 
 
 def is_synonymous(record):
-    ann_effect = get_ann_effect(record)
-    return any(["synonymous_variant" in ef for ef in ann_effect])
+    return any([c in vc for vc in record.INFO['variant_classification'] for c in ["Silent", "Splice_Region"]])
 
 
 def is_loh(record):
@@ -49,13 +48,11 @@ def get_ann_effect(record):
 
 
 def is_inframe(record):
-    ann_effect = get_ann_effect(record)
-    return any(["inframe" in ef for ef in ann_effect])
+    return any(["In_Frame" in vc for vc in record.INFO['variant_classification']])
 
 
 def is_missense(record):
-    ann_effect = get_ann_effect(record)
-    return any(["missense_variant" in ef for ef in ann_effect])
+    return any(["Missense" in vc for vc in record.INFO['variant_classification']])
 
 
 def is_hotspot(record):
