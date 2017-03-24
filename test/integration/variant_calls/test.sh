@@ -23,8 +23,8 @@ done
 echo "==mutation summary=="
 echo "run"
 make -j8 mutation_summary && echo "success" || (echo "failed" && exit 1)
-echo "check files"
-for x in output/summary/tsv/*.tsv; do
-    diff_files $x summary/tsv/$(basename $x)
-done
+#echo "check files"
+#for x in output/summary/tsv/*.tsv; do
+    #diff_files $x summary/tsv/$(basename $x)
+#done
 exit 0

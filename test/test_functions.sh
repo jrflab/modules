@@ -20,11 +20,10 @@ diff_files() {
 }
 
 compare_vcf() {
-    diff -q <(grep -v '^#' $1) <(grep -v '^#' $2) > /dev/null \
+    python modules/vcf_tools/compare_vcf.py --ignore_info -q $1 $2 &> /dev/null \
         && echo "success, files the same: ${1} ${2}" \
         || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }
-
 
 upload_image() {
     local image
@@ -62,3 +61,4 @@ compare_bams() {
 compare_cncf() {
     python modules/copy_number/compare_facets_cncf.py $1 $2
 }
+
