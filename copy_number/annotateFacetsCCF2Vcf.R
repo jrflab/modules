@@ -102,6 +102,7 @@ info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "In
                                                         Description = "facets multiplicity", row.names = "facetsMultiplicity"))
 
 ol <- findOverlaps(rowRanges(vcf), facetsGr, select = 'first')
+ol[is.na(ol)] <- nearest(rowRanges(vcf)[is.na(ol)], facetsGr) # get nearest segment for missing values
 if (sum(!is.na(ol)) > 0) {
     tcn <- facetsGr[ol[!is.na(ol)], ]$tcn
     lcn <- facetsGr[ol[!is.na(ol)], ]$lcn
