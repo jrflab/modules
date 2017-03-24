@@ -40,8 +40,8 @@ define varscan-somatic-tumor-normal-chr
 varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	if [[ $$$$($$(SAMTOOLS) view $$< $3 | head -1 | wc -l) -gt 0 ]]; then \
 		$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
-		<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
-		<($$(SAMTOOLS) mpileup -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
+		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
+		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 		$$(VARSCAN_OPTS) \
 		--output-indel varscan/chr_tables/$1_$2.$3.indel.txt --output-snp varscan/chr_tables/$1_$2.$3.snp.txt && touch $$@"); \
 	else \
