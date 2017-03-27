@@ -20,7 +20,7 @@ diff_files() {
 }
 
 compare_vcf() {
-    python modules/vcf_tools/compare_vcf.py --ignore_info -q $1 $2 &> /dev/null \
+    python modules/vcf_tools/compare_vcf.py --ignore_cols AD DP VAF --ignore_info -q $1 $2 &> /dev/null \
         && echo "success, files the same: ${1} ${2}" \
         || (echo "failed, files differ: ${1} ${2}" && exit 1)
 }

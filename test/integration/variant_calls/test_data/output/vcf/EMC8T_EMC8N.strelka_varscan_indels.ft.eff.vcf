@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Wed Mar 22 02:25:32 2017
+##fileDate=Mon Mar 27 02:13:06 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -99,5 +99,5 @@
 ##INFO=<ID=LOF,Number=.,Type=String,Description="Predicted loss of function effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected' ">
 ##INFO=<ID=NMD,Number=.,Type=String,Description="Predicted nonsense mediated decay effects for this variant. Format: 'Gene_Name | Gene_ID | Number_of_transcripts_in_gene | Percent_of_transcripts_affected' ">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
-2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=51;VARPVAL=1.0;SOMPVAL=0.00276649964682;ANN=GT|splice_region_variant&intron_variant|LOW|MRPS5|MRPS5|transcript|NM_031902.4|protein_coding|3/11|c.278-4dupA||||||	GT:DP:AD:VAF	0/1:23:15,8:0.3478	0/0:21:21,0:0.0
-11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=152;VARPVAL=1.0;SOMPVAL=1.05852042517e-06;ANN=CA|splice_donor_variant&intron_variant|HIGH|LRP4|LRP4|transcript|NM_002334.3|protein_coding|9/37|c.1048+2dupT||||||;LOF=(LRP4|LRP4|1|1.00)	GT:DP:AD:VAF	0/1:84:55,29:0.3452	0/0:42:42,0:0.0
+2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=65;VARPVAL=1.0;SOMPVAL=0.00330847276322;ANN=GT|splice_region_variant&intron_variant|LOW|MRPS5|MRPS5|transcript|NM_031902.4|protein_coding|3/11|c.278-4dupA||||||	GT:DP:AD:VAF	0/1:32:22,10:0.3125	0/0:21:21,0:0.0
+11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=157;VARPVAL=1.0;SOMPVAL=1.12153183646e-06;ANN=CA|splice_donor_variant&intron_variant|HIGH|LRP4|LRP4|transcript|NM_002334.3|protein_coding|9/37|c.1048+2dupT||||||;LOF=(LRP4|LRP4|1|1.00)	GT:DP:AD:VAF	0/1:86:57,29:0.3372	0/0:43:43,0:0.0

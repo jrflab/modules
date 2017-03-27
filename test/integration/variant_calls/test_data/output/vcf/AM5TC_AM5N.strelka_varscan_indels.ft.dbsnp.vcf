@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Wed Mar 22 02:25:34 2017
+##fileDate=Mon Mar 27 02:13:07 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -94,7 +94,7 @@
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
 ##SnpSiftVersion="SnpSift 4.3i (build 2016-12-15 22:33), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate /home/limr/share/reference/dbsnp_138.b37.gmaf.vcf.gz vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/dbsnp_138.b37.gmaf.vcf.gz vcf/AM5TC_AM5N.strelka_varscan_indels.ft.vcf"
 ##INFO=<ID=CDA,Number=0,Type=Flag,Description="Variation is interrogated in a clinical diagnostic assay">
 ##INFO=<ID=S3D,Number=0,Type=Flag,Description="Has 3D structure - SNP3D table">
 ##INFO=<ID=KGPilot123,Number=0,Type=Flag,Description="1000 Genome discovery all pilots 2010(1,2,3)">
@@ -158,10 +158,10 @@
 ##INFO=<ID=SSR,Number=1,Type=Integer,Description="Variant Suspect Reason Codes (may be more than one value added together) 0 - unspecified, 1 - Paralog, 2 - byEST, 4 - oldAlign, 8 - Para_EST, 16 - 1kg_failed, 1024 - other">
 ##INFO=<ID=PM,Number=0,Type=Flag,Description="Variant is Precious(Clinical,Pubmed Cited)">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
-5	67591103	.	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=318;VARPVAL=1.0;SOMPVAL=4.01879376268e-12	GT:DP:AD:VAF	0/1:94:71,23:0.2447	0/0:176:176,0:0.0
-5	67591283	.	TGA	T	.	PASS	SS=Somatic;DP=299;VARPVAL=1.0;SOMPVAL=3.19412999781e-21	GT:DP:AD:VAF	0/1:105:63,42:0.4	0/0:173:173,0:0.0
-7	47925659	.	CA	C	.	PASS	SS=Somatic;DP=184;VARPVAL=1.0;SOMPVAL=2.13372471975e-10	GT:DP:AD:VAF	0/1:88:56,32:0.3636	0/0:72:72,0:0.0
+5	67591103	.	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=326;VARPVAL=1.0;SOMPVAL=3.44609609327e-13	GT:DP:AD:VAF	0/1:97:72,25:0.2577	0/0:182:182,0:0.0
+5	67591283	.	TGA	T	.	PASS	SS=Somatic;DP=308;VARPVAL=1.0;SOMPVAL=4.03884375767e-22	GT:DP:AD:VAF	0/1:109:65,44:0.4037	0/0:178:178,0:0.0
+7	47925659	.	CA	C	.	PASS	SS=Somatic;DP=187;VARPVAL=1.0;SOMPVAL=1.18277086123e-10	GT:DP:AD:VAF	0/1:90:57,33:0.3667	0/0:73:73,0:0.0
 9	139410466	.	C	CG	.	PASS	SS=Somatic;DP=45;VARPVAL=1.0;SOMPVAL=1.47659222364e-09	GT:DP:AD:VAF	0/1:26:6,20:0.7692	0/0:33:32,1:0.0303
-10	98273390	.	GGCA	G	.	PASS	SS=Somatic;DP=133;VARPVAL=1.0;SOMPVAL=0.0151840081303	GT:DP:AD:VAF	0/1:44:39,5:0.1136	0/0:55:55,0:0.0
-10	124457552	.	G	GT	.	PASS	SS=Somatic;DP=346;VARPVAL=1.0;SOMPVAL=3.98314739659e-13	GT:DP:AD:VAF	0/1:130:94,36:0.2769	0/0:158:157,1:0.0063
-X	135049596	.	A	AAT	.	PASS	SS=Somatic;DP=140;VARPVAL=1.0;SOMPVAL=8.81606388459e-09	GT:DP:AD:VAF	0/1:53:34,19:0.3585	0/0:72:72,0:0.0
+10	98273390	.	GGCA	G	.	PASS	SS=Somatic;DP=134;VARPVAL=1.0;SOMPVAL=0.0144248077238	GT:DP:AD:VAF	0/1:44:39,5:0.1136	0/0:56:56,0:0.0
+10	124457552	.	G	GT	.	PASS	SS=Somatic;DP=366;VARPVAL=1.0;SOMPVAL=2.70906980325e-14	GT:DP:AD:VAF	0/1:138:99,39:0.2826	0/0:168:167,1:0.006
+X	135049596	.	A	AAT	.	PASS	SS=Somatic;DP=144;VARPVAL=1.0;SOMPVAL=8.36469749313e-09	GT:DP:AD:VAF	0/1:54:35,19:0.3519	0/0:74:74,0:0.0

@@ -14,6 +14,7 @@ if __name__ == '__main__':
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-q', help='exit code 0 on no diff', default=False, action='store_true')
     parser.add_argument('--ignore_info', help='ignore info columns', default=False, action='store_true')
+    parser.add_argument('--ignore_cols', help='ignore specified columns', nargs='*', default=None)
     parser.add_argument('vcf_file1')
     parser.add_argument('vcf_file2')
     args = parser.parse_args()
@@ -41,6 +42,8 @@ if __name__ == '__main__':
         df = pd.DataFrame({'from': changed_from, 'to': changed_to}, index=changed.index)
         if args.ignore_info:
             df = df.reset_index().ix[~df.reset_index()['col'].str.startswith('info.'), :]
+        if args.ignore_cols is not None:
+            df = df.reset_index().ix[~df.reset_index()['col'].isin(args.ignore_cols), :]
         if args.q and len(df) > 0:
             exit(1)
         if len(df) > 0:
