@@ -241,7 +241,7 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$
 JOBS := $(subst -j,,$(JOB_FLAG))
 
 #### no cluster
-RUN_FIRST = $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
+RUN_FIRST = umask $(UMASK); $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
 ECHO_FIRST = echo -n "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$(JRFLAB_MODULES_ENV)); ";
 ECHO_FIRST_ENV = echo -n "umask $(UMASK); set -o pipefail; $(call ECHO_ACTIVATE_ENV,$1); ";
 
