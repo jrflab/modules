@@ -100,6 +100,7 @@ if __name__ == '__main__':
                                      maf=maf_file)
     retcode = subprocess.call(cmd, shell=True, stdout=FNULL, stderr=FNULL)
     if retcode != 0:
+        sys.stderr.write(cmd + '\n')
         sys.stderr.write('vcf2maf failed\n')
         sys.exit(1)
 
