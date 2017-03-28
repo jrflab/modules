@@ -31,7 +31,7 @@ ANN_FACETS = true
 endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-    $(if $(ONCOTATOR_REF),oncotator) cmo_ann eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
+    cmo_ann eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
     $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
 ifeq ($(HRUN),true)
@@ -76,8 +76,7 @@ merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).somatic_variants.vc
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
-	alltables/allTN.$(type).tab.txt) \
-	tsv/somatic_variants.tsv
+	alltables/allTN.$(type).tab.txt) # tsv/somatic_variants.tsv
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
