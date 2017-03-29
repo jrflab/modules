@@ -131,8 +131,8 @@ if __name__ == '__main__':
                                                            source='vcf2maf',
                                                            version=None)
 
-    vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
-    for i, record in enumerate(vcf_reader):
+    records = [x for x in vcf_reader]
+    for i, record in enumerate(records):
         assert record.CHROM == maf.ix[i, 'Chromosome']
         record.INFO['HGVSp_Short'] = maf.ix[i, 'HGVSp_Short']
         record.INFO['SYMBOL'] = maf.ix[i, 'SYMBOL']
@@ -140,6 +140,9 @@ if __name__ == '__main__':
         gene_hgvsp = str(record.INFO['SYMBOL']) + ':' + str(record.INFO['HGVSp_Short'])
         if hotspots is not None and gene_hgvsp in hotspots:
             record.INFO['cmo_hotspot'] = True
+    assert i == len(maf) - 1
+
+    vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
+    for record in records:
         vcf_writer.write_record(record)
     vcf_writer.close()
-    assert i == len(maf) - 1

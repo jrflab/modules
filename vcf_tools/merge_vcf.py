@@ -26,8 +26,8 @@ if len(vcf_readers) > 1:
             if filt not in vcf_reader.infos:
                 vcf_reader.filters[filt] = vcf_reader2.filters[filt]
 
-vcf_writer = vcf.Writer(args.out_file, vcf_reader)
 
+pass_records = list()
 sentinel = object()
 for records in izip_longest(*vcf_readers, fillvalue=sentinel):
     if sentinel in records:
@@ -54,6 +54,9 @@ for records in izip_longest(*vcf_readers, fillvalue=sentinel):
                 if inf not in record.INFO:
                     record.add_info(inf, record2.INFO[inf])
     if len(record.FILTER) == 0:
-        vcf_writer.write_record(record)
+        pass_records.append(record)
 
+vcf_writer = vcf.Writer(args.out_file, vcf_reader)
+for record in pass_records:
+    vcf_writer.write_record(record)
 vcf_writer.close()

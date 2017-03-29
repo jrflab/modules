@@ -79,7 +79,7 @@ somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	alltables/allTN.$(type).tab.txt) # tsv/somatic_variants.tsv
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
-MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
+MERGE_SCRIPT = $(call LSCRIPT_CHECK_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
 define somatic-merged-vcf
 # first filter round
 vcf/%.$1.ft.vcf : $$(if $$(strip $$(call SOMATIC_FILTER1,$1)),$$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/%.$1.$$(ft).vcf),vcf/%.$1.vcf)

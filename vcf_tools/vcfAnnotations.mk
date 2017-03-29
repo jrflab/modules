@@ -30,7 +30,8 @@ vcf/%.exondist.vcf : vcf/%.vcf
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 vcf/%.eff.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp \
+		&& if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
 
 
 vcf/%.clinvar.vcf : vcf/%.vcf
@@ -48,7 +49,9 @@ LAWRENCE_BED = $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000
 
 ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) modules/vcf_tools/addGeneListAnnotationToVcf.R
 vcf/%.gene_ann.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(HAPLOTYPE_INSUF_BED)$(,)$(CANCER_GENE_CENSUS_BED)$(,)$(KANDOTH_BED)$(,)$(LAWRENCE_BED) --name hap_insuf$(,)cancer_gene_census$(,)kandoth$(,)lawrence --outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
+		--geneBed $(HAPLOTYPE_INSUF_BED)$(,)$(CANCER_GENE_CENSUS_BED)$(,)$(KANDOTH_BED)$(,)$(LAWRENCE_BED) \
+		--name hap_insuf$(,)cancer_gene_census$(,)kandoth$(,)lawrence --outFile $@ $<"))
 
 # Copy number regulated genes annotated per subtype
 # FYI Endometrioid_MSI-L has no copy number regulated genes
@@ -57,12 +60,16 @@ CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_He
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 vcf/%.cn_reg.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) --geneBed $(subst $(space),$(,),$(strip $(CN_ENDOMETRIAL_BED)) $(strip $(CN_BREAST_BED))) --name $(subst $(space),$(,),$(foreach set,$(strip $(CN_ENDOMETRIAL_SUBTYPES)),endometrial_$(set)) $(foreach set,$(strip $(CN_BREAST_SUBTYPES)),breast_$(set))) --outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
+		--geneBed $(subst $(space),$(,),$(strip $(CN_ENDOMETRIAL_BED)) $(strip $(CN_BREAST_BED))) \
+		--name $(subst $(space),$(,),$(foreach set,$(strip $(CN_ENDOMETRIAL_SUBTYPES)),endometrial_$(set)) \
+		$(foreach set,$(strip $(CN_BREAST_SUBTYPES)),breast_$(set))) --outFile $@ $<"))
 
 
 define ad-tumor-normal
 vcf/$1_$2.%.ad.vcf : vcf/$1_$2.%.vcf bam/$1.bam bam/$2.bam bam/$1.bai bam/$2.bai
-	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) -A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
+	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,2G,3G,"$$(call GATK_MEM,8G) -T VariantAnnotator -nt 4 -R $$(REF_FASTA) \
+		-A DepthPerAlleleBySample --dbsnp $$(DBSNP) $$(foreach bam,$$(filter %.bam,$$^),-I $$(bam) ) -V $$< -o $$@ -L $$<")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call ad-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
