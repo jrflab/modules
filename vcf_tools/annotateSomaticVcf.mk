@@ -31,7 +31,7 @@ ANN_FACETS = true
 endif
 
 SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
-    cmo_ann eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
+    $(if $(ONCOTATOR_DB),oncotator) cmo_ann eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
     $(if $(findstring b37,$(REF)),cosmic gene_ann cn_reg clinvar exac_nontcga hotspot_ann)
 
 ifeq ($(HRUN),true)
