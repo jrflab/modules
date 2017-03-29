@@ -27,10 +27,11 @@ if __name__ == "__main__":
     vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=-1, type='String',
                                                          desc="Classification of pathogenicity",
                                                          source=None, version=None)
-    vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
-
-    records = list()
-    for record in vcf_reader:
+    records = [x for x in vcf_reader]
+    for record in records:
         cp.classify_pathogenicity(record)
+
+    vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
+    for record in records:
         vcf_writer.write_record(record)
     vcf_writer.close()
