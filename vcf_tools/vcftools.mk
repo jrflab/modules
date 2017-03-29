@@ -8,6 +8,7 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/vcf.$(NOW)
 
+
 ..DUMMY := $(shell mkdir -p version; echo "$(SNP_EFF) &> version/snp_eff.txt")
 
 # flags for non-gatk snp eff
@@ -20,7 +21,7 @@ MUT_ASS = $(RSCRIPT) modules/vcf_tools/mutAssVcf.R
 
 %.pass.vcf : %.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call SNP_SIFT_MEM,7G) filter $(SNP_SIFT_OPTS) \
-		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 define rename-samples-tumor-normal
 vcf/$1_$2.%.rn.vcf : vcf/$1_$2.%.vcf

@@ -1,46 +1,46 @@
 # dbsnp annotations
 vcf/%.dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,25G,"$(call SNP_SIFT_MEM,10G) annotate \
-		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 vcf/%.hotspot_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,23G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		$(HOTSPOT_UNMERGED_VCF) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 # mouse genome project dbsnp
 vcf/%.mgp_dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,13G,15G,"$(call SNP_SIFT_MEM,10G) annotate \
 		-tabix $(SNP_SIFT_OPTS) $(MGP_SNP_DBSNP) $< | $(call SNP_SIFT_MEM,10G) annotate \
-		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		-tabix $(SNP_SIFT_OPTS) $(MGP_INDEL_DBSNP) > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 vcf/%.cosmic.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,24G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
-		$(COSMIC) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		$(COSMIC) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
 vcf/%.transfic.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_MEM,9G,12G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@ $<")
+	$(call CHECK_VCF,$(call LSCRIPT_MEM,9G,12G,"$(TRANSFIC) --genome $(REF) --transfic $(TRANSFIC_PERL_SCRIPT) --outFile $@.tmp $< && $(call VERIFY_VCF,$@.tmp,$@)")
 
 # add exon distance
 vcf/%.exondist.vcf : vcf/%.vcf
-	$(call LSCRIPT_CHECK_MEM,2G,3G,"$(INTRON_POSN_LOOKUP) $< > $@")
+	$(call LSCRIPT_CHECK_MEM,2G,3G,"$(INTRON_POSN_LOOKUP) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
 
 # run snp eff
 SNP_EFF_FLAGS ?= -canon # -ud 0  -no-intron -no-intergenic -no-utr
 SNP_EFF_OPTS = -c $(SNP_EFF_CONFIG) -i vcf -o vcf $(SNP_EFF_FLAGS)
 vcf/%.eff.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp \
-		&& if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		&& $(call VERIFY_VCF,$@.tmp,$@)"))
 
 
 vcf/%.clinvar.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,23G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
-		$(CLINVAR) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		$(CLINVAR) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 vcf/%.exac_nontcga.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,18G,20G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
-		-info ExAC_AF $(EXAC_NONTCGA) $< > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+		-info ExAC_AF $(EXAC_NONTCGA) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 CANCER_GENE_CENSUS_BED = $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
@@ -51,7 +51,8 @@ ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) modules/vcf_tools/addGeneListAnnotationToV
 vcf/%.gene_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
 		--geneBed $(HAPLOTYPE_INSUF_BED)$(,)$(CANCER_GENE_CENSUS_BED)$(,)$(KANDOTH_BED)$(,)$(LAWRENCE_BED) \
-		--name hap_insuf$(,)cancer_gene_census$(,)kandoth$(,)lawrence --outFile $@ $<"))
+		--name hap_insuf$(,)cancer_gene_census$(,)kandoth$(,)lawrence --outFile $@.tmp $< && \
+		$(call VERIFY_VCF,$@.tmp,$@)"))
 
 # Copy number regulated genes annotated per subtype
 # FYI Endometrioid_MSI-L has no copy number regulated genes
@@ -60,10 +61,11 @@ CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_He
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.bed)
 vcf/%.cn_reg.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
 		--geneBed $(subst $(space),$(,),$(strip $(CN_ENDOMETRIAL_BED)) $(strip $(CN_BREAST_BED))) \
 		--name $(subst $(space),$(,),$(foreach set,$(strip $(CN_ENDOMETRIAL_SUBTYPES)),endometrial_$(set)) \
-		$(foreach set,$(strip $(CN_BREAST_SUBTYPES)),breast_$(set))) --outFile $@ $<"))
+		$(foreach set,$(strip $(CN_BREAST_SUBTYPES)),breast_$(set))) --outFile $@.tmp $< && \
+		$(call VERIFY_VCF,$@.tmp,$@)"))
 
 
 define ad-tumor-normal
@@ -97,4 +99,4 @@ CMO_ANN_OPTS = --vcf2maf '$(VCF2MAF)' \
 
 vcf/%.cmo_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_ENV_CHECK_PARALLEL_MEM,$(VEP_ENV),4,3G,3G,"$(CMO_ANN) $(CMO_ANN_OPTS) \
-		 --vep_forks 4 $< > $@"))
+		--vep_forks 4 $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
