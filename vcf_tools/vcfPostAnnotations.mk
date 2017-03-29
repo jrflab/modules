@@ -10,7 +10,7 @@ CLASSIFY_INDEL_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
 							  --cluster_mode none) \
 							  --num_provean_threads 6 --mem_per_thread 3G $(if $(findstring true,$(SUMMARY_NO_REMOTE)),--no_remote)
 vcf/%.snp_pathogen.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,5G,8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,5G,8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 vcf/%.indel_pathogen.vcf : vcf/%.vcf
 	$(INIT) $(call CHECK_VCF,$(CLASSIFY_INDEL_PATHOGENICITY) $(CLASSIFY_INDEL_PATHOGENICITY_OPTS) $< > $@ 2> $(LOG))
@@ -49,7 +49,7 @@ vcf/%.fathmm.vcf : vcf/%.vcf
 
 PARSSNP_VCF = $(RSCRIPT) modules/vcf_tools/parsSNPVcf.R
 vcf/%.parssnp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"$(PARSSNP_VCF) --parsnpRdata $(PARSSNP_RESOURCES) --outFile $@ $<"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,10G,"$(PARSSNP_VCF) --parsnpRdata $(PARSSNP_RESOURCES) --outFile $@.tmp $< && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 
 define hrun-tumor-normal
@@ -66,12 +66,12 @@ $(foreach sample,$(SAMPLES),$(eval $(call hrun-sample,$(sample))))
 
 # run snp sift to annotated with dbnsfp
 vcf/%.nsfp.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,20G,"$(call SNP_SIFT_MEM,12G) dbnsfp $(SNP_SIFT_OPTS) -f $(subst $( ),$(,),$(NSFP_FIELDS)) -db $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/; /^##INFO=<ID=dbNSFP_clinvar_rs/ s/Integer/String/;' > $@.tmp && if grep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi"))
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,16G,20G,"$(call SNP_SIFT_MEM,12G) dbnsfp $(SNP_SIFT_OPTS) -f $(subst $( ),$(,),$(NSFP_FIELDS)) -db $(DB_NSFP) $< | sed '/^##INFO=<ID=dbNSFP/ s/Character/String/; /^##INFO=<ID=dbNSFP_clinvar_rs/ s/Integer/String/;' > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 ANNOTATE_FACETS_VCF = $(RSCRIPT) modules/copy_number/annotateFacets2Vcf.R
 define annotate-facets-pair
 vcf/$1.%.facets.vcf : vcf/$1.%.vcf facets/cncf/$1.cncf.txt
-	$$(call CHECK_VCF,$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@ $$<"))
+	$$(call CHECK_VCF,$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(ANNOTATE_FACETS_VCF) --facetsFile $$(<<) --outFile $$@.tmp $$< && $$(call VERIFY_VCF,$$@.tmp,$$@)"))
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
 
@@ -79,13 +79,13 @@ ANNOTATE_FACETS_CCF_VCF = $(RSCRIPT) modules/copy_number/annotateFacetsCCF2Vcf.R
 CCF_RSCRIPT = $(HOME)/share/usr/ccf.R
 define annotate-facets-pair
 vcf/$1.%.facets_ccf.vcf : vcf/$1.%.vcf facets/cncf/$1.Rdata
-	$$(call CHECK_VCF,$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_FACETS_CCF_VCF) --tumor $$(tumor.$1) --ccfRscript $$(CCF_RSCRIPT) --facetsRdata $$(<<) --outFile $$@ $$<"))
+	$$(call CHECK_VCF,$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(ANNOTATE_FACETS_CCF_VCF) --tumor $$(tumor.$1) --ccfRscript $$(CCF_RSCRIPT) --facetsRdata $$(<<) --outFile $$@.tmp $$< && $$(call VERIFY_VCF,$$@.tmp,$$@)"))
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call annotate-facets-pair,$(pair))))
 
 include modules/copy_number/titan.inc
 define titan-pair
 vcf/$1.%.titan.vcf : vcf/$1.%.vcf titan/optclust_results_w$(TITAN_WINDOW_SIZE)_p$(DEFAULT_PLOIDY_PRIOR)/$1.titan_seg.txt
-	$$(call LSCRIPT_MEM,4G,6G,"$$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $$(<<) --outFile $$@ $$<")
+	$$(call LSCRIPT_ENV_MEM,4G,6G,"$$(ANNOTATE_TITAN_LOH_VCF) --titanSeg $$(<<) --outFile $$@.tmp $$< && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call titan-pair,$(pair))))
