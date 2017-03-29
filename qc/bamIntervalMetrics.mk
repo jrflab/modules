@@ -32,7 +32,7 @@ hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv metrics/hs_m
 
 amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metrics.tsv)
 
-interval_report : metrics/interval_report/index.html
+interval_report : metrics/interval_report/interval_report.timestamp
 
 insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
 
@@ -74,8 +74,8 @@ metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metric
 		done; \
 		} > $@
 
-metrics/interval_report/index.html : metrics/hs_metrics.tsv
-	$(call LSCRIPT_MEM,7G,10G,"$(PLOT_HS_METRICS) --outDir $(@D) $<")
+metrics/interval_report/interval_report.timestamp : metrics/hs_metrics.tsv
+	$(call LSCRIPT_MEM,7G,10G,"$(PLOT_HS_METRICS) --outDir $(@D) $< && touch $@")
 
 metrics/%.interval_nonref_freq.tsv : bam/%.bam
 	$(call LSCRIPT_MEM,8G,10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
