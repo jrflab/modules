@@ -100,3 +100,9 @@ CMO_ANN_OPTS = --vcf2maf '$(VCF2MAF)' \
 vcf/%.cmo_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_ENV_CHECK_PARALLEL_MEM,$(VEP_ENV),4,3G,3G,"$(CMO_ANN) $(CMO_ANN_OPTS) \
 		--vep_forks 4 $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+
+VEP = variant_effect_predictor.pl
+VEP_OPTS = --species $(VEP_SPECIES) --everything --cache --no_progress --format vcf --dir $(VEP_DATA) --force_overwrite --vcf --offline --assembly $(VEP_REF)
+vcf/%.vep.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_ENV_CHECK_MEM,$(VEP_ENV),6G,8G,"$(VEP) $(VEP_OPTS) -i $< -o $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+
