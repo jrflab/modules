@@ -12,19 +12,27 @@ import re
 
 def add_maf(df):
     rv = df.copy()
+
     def f(x):
-        if "," in x["AD.TUMOR"] and sum(map(float, x["AD.TUMOR"].split(','))) > 0:
+        if "," in str(x["AD.TUMOR"]) and sum(map(float, x["AD.TUMOR"].split(','))) > 0:
             return float(x["AD.TUMOR"].split(",")[1]) / sum(map(float, x["AD.TUMOR"].split(',')))
         else:
             return float('nan')
+
     def g(x):
-        if "," in x["AD.NORMAL"] and sum(map(float, x["AD.NORMAL"].split(','))) > 0:
+        if "," in str(x["AD.NORMAL"]) and sum(map(float, x["AD.NORMAL"].split(','))) > 0:
             return float(x["AD.NORMAL"].split(",")[1]) / sum(map(float, x["AD.NORMAL"].split(',')))
         else:
             return float('nan')
-    if len(df) > 0:
+
+    if len(df) > 0 and all([x in df.columns for x in ['AD.TUMOR', 'AD.NORMAL']]):
         rv["TUMOR_MAF"] = df.apply(f, axis=1)
         rv["NORMAL_MAF"] = df.apply(g, axis=1)
+    elif len(df) > 0 and all([x in df.columns for x in ['NV.TUMOR', 'NV.NORMAL', 'NR.TUMOR', 'NR.NORMAL']]):
+        rv["TUMOR_MAF"] = df['NV.TUMOR'].apply(lambda x: int(x.split(',')[0])) / \
+            df['NR.TUMOR'].apply(lambda x: int(x.split(',')[0]))
+        rv["NORMAL_MAF"] = df['NV.NORMAL'].apply(lambda x: int(x.split(',')[0])) / \
+            df['NR.NORMAL'].apply(lambda x: int(x.split(',')[0]))
     else:
         rv["TUMOR_MAF"] = pd.Series()
         rv["NORMAL_MAF"] = pd.Series()
@@ -33,19 +41,25 @@ def add_maf(df):
 
 def add_dp(df):
     rv = df.copy()
+
     def h(x):
-        if "," in x["AD.TUMOR"]:
+        if "," in str(x["AD.TUMOR"]):
             return sum(map(float, x["AD.TUMOR"].split(',')))
         else:
             return float('nan')
+
     def i(x):
-        if "," in x["AD.NORMAL"]:
+        if "," in str(x["AD.NORMAL"]):
             return sum(map(float, x["AD.NORMAL"].split(',')))
         else:
             return float('nan')
-    if len(df) > 0:
-        rv["TUMOR_DP"] = df.apply(h, axis=1).astype(int)
-        rv["NORMAL_DP"] = df.apply(i, axis=1).astype(int)
+
+    if len(df) > 0 and all([x in df.columns for x in ['AD.TUMOR', 'AD.NORMAL']]):
+        rv["TUMOR_DP"] = df.apply(h, axis=1)
+        rv["NORMAL_DP"] = df.apply(i, axis=1)
+    elif len(df) > 0 and all([x in df.columns for x in ['NR.TUMOR', 'NR.NORMAL']]):
+        rv["TUMOR_DP"] = df['NR.TUMOR'].apply(lambda x: int(x.split(',')[0]))
+        rv["NORMAL_DP"] = df['NR.NORMAL'].apply(lambda x: int(x.split(',')[0]))
     else:
         rv["TUMOR_DP"] = pd.Series()
         rv["NORMAL_DP"] = pd.Series()
@@ -54,24 +68,28 @@ def add_dp(df):
 
 def merge_ann_cols(df):
     rv = df.copy()
-    if 'MutationTaster_pred' in rv and 'MT_pred' in rv:
-        rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MutationTaster_pred'] = \
-            rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MT_pred']
-        rv.ix[rv['MutationTaster_pred'].str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
-        rv.ix[rv['MutationTaster_pred'].str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
-    if 'dbNSFP_PROVEAN_pred' in rv:
-        rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
-        rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
-    if 'provean_pred' in rv:
-        rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
-        rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
+    if len(df) > 0:
+        if 'MutationTaster_pred' in rv and 'MT_pred' in rv:
+            rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MutationTaster_pred'] = \
+                rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MT_pred']
+            rv.ix[rv['MutationTaster_pred'].str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
+            rv.ix[rv['MutationTaster_pred'].str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
+        if 'dbNSFP_PROVEAN_pred' in rv:
+            rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
+            rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
+        if 'provean_pred' in rv:
+            rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('N').fillna(False),
+                  'PROVEAN_pred'] = 'N'
+            rv.ix[rv['is_indel'] & rv['provean_pred'].astype('str').str.contains('D').fillna(False),
+                  'PROVEAN_pred'] = 'D'
     return rv
 
 
 def add_cancer_gene(df):
     rv = df.copy()
-    rv["cancer_gene"] = rv['cancer_gene_census'] | rv['kandoth'] | rv['lawrence']
-    rv["num_cancer_gene"] = df[['cancer_gene_census', 'kandoth', 'lawrence']].sum(axis=1)
+    if len(df) > 0 and all([x in df.columns for x in ['cancer_gene_census', 'kandoth', 'lawrence']]):
+        rv["cancer_gene"] = rv['cancer_gene_census'] | rv['kandoth'] | rv['lawrence']
+        rv["num_cancer_gene"] = df[['cancer_gene_census', 'kandoth', 'lawrence']].sum(axis=1)
     return rv
 
 if __name__ == "__main__":
