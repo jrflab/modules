@@ -29,10 +29,10 @@ def add_maf(df):
         rv["TUMOR_MAF"] = df.apply(f, axis=1)
         rv["NORMAL_MAF"] = df.apply(g, axis=1)
     elif len(df) > 0 and all([x in df.columns for x in ['NV.TUMOR', 'NV.NORMAL', 'NR.TUMOR', 'NR.NORMAL']]):
-        rv["TUMOR_MAF"] = df['NV.TUMOR'].apply(lambda x: int(x.split(',')[0])) / \
-            df['NR.TUMOR'].apply(lambda x: int(x.split(',')[0]))
-        rv["NORMAL_MAF"] = df['NV.NORMAL'].apply(lambda x: int(x.split(',')[0])) / \
-            df['NR.NORMAL'].apply(lambda x: int(x.split(',')[0]))
+        rv["TUMOR_MAF"] = df['NV.TUMOR'].apply(lambda x: int(str(x).split(',')[0])) / \
+            df['NR.TUMOR'].apply(lambda x: int(str(x).split(',')[0]))
+        rv["NORMAL_MAF"] = df['NV.NORMAL'].apply(lambda x: int(str(x).split(',')[0])) / \
+            df['NR.NORMAL'].apply(lambda x: int(str(x).split(',')[0]))
     else:
         rv["TUMOR_MAF"] = pd.Series()
         rv["NORMAL_MAF"] = pd.Series()
@@ -58,8 +58,8 @@ def add_dp(df):
         rv["TUMOR_DP"] = df.apply(h, axis=1)
         rv["NORMAL_DP"] = df.apply(i, axis=1)
     elif len(df) > 0 and all([x in df.columns for x in ['NR.TUMOR', 'NR.NORMAL']]):
-        rv["TUMOR_DP"] = df['NR.TUMOR'].apply(lambda x: int(x.split(',')[0]))
-        rv["NORMAL_DP"] = df['NR.NORMAL'].apply(lambda x: int(x.split(',')[0]))
+        rv["TUMOR_DP"] = df['NR.TUMOR'].apply(lambda x: int(str(x).split(',')[0]))
+        rv["NORMAL_DP"] = df['NR.NORMAL'].apply(lambda x: int(str(x).split(',')[0]))
     else:
         rv["TUMOR_DP"] = pd.Series()
         rv["NORMAL_DP"] = pd.Series()
