@@ -174,7 +174,7 @@ NOW := $(shell date +"%F")
 
 MKDIR = mkdir -p -m 775
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
-LOG = $(LOGDIR)/$(@).log
+LOG = $(PWD)/$(LOGDIR)/$(@).log
 
 UMASK = 002
 
