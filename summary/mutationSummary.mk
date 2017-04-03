@@ -5,10 +5,6 @@ LOGDIR = log/summary.$(NOW)
 .SECONDARY:
 .DELETE_ON_ERROR:
 
-
-SNV_TYPE ?= mutect# mutect_snps #mutect
-INDEL_TYPE ?= strelka_varscan_indels# mutect_indels #strelka_varscan_indels
-
 NO_HOTSPOTS ?= false
 
 ifeq ($(NO_HOTSPOTS),false)
@@ -18,11 +14,14 @@ endif
 
 SUMMARY_CONFIG = $(wildcard summary_config.yaml)
 
+SUMMARY_SNV_TYPE ?= $(word 1 $(SNV_TYPE))
+SUMMARY_INDEL_TYPE ?= $(word 1 $(INDEL_TYPE))
 
-SNV_TABLES = alltables/allTN.$(SNV_TYPE).tab.high_moderate.txt alltables/allTN.$(SNV_TYPE).tab.low_modifier.txt \
-			 alltables/allTN.$(SNV_TYPE).tab.synonymous.txt alltables/allTN.$(SNV_TYPE).tab.nonsynonymous.txt
-INDEL_TABLES = alltables/allTN.$(INDEL_TYPE).tab.high_moderate.txt alltables/allTN.$(INDEL_TYPE).tab.low_modifier.txt \
-			   alltables/allTN.$(INDEL_TYPE).tab.synonymous.txt alltables/allTN.$(INDEL_TYPE).tab.nonsynonymous.txt
+
+SNV_TABLES = alltables/allTN.$(SUMMARY_SNV_TYPE).tab.high_moderate.txt alltables/allTN.$(SUMMARY_SNV_TYPE).tab.low_modifier.txt \
+			 alltables/allTN.$(SUMMARY_SNV_TYPE).tab.synonymous.txt alltables/allTN.$(SUMMARY_SNV_TYPE).tab.nonsynonymous.txt
+INDEL_TABLES = alltables/allTN.$(SUMMARY_INDEL_TYPE).tab.high_moderate.txt alltables/allTN.$(SUMMARY_INDEL_TYPE).tab.low_modifier.txt \
+			   alltables/allTN.$(SUMMARY_INDEL_TYPE).tab.synonymous.txt alltables/allTN.$(SUMMARY_INDEL_TYPE).tab.nonsynonymous.txt
 TABLES += $(SNV_TABLES) $(INDEL_TABLES)
 
 

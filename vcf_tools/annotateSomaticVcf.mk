@@ -79,8 +79,9 @@ variant_summary: variant_count.tsv
 merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).somatic_variants.vcf.gz)
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 somatic_tables : $(foreach type,$(VARIANT_TYPES),\
+	tsv/all.$(type).tsv \
 	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
-	alltables/allTN.$(type).tab.txt) # tsv/somatic_variants.tsv
+	alltables/allTN.$(type).tab.txt) tsv/all.somatic_variants.tsv
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call LSCRIPT_CHECK_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
@@ -116,11 +117,13 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call somatic-merge-vcf-tumor-normal,$(tu
 variant_count.tsv : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPES),vcf_ann/$(pair).$(type).vcf))
 	grep -c -v '^#' $^ | sed 's:.*/::; s/\.vcf//; s/:/\t/; s/\./\t/g;' > $@
 
-SOMATIC_VCF2TSV = python modules/vcf_tools/somatic_vcf2tsv.py
-tsv/%.somatic_variants.tsv : vcf_ann/%.somatic_variants.vcf.gz
-	$(call LSCRIPT_MEM,4G,6G,"$(SOMATIC_VCF2TSV)  --normal $(normal.$*) $< > $@")
+define somatic-vcf2tsv-type
+tsv/%.$1.tsv : vcf_ann/%.$1.vcf.gz
+	$$(call LSCRIPT_MEM,4G,6G,"$$(SOMATIC_VCF2TSV) --normal $$(normal.$$*) $$< > $$@")
+endef
+$(foreach type,$(VARIANT_TYPES) somatic_variants,$(eval $(call somatic-vcf2tsv-type,$(type))))
 
-tsv/somatic_variants.tsv : $(foreach pair,$(SAMPLE_PAIRS),tsv/$(pair).somatic_variants.tsv)
+tsv/all.%.tsv : $(foreach pair,$(SAMPLE_PAIRS),tsv/$(pair).%.tsv)
 	$(call LSCRIPT_MEM,4G,6G,"(sed -n 1p $<; for x in $^; do sed 1d \$$x; done) > $@")
 
 .DELETE_ON_ERROR:
