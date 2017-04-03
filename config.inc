@@ -133,5 +133,7 @@ ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
 VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
 VEP_PATH = $(VEP_ENV)/bin
 
+SPLIT_BED = python modules/scripts/split_bed.py
+
 endif
 CONFIG_INC = true
