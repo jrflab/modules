@@ -19,16 +19,9 @@ MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 vcf/%.mut_taste.vcf : vcf/%.vcf
 	$(INIT) $(MUTATION_TASTER) $< > $@ 2> $(LOG)
 
-PROVEAN = $(RSCRIPT) modules/vcf_tools/proveanVcf.R
-AA_TABLE = $(HOME)/share/reference/aa_table.tsv
-
-PROVEAN_OPTS = --genome $(REF) --aaTable $(AA_TABLE) --ensemblTxdb $(ENSEMBL_TXDB) --mysqlHost $(EMBL_MYSQLDB_HOST) \
-			   --mysqlPort $(EMBL_MYSQLDB_PORT) --mysqlUser $(EMBL_MYSQLDB_USER) \
-               $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
-			   --mysqlDb $(EMBL_MYSQLDB_DB) --numThreads 8 --memPerThread 1G --queue $(QUEUE) --qsubPriority $(QSUB_PRIORITY)
-
+PROVEAN = python modules/scripts/provean_vcf.py
 vcf/%.provean.vcf : vcf/%.vcf
-	$(call LSCRIPT_MEM,8G,10G,"$(PROVEAN) $(PROVEAN_OPTS) --outFile $@ $<")
+	$(INIT) $(PROVEAN) $< > $@
 
 CHASM = $(RSCRIPT) modules/vcf_tools/chasmVcf.R 
 CHASM_DIR = $(HOME)/share/usr/CHASM-3.0/CHASM

@@ -62,10 +62,10 @@ class RemoteProveanQuery:
         df = self._parse_job_results(job_url)
         for idx, record in enumerate(self.records):
             if df.ix[idx, 'PROTEIN_ID'] != 'record not found':
-                record.INFO['provean_protein_id'] = df.ix[idx, 'PROTEIN_ID']
+                #record.INFO['provean_protein_id'] = df.ix[idx, 'PROTEIN_ID']
                 record.INFO['provean_pred'] = df.ix[idx, 'PREDICTION (cutoff=-2.5)']
                 record.INFO['provean_score'] = df.ix[idx, 'SCORE']
             else:
-                record.INFO['provean_protein_id'] = '.'
+                #record.INFO['provean_protein_id'] = '.'
                 record.INFO['provean_pred'] = 'none'
                 record.INFO['provean_score'] = '.'

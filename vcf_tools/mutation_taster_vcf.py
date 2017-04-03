@@ -16,10 +16,10 @@ if __name__ == "__main__":
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 
-    vcf_reader.infos['MutationTaster_pred'] = vcf.parser._Info(id='MutationTaster_pred', num=-1, type='String',
+    vcf_reader.infos['MutationTaster_pred'] = vcf.parser._Info(id='MutationTaster_pred', num=1, type='String',
                                                             desc="Mutation taster prediction using webquery if indel or"
                                                             " dbNSFP if it exists", source=None, version=None)
-    vcf_reader.infos['MutationTaster_score'] = vcf.parser._Info(id='MutationTaster_score', num=-1, type='Float',
+    vcf_reader.infos['MutationTaster_score'] = vcf.parser._Info(id='MutationTaster_score', num=1, type='Float',
                                                                 desc="Mutation taster score using webquery if indel or"
                                                                 " dbNSFP if it exists", source=None, version=None)
 
@@ -59,7 +59,7 @@ if __name__ == "__main__":
                             score = max(pred_score[p])
                             break
         if pred is not None and score is not None:
-            record.INFO['MutationTaster_pred'] = [pred]
-            record.INFO['MutationTaster_score'] = [score]
+            record.INFO['MutationTaster_pred'] = pred
+            record.INFO['MutationTaster_score'] = score
         vcf_writer.write_record(record)
     vcf_writer.close()
