@@ -86,6 +86,7 @@ ONCOTATOR = oncotator
 ONCOTATOR_OPTS = -v --db-dir $(ONCOTATOR_DB) $(if $(ONCOTATOR_TX_OVERRIDES),-c $(ONCOTATOR_TX_OVERRIDES))
 vcf/%.oncotator.vcf : vcf/%.vcf
 	$(call LSCRIPT_ENV_CHECK_MEM,$(ONCOTATOR_ENV),8G,12G,"$(ONCOTATOR) $(ONCOTATOR_OPTS) -i VCF -o VCF $< $@.tmp $(ONCOTATOR_REF) && \
+		sed -i 's/^##INFO=<ID=HapScore$(,)Number=.$(,)Type=Integer/##INFO=<ID=HapScore$(,)Number=.$(,)Type=String/' $@.tmp && \
 		perl -lane 'if (/^#/) { print; } else { for \$$i (7 .. \$$#F) { \$$F[\$$i] =~ s/\|/$(,)/g; } print join \"\t\"$(,) @F;}' $@.tmp > $@ && \
 		rm $@.tmp")
 
