@@ -72,8 +72,8 @@ def merge_ann_cols(df):
         if 'MutationTaster_pred' in rv and 'MT_pred' in rv:
             rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MutationTaster_pred'] = \
                 rv.ix[rv['is_indel'] & rv['MutationTaster_pred'].isnull(), 'MT_pred']
-            rv.ix[rv['MutationTaster_pred'].str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
-            rv.ix[rv['MutationTaster_pred'].str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
+            rv.ix[rv['MutationTaster_pred'].astype('str').str.contains('disease').fillna(False), 'MutationTaster_pred'] = 'D'
+            rv.ix[rv['MutationTaster_pred'].astype('str').str.contains('poly').fillna(False), 'MutationTaster_pred'] = 'N'
         if 'dbNSFP_PROVEAN_pred' in rv:
             rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('N').fillna(False), 'PROVEAN_pred'] = 'N'
             rv.ix[rv['dbNSFP_PROVEAN_pred'].astype('str').str.contains('D').fillna(False), 'PROVEAN_pred'] = 'D'
