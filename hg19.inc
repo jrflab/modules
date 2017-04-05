@@ -99,12 +99,9 @@ CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_He
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
 
-HOTSPOT_VCF_SEQ = 1 2
 HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
-HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.hg19.vcf
-HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.hg19.vcf
-HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.hg19.vcf
-HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.hg19.vcf.gz
+HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v2.hg19.vcf.gz
+HOTSPOT_VCF.int = $(HOTSPOT_VCF_DIR)/hotspot-v1.hg19.vcf.gz
 
 REF_MSI = $(REF_DIR)/ucsc_gatk_bundle_2.8/hg19_msi.list
 

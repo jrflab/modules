@@ -214,7 +214,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
         "ExAC_AF,MutationTaster_pred,provean_pred,fathmm_pred," \
-        "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,clonalStatus,ccf".split(",")
+        "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot,clonalStatus,ccf".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     #chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
     chasm_pred_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_pred" in c]

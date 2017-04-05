@@ -97,13 +97,9 @@ ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 
 HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
 
-# we need two hotspot vcfs unfortunately due to limitations of UnifiedGenotyper and multiple variants at a position
-HOTSPOT_VCF_SEQ = 1 2
 HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
-HOTSPOT_VCF.1 = $(HOTSPOT_VCF_DIR)/hotspot1.vcf
-HOTSPOT_VCF.2 = $(HOTSPOT_VCF_DIR)/hotspot2.vcf
-HOTSPOT_VCF = $(HOTSPOT_VCF_DIR)/hotspot.vcf
-HOTSPOT_UNMERGED_VCF = $(HOTSPOT_VCF_DIR)/hotspot_unmerged.vcf.gz
+HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v2.vcf.gz
+HOTSPOT_VCF.int = $(HOTSPOT_VCF_DIR)/hotspot-v1.vcf.gz
 
 HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.bed
 CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.b37.2016-10-14.bed

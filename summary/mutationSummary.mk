@@ -14,8 +14,10 @@ endif
 
 SUMMARY_CONFIG = $(wildcard summary_config.yaml)
 
-SUMMARY_SNV_TYPE ?= $(word 1 $(SNV_TYPE))
-SUMMARY_INDEL_TYPE ?= $(word 1 $(INDEL_TYPE))
+SNV_TYPE ?= mutect
+INDEL_TYPE ?= strelka_varscan_indels
+SUMMARY_SNV_TYPE ?= $(word 1,$(SNV_TYPE))
+SUMMARY_INDEL_TYPE ?= $(word 1,$(INDEL_TYPE))
 
 
 SNV_TABLES = alltables/allTN.$(SUMMARY_SNV_TYPE).tab.high_moderate.txt alltables/allTN.$(SUMMARY_SNV_TYPE).tab.low_modifier.txt \

@@ -3,9 +3,13 @@ vcf/%.dbsnp.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,25G,"$(call SNP_SIFT_MEM,10G) annotate \
 		$(SNP_SIFT_OPTS) $(DBSNP) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
-vcf/%.hotspot_ann.vcf : vcf/%.vcf
+vcf/%.hotspot_int_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,23G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
-		$(HOTSPOT_UNMERGED_VCF) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+		$(HOTSPOT_VCF.int) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+
+vcf/%.hotspot_ext_ann.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,23G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
+		$(HOTSPOT_VCF.ext) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 # mouse genome project dbsnp
 vcf/%.mgp_dbsnp.vcf : vcf/%.vcf

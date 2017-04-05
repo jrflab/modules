@@ -132,7 +132,8 @@ if __name__ == "__main__":
                        "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,"
                        "ExAC_AF,MutationTaster_pred,PROVEAN_pred,fathmm_pred," +
                        ",".join(chasm_pred_columns) + ',' +
-                       "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,clonalStatus,ccf,samples_called_in").split(",")
+                       "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot," +
+                       "clonalStatus,ccf,samples_called_in").split(",")
     cols = [x for x in summary_columns if x in mdf]
 
     mdf.ix[:, cols].to_csv(sys.stdout, sep='\t', index=False)

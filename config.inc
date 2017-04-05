@@ -93,7 +93,7 @@ GET_INSERT_SIZE ?= $(HOME)/share/usr/bin/getInsertSize.py
 
 #GATK
 GATK_JAR ?= $(JARDIR)/GenomeAnalysisTK.jar
-GATK_JAR2 ?= $(JARDIR)/GenomeAnalysisTK-3.6.jar
+GATK_JAR2 ?= $(JARDIR)/GenomeAnalysisTK-3.7.jar
 
 VT ?= $(HOME)/share/usr/bin/vt
 TABIX ?= $(HOME)/share/usr/bin/tabix

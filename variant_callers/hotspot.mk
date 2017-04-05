@@ -19,30 +19,30 @@ hotspot_vcfs : $(if $(SAMPLE_PAIRS),\
 	$(foreach sample,$(SAMPLES),vcf_ann/$(sample).hotspot.vcf))
 hotspot_tables : $(if $(SAMPLE_PAIRS),alltables/allTN.hotspot.tab.txt)
 
-vcf_ann/%.hotspot.vcf : vcf/%.hotspot.ac_ft.hotspot_ann.vcf
+vcf_ann/%.hotspot.vcf : vcf/%.hotspot.ac_ft.hotspot_int_ann.hotspot_ext_ann.vcf
 	$(INIT) cp $< $@
 
-vcf/%.hotspot.vcf : $(foreach i,$(HOTSPOT_VCF_SEQ),hotspot/%.hotspot.$i.vcf.gz hotspot/%.hotspot.$i.vcf.gz.tbi)
+vcf/%.hotspot.vcf : $(foreach i,int ext,hotspot/%.hotspot-$i.vcf.gz hotspot/%.hotspot-$i.vcf.gz.tbi)
 	$(call LSCRIPT_MEM,2G,3G,"$(BCFTOOLS2) concat -a $(filter %.vcf.gz,$^) > $@")
 
 define hotspot-vcf-tumor-normal-i
-hotspot/$1_$2.hotspot.$3.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai 
-	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) \
+hotspot/$1_$2.hotspot-$3.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai 
+	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM2,8G) \
 		-T UnifiedGenotyper $$(HOTSPOT_GATK_OPTS) -I $$(<) -I $$(<<) \
 		-alleles $$(HOTSPOT_VCF.$3) -L $$(HOTSPOT_VCF.$3) -o $$@")
 endef
 $(if $(SAMPLE_PAIRS),$(foreach pair,$(SAMPLE_PAIRS),\
-	$(foreach i,$(HOTSPOT_VCF_SEQ),\
+	$(foreach i,int ext,\
 		$(eval $(call hotspot-vcf-tumor-normal-i,$(tumor.$(pair)),$(normal.$(pair)),$i)))))
 
 define hotspot-vcf-sample-i
-hotspot/$1.hotspot.$2.vcf : bam/$1.bam bam/$1.bam.bai
+hotspot/$1.hotspot-$2.vcf : bam/$1.bam bam/$1.bam.bai
 	$$(call LSCRIPT_MEM,9G,12G,"$$(call GATK_MEM,8G) \
 		-T UnifiedGenotyper $$(HOTSPOT_GATK_OPTS) -I $$(<) \
 		-alleles $$(HOTSPOT_VCF.$2) -L $$(HOTSPOT_VCF.$2) -o $$@")
 endef
 $(foreach sample,$(SAMPLES),\
-	$(foreach i,$(HOTSPOT_VCF_SEQ),\
+	$(foreach i,int ext,\
 		$(eval $(call hotspot-vcf-sample-i,$(sample),$i))))
 
 include modules/vcf_tools/vcftools.mk
