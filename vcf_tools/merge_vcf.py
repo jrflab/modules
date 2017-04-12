@@ -33,7 +33,7 @@ for records in izip_longest(*vcf_readers, fillvalue=sentinel):
     if sentinel in records:
         raise ValueError('vcf files have different lengths')
     for rec in records:
-        if rec.FILTER is None or rec.FILTER[0] == '':
+        if rec.FILTER is None or (hasattr(rec.FILTER, '__iter__') and (len(rec.FILTER) == 0 or rec.FILTER[0] == '')):
             rec.FILTER = []
     record = records[0]
     if len(records) > 1:
