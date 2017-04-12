@@ -32,12 +32,12 @@ sentinel = object()
 for records in izip_longest(*vcf_readers, fillvalue=sentinel):
     if sentinel in records:
         raise ValueError('vcf files have different lengths')
+    for rec in records:
+        if rec.FILTER is None or rec.FILTER[0] == '':
+            rec.FILTER = []
     record = records[0]
     if len(records) > 1:
         assert all([r.CHROM == record.CHROM and r.POS == record.POS for r in records])
-        for rec in records:
-            if rec.FILTER is None:
-                rec.FILTER = []
 
         ids = [r.ID for r in records]
         ids = [x.strip() for x in filter(None, ids)]
