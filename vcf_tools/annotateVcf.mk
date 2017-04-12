@@ -31,7 +31,7 @@ vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
-MERGE_SCRIPT = $(call LSCRIPT_MEM,6G,7G,"$(MERGE_VCF) --out_file $@ $^")
+MERGE_SCRIPT = $(call LSCRIPT_CHECK_MEM,6G,7G,"$(MERGE_VCF) --out_file $@.tmp $^ && $(call VERIFY_VCF,$@.tmp,$@)")
 define merged-vcf
 # first filter round
 vcf/%.$1.ft.vcf : $$(foreach ft,$$(call FILTERS,$1),vcf/%.$1.$$(ft).vcf)
