@@ -10,7 +10,7 @@ PHONY += hotspot hotspot_vcfs hotspot_tables
 .SECONDARY:
 .PHONY: $(PHONY)
 
-HOTSPOT_GATK_OPTS = --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES -R $(REF_FASTA) -stand_call_conf 0 -stand_emit_conf 0 -dcov 1000
+HOTSPOT_GATK_OPTS = --output_mode EMIT_ALL_SITES --genotyping_mode GENOTYPE_GIVEN_ALLELES -R $(REF_FASTA) -stand_call_conf 0
 
 
 hotspot : hotspot_vcfs hotspot_tables
