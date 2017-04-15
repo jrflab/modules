@@ -93,6 +93,11 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
+##SnpSiftVersion="SnpSift 4.3i (build 2016-12-15 22:33), by Pablo Cingolani"
+##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/hotspot.new//hotspot-v2.vcf.gz vcf/EMC8T_EMC8N.strelka_varscan_indels.ft.vcf"
+##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
+##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
+##INFO=<ID=HOTSPOT_INTERNAL,Number=0,Type=Flag,Description="internal hotspot flag">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
 2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=65;VARPVAL=1.0;SOMPVAL=0.00330847276322	GT:DP:AD:VAF	0/1:32:22,10:0.3125	0/0:21:21,0:0.0
 11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=157;VARPVAL=1.0;SOMPVAL=1.12153183646e-06	GT:DP:AD:VAF	0/1:86:57,29:0.3372	0/0:43:43,0:0.0

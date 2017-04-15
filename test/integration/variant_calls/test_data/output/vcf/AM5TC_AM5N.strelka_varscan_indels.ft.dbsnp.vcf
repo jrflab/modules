@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Mon Mar 27 02:13:07 2017
+##fileDate=Fri Apr 14 03:06:20 2017
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">

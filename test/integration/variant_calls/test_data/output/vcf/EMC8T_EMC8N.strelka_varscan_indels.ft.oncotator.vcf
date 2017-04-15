@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Mon Mar 27 02:13:06 2017
+##fileDate=Fri Apr 14 03:06:15 2017
 ##oncotator_version=Oncotator_v1.9.1.0_|_Flat_File_Reference_hg19_|_GENCODE_v19_CANONICAL_|_UniProt_AAxform_2014_12_|_dbSNP_build_142_|_COSMIC_v76_|_1000gp3_20130502_|_ClinVar_12.03.20_|_ORegAnno_UCSC_Track_|_CCLE_By_GP_09292010_|_UniProt_AA_2014_12_|_Ensembl_ICGC_MUCOPA_|_COSMIC_FusionGenes_v76_|_gencode_xref_refseq_metadata_v19_|_CCLE_By_Gene_09292010_|_ACHILLES_Lineage_Results_110303_|_CGC_full_2012-03-15_|_UniProt_2014_12_|_HumanDNARepairGenes_20110905_|_HGNC_Sept172014_|_COSMIC_Tissue_v76_|_Familial_Cancer_Genes_20110905_|_TUMORScape_20100104_|_TCGAScape_110405_|_MutSig_Published_Results_20110905_
 ##INFO=<ID=HGNC_Ensembl_ID(supplied_by_Ensembl),Number=.,Type=String,Description="Unknown">
 ##INFO=<ID=annotation_transcript,Number=.,Type=String,Description="Unknown">

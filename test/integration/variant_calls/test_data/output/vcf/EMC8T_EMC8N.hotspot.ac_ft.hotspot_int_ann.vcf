@@ -123,7 +123,5 @@
 ##INFO=<ID=HOTSPOT_HGVSp,Number=A,Type=String,Description="HOTSPOT HGVSp">
 ##INFO=<ID=HOTSPOT_GENE,Number=1,Type=String,Description="HOTSPOT HUGO gene symbol">
 ##INFO=<ID=HOTSPOT,Number=0,Type=Flag,Description="Hotspot flag">
-##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/hotspot.new//hotspot-v2.vcf.gz vcf/EMC8T_EMC8N.hotspot.ac_ft.hotspot_int_ann.vcf"
-##INFO=<ID=HOTSPOT_INTERNAL,Number=0,Type=Flag,Description="internal hotspot flag">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
 11	533874	COSM244958;COSM498;COSM499;COSM500;COSM99664	T	A,C	3800.19	.	AC=0,1;AF=0,0.25;AN=4;BaseQRankSum=-1.353;DP=417;Dels=0;ExcessHet=3.0103;FS=1.179;HaplotypeScore=7.0356;MLEAC=0,1;MLEAF=0,0.25;MQ=59.62;MQ0=0;MQRankSum=0.879;QD=15.26;ReadPosRankSum=-0.616;SOR=0.569;HOTSPOT;HOTSPOT_GENE=HRAS;HOTSPOT_HGVSp=p.Q61L,p.Q61R	GT:AD:DP:GQ:PL	0/0:166,0,1:167:99:0,427,5437,427,5437,5437	0/2:108,1,140:250:99:3830,4113,7341,0,3228,2864
