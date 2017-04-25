@@ -167,6 +167,10 @@ TARGETS += sufam
 sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamSampleSet.mk)
 
+TARGETS += platypus
+platypus:
+	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
+
 #####
 # copy number
 ####
