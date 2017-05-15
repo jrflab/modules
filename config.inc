@@ -19,7 +19,7 @@ RSCRIPT ?= Rscript
 # General python 2.7 environment
 ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 # SUFAM python environment
-SUFAM_ENV ?= /home/debruiji/share/usr/anaconda-envs/sufam-0.4.2
+SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev
 
 SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.1
 MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
