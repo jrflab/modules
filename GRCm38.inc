@@ -11,7 +11,7 @@ GENES_GTF = $(REF_DIR)/Mus_musculus/NCBI/$(TOPHAT_REF)/Annotation/Genes/genes.gt
 
 REF_FASTA := $(REF_DIR)/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.fa
 REF_DICT := $(REF_DIR)/Mus_musculus_GRCm38/Mus_musculus.GRCm38.71.dna.chromosome.genome.dict
-SNP_EFF_GENOME = GRCm38.79 # == mm10
+SNP_EFF_GENOME = GRCm38.86 # == mm10
 DBSNP := $(REF_DIR)/mgp.v5.merged.snps_all.dbSNP142.vcf.gz
 MGP_SNP_DBSNP := $(DBSNP)
 MGP_INDEL_DBSNP := $(REF_DIR)/mgp.v5.merged.indels.dbSNP142.normed.vcf.gz
