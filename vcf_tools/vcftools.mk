@@ -49,29 +49,21 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf_ann/$1_$2.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@")
+	$$(call LSCRIPT_ENV_CHECK_MEM,$$(VEP_ENV),9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --filter-vcf $$(EXAC_NONTCGA) --ref-fasta $$(REF_FASTA) --tmp-dir `mktemp -d` --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@.tmp && sed '/^#/d' $$@.tmp > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call vcf2maf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
-allmaf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
-	$(INIT) \
-	{ \
-	grep -v '^#' $< | sed -n 1p; \
-	for x in $^; do grep -v '^#' $$x | sed 1d; done \
-	} > $@
+maf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
+	$(INIT) csvstack -t $^ | csvformat -T > $@
 
 define vcf2maf-sample
 maf/$1.%.maf : vcf_ann/$1.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --filter-vcf $$(EXAC_NONTCGA) --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --tmp-dir `mktemp -d` --output-maf $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call vcf2maf-sample,$(sample))))
 
-allmaf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
-	$(INIT) \
-	{ \
-	sed -n 2p $<; \
-	sed 1,2d $^; \
-	} > $@
+maf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
+	$(INIT) csvstack -t $^ | csvformat -T > $@
 
 ifdef SAMPLE_PAIRS
 alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)

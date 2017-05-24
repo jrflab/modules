@@ -74,9 +74,10 @@ SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
 PHONY += ann_somatic_vcfs somatic_vcfs merged_vcfs variant_summary
-ann_somatic_vcfs : somatic_vcfs somatic_tables merged_vcfs variant_summary
+ann_somatic_vcfs : somatic_vcfs somatic_tables merged_vcfs variant_summary merged_maf
 variant_summary: variant_count.tsv
 merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).somatic_variants.vcf.gz)
+merged_maf : maf/allTN.somatic_variants.maf
 somatic_vcfs : $(foreach type,$(VARIANT_TYPES),$(type)_vcfs)
 somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	tsv/all.$(type).tsv \
@@ -109,7 +110,7 @@ $(foreach type,$(VARIANT_TYPES),$(eval $(call somatic-merged-vcf,$(type))))
 define somatic-merge-vcf-tumor-normal
 vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf
 	$$(call LSCRIPT_CHECK_MEM,4G,5G,"$$(BCFTOOLS2) view -l 5 -s $1$$(,)$2 -O z <(bgzip -c $$^) > $$@")
-vcf_ann/$1_$2.somatic_variants.vcf.gz : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
+vcf_ann/$1_$2.somatic_variants.vcf : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
 	$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(BCFTOOLS2) concat -O z -a -D $$(filter %.vcf.gz,$$^) > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call somatic-merge-vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -119,7 +120,7 @@ variant_count.tsv : $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(VARIANT_TYPE
 
 SOMATIC_VCF2TSV = python modules/vcf_tools/somatic_vcf2tsv.py
 define somatic-vcf2tsv-type
-tsv/%.$1.tsv : vcf_ann/%.$1.vcf.gz
+tsv/%.$1.tsv : vcf_ann/%.$1.vcf
 	$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(SOMATIC_VCF2TSV) --normal $$(normal.$$*) $$< > $$@")
 endef
 $(foreach type,$(VARIANT_TYPES) somatic_variants,$(eval $(call somatic-vcf2tsv-type,$(type))))
