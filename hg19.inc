@@ -39,7 +39,8 @@ GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 CLINVAR ?= $(REF_DIR)/clinvar_20160531.hg19.vcf.gz
 EXAC_NONTCGA ?= $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.hg19.vcf.gz
 
-COSMIC ?= $(REF_DIR)/CosmicCodingMuts_v69.hg19.vcf.gz
+COSMIC ?= $(REF_DIR)/cosmic_v81/CosmicCodingMuts.hg19.vcf.gz
+COSMIC_NONCODING ?= $(REF_DIR)/cosmic_v81/CosmicNonCodingVariants.hg19.vcf.gz
 
 REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta

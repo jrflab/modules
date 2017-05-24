@@ -21,6 +21,10 @@ vcf/%.cosmic.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,24G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
 		$(COSMIC) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
+vcf/%.cosmic_nc.vcf : vcf/%.vcf
+	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,20G,24G,"$(call SNP_SIFT_MEM,10G) annotate $(SNP_SIFT_OPTS) \
+		$(COSMIC_NONCODING) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+
 TRANSFIC = $(RSCRIPT) modules/vcf_tools/transficVcf.R
 TRANSFIC_PERL_SCRIPT = $(HOME)/share/usr/transfic/bin/transf_scores.pl
 vcf/%.transfic.vcf : vcf/%.vcf
