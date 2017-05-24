@@ -111,7 +111,7 @@ define somatic-merge-vcf-tumor-normal
 vcf/$1_$2.%.reord.vcf.gz : vcf_ann/$1_$2.%.vcf
 	$$(call LSCRIPT_CHECK_MEM,4G,5G,"$$(BCFTOOLS2) view -l 5 -s $1$$(,)$2 -O z <(bgzip -c $$^) > $$@")
 vcf_ann/$1_$2.somatic_variants.vcf : $$(foreach type,$$(VARIANT_TYPES),vcf/$1_$2.$$(type).reord.vcf.gz vcf/$1_$2.$$(type).reord.vcf.gz.tbi)
-	$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(BCFTOOLS2) concat -O z -a -D $$(filter %.vcf.gz,$$^) > $$@")
+	$$(call LSCRIPT_CHECK_MEM,4G,6G,"$$(BCFTOOLS2) concat -O v -a -D $$(filter %.vcf.gz,$$^) > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call somatic-merge-vcf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
