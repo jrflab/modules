@@ -28,7 +28,7 @@ class Job:
                                                            suffix='.sh', delete=False)
         self.job_script_file.write(job_script)
         self.job_script_file.close()
-        os.chmod(self.job_script_file.name, 0555)
+        os.chmod(self.job_script_file.name, 0o555)
         jt = session.createJobTemplate()
         jt.remoteCommand = self.job_script_file.name
         jt.workingDirectory = os.getcwd()
@@ -52,9 +52,9 @@ class Job:
             except drmaa.ExitTimeoutException:
                 pass
             if self._kill_now:
-                print "terminating job"
+                print("terminating job")
                 self.session.control(self.id, drmaa.JobControlAction.TERMINATE)
-                print "job terminated"
+                print("job terminated")
                 break
         return retval
 
@@ -106,7 +106,7 @@ class Job:
         return local_file_size > 0
 
     def __exit_gracefully(self, signum, frame):
-        print "received interrupt"
+        print("received interrupt")
         self._kill_now = True
 
 
