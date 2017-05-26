@@ -56,6 +56,7 @@ OMNI ?= $(REF_DIR)/GATK_bundle/2.3/1000G_omni2.5.b37.vcf.gz
 HAPMAP ?= $(REF_DIR)/GATK_bundle/2.3/hapmap_3.3.b37.vcf.gz
 COSMIC ?= $(REF_DIR)/cosmic_v81/CosmicCodingMuts.vcf.gz
 COSMIC_NONCODING ?= $(REF_DIR)/cosmic_v81/CosmicCodingMuts.vcf.gz
+HAPMAP_POP_FILE ?= $(REF_DIR)/b37_gatk_bundle_2017-04-26/hapmap_3.3_b37_pop_stratified_af.vcf.gz
 BOWTIE_REF = $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37
 EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v3_v4.b37.bed
 MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.nochr.bigWig
