@@ -8,7 +8,7 @@ import re
 parser = argparse.ArgumentParser(prog='create_sample_yaml.py',
                                  description='Create samples.fastq.yaml and samples.yaml(best guess) from a rawdata \
                                  dir')
-parser.add_argument('fastq_dir')
+parser.add_argument('fastq_dir', nargs = '+')
 parser.add_argument('--fastq_suffix', default='.fastq.gz')
 parser.add_argument('--sample_fastq_file', help='sample fastq file yaml output',
                     type=argparse.FileType('w', 0), nargs='?',
@@ -17,13 +17,14 @@ parser.add_argument('--sample_file', help='sample yaml output file', type=argpar
                     default='samples.yaml')
 args = parser.parse_args()
 
-fastqFiles = glob2.glob(args.fastq_dir + '/**/*' + args.fastq_suffix)
-r1fastqs = filter(lambda x: re.search(r'_L\d{3}_R1_', x), fastqFiles)
 paired_fastqs = []
-for r1fastq in r1fastqs:
-    r2fastq = re.sub('_(L\d{3})_R1_', '_\g<1>_R2_', r1fastq)
-    assert(any([r2fastq == x for x in fastqFiles]))  # r2 fastq doesn't exist
-    paired_fastqs.append([r1fastq, r2fastq])
+for fastq_dir in args.fastq_dir:
+    fastqFiles = glob2.glob(fastq_dir + '/**/*' + args.fastq_suffix)
+    r1fastqs = filter(lambda x: re.search(r'_L\d{3}_R1_', x), fastqFiles)
+    for r1fastq in r1fastqs:
+        r2fastq = re.sub('_(L\d{3})_R1_', '_\g<1>_R2_', r1fastq)
+        assert(any([r2fastq == x for x in fastqFiles]))  # r2 fastq doesn't exist
+        paired_fastqs.append([r1fastq, r2fastq])
 
 sample_fastqs = {}
 for pair in paired_fastqs:
