@@ -133,6 +133,7 @@ endif
 
 # if SPLIT_CHR is set to true, we will split realn processing by chromosome
 ifeq ($(SPLIT_CHR),true)
+
 # indel realignment intervals (i.e. where to do MSA)
 # split by samples and chromosomes
 # %=sample
@@ -146,6 +147,26 @@ define chr-target-realn
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 
+ifneq ($(SAMPLE_PAIRS),)
+
+# indel realignment per chromosome
+# only realign if intervals is non-empty
+# %=sample
+# $(eval $(call chr-aln,chromosome))
+define realn-chr-tumor-normal
+$$(ALIGNER)/bam/$2.%.$1.chr_realn.bam $$(ALIGNER)/bam/$3.%.$1.chr_realn.bam : $$(ALIGNER)/bam/$2.%.bam $$(ALIGNER)/bam/$3.%.bam $$(ALIGNER)/bam/$2.%.$(1).chr_split.intervals $$(ALIGNER)/bam/$2.%.bam.bai $(ALIGNER)/bam/$3.%.bam.bai
+	$$(call LSCRIPT_MEM,9G,12G,"if [[ -s $$(<<<) ]]; then $$(call GATK_MEM,8G) -T IndelRealigner \
+	-I $$(<) -I $$(<<) -R $$(REF_FASTA) -L $1 -targetIntervals $$(<<<) \
+	--nWayOut .$1.chr_realn.bam $$(BAM_REALN_OPTS) && \
+	mv -t $$(@D) {$2$$(,)$3}.$$*.$1.chr_realn.{bam$$(,)bai}; \
+	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$< -L $1 -o $$(@D)/$2.$$*.$1.chr_realn.bam && \
+	$$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$(<<) -L $1 -o $$(@D)/$3.$$*.$1.chr_realn.bam; fi")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach chr,$(CHROMOSOMES),\
+	$(eval $(call realn-chr-tumor-normal,$(chr),$(tumor.$(pair)),$(normal.$(pair))))))
+
+else
 # indel realignment per chromosome
 # only realign if intervals is non-empty
 # %=sample
@@ -158,6 +179,9 @@ define chr-realn
 	else $$(call GATK_MEM,8G) -T PrintReads -R $$(REF_FASTA) -I $$< -L $1 -o $$@ ; fi")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
+
+endif
+
 
 # merge sample realn chromosome bams
 %.realn.bam : $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bam) $(foreach chr,$(CHROMOSOMES),%.$(chr).chr_realn.bai)
@@ -179,11 +203,26 @@ else # no splitting by chr
 %.recal.bam : %.bam %.recal_report.grp
 	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM,10G) -T PrintReads -R $(REF_FASTA) -I $< -BQSR $(word 2,$^) -o $@ && $(RM) $<")
 
+ifneq ($(SAMPLE_PAIRS),)
+define realn-tumor-normal
+$$(ALIGNER)/bam/$1.%.realn.bam $$(ALIGNER)/bam/$2.%.realn.bam : $$(ALIGNER)/bam/$1.%.bam $$(ALIGNER)/bam/$2.%.bam $$(ALIGNER)/bam/$1.%.intervals $$(ALIGNER)/bam/$1.%.bam.bai $$(ALIGNER)/bam/$2.%.bam.bai
+	$$(call LSCRIPT_MEM,9G,12G,"if [[ -s $$(<<<) ]]; then $$(call GATK_MEM,8G) -T IndelRealigner \
+	-I $$(<) -I $$(<<) -R $$(REF_FASTA)  -targetIntervals $$(<<<) \
+	--nWayOut .realn.bam $$(BAM_REALN_OPTS) && \
+	mv -t $$(@D) {$1$$(,)$2}.$$*.realn.{bam$$(,)bai}; \
+	else mv $$< $$(@D)/$1.$$*.realn.bam && \
+	mv $$(<<) $$(@D)/$2.$$*.realn.bam; fi")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+	$(foreach chr,$(CHROMOSOMES),\
+	$(eval $(call realn-chr-tumor-normal,$(chr),$(tumor.$(pair)),$(normal.$(pair))))))
+else
 %.realn.bam : %.bam %.intervals %.bam.bai
 	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM,8G) -T IndelRealigner \
 	-I $< -R $(REF_FASTA) -targetIntervals $(<<) \
 	-o $@ $(BAM_REALN_OPTS) && $(RM) $<") ; \
 	else mv $< $@ ; fi
+endif
 
 %.intervals : %.bam %.bam.bai
 	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(call GATK_MEM,8G) -T RealignerTargetCreator \
