@@ -12,7 +12,7 @@ MUTECT_OPTS ?= --enable_extended_output --max_alt_alleles_in_normal_count $(MUTE
 			   --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT_FILTERS),-rf $(ft))
 MUTECT = $(JAVA7) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
-MUTECT_SPLIT_CHR ?= false
+MUTECT_SPLIT_CHR ?= true
 
 MUT_FREQ_REPORT = modules/variant_callers/somatic/mutectReport.Rmd
 
@@ -51,9 +51,12 @@ $(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 # run mutect on each chunk
 #$(call mutect-tumor-normal-chunk,tumor,normal,chunk)
 define mutect-tumor-normal-chunk
-mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables; \
-		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@")
+mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables mutect/cov; \
+		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
+		--fraction_contamination `csvcut -c contamination $$(<<<<) | sed 1d` --intervals $$< \
+		-I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@ \
+		--coverage_file mutect/cov/$1_$2.chunk$3.cov.wig")
 endef
 $(foreach chunk,$(MUTECT_CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
@@ -62,9 +65,12 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect-tumor-normal-chr
-mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables; \
-		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 --intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt -vcf $$@")
+mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables mutect/cov; \
+		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
+		--fraction_contamination `csvcut -c contamination $$(<<<) | sed 1d` \
+		--intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt  \
+		-vcf $$@ --coverage_file mutect/cov/$1_$2.$3.cov.wig")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
@@ -110,3 +116,4 @@ mutect/highAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(p
 	$(call LSCRIPT_NAMED_MEM,mutect_highaf_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --highAF $^")
 
 include modules/vcf_tools/vcftools.mk
+include modules/contamination/contest.mk
