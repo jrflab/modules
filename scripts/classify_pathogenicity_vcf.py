@@ -9,7 +9,7 @@ def is_synonymous(record):
 
 
 def is_loh(record):
-    return 'facetsLOH' in record.INFO
+    return 'facetsLOH' in record.INFO or 'LOH' in record.INFO
 
 
 def is_provean_pathogenic(record):

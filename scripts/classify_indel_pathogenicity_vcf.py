@@ -41,7 +41,7 @@ if __name__ == "__main__":
     assert "ANN" in vcf_reader.infos
     assert "kandoth" in vcf_reader.infos
     assert "lawrence" in vcf_reader.infos
-    assert "facetsLOH" in vcf_reader.infos
+    assert "facetsLOH" in vcf_reader.infos or "LOH" in vcf_reader.infos
 
     # add necessary info headers
     vcf_reader.infos['pathogenicity'] = vcf.parser._Info(id='pathogenicity', num=1, type='String',
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     records = list()
     query_records = list()
     for record in vcf_reader:
-        if cp.requires_mt_provean(record):
+        if record.is_indel and cp.requires_mt_provean(record):
             query_records.append(record)
         records.append(record)
     if len(query_records) > 0 and not args.no_remote:

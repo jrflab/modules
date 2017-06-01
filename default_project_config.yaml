@@ -27,6 +27,7 @@ vcf_post_ann_filter_expression: ExAC_AF > 0.05
 # vcf annotations
 ann_facets: true
 ann_mut_taste: false
+ann_provean: false
 ann_pathogen: true
 
 # targets_file: intervals.bed

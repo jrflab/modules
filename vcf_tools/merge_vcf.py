@@ -9,6 +9,7 @@ from itertools import izip_longest
 parser = argparse.ArgumentParser(prog='merge_vcf.py',
                                  description='merge vcf files')
 parser.add_argument('vcf_files', nargs='+', help='vcf files to merge')
+parser.add_argument('--ignore_filter', action='store_true', default=False, help='ignore filter column')
 parser.add_argument('--out_file', nargs='?', help='merged vcf output file', default=sys.stdout,
                     type=argparse.FileType('w'))
 
@@ -33,9 +34,12 @@ for records in izip_longest(*vcf_readers, fillvalue=sentinel):
     if sentinel in records:
         raise ValueError('vcf files have different lengths')
     for rec in records:
-        if rec.FILTER is None or (hasattr(rec.FILTER, '__iter__') and (len(rec.FILTER) == 0 or rec.FILTER[0] == '')):
+        if rec.FILTER is None or args.ignore_filter or (hasattr(rec.FILTER, '__iter__') and
+                                                        (len(rec.FILTER) == 0 or rec.FILTER[0] == '')):
             rec.FILTER = []
     record = records[0]
+    if args.ignore_filter:
+        record.FILTER = []
     if len(records) > 1:
         assert all([r.CHROM == record.CHROM and r.POS == record.POS for r in records])
 

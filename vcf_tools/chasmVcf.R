@@ -40,21 +40,21 @@ classifiers <- unlist(strsplit(opt$classifier, ','))
 
 # create new header
 vcfHeader <- scanVcfHeader(fn)
-hinfoprime <- apply(as.data.frame(info(vcfHeader)), 2, as.character)
-rownames(hinfoprime) <- rownames(info(vcfHeader))
+hinfoprime <- as.data.frame(info(vcfHeader))
 for (cl in classifiers) {
     cln <- gsub('-', '_', cl)
-    X <- rbind(chasm_mut = c("A", "String", paste(cln, "CHASM mutation")),
-               chasm_pval = c("A", "Float", paste(cln, "CHASM p-value")),
-               chasm_score = c("A", "Float", paste(cln, "CHASM score")),
-               chasm_pred = c("A", "String", paste(cln, "CHASM prediction")),
-               chasm_fdr = c("A", "Float", paste(cln, "CHASM B-H FDR")))
+    X <- rbind(chasm_mut = c("Number" = "A", "Type" = "String", "Description" = paste(cln, "CHASM mutation")),
+               chasm_pval = c("Number" = "A", "Type" = "Float", "Description" = paste(cln, "CHASM p-value")),
+               chasm_score = c("Number" = "A", "Type" = "Float", "Description" = paste(cln, "CHASM score")),
+               chasm_pred = c("Number" = "A", "Type" = "String", "Description" = paste(cln, "CHASM prediction")),
+               chasm_fdr = c("Number" = "A", "Type" = "Float", "Description" = paste(cln, "CHASM B-H FDR")))
     rownames(X) <- paste(cln, rownames(X), sep = "_")
     hinfoprime <- rbind(hinfoprime, X)
 }
 hinfoprime <- DataFrame(hinfoprime, row.names = rownames(hinfoprime))
 hlist <- header(vcfHeader)
 hlist$INFO <- hinfoprime
+colnames(hlist$INFO) <- c('Number', 'Type', 'Description')
 newVcfHeader <- new("VCFHeader", samples = vcfHeader@samples, header = hlist)
 
 
