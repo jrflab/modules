@@ -54,7 +54,7 @@ define mutect-tumor-normal-chunk
 mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
-		--fraction_contamination `csvcut -c contamination $$(<<<<) | sed 1d` --intervals $$< \
+		--fraction_contamination `csvcut -t -c contamination $$(<<<<) | sed 1d` --intervals $$< \
 		-I:tumor $$(<<) -I:normal $$(<<<) --out mutect/chunk_tables/$1_$2.chunk$3.mutect.txt -vcf $$@ \
 		--coverage_file mutect/cov/$1_$2.chunk$3.cov.wig")
 endef
@@ -68,7 +68,7 @@ define mutect-tumor-normal-chr
 mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
-		--fraction_contamination `csvcut -c contamination $$(<<<) | sed 1d` \
+		--fraction_contamination `csvcut -t -c contamination $$(<<<) | sed 1d` \
 		--intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt  \
 		-vcf $$@ --coverage_file mutect/cov/$1_$2.$3.cov.wig")
 endef
