@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" filter off-target with low depth
+""" annotate off-target and filter off-target with low depth
 """
 
 import argparse
@@ -29,6 +29,10 @@ if __name__ == "__main__":
     vcf_reader.filters['lowDepthOffTarget'] = vcf.parser._Filter(
         id='lowDepthOffTarget',
         desc='low depth (< {}) and no overlap with intervals'.format(args.depth_threshold))
+    vcf_reader.infos['offTarget'] = vcf.parser._Info(id='offTarget', num='0', type='Flag',
+                                                     desc='no overlap with target intervals',
+                                                     source=None,
+                                                     version=None)
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
     for record in vcf_reader:
@@ -36,12 +40,16 @@ if __name__ == "__main__":
         depths = [x['DP'] for x in record.samples]
         if record.FILTER is None:
             record.FILTER = []
-        if chrom not in trees and any([x < args.depth_threshold for x in depths]):
-            record.FILTER.append('lowDepthOffTarget')
+        if chrom not in trees:
+            record.INFO['offTarget'] = True
+            if any([x < args.depth_threshold for x in depths]):
+                record.FILTER.append('lowDepthOffTarget')
         else:
             query = trees[chrom].search(record.POS)
-            if len(query) == 0 and any([x < args.depth_threshold for x in depths]):
-                record.FILTER.append('lowDepthOffTarget')
+            if len(query) == 0:
+                record.INFO['offTarget'] = True
+                if any([x < args.depth_threshold for x in depths]):
+                    record.FILTER.append('lowDepthOffTarget')
         vcf_writer.write_record(record)
 
     vcf_writer.close()
