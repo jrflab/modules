@@ -59,7 +59,7 @@ SOMATIC_INDEL_FILTER1 =
 SOMATIC_SNV_FILTER1 = $(if $(findstring mutect,$1),som_ad_ft,\
     $(if $(findstring true,$(FFPE_NORMAL_FILTER)),ffpe_som_ad_ft))
 # target filter
-SOMATIC_FILTER1 = $(if $(TARGETS_FILE),target_ft) $(if $(findstring indel,$1),$(call SOMATIC_INDEL_FILTER1,$1),$(call SOMATIC_SNV_FILTER1,$1))
+SOMATIC_FILTER1 = $(if $(TARGETS_FILE),target_dp_ft) $(if $(findstring indel,$1),$(call SOMATIC_INDEL_FILTER1,$1),$(call SOMATIC_SNV_FILTER1,$1))
 
 # filters run after initial round of annotations (but before final annotations)
 SOMATIC_FILTER2 = cft common_ft

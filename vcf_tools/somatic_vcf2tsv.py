@@ -128,7 +128,7 @@ if __name__ == "__main__":
     summary_columns = ("CHROM,POS,REF,ALT,SAMPLE.TUMOR,SAMPLE.NORMAL,"
                        "gene,Ensembl_so_term,protein_change,"
                        "SYMBOL,Variant_Classification,HGVSp_Short,"
-                       "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,"
+                       "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,offTarget,"
                        "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,"
                        "ExAC_AF,MutationTaster_pred,PROVEAN_pred,fathmm_pred," +
                        ",".join(chasm_pred_columns) + ',' +

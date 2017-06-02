@@ -41,6 +41,12 @@ INTERVAL_FILTER_VCF = python modules/vcf_tools/interval_filter_vcf.py
 %.target_ft.vcf : %.vcf
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(INTERVAL_FILTER_VCF) $(TARGETS_FILE) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
 
+INTERVAL_DEPTH_FILTER_VCF = python modules/vcf_tools/interval_depth_filter_vcf.py
+INTERVAL_DEPTH_THRESHOLD ?= 50
+%.target_dp_ft.vcf : %.vcf
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(INTERVAL_DEPTH_FILTER_VCF) --depth_threshold $(INTERVAL_DEPTH_THRESHOLD) \
+		$(TARGETS_FILE) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
 # varscan depth filter (b/c varscan is dumb and only gives variant depth)
 vcf/%.vdp_ft.vcf : vcf/%.vcf
 	$(call LSCRIPT_CHECK_MEM,2G,5G,"cat $< | $(call SNP_SIFT_MEM,2G) filter $(SNP_SIFT_OPTS) '(exists GEN[*].AD) & (GEN[*].AD > $(DEPTH_FILTER))' > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")

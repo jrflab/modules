@@ -18,10 +18,9 @@ FILTERS = dp_ft
 # filter out germline mutations if there's a NORMAL_VCF
 FILTERS += $(if $(NORMAL_VCF),nft)
 # target filter
-FILTERS += $(if $(TARGETS_FILE),target_ft)
+FILTERS += $(if $(TARGETS_FILE),target_dp_ft)
 # hrun filter
-FILTERS += $(if $(findstring indel,$1),\
-            $(if $(findstring true,$(HRUN)),hrun hrun_ft))
+FILTERS += $(if $(findstring true,$(HRUN)),hrun hrun_ft))
 
 #POST_FILTERS += cft common_ft
 
