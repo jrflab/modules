@@ -14,8 +14,8 @@ PHONY += msisensor
 msisensor: msisensor/msi.tsv
 
 define msisensor-tumor-normal
-msisensor/$1_$2.msi : bam/$1.ds.bam bam/$2.ds.bam bam/$1.ds.bam.bai bam/$2.ds.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$$(MSISENSOR) msi $$(MSISENSOR_OPTS) -n $$(<<) -t $$< -b 8 -o $$@")
+msisensor/$1_$2.msi : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
+	$$(call LSCRIPT_CHECK_PARALLEL_MEM,8,1G,1.2G,"$$(MSISENSOR) msi $$(MSISENSOR_OPTS) -n $$(<<) -t $$< -b 8 -o $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call msisensor-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
