@@ -134,7 +134,7 @@ while(nrow(vcf <- readVcf(tab, genome = opt$genome))) {
             predCod <- subset(predCod, CONSEQUENCE == "nonsynonymous")
 
             # retrieve transcript ids
-            x <- transcripts(txdb, vals = list(tx_id = predCod$TXID), columns = c('tx_id', 'tx_name'))
+            x <- transcripts(txdb, filter = list(tx_id = predCod$TXID), columns = c('tx_id', 'tx_name'))
             enstIds <- x$tx_name
             names(enstIds) <- x$tx_id
             aa = cbind(queryId = passIds[predCod$QUERYID], aa = paste(as.character(predCod$REFAA), lapply(predCod$PROTEINLOC, function(x) x[1]), as.character(predCod$VARAA), sep = ''))
