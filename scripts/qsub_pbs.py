@@ -211,8 +211,8 @@ class Job:
     def _local_check_file(self, max_connection_retry):
         for attempt in range(max_connection_retry):
             try:
-                local_file_size = subprocess.check_output('stat -c%s "{}"'.format(os.path.abspath(self.out_file)),
-                                                            shell=True, stderr=DEVNULL).rstrip()
+                local_file_size = int(subprocess.check_output('stat -c%s "{}"'.format(os.path.abspath(self.out_file)),
+                                                            shell=True, stderr=DEVNULL))
                 return local_file_size
             except:
                 sys.stderr.write("Unable to stat {} locally\n".format(os.path.abspath(self.out_file)))
@@ -224,10 +224,10 @@ class Job:
     def _remote_check_file(self, local_file_size, server, max_connection_retry):
         for attempt in range(max_connection_retry):
             try:
-                remote_file_size = subprocess.\
-                    check_output('ssh {} stat -c%s "{}"'.
-                                    format(server, os.path.abspath(self.out_file)),
-                                    shell=True, stderr=DEVNULL).rstrip()
+                remote_file_size = int(subprocess.\
+                                       check_output('ssh {} stat -c%s "{}"'.
+                                                    format(server, os.path.abspath(self.out_file)),
+                                                    shell=True, stderr=DEVNULL))
                 if remote_file_size != local_file_size:
                     raise ValueError(
                         "{}: remote file size != local file size: {} != {}"
