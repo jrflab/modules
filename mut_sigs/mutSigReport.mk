@@ -20,7 +20,7 @@ SNV_TYPE ?= mutect
 
 mutect_mutsig_reports : mutsig_report/mutect/mutsig_report.timestamp
 
-mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).$(SNV_TYPE).VRanges.Rdata)
+mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).$(SNV_TYPE).ft.VRanges.Rdata)
 	$(call LSCRIPT_ENV_NAMED_PARALLEL_MEM,$(MUTSIG_REPORT_ENV),mutect_mutsig_report,4,3G,5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
 
 mutsig_report/vrange/%.VRanges.Rdata : vcf/%.vcf
