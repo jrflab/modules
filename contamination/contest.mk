@@ -5,7 +5,7 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
-LOGDIR = log/contest.$(NOW)
+LOGDIR ?= log/contest.$(NOW)
 
 .SECONDARY:
 .DELETE_ON_ERROR:

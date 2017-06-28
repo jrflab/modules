@@ -18,6 +18,7 @@ bam_reprocess: false
 
 snv_type: mutect
 mutect_split_chr: true
+mutect_use_contest: false
 #mutect or mutect_snps
 indel_type: strelka_varscan_indels
 # somatic_indels or strelka_varscan_indels
