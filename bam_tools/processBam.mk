@@ -97,7 +97,7 @@ endif
 
 # recalibrate base quality
 %.recal_report.grp : %.bam %.bai
-	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM2,10G) -T BaseRecalibrator -R $(REF_FASTA) $(BAM_BASE_RECAL_OPTS) -I $< -o $@")
+	$(call LSCRIPT_MEM,15G,15G,"$(call GATK_MEM2,7G) -T BaseRecalibrator -R $(REF_FASTA) $(BAM_BASE_RECAL_OPTS) -I $< -o $@")
 
 #%.sorted.bam : %.bam
 #	$(call LSCRIPT_PARALLEL_MEM,4,3G,3G,"$(SAMTOOLS2) sort -m 2.8G -o $@ -O bam --reference $(REF_FASTA) -@ 4 $<")
@@ -139,7 +139,7 @@ ifeq ($(SPLIT_CHR),true)
 # $(eval $(call chr-target-aln,chromosome))
 define chr-target-realn
 %.$1.chr_split.intervals : %.bam %.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,3G,4G,"$$(call GATK_MEM2,11G) -T RealignerTargetCreator \
+	$$(call LSCRIPT_PARALLEL_MEM,4,4G,4G,"$$(call GATK_MEM2,8G) -T RealignerTargetCreator \
 		-I $$(<) \
 		-L $1 \
 		-nt 4 -R $$(REF_FASTA)  -o $$@ $$(BAM_REALN_TARGET_OPTS)")
@@ -152,7 +152,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 # $(eval $(call chr-aln,chromosome))
 define chr-realn
 %.$(1).chr_realn.bam : %.bam %.$(1).chr_split.intervals %.bam.bai
-	$$(call LSCRIPT_MEM,9G,12G,"if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM2,8G) -T IndelRealigner \
+	$$(call LSCRIPT_MEM,12G,12G,"if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM2,6G) -T IndelRealigner \
 	-I $$(<) -R $$(REF_FASTA) -L $1 -targetIntervals $$(word 2,$$^) \
 	-o $$(@) $$(BAM_REALN_OPTS); \
 	else $$(call GATK_MEM2,8G) -T PrintReads -R $$(REF_FASTA) -I $$< -L $1 -o $$@ ; fi")
@@ -169,7 +169,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-realn,$(chr))))
 
 define chr-recal
 %.$1.chr_recal.bam : %.bam %.recal_report.grp
-	$$(call LSCRIPT_MEM,11G,15G,"$$(call GATK_MEM2,10G) -T PrintReads -L $1 -R $$(REF_FASTA) -I $$< -BQSR $$(<<) -o $$@")
+	$$(call LSCRIPT_MEM,11G,15G,"$$(call GATK_MEM2,6G) -T PrintReads -L $1 -R $$(REF_FASTA) -I $$< -BQSR $$(<<) -o $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-recal,$(chr))))
 
@@ -177,16 +177,16 @@ else # no splitting by chr
 
 # recalibration
 %.recal.bam : %.bam %.recal_report.grp
-	$(call LSCRIPT_MEM,11G,15G,"$(call GATK_MEM2,10G) -T PrintReads -R $(REF_FASTA) -I $< -BQSR $(word 2,$^) -o $@ && $(RM) $<")
+	$(call LSCRIPT_MEM,14G,15G,"$(call GATK_MEM2,7G) -T PrintReads -R $(REF_FASTA) -I $< -BQSR $(word 2,$^) -o $@ && $(RM) $<")
 
 %.realn.bam : %.bam %.intervals %.bam.bai
-	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,9G,12G,"$(call GATK_MEM2,8G) -T IndelRealigner \
+	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,14G,16G,"$(call GATK_MEM2,7G) -T IndelRealigner \
 	-I $< -R $(REF_FASTA) -targetIntervals $(<<) \
 	-o $@ $(BAM_REALN_OPTS) && $(RM) $<") ; \
 	else mv $< $@ ; fi
 
 %.intervals : %.bam %.bam.bai
-	$(call LSCRIPT_PARALLEL_MEM,4,2.5G,3G,"$(call GATK_MEM2,8G) -T RealignerTargetCreator \
+	$(call LSCRIPT_PARALLEL_MEM,4,3G,3.5G,"$(call GATK_MEM2,6G) -T RealignerTargetCreator \
 	-I $< \
 	-nt 4 -R $(REF_FASTA) -o $@ $(BAM_REALN_TARGET_OPTS)")
 endif
