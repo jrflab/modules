@@ -64,7 +64,7 @@ def is_hap_insuf(record):
 
 
 def is_fathmm_pathogenic(record):
-    return "CANCER" in record.INFO['fathmm_pred'] if 'fathmm_pred' in record.INFO else False
+    return "D" in record.INFO['FATHMM_pred'] if 'FATHMM_pred' in record.INFO else False
 
 
 def get_fs_splice_stop_pathogenicity(record):
