@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     assert "ANN" in vcf_reader.infos
     assert "HOTSPOT" in vcf_reader.infos or "hotspot" in vcf_reader.infos
-    assert "fathmm_pred" in vcf_reader.infos
+    assert "FATHMM_pred" in vcf_reader.infos
     assert "facetsLOH" in vcf_reader.infos or "LOH" in vcf_reader.infos
     assert "MutationTaster_pred" in vcf_reader.infos
 
