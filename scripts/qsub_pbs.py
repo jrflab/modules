@@ -220,6 +220,8 @@ class Job:
             else:
                 sys.stderr.write("max retries for local file size check\n")
                 return None
+            if self._kill_now:
+                return None
 
     def _remote_check_file(self, local_file_size, server, max_connection_retry):
         for attempt in range(max_connection_retry):
@@ -245,6 +247,8 @@ class Job:
             else:
                 sys.stderr.write("max connection retries for "
                                     "remote file size check\n")
+                return False
+            if self._kill_now:
                 return False
         return True
 
