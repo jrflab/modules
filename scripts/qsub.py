@@ -77,6 +77,8 @@ class Job:
             else:
                 sys.stderr.write("max retries for local file size check\n")
                 return False
+            if self._kill_now:
+                return False
 
         for server in servers:
             for attempt in range(max_connection_retry):
@@ -102,6 +104,8 @@ class Job:
                 else:
                     sys.stderr.write("max connection retries for "
                                      "remote file size check\n")
+                    return False
+                if self._kill_now:
                     return False
         return local_file_size > 0
 
