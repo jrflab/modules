@@ -93,7 +93,7 @@ hotspot:
 
 TARGETS += gatk
 gatk : 
-	$(call RUN_MAKE,modules/variant_callers/gatkVariantCaller.mk)
+	$(call RUN_MAKE,modules/variant_callers/gatk.mk)
 
 TARGETS += jsm
 jsm :
@@ -143,9 +143,17 @@ TARGETS += pindel
 pindel :
 	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
 
+TARGETS += pindelTN
+pindelTN :
+	$(call RUN_MAKE,modules/variant_callers/somatic/pindelTN.mk)
+
 TARGETS += scalpel
 scalpel :
 	$(call RUN_MAKE,modules/variant_callers/somatic/scalpel.mk)
+    
+TARGETS += lancet
+lancet :
+	$(call RUN_MAKE,modules/variant_callers/somatic/lancet.mk)
 
 TARGETS += tvc
 tvc:

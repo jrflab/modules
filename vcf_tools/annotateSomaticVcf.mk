@@ -13,7 +13,7 @@ ifeq ($(CLUSTER_ENGINE),"PBS")
 endif
 
 SNV_TYPE ?= mutect
-INDEL_TYPE ?= strelka_varscan_indels
+INDEL_TYPE ?= somatic_indels
 #strelka_indels varscan_indels strelka_varscan_indels
 VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
 
@@ -100,8 +100,10 @@ vcf/%.$1.ft2.vcf : $$(foreach ft,$$(call SOMATIC_FILTER2,$1),vcf/%.$1.ft.ann.$$(
 # post-filter after first annotation round
 vcf/%.$1.ft2.ann2.vcf : $$(if $$(strip $$(call SOMATIC_ANN2,$1)),$$(foreach ann,$$(call SOMATIC_ANN2,$1),vcf/%.$1.ft2.$$(ann).vcf),vcf/%.$1.ft2.vcf)
 	$$(MERGE_SCRIPT)
-vcf_ann/%.$1.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
+vcf/%.$1.ft2.ann3.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
+vcf_ann/%.$1.vcf : vcf/%.$1.ft2.ann3.pass.vcf
+	$$(INIT) cp $$< $$@
 PHONY += $1_vcfs
 $1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf vcf/$$(pair).$1.ft2.vcf vcf/$$(pair).$1.ft.ann.vcf vcf/$$(pair).$1.ft.vcf)
 endef

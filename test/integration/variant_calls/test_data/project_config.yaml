@@ -17,7 +17,7 @@ bam_phred64: false
 bam_reprocess: false
 
 snv_type: mutect
-indel_type: strelka_varscan_indels
+indel_types: varscan_indels strelka_indels scalpel_indels lancet_indels platypus_indels pindel
 
 vcf_post_ann_filter_expression: ExAC_AF > 0.05
 

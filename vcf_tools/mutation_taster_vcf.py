@@ -50,11 +50,11 @@ if __name__ == "__main__":
                 if ('prediction' in summary.columns):
                     pred_score = {}
                     for i, row in summary.iterrows():
-                        if (not pred_score.has_key(row['prediction'])):
+                        if (row['prediction'] not in pred_score):
                             pred_score[row['prediction']] = []
                         pred_score[row['prediction']].append(float(row['probability']))
                     for p in prediction_priority:
-                        if pred_score.has_key(p):
+                        if p in pred_score:
                             pred = p
                             score = max(pred_score[p])
                             break

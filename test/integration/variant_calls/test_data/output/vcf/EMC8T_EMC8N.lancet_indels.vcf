@@ -1,0 +1,42 @@
+##fileformat=VCFv4.1
+##fileDate=Mon Jun 26 16:28:05 2017
+##source=lancet 1.0.0 (beta), September 18 2016
+##reference=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##INFO=<ID=FETS,Number=1,Type=Float,Description="phred-scaled p-value of the Fisher's exact test for tumor-normal allele counts (right-sided)">
+##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
+##INFO=<ID=SHARED,Number=0,Type=Flag,Description="Shared mutation betweem tumor and normal">
+##INFO=<ID=NORMAL,Number=0,Type=Flag,Description="Mutation present only in the normal">
+##INFO=<ID=NONE,Number=0,Type=Flag,Description="Mutation not supported by data">
+##INFO=<ID=KMERSIZE,Number=1,Type=Integer,Description="K-mer size used to assemble the locus">
+##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias of the Fisher's exact test (two-sided)">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Depth">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="allele depth: # of supporting reference,mutation reads at the site">
+##FORMAT=<ID=SR,Number=.,Type=Integer,Description="strand counts for ref: # of supporting forward,reverse reads for reference allele">
+##FORMAT=<ID=SA,Number=.,Type=Integer,Description="strand counts for alt: # of supporting forward,reverse reads for alterantive allele">
+##FILTER=<ID=MS,Description="Microsatellite mutation (format: #LEN#MOTIF)">
+##FILTER=<ID=LowCovNormal,Description="low coverage in the normal (<10)">
+##FILTER=<ID=HighCovNormal,Description="high coverage in the normal (>1000000)">
+##FILTER=<ID=LowCovTumor,Description="low coverage in the tumor (<4)">
+##FILTER=<ID=HighCovTumor,Description="high coverage in the tumor (>1000000)">
+##FILTER=<ID=LowVafTumor,Description="low variant allele frequency in the tumor (<0.04)">
+##FILTER=<ID=HighVafNormal,Description="high variant allele frequency in the normal (>0)">
+##FILTER=<ID=LowAltCntTumor,Description="low alternative allele count in the tumor (<3)">
+##FILTER=<ID=HighAltCntNormal,Description="high alternative allele count in the normal (>0)">
+##FILTER=<ID=LowFisherScore,Description="low Fisher's exact test score for tumor-normal allele counts (<5)">
+##FILTER=<ID=StrandBias,Description="strand bias: # of non-reference reads in either forward or reverse strand below threshold (<1)">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
+2	95775789	.	G	GT	21.1765	PASS	FETS=21.1765;SOMATIC;KMERSIZE=15;SB=4.59591;LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/0:21,0:13,8:0,0:21	0/1:17,7:10,7:4,3:24
+2	152552143	.	AG	A	5.66515	LowVafTumor;LowAltCntTumor;StrandBias	FETS=5.66515;SOMATIC;KMERSIZE=14;SB=5.35071;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/0:86,0:38,48:0,0:86	0/1:92,2:43,49:0,2:94
+4	186097219	.	C	CA	7.40363	LowCovNormal;HighVafNormal;HighAltCntNormal;MS=11A	FETS=7.40363;SHARED;KMERSIZE=19;SB=0.791812;LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/1:3,2:1,2:1,1:5	0/1:1,5:0,1:1,4:6
+6	32552093	.	ACCGCAC	A	.	LowFisherScore;LowCovNormal;HighVafNormal;HighAltCntNormal;StrandBias	FETS=0.0;SHARED;KMERSIZE=17;SB=0;LEN=6;TYPE=del	GT:AD:SR:SA:DP	1/1:0,9:0,0:0,9:9	1/1:0,13:0,0:0,13:13
+6	130761532	.	CT	C	16.1873	MS=9T	FETS=16.1873;SOMATIC;KMERSIZE=20;SB=3.60375;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/0:70,0:46,24:0,0:70	0/1:43,4:31,12:3,1:47
+7	21907452	.	G	GT	11.7876	HighVafNormal;HighAltCntNormal	FETS=11.7876;SHARED;KMERSIZE=20;SB=2.55273;LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/1:2,12:1,1:6,6:14	0/1:5,5:4,1:4,1:10
+7	127251732	.	TA	T	20.5643	HighVafNormal;HighAltCntNormal;MS=10A	FETS=20.5643;SHARED;KMERSIZE=13;SB=6.53478;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/1:53,24:32,21:2,22:77	0/1:47,7:25,22:5,2:54
+7	142471709	.	GT	G	8.87897	HighVafNormal;HighAltCntNormal	FETS=8.87897;SHARED;KMERSIZE=13;SB=6.69089;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/1:67,14:49,18:10,4:81	0/1:72,19:51,21:13,6:91
+8	22422728	.	TC	T	2.05163	LowFisherScore;LowVafTumor;LowAltCntTumor;StrandBias	FETS=2.05163;SOMATIC;KMERSIZE=16;SB=7.2269;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/0:75,0:42,33:0,0:75	0/1:280,2:159,121:0,2:282
+11	46917758	.	C	CA	65.8812	PASS	FETS=65.8812;SOMATIC;KMERSIZE=13;SB=11.5331;LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/0:44,0:32,12:0,0:44	0/1:57,32:47,10:22,10:89
+11	55406761	.	CAACT	C	6.78231	HighVafNormal;HighAltCntNormal	FETS=6.78231;SHARED;KMERSIZE=15;SB=5.39912;LEN=4;TYPE=del	GT:AD:SR:SA:DP	0/1:9,9:2,7:1,8:18	0/1:10,6:4,6:1,5:16
+13	35733547	.	CT	C	34.6702	LowVafTumor;HighVafNormal;LowAltCntTumor;HighAltCntNormal;StrandBias	FETS=34.6702;NORMAL;KMERSIZE=17;SB=0;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/1:68,33:39,29:2,31:101	0/0:23,0:15,8:0,0:23
+19	41188890	.	TG	T	12.4075	HighVafNormal;HighAltCntNormal;MS=9G	FETS=12.4075;SHARED;KMERSIZE=14;SB=7.26818;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/1:61,2:24,37:1,1:63	0/1:94,11:48,46:7,4:105
+20	47705763	.	GTT	G	10.4619	LowCovNormal;HighVafNormal;HighAltCntNormal;StrandBias;MS=10T	FETS=10.4619;SHARED;KMERSIZE=19;SB=0;LEN=2;TYPE=del	GT:AD:SR:SA:DP	0/1:3,2:3,0:1,1:5	0/1:1,8:1,0:8,0:9

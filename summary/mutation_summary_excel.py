@@ -213,7 +213,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
         "ExAC_AF,MutationTaster_pred,provean_pred,FATHMM_pred,parssnp_pred," \
-        "fuentes,dgd,oncoKB_level,oncoKB_cancer_type" \
+        "fuentes,dgd,oncoKB_level,oncoKB_cancer_type,offTarget," \
         "facetsLOHCall,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot,clonalStatus,ccf".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     #chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
@@ -324,7 +324,7 @@ def main():
         absolute_somatic_txts = args.absolute_somatic_txts.split(",")
         absolute_segments = args.absolute_segments.split(",")
         if not (len(absolute_somatic_txts) == len(absolute_segments)):
-            raise(Exception("Unequal length of absolute files"))
+            raise Exception
     else:
         absolute_somatic_txts = None
         absolute_segments = None

@@ -20,7 +20,7 @@ args = parser.parse_args()
 paired_fastqs = []
 for fastq_dir in args.fastq_dir:
     fastqFiles = glob2.glob(fastq_dir + '/**/*' + args.fastq_suffix)
-    r1fastqs = filter(lambda x: re.search(r'_L\d{3}_R1_', x), fastqFiles)
+    r1fastqs = [x for x in fastqFiles if re.search(r'_L\d{3}_R1_', x)]
     for r1fastq in r1fastqs:
         r2fastq = re.sub('_(L\d{3})_R1_', '_\g<1>_R2_', r1fastq)
         assert(any([r2fastq == x for x in fastqFiles]))  # r2 fastq doesn't exist
@@ -40,7 +40,7 @@ yaml.dump(sample_fastqs, args.sample_fastq_file)
 # output best guess for samples.yaml
 normals = set()
 tumors = set()
-for s in sample_fastqs.keys():
+for s in list(sample_fastqs.keys()):
     if s.endswith('N'):
         normals.add(s)
     else:
@@ -50,7 +50,7 @@ samples = []
 unmatched_tumors = tumors
 for norm in normals:
     name = re.sub(r'N$', '', norm)
-    tums = filter(lambda x: x.startswith(name), tumors)
+    tums = [x for x in tumors if x.startswith(name)]
     if tums is not None:
         for x in tums:
             unmatched_tumors.discard(x)

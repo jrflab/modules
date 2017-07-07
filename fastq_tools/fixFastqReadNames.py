@@ -12,11 +12,11 @@ parser.add_argument('fixedFastqFile1', action='store', help='Fixed fastq file 1'
 parser.add_argument('fixedFastqFile2', action='store', help='Fixed fastq file 2')
 args = parser.parse_args()
 
-print 'Paired fastq files: ', args.fastqFile1, ' - ', args.fastqFile2
+print(('Paired fastq files: ', args.fastqFile1, ' - ', args.fastqFile2))
 inFile1 = open(args.fastqFile1, 'rb')
 inFile2 = open(args.fastqFile2, 'rb')
 
-print 'Output to fixed paired fastq files: ', args.fixedFastqFile1, ' - ', args.fixedFastqFile2
+print(('Output to fixed paired fastq files: ', args.fixedFastqFile1, ' - ', args.fixedFastqFile2))
 outFile1 = open(args.fixedFastqFile1, 'wb')
 outFile2 = open(args.fixedFastqFile2, 'wb')
 
@@ -26,15 +26,15 @@ while True:
 	line2 = inFile2.readline()
 
 	if line1 == '' and line2 == '':
-		print 'End of files reached.  Successfully fixed fastq read names'
+		print('End of files reached.  Successfully fixed fastq read names')
 		sys.exit(0)
 
 	elif line1 == '' and line2 != '':
-		print 'File 1 has reached the end before File 2'
+		print('File 1 has reached the end before File 2')
 		sys.exit(1)
 
 	elif line1 != '' and line2 == '':
-		print 'File 2 has reached the end before File 1'
+		print('File 2 has reached the end before File 1')
 		sys.exit(1)
 
 	elif i == 1 or ( i % 4 ) == 1:

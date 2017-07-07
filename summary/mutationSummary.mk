@@ -15,7 +15,7 @@ endif
 SUMMARY_CONFIG = $(wildcard summary_config.yaml)
 
 SNV_TYPE ?= mutect
-INDEL_TYPE ?= strelka_varscan_indels
+INDEL_TYPE ?= somatic_indels
 SUMMARY_SNV_TYPE ?= $(word 1,$(SNV_TYPE))
 SUMMARY_INDEL_TYPE ?= $(word 1,$(INDEL_TYPE))
 
