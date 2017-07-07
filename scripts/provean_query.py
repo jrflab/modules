@@ -122,7 +122,7 @@ class ProveanQueryManager:
             session = drmaa.Session()
             session.initialize()
         jobs = []
-        for record, queries in provean_queries.iteritems():
+        for record, queries in provean_queries.items():
             for query in queries:
                 if self.cluster_mode.lower() == 'none':
                     query.run_local()
@@ -131,7 +131,7 @@ class ProveanQueryManager:
                                                     mem_per_thread=self.mem_per_thread))
         for job in jobs:
             job.wait()
-        for record, queries in provean_queries.iteritems():
+        for record, queries in provean_queries.items():
             scores = []
             for query in queries:
                 scores.append(query.process())
@@ -157,7 +157,7 @@ class ProveanQueryManager:
                 if 'fs' in hgvsp:
                     continue
                 ensp_hgvsp[ensembl_id].append(hgvsp)
-            for ensp, hgvsps in ensp_hgvsp.iteritems():
+            for ensp, hgvsps in ensp_hgvsp.items():
                 provean_queries[record].append(ProveanQuery(ensembl_id=ensp, hgvsps=hgvsps,
                                                             num_provean_threads=self.num_threads,
                                                             provean_script=self.provean_script))
@@ -175,8 +175,8 @@ class ProveanQueryManager:
                 if not r.ok:
                     r.raise_for_status()
                 decoded = r.json()
-                hgvsp_decoded = filter(lambda x: 'hgvsp' in x, decoded[0]['transcript_consequences'])
-                hgvsp = map(lambda x: x['hgvsp'], hgvsp_decoded)
+                hgvsp_decoded = [x for x in decoded[0]['transcript_consequences'] if 'hgvsp' in x]
+                hgvsp = [x['hgvsp'] for x in hgvsp_decoded]
                 return hgvsp
             except:
                 sys.stderr.write("attempt {} failed...\n".format(attempt))

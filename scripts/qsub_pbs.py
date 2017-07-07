@@ -96,7 +96,7 @@ class Job:
                                                            delete=False)
         self.job_script_file.write(self.job_script)
         self.job_script_file.close()
-        os.chmod(self.job_script_file.name, 0555)
+        os.chmod(self.job_script_file.name, 0o555)
 
         cmd = "qsub"
         cmd += " " + self.qsub_args

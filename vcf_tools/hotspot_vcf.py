@@ -17,7 +17,7 @@ def one_to_three_amino_acid_code(x):
      'Gly': 'G', 'His': 'H', 'Leu': 'L', 'Arg': 'R', 'Trp': 'W',
      'Ala': 'A', 'Val': 'V', 'Glu': 'E', 'Tyr': 'Y', 'Met': 'M'}
     # inverse to get 1 > 3 AA code mapping
-    inv_d = {v: k for k, v in d.items()}
+    inv_d = {v: k for k, v in list(d.items())}
     if x == "*":
         return "*"
     else:

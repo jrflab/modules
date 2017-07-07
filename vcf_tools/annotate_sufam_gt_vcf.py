@@ -32,7 +32,7 @@ if __name__ == '__main__':
     vcf_writer = vcf.Writer(sys.stdout, sufam_vcf_reader)
     for record in sufam_vcf_reader:
         recid = "{}:{}:{}{}".format(record.CHROM, record.POS, record.REF, record.ALT)
-        for s, v in sample_variants.iteritems():
+        for s, v in list(sample_variants.items()):
             if recid in v:
                 if 'samples_called_in' not in record.INFO:
                     record.INFO['samples_called_in'] = []

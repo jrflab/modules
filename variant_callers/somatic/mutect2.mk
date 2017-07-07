@@ -26,8 +26,8 @@ mutect2_vcfs : $(foreach type,$(MUTECT2_VARIANT_TYPES),$(foreach pair,$(SAMPLE_P
 .PHONY : $(PHONY)
 
 SPLIT_BED = python modules/scripts/split_bed.py
-NUM_MUTECT2_CHUNKS = 200
-MUTECT2_CHUNKS = $(shell seq -w 1 $(NUM_MUTECT2_CHUNKS))
+NUM_MUTECT2_CHUNKS = 50
+MUTECT2_CHUNKS = $(shell seq -f "%03g" $(NUM_MUTECT2_CHUNKS))
 
 ifdef TARGETS_FILE
 mutect2/interval_chunk/chunk.timestamp : $(TARGETS_FILE)

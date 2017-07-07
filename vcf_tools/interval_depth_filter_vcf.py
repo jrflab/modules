@@ -37,7 +37,15 @@ if __name__ == "__main__":
 
     for record in vcf_reader:
         chrom = re.sub(r'chr', '', record.CHROM)
-        depths = [x['DP'] for x in record.samples]
+        if getattr(record.samples[0].data, 'DP', None) is not None:
+            depths = [x['DP'] for x in record.samples]
+        elif getattr(record.samples[0].data, 'AD', None) is not None:
+            depths = [sum(x['AD']) for x in record.samples]
+        elif getattr(record.samples[0].data, 'NR', None) is not None:
+            depths = [x['NR'] for x in record.samples]
+        else:
+            raise ValueError('no depth or allelic depth available')
+
         if record.FILTER is None:
             record.FILTER = []
         if chrom not in trees:

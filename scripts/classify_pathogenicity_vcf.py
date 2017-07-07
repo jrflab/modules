@@ -9,7 +9,7 @@ def is_synonymous(record):
 
 
 def is_loh(record):
-    return 'facetsLOH' in record.INFO or 'LOH' in record.INFO
+    return 'facetsLOH' in record.INFO
 
 
 def is_provean_pathogenic(record):
@@ -64,7 +64,7 @@ def is_hap_insuf(record):
 
 
 def is_fathmm_pathogenic(record):
-    return "D" in record.INFO['FATHMM_pred'] if 'FATHMM_pred' in record.INFO else False
+    return "CANCER" in record.INFO['fathmm_pred'] if 'fathmm_pred' in record.INFO else False
 
 
 def get_fs_splice_stop_pathogenicity(record):

@@ -32,7 +32,7 @@ for d in args.bam_dir:
     bam_files.extend(glob2.glob(d + '/**/*.bam'))
 
 sample_merge = {}
-for sample, keys in sample_map.iteritems():
+for sample, keys in list(sample_map.items()):
     if sample not in sample_merge:
         sample_merge[sample] = []
     for key in keys:
@@ -45,7 +45,7 @@ yaml.dump(sample_merge, args.sample_merge_file)
 # output best guess for samples.yaml
 normals = set()
 tumors = set()
-for s in sample_merge.keys():
+for s in list(sample_merge.keys()):
     if s.upper().endswith('N'):
         normals.add(s)
     else:
@@ -55,7 +55,7 @@ samples = []
 unmatched_tumors = tumors
 for norm in normals:
     name = re.sub(r'[nN]$', '', norm)
-    tums = filter(lambda x: x.startswith(name), tumors)
+    tums = [x for x in tumors if x.startswith(name)]
     if tums is not None:
         for x in tums:
             unmatched_tumors.discard(x)

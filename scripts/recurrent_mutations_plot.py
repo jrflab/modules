@@ -106,7 +106,7 @@ def make_most_severe_effect_column(mut_split):
     ])
     rv["MOST_SEVERE_EFFECT"] = [np.nan] * len(rv["ANN[*].EFFECT_SPLIT"])
 
-    for i, (effect, pattern) in enumerate(normalize.iteritems()):
+    for i, (effect, pattern) in enumerate(normalize.items()):
         rv.loc[rv["ANN[*].EFFECT_SPLIT"].str.match(re.compile(pattern, re.IGNORECASE)).astype(bool), 'MOST_SEVERE_EFFECT'] = i
     rv.loc[rv["HOTSPOT"] == True, 'MOST_SEVERE_EFFECT'] = len(normalize)
 
@@ -237,8 +237,8 @@ def output_recurrent_mutations_ccf_single_figure_plot_only(mut_split, gene_order
     # add legend
     # box = ax.get_position() make room
     # ax.set_position([box.x0, box.y0, box.width * 0.7, box.height])
-    cg = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="k")
-    pa = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="r")
+    cg = plt.Line2D(list(range(1)), list(range(1)), markersize=5, color="w", marker='o', markerfacecolor="k")
+    pa = plt.Line2D(list(range(1)), list(range(1)), markersize=5, color="w", marker='o', markerfacecolor="r")
     loh = LOHLegend((1, 1), 1, 1, facecolor="w", edgecolor="k", linewidth=1)
     clonal = mpatches.Rectangle((1, 1), 1, 1, facecolor="w", edgecolor="goldenrod", linewidth=2)
     ccf = mpatches.Patch(facecolor="w", edgecolor="w")
@@ -520,8 +520,8 @@ def output_recurrent_mutations(snv_fp, indel_fp, outdir, summary_config=None):
                 # make room
                 box = ax.get_position()
                 ax.set_position([box.x0, box.y0, box.width * 0.7, box.height])
-                pa = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="r")
-                cg = plt.Line2D(range(1), range(1), markersize=5, color="w", marker='o', markerfacecolor="k")
+                pa = plt.Line2D(list(range(1)), list(range(1)), markersize=5, color="w", marker='o', markerfacecolor="r")
+                cg = plt.Line2D(list(range(1)), list(range(1)), markersize=5, color="w", marker='o', markerfacecolor="k")
                 loh = LOHLegend((1, 1), 1, 1, facecolor="w", edgecolor="k", linewidth=0.1)
                 clonal = mpatches.Rectangle((1, 1), 1, 1, facecolor="w", edgecolor="goldenrod", linewidth=2)
                 ccf = mpatches.Patch(facecolor="w", edgecolor="w")

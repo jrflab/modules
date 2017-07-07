@@ -28,16 +28,16 @@ for attempt in range(2):
                               db=server_info['db'])
         break
     except:
-        print "Failed to connect to {} mysql server. Running docker".format(server_info['db'])
+        print(("Failed to connect to {} mysql server. Running docker".format(server_info['db'])))
         docker_cmd = "docker run -d -v {}:/var/lib/mysql -p {}:3306 {}".format(server_info['data_dir'],
                                                                                server_info['port'],
                                                                                server_info['docker_repo'])
-        print docker_cmd + "\n"
+        print((docker_cmd + "\n"))
         #job = Job(docker_cmd, '-I -l nodes=1:docker -l host={}'.format(server_info['host']))
         #job.run_job()
         #job.wait()
         #time.sleep(90) # wait for mysqld to start
 
 if not con:
-    print "Failed to initialize mysql server"
+    print("Failed to initialize mysql server")
     sys.exit(1)

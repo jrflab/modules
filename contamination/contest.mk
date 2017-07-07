@@ -16,7 +16,8 @@ contest : contest/all_contest.txt
 # ContEst doing on-the-fly genotyping
 define contest-tumor-normal
 contest/$1_$2.contest.txt : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,12G,12G,"$$(call GATK_MEM2,4G) -T ContEst -I:eval $$(<) -I:genotype $$(<<) -pf $$(HAPMAP_POP_FILE) -o $$(@) -R $$(REF_FASTA)")
+	$$(call LSCRIPT_MEM,12G,12G,"$$(call GATK_MEM2,4G) -T ContEst -I:eval $$(<) -I:genotype $$(<<) \
+		-pf $$(HAPMAP_POP_FILE) -o $$(@) -R $$(REF_FASTA)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call contest-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
