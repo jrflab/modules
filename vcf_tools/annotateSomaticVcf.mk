@@ -31,9 +31,9 @@ $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 ANN_FACETS = true
 endif
 
-SOMATIC_ANN1 = $(if $(findstring mm10,$(REF)),mgp_dbsnp,dbsnp) \
+SOMATIC_ANN1 = $(if $(or $(findstring GRCm38,$(REF)),$(findstring mm10,$(REF))),mgp_dbsnp,dbsnp) \
     $(if $(findstring GRCh37,$(VEP_REF)),cmo_ann) eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
-    $(if $(findstring b37,$(REF)),cosmic cosmic_nc gene_ann cn_reg clinvar exac_nontcga hotspot_int_ann hotspot_ext_ann)
+    $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),cosmic cosmic_nc gene_ann cn_reg clinvar exac_nontcga hotspot_int_ann hotspot_ext_ann)
 
 ifeq ($(HRUN),true)
 SOMATIC_INDEL_ANN2 += hrun
@@ -62,7 +62,7 @@ SOMATIC_SNV_FILTER1 = $(if $(findstring mutect,$1),som_ad_ft,\
 SOMATIC_FILTER1 = $(if $(TARGETS_FILE),target_dp_ft) $(if $(findstring indel,$1),$(call SOMATIC_INDEL_FILTER1,$1),$(call SOMATIC_SNV_FILTER1,$1))
 
 # filters run after initial round of annotations (but before final annotations)
-SOMATIC_FILTER2 = cft common_ft
+SOMATIC_FILTER2 = $(if $(or $(findstring hg19,$(REF)),$(findstring b37,$(REF))),cft) common_ft
 # hrun filter
 SOMATIC_FILTER2 += $(if $(findstring indel,$1),\
             $(if $(findstring true,$(HRUN)),hrun_ft))
@@ -74,7 +74,7 @@ SOMATIC_SNV_ANN3 = $(if $(and $(findstring true,$(ANN_FACETS)),$(findstring b37,
 SOMATIC_ANN3 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN3),$(SOMATIC_SNV_ANN3))
 
 PHONY += ann_somatic_vcfs somatic_vcfs merged_vcfs variant_summary
-ann_somatic_vcfs : somatic_vcfs somatic_tables merged_vcfs variant_summary merged_maf
+ann_somatic_vcfs : somatic_vcfs somatic_tables merged_vcfs variant_summary # merged_maf
 variant_summary: variant_count.tsv
 merged_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).somatic_variants.vcf.gz)
 merged_maf : maf/allTN.somatic_variants.maf
