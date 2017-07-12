@@ -58,7 +58,7 @@ maf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
 
 define vcf2maf-sample
 maf/$1.%.maf : vcf_ann/$1.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --filter-vcf $$(EXAC_NONTCGA) --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --tmp-dir `mktemp -d` --output-maf $$@")
+	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 $$(if $$(EXAC_NONTCGA),--filter-vcf $$(EXAC_NONTCGA)) --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --tmp-dir `mktemp -d` --output-maf $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call vcf2maf-sample,$(sample))))
 
