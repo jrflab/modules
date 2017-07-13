@@ -53,7 +53,8 @@ $(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 # run mutect on each chunk
 #$(call mutect-tumor-normal-chunk,tumor,normal,chunk)
 define mutect-tumor-normal-chunk
-mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
+mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam \
+	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
 		$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),--fraction_contamination `csvcut -t -c contamination $$(<<<<) | sed 1d`) \
@@ -68,7 +69,8 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 # run mutect on each chromosome
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect-tumor-normal-chr
-mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam contest/$1_$2.contest.txt bam/$1.bam.bai bam/$2.bam.bai
+mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam \
+	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
 	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
 		$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),--fraction_contamination `csvcut -t -c contamination $$(<<<) | sed 1d`) \
