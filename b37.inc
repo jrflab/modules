@@ -128,6 +128,10 @@ VEP_DATA = $(REF_DIR)/vep/v86
 VEP_OVERRIDES = $(REF_DIR)/isoform_overrides_at_mskcc
 VEP_SPECIES = homo_sapiens
 
+
+FUENTES_BED = ~/share/reference/fuentes_blacklist.hg19.bed
+DGD_BED = ~/share/reference/dgd.hg19.bed
+
 endif
 B37_INC = true
 
