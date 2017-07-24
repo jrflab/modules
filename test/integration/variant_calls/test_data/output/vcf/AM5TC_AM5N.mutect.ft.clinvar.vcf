@@ -1,10 +1,11 @@
 ##fileformat=VCFv4.1
-##GATKCommandLine=<ID=MuTect,Version=3.1-0-g72492bb,Date="Fri Apr 14 02:08:24 EDT 2017",Epoch=1492150104196,CommandLineOptions="analysis_type=MuTect input_file=[bam/AM5TC.bam, bam/AM5N.bam] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[DuplicateRead, FailsVendorQualityCheck, NotPrimaryAlignment, BadMate, MappingQualityUnavailable, UnmappedRead, BadCigar] intervals=[mutect/interval_chunk/chunk001.bed] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=SILENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false noop=false enable_extended_output=true enable_qscore_output=false artifact_detection_mode=false tumor_sample_name=AM5TC bam_tumor_sample_name=null normal_sample_name=AM5N force_output=false force_alleles=false only_passing_calls=false initial_tumor_lod=4.0 tumor_lod=6.3 fraction_contamination=0.02 minimum_mutation_cell_fraction=0.0 normal_lod=2.2 normal_artifact_lod=1.0 strand_artifact_lod=2.0 strand_artifact_power_threshold=0.9 dbsnp_normal_lod=5.5 minimum_normal_allele_fraction=0.0 tumor_f_pretest=0.005 min_qscore=5 gap_events_threshold=3 heavily_clipped_read_fraction=0.3 fraction_mapq0_threshold=0.5 pir_median_threshold=10.0 pir_mad_threshold=3.0 required_maximum_alt_allele_mapping_quality_score=20 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 power_constant_qscore=30 power_constant_af=0.30000001192092896 vcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub dbsnp=[(RodBinding name=dbsnp source=/home/debruiji/share/reference/dbsnp_138.b37.gmaf.vcf.gz)] cosmic=[] normal_panel=[] coverage_file=null coverage_20_q20_file=null power_file=null tumor_depth_file=null normal_depth_file=null filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
-##reference=file:///home/debruiji/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##MuTect="analysis_type=MuTect input_file=[bam/AM5TC.bam, bam/AM5N.bam] read_buffer_size=null phone_home=STANDARD gatk_key=null tag=NA read_filter=[] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableRandomization=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 enable_experimental_downsampling=false baq=OFF baqGapOpenPenalty=40.0 performanceLog=null useOriginalQualities=false BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 defaultBaseQualities=-1 validation_strictness=SILENT remove_program_records=false keep_program_records=false unsafe=null num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false logging_level=INFO log_to_file=null help=false noop=false enable_extended_output=true artifact_detection_mode=false tumor_sample_name=AM5TC bam_tumor_sample_name=null normal_sample_name=AM5N force_output=false force_alleles=false only_passing_calls=false initial_tumor_lod=4.0 tumor_lod=6.3 fraction_contamination=0.02 minimum_mutation_cell_fraction=0.0 normal_lod=2.2 normal_artifact_lod=1.0 strand_artifact_lod=2.0 strand_artifact_power_threshold=0.9 dbsnp_normal_lod=5.5 somatic_classification_normal_power_threshold=0.95 minimum_normal_allele_fraction=0.0 tumor_f_pretest=0.0050 min_qscore=5 gap_events_threshold=3 heavily_clipped_read_fraction=0.3 clipping_bias_pvalue_threshold=0.05 fraction_mapq0_threshold=0.5 pir_median_threshold=10.0 pir_mad_threshold=3.0 required_maximum_alt_allele_mapping_quality_score=20 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 power_constant_qscore=30 absolute_copy_number_data=null power_constant_af=0.30000001192092896 vcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub dbsnp=[(RodBinding name=dbsnp source=/home/limr/share/reference/dbsnp_138.b37.gmaf.vcf)] cosmic=[] normal_panel=[] coverage_file=null coverage_20_q20_file=null power_file=null tumor_depth_file=null normal_depth_file=null filter_mismatching_base_and_quals=false"
+##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
 ##INFO=<ID=VT,Number=1,Type=String,Description="Variant type, can be SNP, INS or DEL">
+##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
 ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
 ##FORMAT=<ID=BQ,Number=A,Type=Float,Description="Average base quality for reads supporting alleles">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
@@ -15,7 +16,7 @@
 ##FORMAT=<ID=SS,Number=1,Type=Integer,Description="Variant status relative to non-adjacent Normal,0=wildtype,1=germline,2=somatic,3=LOH,4=post-transcriptional modification,5=unknown">
 ##FILTER=<ID=PASS,Description="Accept as a confident somatic mutation">
 ##FILTER=<ID=REJECT,Description="Rejected as a confident somatic mutation">
-##FILTER=<ID=targetInterval,Description="no overlap with intervals">
+##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
 ##FILTER=<ID=somaticAlleleDepth,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
 ##FILTER=<ID=depth,Description="filter if normal depth < 5 or tumor depth < 5">
 ##FILTER=<ID=noAF,Description="missing AF">
@@ -103,8 +104,8 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
-##SnpSiftVersion="SnpSift 4.3i (build 2016-12-15 22:33), by Pablo Cingolani"
-##SnpSiftCmd="SnpSift annotate /home/debruiji/share/reference/clinvar_20160531.vcf.gz vcf/AM5TC_AM5N.mutect.ft.vcf"
+##SnpSiftVersion="SnpSift 4.3m (build 2017-05-05 18:41), by Pablo Cingolani"
+##SnpSiftCmd=""
 ##INFO=<ID=CDA,Number=0,Type=Flag,Description="Variation is interrogated in a clinical diagnostic assay">
 ##INFO=<ID=OTH,Number=0,Type=Flag,Description="Has other variant with exactly the same set of mapped positions on NCBI refernce assembly.">
 ##INFO=<ID=S3D,Number=0,Type=Flag,Description="Has 3D structure - SNP3D table">
@@ -164,34 +165,35 @@
 ##INFO=<ID=HD,Number=0,Type=Flag,Description="Marker is on high density genotyping kit (50K density or greater).  The variant may have phenotype associations present in dbGaP.">
 ##INFO=<ID=PM,Number=0,Type=Flag,Description="Variant is Precious(Clinical,Pubmed Cited)">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
-1	244755022	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:39,19:28.0:58:0.328:2	0:97,2:.:99:0.02:0
+1	198717235	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:8,5:16.0:13:0.385:2	0:18,1:.:19:0.053:0
+1	244755022	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:39,19:28.0:58:0.328:2	0:98,2:.:100:0.02:0
 2	70066582	rs200830569	G	T	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:17,6:22.0:23:0.261:2	0:46,1:.:47:0.021:0
-2	179416547	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:60,31:28.0:91:0.341:2	0:149,0:.:150:0.0:0
-3	42265050	.	C	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:167,119:28.0:286:0.416:2	0:216,0:.:217:0.0:0
-3	49842010	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:212,106:29.0:318:0.333:2	0:309,0:.:309:0.0:0
-4	55131048	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:46,15:27.0:61:0.246:2	0:76,0:.:79:0.0:0
-5	96503722	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:33,15:29.0:48:0.313:2	0:62,0:.:62:0.0:0
-5	110835624	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:99,56:28.0:155:0.361:2	0:230,0:.:231:0.0:0
-5	130846067	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:31,21:29.0:52:0.404:2	0:105,0:.:105:0.0:0
-6	122768041	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:57,38:29.0:95:0.4:2	0:187,0:.:189:0.0:0
-9	104356907	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:282,76:29.0:359:0.212:2	0:274,0:.:275:0.0:0
+2	179416547	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:61,31:28.0:92:0.337:2	0:153,0:.:154:0.0:0
+3	42265050	.	C	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:167,119:28.0:286:0.416:2	0:217,0:.:218:0.0:0
+3	49842010	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:213,106:29.0:319:0.332:2	0:310,0:.:310:0.0:0
+4	55131048	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:47,15:27.0:62:0.242:2	0:77,0:.:80:0.0:0
+5	96503722	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:33,16:29.0:49:0.327:2	0:64,0:.:64:0.0:0
+5	110835624	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:100,57:28.0:157:0.363:2	0:237,0:.:238:0.0:0
+5	130846067	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:32,21:29.0:53:0.396:2	0:107,0:.:107:0.0:0
+6	122768041	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:59,38:29.0:97:0.392:2	0:190,0:.:192:0.0:0
+9	104356907	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:283,77:29.0:361:0.214:2	0:276,0:.:277:0.0:0
 9	139981571	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:75,6:26.0:81:0.074:2	0:141,1:.:142:0.007042:0
 10	93744	rs41298226	T	C	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:30,5:25.0:35:0.143:2	0:35,1:.:36:0.028:0
-10	74100864	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:154,28:29.0:182:0.154:2	0:196,1:.:197:0.005076:0
+10	74100864	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:154,28:29.0:182:0.154:2	0:197,1:.:198:0.005051:0
 10	99376090	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:38,43:29.0:81:0.531:2	0:85,1:.:86:0.012:0
-10	124214218	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:44,43:28.0:87:0.494:2	0:78,1:.:79:0.013:0
-10	126515192	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:58,55:28.0:113:0.487:2	0:103,1:.:105:0.009615:0
+10	124214218	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:44,44:28.0:88:0.5:2	0:78,1:.:79:0.013:0
+10	126515192	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:60,56:28.0:116:0.483:2	0:104,1:.:106:0.009524:0
 11	533875	rs28933406	G	T	.	PASS	DB;SOMATIC;VT=SNP;ASP;CLNACC=RCV000013434.6|RCV000022795.6;CLNALLE=1;CLNDBN=Thyroid_cancer\x2c_follicular|Spermatocytic_seminoma;CLNDSDB=MedGen:OMIM|MedGen:ORPHA;CLNDSDBID=C0206682:188470|C0334517:99865;CLNHGVS=NC_000011.9:g.533875G>T;CLNORIGIN=2;CLNREVSTAT=no_criteria|no_criteria;CLNSIG=5|5;CLNSRC=OMIM_Allelic_Variant;CLNSRCID=190020.0002;GENEINFO=HRAS:3265;LSD;NSM;OM;PM;PMC;REF;RS=28933406;RSPOS=533875;RV;S3D;SAO=3;SSR=0;U5;VC=SNV;VP=0x050268400a05000002110120;WGT=1;dbSNPBuildID=133	GT:AD:BQ:DP:FA:SS	0/1:148,88:29.0:236:0.373:2	0:200,0:.:201:0.0:0
-11	1265872	rs200110372	G	A	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:22,5:30.0:27:0.185:2	0:26,0:.:26:0.0:0
-11	17373604	.	T	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:17,6:18.0:23:0.261:2	0:19,1:.:20:0.05:0
-11	27520946	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:86,47:28.0:133:0.353:2	0:210,0:.:210:0.0:0
-13	28885846	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:30,19:27.0:49:0.388:2	0:70,0:.:70:0.0:0
-16	27659939	.	C	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:128,75:28.0:203:0.369:2	0:124,0:.:124:0.0:0
-16	58313591	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:37,8:14.0:45:0.178:2	0:28,1:.:29:0.034:0
-16	58314194	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:157,89:28.0:247:0.362:2	0:205,1:.:206:0.004854:0
-17	76799507	.	C	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:238,141:29.0:380:0.372:2	0:290,1:.:292:0.003436:0
-18	3534412	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:182,79:28.0:261:0.303:2	0:155,1:.:157:0.00641:0
-19	17291713	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:132,77:29.0:209:0.368:2	0:136,0:.:136:0.0:0
-19	33119808	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:50,5:28.0:55:0.091:2	0:50,0:.:50:0.0:0
-22	37414752	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:230,140:30.0:371:0.378:2	0:249,0:.:249:0.0:0
-22	42609570	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:158,83:28.0:241:0.344:2	0:151,0:.:152:0.0:0
+11	1265872	rs200110372	G	A	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:23,5:30.0:28:0.179:2	0:26,0:.:26:0.0:0
+11	17373604	.	T	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:19,6:18.0:25:0.24:2	0:20,1:.:21:0.048:0
+11	27520946	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:87,47:28.0:134:0.351:2	0:210,0:.:210:0.0:0
+13	28885846	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:30,19:27.0:49:0.388:2	0:71,0:.:71:0.0:0
+16	27659939	.	C	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:128,75:28.0:203:0.369:2	0:125,0:.:125:0.0:0
+16	58313591	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:37,8:14.0:45:0.178:2	0:29,1:.:30:0.033:0
+16	58314194	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:159,90:28.0:250:0.361:2	0:211,1:.:212:0.004717:0
+17	76799507	.	C	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:240,144:29.0:385:0.375:2	0:296,1:.:298:0.003367:0
+18	3534412	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:184,80:28.0:264:0.303:2	0:158,1:.:160:0.006289:0
+19	17291713	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:134,77:29.0:211:0.365:2	0:139,0:.:139:0.0:0
+19	33119808	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:53,6:29.0:59:0.102:2	0:51,0:.:51:0.0:0
+22	37414752	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:230,140:30.0:371:0.378:2	0:250,0:.:250:0.0:0
+22	42609570	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0/1:158,83:28.0:241:0.344:2	0:153,0:.:154:0.0:0

@@ -209,12 +209,12 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         config = yaml.load(open(summary_config))
     else:
         config = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
-        "gene,Ensembl_so_term,protein_change," \
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ID,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
         "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
-        "ExAC_AF,MutationTaster_pred,provean_pred,fathmm_pred," \
-        "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot,clonalStatus,ccf".split(",")
+        "ExAC_AF,MutationTaster_pred,provean_pred,FATHMM_pred,parssnp_pred," \
+        "fuentes,dgd,oncoKB_level,oncoKB_cancer_type" \
+        "facetsLOHCall,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot,clonalStatus,ccf".split(",")
     # find chasm score columns, they are prefixed with chosen classifier
     #chasm_score_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_score" in c]
     chasm_pred_columns = [c for c in pd.read_csv(snps_high_moderate, encoding='utf-8', sep="\t").columns if "chasm_pred" in c]

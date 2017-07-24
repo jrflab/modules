@@ -1,9 +1,10 @@
 ##fileformat=VCFv4.1
-##fileDate=20170414
+##fileDate=20170724
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
 ##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
 ##INFO=<ID=endometrial_CN_high,Number=0,Type=Flag,Description="endometrial_CN_high: variant is in gene list">
 ##INFO=<ID=endometrial_CN_low,Number=0,Type=Flag,Description="endometrial_CN_low: variant is in gene list">
 ##INFO=<ID=endometrial_Endometrioid_MSI_H,Number=0,Type=Flag,Description="endometrial_Endometrioid_MSI_H: variant is in gene list">
@@ -25,7 +26,7 @@
 ##FORMAT=<ID=AD,Number=A,Type=Integer,Description="allelic depth">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
 ##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
-##FILTER=<ID=targetInterval,Description="no overlap with intervals">
+##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
 ##contig=<ID=1,length=249250621,assembly="b37">
 ##contig=<ID=2,length=243199373,assembly="b37">
 ##contig=<ID=3,length=198022430,assembly="b37">
@@ -111,5 +112,5 @@
 ##contig=<ID=GL000225.1,length=211173,assembly="b37">
 ##contig=<ID=GL000192.1,length=547496,assembly="b37">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
-2	95775789	2:95775789_G/GT	G	GT	.	PASS	SS=Somatic;DP=65;VARPVAL=1;SOMPVAL=0.00330847276322;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_Serous	GT:AD:DP:VAF	0/1:22:32:0.3125	0/0:21:21:0
-11	46917758	11:46917758_C/CA	C	CA	.	PASS	SS=Somatic;DP=157;VARPVAL=1;SOMPVAL=1.12153183646e-06;endometrial_CN_high;endometrial_POLE	GT:AD:DP:VAF	0/1:57:86:0.3372	0/0:43:43:0
+2	95775789	2:95775789_G/GT	G	GT	.	PASS	SS=Somatic;DP=51;VARPVAL=1;SOMPVAL=0.00276649964682;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_Serous	GT:AD:DP:VAF	0/1:15:23:0.3478	0/0:21:21:0
+11	46917758	11:46917758_C/CA	C	CA	.	PASS	SS=Somatic;DP=152;VARPVAL=1;SOMPVAL=1.05852042517e-06;endometrial_CN_high;endometrial_POLE	GT:AD:DP:VAF	0/1:55:84:0.3452	0/0:42:42:0
