@@ -129,8 +129,10 @@ VEP_OVERRIDES = $(REF_DIR)/isoform_overrides_at_mskcc
 VEP_SPECIES = homo_sapiens
 
 
-FUENTES_BED = ~/share/reference/fuentes_blacklist.hg19.bed
-DGD_BED = ~/share/reference/dgd.hg19.bed
+FUENTES_BED = $(REF_DIR)/fuentes_blacklist.b37.bed
+DGD_BED = $(REF_DIR)/dgd.b37.bed
+
+ONCOKB = $(REF_DIR)/allActionableVariants.txt
 
 endif
 B37_INC = true

@@ -121,3 +121,8 @@ vcf/%.fuentes.vcf : vcf/%.vcf
 
 vcf/%.dgd.vcf : vcf/%.vcf
 	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(BED_ANNOTATE_VCF) --info_tag dgd $(DGD_BED) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
+ONCOKB_VCF = python modules/vcf_tools/oncokb_vcf.py
+vcf/%.oncokb.vcf : vcf/%.vcf
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(ONCOKB_VCF) --oncokb $(ONCOKB) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
