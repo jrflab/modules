@@ -1,9 +1,10 @@
 ##fileformat=VCFv4.1
-##fileDate=20170414
+##fileDate=20170724
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
 ##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
 ##INFO=<ID=endometrial_CN_high,Number=0,Type=Flag,Description="endometrial_CN_high: variant is in gene list">
 ##INFO=<ID=endometrial_CN_low,Number=0,Type=Flag,Description="endometrial_CN_low: variant is in gene list">
 ##INFO=<ID=endometrial_Endometrioid_MSI_H,Number=0,Type=Flag,Description="endometrial_Endometrioid_MSI_H: variant is in gene list">
@@ -25,7 +26,7 @@
 ##FORMAT=<ID=AD,Number=A,Type=Integer,Description="allelic depth">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
 ##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
-##FILTER=<ID=targetInterval,Description="no overlap with intervals">
+##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
 ##contig=<ID=1,length=249250621,assembly="b37">
 ##contig=<ID=2,length=243199373,assembly="b37">
 ##contig=<ID=3,length=198022430,assembly="b37">
@@ -111,10 +112,10 @@
 ##contig=<ID=GL000225.1,length=211173,assembly="b37">
 ##contig=<ID=GL000192.1,length=547496,assembly="b37">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
-5	67591103	5:67591103_ATTAAACCAGACC/A	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=326;VARPVAL=1;SOMPVAL=3.44609609327e-13;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:DP:VAF	0/1:72:97:0.2577	0/0:182:182:0
-5	67591283	5:67591283_TGA/T	TGA	T	.	PASS	SS=Somatic;DP=308;VARPVAL=1;SOMPVAL=4.03884375767e-22;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:DP:VAF	0/1:65:109:0.4037	0/0:178:178:0
-7	47925659	7:47925659_CA/C	CA	C	.	PASS	SS=Somatic;DP=187;VARPVAL=1;SOMPVAL=1.18277086123e-10;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:DP:VAF	0/1:57:90:0.3667	0/0:73:73:0
+5	67591103	5:67591103_ATTAAACCAGACC/A	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=318;VARPVAL=1;SOMPVAL=4.01879376268e-12;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:DP:VAF	0/1:71:94:0.2447	0/0:176:176:0
+5	67591283	5:67591283_TGA/T	TGA	T	.	PASS	SS=Somatic;DP=299;VARPVAL=1;SOMPVAL=3.19412999781e-21;breast_ER_negative;breast_ER_positive;breast_HER2_postitive;breast_Pam50_Basal;breast_Pam50_Her2;breast_Pam50_LumA;breast_Pam50_LumB;breast_Triple_negative	GT:AD:DP:VAF	0/1:63:105:0.4	0/0:173:173:0
+7	47925659	7:47925659_CA/C	CA	C	.	PASS	SS=Somatic;DP=184;VARPVAL=1;SOMPVAL=2.13372471975e-10;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:DP:VAF	0/1:56:88:0.3636	0/0:72:72:0
 9	139410466	9:139410466_C/CG	C	CG	.	PASS	SS=Somatic;DP=45;VARPVAL=1;SOMPVAL=1.47659222364e-09;endometrial_CN_high;endometrial_Endometrioid_MSS;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous;breast_Pam50_LumB	GT:AD:DP:VAF	0/1:6:26:0.7692	0/0:32:33:0.0303
-10	98273390	10:98273390_GGCA/G	GGCA	G	.	PASS	SS=Somatic;DP=134;VARPVAL=1;SOMPVAL=0.0144248077238;endometrial_CN_high;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:DP:VAF	0/1:39:44:0.1136	0/0:56:56:0
-10	124457552	10:124457552_G/GT	G	GT	.	PASS	SS=Somatic;DP=366;VARPVAL=1;SOMPVAL=2.70906980325e-14	GT:AD:DP:VAF	0/1:99:138:0.2826	0/0:167:168:0.006
-X	135049596	X:135049596_A/AAT	A	AAT	.	PASS	SS=Somatic;DP=144;VARPVAL=1;SOMPVAL=8.36469749313e-09	GT:AD:DP:VAF	0/1:35:54:0.3519	0/0:74:74:0
+10	98273390	10:98273390_GGCA/G	GGCA	G	.	PASS	SS=Somatic;DP=133;VARPVAL=1;SOMPVAL=0.0151840081303;endometrial_CN_high;endometrial_Endometrioid;endometrial_POLE;endometrial_Serous	GT:AD:DP:VAF	0/1:39:44:0.1136	0/0:55:55:0
+10	124457552	10:124457552_G/GT	G	GT	.	PASS	SS=Somatic;DP=346;VARPVAL=1;SOMPVAL=3.98314739659e-13	GT:AD:DP:VAF	0/1:94:130:0.2769	0/0:157:158:0.0063
+X	135049596	X:135049596_A/AAT	A	AAT	.	PASS	SS=Somatic;DP=140;VARPVAL=1;SOMPVAL=8.81606388459e-09	GT:AD:DP:VAF	0/1:34:53:0.3585	0/0:72:72:0
