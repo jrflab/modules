@@ -44,10 +44,11 @@ endif
 ifeq ($(ANN_PROVEAN),true)
 SOMATIC_INDEL_ANN2 += provean
 endif
-SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm parssnp) #fathmm
+SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm parssnp)
 
 # indel/snv initial round of annotations
-SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2))
+SOMATIC_ANN2 = $(if $(findstring indel,$1),$(SOMATIC_INDEL_ANN2),$(SOMATIC_SNV_ANN2)) \
+			   $(if $(findstring b37,$(REF)),dgd fuentes oncokb)
 ifeq ($(ANN_FACETS),true)
 SOMATIC_ANN2 += facets_ccf
 endif

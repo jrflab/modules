@@ -115,3 +115,14 @@ VEP_OPTS = --species $(VEP_SPECIES) --everything --cache --no_progress --format 
 vcf/%.vep.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call LSCRIPT_ENV_CHECK_MEM,$(VEP_ENV),6G,8G,"$(VEP) $(VEP_OPTS) -i $< -o $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
+BED_ANNOTATE_VCF = python modules/vcf_tools/bed_annotate_vcf.py
+vcf/%.fuentes.vcf : vcf/%.vcf
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(BED_ANNOTATE_VCF) --info_tag fuentes $(FUENTES_BED) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
+vcf/%.dgd.vcf : vcf/%.vcf
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(BED_ANNOTATE_VCF) --info_tag dgd $(DGD_BED) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
+ONCOKB_VCF = python modules/vcf_tools/oncokb_vcf.py
+vcf/%.oncokb.vcf : vcf/%.vcf
+	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(ONCOKB_VCF) --oncokb $(ONCOKB) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+
