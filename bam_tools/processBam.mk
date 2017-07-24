@@ -139,7 +139,7 @@ ifeq ($(SPLIT_CHR),true)
 # $(eval $(call chr-target-aln,chromosome))
 define chr-target-realn
 %.$1.chr_split.intervals : %.bam %.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,4G,4G,"$$(call GATK_MEM2,8G) -T RealignerTargetCreator \
+	$$(call LSCRIPT_PARALLEL_MEM,4,4G,4G,"$$(call GATK_MEM2,5G) -T RealignerTargetCreator \
 		-I $$(<) \
 		-L $1 \
 		-nt 4 -R $$(REF_FASTA)  -o $$@ $$(BAM_REALN_TARGET_OPTS)")
@@ -152,7 +152,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call chr-target-realn,$(chr))))
 # $(eval $(call chr-aln,chromosome))
 define chr-realn
 %.$(1).chr_realn.bam : %.bam %.$(1).chr_split.intervals %.bam.bai
-	$$(call LSCRIPT_MEM,12G,12G,"if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM2,6G) -T IndelRealigner \
+	$$(call LSCRIPT_MEM,16G,16G,"if [[ -s $$(word 2,$$^) ]]; then $$(call GATK_MEM2,4G) -T IndelRealigner \
 	-I $$(<) -R $$(REF_FASTA) -L $1 -targetIntervals $$(word 2,$$^) \
 	-o $$(@) $$(BAM_REALN_OPTS); \
 	else $$(call GATK_MEM2,8G) -T PrintReads -R $$(REF_FASTA) -I $$< -L $1 -o $$@ ; fi")
@@ -180,7 +180,7 @@ else # no splitting by chr
 	$(call LSCRIPT_MEM,14G,15G,"$(call GATK_MEM2,7G) -T PrintReads -R $(REF_FASTA) -I $< -BQSR $(word 2,$^) -o $@ && $(RM) $<")
 
 %.realn.bam : %.bam %.intervals %.bam.bai
-	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,14G,16G,"$(call GATK_MEM2,7G) -T IndelRealigner \
+	if [[ -s $(word 2,$^) ]]; then $(call LSCRIPT_MEM,16G,16G,"$(call GATK_MEM2,7G) -T IndelRealigner \
 	-I $< -R $(REF_FASTA) -targetIntervals $(<<) \
 	-o $@ $(BAM_REALN_OPTS) && $(RM) $<") ; \
 	else mv $< $@ ; fi
