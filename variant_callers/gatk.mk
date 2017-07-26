@@ -52,7 +52,6 @@ $(foreach sample,$(SAMPLES),$(eval $(call hapcall-vcf,$(sample))))
 
 endif # split by chr
 
-<<<<<<< HEAD
 # select snps % = sample
 gatk/vcf/%.variants.snps.vcf : gatk/vcf/%.variants.vcf
 	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call GATK_MEM,8G) -T SelectVariants  -R $(REF_FASTA)  --variant $<  -o $@ \
