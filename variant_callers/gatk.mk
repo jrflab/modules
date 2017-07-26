@@ -10,8 +10,6 @@
 # 		   SPLIT_CHR = true/false (default: true)
 #
 
-ifndef GATK_MK
-
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
@@ -19,7 +17,7 @@ GATK_HARD_FILTER_SNPS ?= true
 GATK_POOL_SNP_RECAL ?= false
 GATK_SPLIT_CHR ?= true
 
-###### RECIPES #######
+gatk : vcf/all.gatk_hc.g.vcf
 
 %.intervals : %.vcf
 	$(INIT) sed '/^#/d' $< | awk '{print $$1":"$$2 }' > $@
@@ -65,12 +63,6 @@ gatk/vcf/%.variants.indels.vcf : gatk/vcf/%.variants.vcf
 %.bai : %.bam
 	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(SAMTOOLS) index $< $@")
 
-$(REF_FASTA).fai : $(REF_FASTA)
-	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(SAMTOOLS) faidx $<")
-
-$(REF_FASTA:.fasta=.dict) : $(REF_FASTA)
-	$(call LSCRIPT_CHECK_MEM,5G,6G,"$(CREATE_SEQ_DICT) REFERENCE=$< OUTPUT=$@")
-
 #$(call VARIANT_RECAL,$@,$^)
 define VARIANT_RECAL
 $(call LSCRIPT_CHECK_PARALLEL_MEM,6,4G,5G,"$(call GATK_MEM,22G) -T VariantRecalibrator \
@@ -112,7 +104,7 @@ gatk/gvcf/all.variants.snps.recal.g.vcf : gatk/gvcf/all.variants.snps.g.vcf
 		-rscriptFile $(patsubst %.g.vcf,%.snps.plots.R $@)")
 
 # apply variant recal function
-gatk/vcf/all.variants.snps.filtered.g.vcf : gatk/vcf/all.variants.snps.g.vcf gatk/gvcf/all.variants.snps.recal.g.vcf
+gatk/gvcf/all.variants.snps.filtered.g.vcf : gatk/gvcf/all.variants.snps.g.vcf gatk/gvcf/all.variants.snps.recal.g.vcf
 $(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM2,8G) -T ApplyRecalibration  -R $(REF_FASTA) \
 	-input $< \
 	-recalFile $(<<) \
@@ -122,7 +114,7 @@ $(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM2,8G) -T ApplyRecalibration  -R 
 endif
 
 # hard filter indels %=sample
-gatk/gvcf/all.variants.indels.filtered.vcf : gatk/vcf/all.variants.indels.vcf
+gatk/gvcf/all.variants.indels.filtered.g.vcf : gatk/gvcf/all.variants.indels.g.vcf
 	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM2,8G) -T VariantFiltration -R $(REF_FASTA) $(INDEL_FILTERS) -o $@ \
 	--variant $<")
 
@@ -138,6 +130,3 @@ vcf/all.gatk_hc.g.vcf : gatk/gvcf/all.variants.snps.filtered.g.vcf gatk/gvcf/all
 # merge variants 
 include modules/bam_tools/processBam.mk
 include modules/vcf_tools/vcftools.mk
-
-endif
-GATK_MK = true
