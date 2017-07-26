@@ -24,8 +24,8 @@ if __name__ == '__main__':
                 mafr_diff += math.fabs(row1['mafR.clust'] - row2['mafR.clust'])
                 break
     if mafr_diff < 20:
-        print "success, CNCF files are similar: {} {}".format(args.cncf1, args.cncf2)
+        print(("success, CNCF files are similar: {} {}".format(args.cncf1, args.cncf2)))
         sys.exit(0)
     else:
-        print "failed, files have high mafR difference: {} {}".format(args.cncf1, args.cncf2)
+        print(("failed, files have high mafR difference: {} {}".format(args.cncf1, args.cncf2)))
         sys.exit(1)

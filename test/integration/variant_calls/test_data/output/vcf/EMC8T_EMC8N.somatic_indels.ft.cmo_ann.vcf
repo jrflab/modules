@@ -1,0 +1,283 @@
+##fileformat=VCFv4.1
+##fileDate=Mon Dec  5 17:17:42 2016
+##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
+##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
+##INFO=<ID=SOMPVAL,Number=1,Type=Float,Description="somatic p-value">
+##INFO=<ID=UPS_Coord,Number=.,Type=String,Description="UPS-coordinate">
+##INFO=<ID=QSI,Number=1,Type=Integer,Description="Quality score for any somatic variant, ie. for the ALT haplotype to be present at a significantly different frequency in the tumor and normal">
+##INFO=<ID=TQSI,Number=1,Type=Integer,Description="Data tier used to compute QSI">
+##INFO=<ID=NT,Number=1,Type=String,Description="Genotype of the normal in all data tiers, as used to classify somatic variants. One of {ref,het,hom,conflict}.">
+##INFO=<ID=QSI_NT,Number=1,Type=Integer,Description="Quality score reflecting the joint probability of a somatic variant and NT">
+##INFO=<ID=TQSI_NT,Number=1,Type=Integer,Description="Data tier used to compute QSI_NT">
+##INFO=<ID=SGT,Number=1,Type=String,Description="Most likely somatic genotype excluding normal noise states">
+##INFO=<ID=RU,Number=1,Type=String,Description="Smallest repeating sequence unit in inserted or deleted sequence">
+##INFO=<ID=RC,Number=1,Type=Integer,Description="Number of times RU repeats in the reference allele">
+##INFO=<ID=IC,Number=1,Type=Integer,Description="Number of times RU repeats in the indel allele">
+##INFO=<ID=IHP,Number=1,Type=Integer,Description="Largest reference interupted homopolymer length intersecting with the indel">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
+##INFO=<ID=OVERLAP,Number=0,Type=Flag,Description="Somatic indel possibly overlaps a second indel.">
+##INFO=<ID=AVGCOV,Number=1,Type=Float,Description="average k-mer coverage">
+##INFO=<ID=MINCOV,Number=1,Type=Integer,Description="minimum k-mer coverage of non-reference allele">
+##INFO=<ID=ALTCOV,Number=1,Type=Integer,Description="k-mer coverage of reference + any other allele (different from current non-reference) at locus">
+##INFO=<ID=ZYG,Number=1,Type=String,Description="zygosity">
+##INFO=<ID=COVRATIO,Number=1,Type=Float,Description="coverage ratio [(MINCOV)/(ALTCOV+MINCOV)]">
+##INFO=<ID=CHI2,Number=1,Type=Float,Description="chi-square score">
+##INFO=<ID=FISHERPHREDSCORE,Number=1,Type=Float,Description="phred-scaled p-value from the Fisher's exact test for tumor-normal allele counts">
+##INFO=<ID=INH,Number=1,Type=String,Description="inheritance">
+##INFO=<ID=BESTSTATE,Number=1,Type=String,Description="state of the mutation">
+##INFO=<ID=COVSTATE,Number=1,Type=String,Description="coverage state of the mutation">
+##INFO=<ID=DENOVO,Number=0,Type=Flag,Description="De novo mutation">
+##INFO=<ID=FETS,Number=1,Type=Float,Description="phred-scaled p-value of the Fisher's exact test for tumor-normal allele counts (right-sided)">
+##INFO=<ID=SHARED,Number=0,Type=Flag,Description="Shared mutation betweem tumor and normal">
+##INFO=<ID=NORMAL,Number=0,Type=Flag,Description="Mutation present only in the normal">
+##INFO=<ID=NONE,Number=0,Type=Flag,Description="Mutation not supported by data">
+##INFO=<ID=KMERSIZE,Number=1,Type=Integer,Description="K-mer size used to assemble the locus">
+##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias of the Fisher's exact test (two-sided)">
+##INFO=<ID=FR,Number=.,Type=Float,Description="Estimated population frequency of variant">
+##INFO=<ID=MMLQ,Number=1,Type=Float,Description="Median minimum base quality for bases around variant">
+##INFO=<ID=TCR,Number=1,Type=Integer,Description="Total reverse strand coverage at this locus">
+##INFO=<ID=HP,Number=1,Type=Integer,Description="Homopolymer run length around variant locus">
+##INFO=<ID=WE,Number=1,Type=Integer,Description="End position of calling window">
+##INFO=<ID=Source,Number=.,Type=String,Description="Was this variant suggested by Playtypus, Assembler, or from a VCF?">
+##INFO=<ID=FS,Number=.,Type=Float,Description="Fisher's exact test for strand bias (Phred scale)">
+##INFO=<ID=WS,Number=1,Type=Integer,Description="Starting position of calling window">
+##INFO=<ID=PP,Number=.,Type=Float,Description="Posterior probability (phred scaled) that this variant segregates">
+##INFO=<ID=TR,Number=.,Type=Integer,Description="Total number of reads containing this variant">
+##INFO=<ID=NF,Number=.,Type=Integer,Description="Total number of forward reads containing this variant">
+##INFO=<ID=TCF,Number=1,Type=Integer,Description="Total forward strand coverage at this locus">
+##INFO=<ID=NR,Number=.,Type=Integer,Description="Total number of reverse reads containing this variant">
+##INFO=<ID=TC,Number=1,Type=Integer,Description="Total coverage at this locus">
+##INFO=<ID=END,Number=.,Type=Integer,Description="End position of reference call block">
+##INFO=<ID=MGOF,Number=.,Type=Integer,Description="Worst goodness-of-fit value reported across all samples">
+##INFO=<ID=SbPval,Number=.,Type=Float,Description="Binomial P-value for strand bias test">
+##INFO=<ID=START,Number=.,Type=Integer,Description="Start position of reference call block">
+##INFO=<ID=ReadPosRankSum,Number=.,Type=Float,Description="Mann-Whitney Rank sum test for difference between in positions of variants in reads from ref and alt">
+##INFO=<ID=MQ,Number=.,Type=Float,Description="Root mean square of mapping qualities of reads at the variant position">
+##INFO=<ID=QD,Number=1,Type=Float,Description="Variant-quality/read-depth for this variant">
+##INFO=<ID=SC,Number=1,Type=String,Description="Genomic sequence 10 bases either side of variant position">
+##INFO=<ID=BRF,Number=1,Type=Float,Description="Fraction of reads around this variant that failed filters">
+##INFO=<ID=HapScore,Number=.,Type=Integer,Description="Haplotype score measuring the number of haplotypes the variant is segregating into in a window">
+##INFO=<ID=Size,Number=.,Type=Integer,Description="Size of reference call block">
+##INFO=<ID=HOMLEN,Number=1,Type=Integer,Description="Length of base pair identical micro-homology at event breakpoints">
+##INFO=<ID=HOMSEQ,Number=.,Type=String,Description="Sequence of base pair identical micro-homology at event breakpoints">
+##INFO=<ID=NTLEN,Number=.,Type=Integer,Description="Number of bases inserted in place of deleted code">
+##INFO=<ID=PF,Number=1,Type=Integer,Description="The number of samples carry the variant">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Difference in length between REF and ALT alleles">
+##INFO=<ID=set,Number=1,Type=String,Description="Source VCF for the merged record in CombineVariants">
+##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
+##INFO=<ID=HGVSp_Short,Number=.,Type=String,Description="HGVSp short from vcf2maf">
+##INFO=<ID=SYMBOL,Number=.,Type=String,Description="gene symbol from vcf2maf">
+##INFO=<ID=Variant_Classification,Number=.,Type=String,Description="variant classification from vcf2maf">
+##INFO=<ID=cmo_hotspot,Number=0,Type=Flag,Description="cmo hotspot">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depth">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
+##FORMAT=<ID=VAF,Number=1,Type=Float,Description="variant freq">
+##FORMAT=<ID=DP2,Number=1,Type=Integer,Description="Read depth for tier2">
+##FORMAT=<ID=TAR,Number=2,Type=Integer,Description="Reads strongly supporting alternate allele for tiers 1,2">
+##FORMAT=<ID=TIR,Number=2,Type=Integer,Description="Reads strongly supporting indel allele for tiers 1,2">
+##FORMAT=<ID=TOR,Number=2,Type=Integer,Description="Other reads (weak support or insufficient indel breakpoint overlap) for tiers 1,2">
+##FORMAT=<ID=DP50,Number=1,Type=Float,Description="Average tier1 read depth within 50 bases">
+##FORMAT=<ID=FDP50,Number=1,Type=Float,Description="Average tier1 number of basecalls filtered from original read depth within 50 bases">
+##FORMAT=<ID=SUBDP50,Number=1,Type=Float,Description="Average number of reads below tier1 mapping quality threshold aligned across sites within 50 bases">
+##FORMAT=<ID=SR,Number=.,Type=Integer,Description="strand counts for ref: # of supporting forward,reverse reads for reference allele">
+##FORMAT=<ID=SA,Number=.,Type=Integer,Description="strand counts for alt: # of supporting forward,reverse reads for alterantive allele">
+##FORMAT=<ID=GQ,Number=.,Type=Integer,Description="Genotype quality as phred score">
+##FORMAT=<ID=GOF,Number=.,Type=Float,Description="Goodness of fit value">
+##FORMAT=<ID=NR,Number=.,Type=Integer,Description="Number of reads covering variant location in this sample">
+##FORMAT=<ID=GL,Number=.,Type=Float,Description="Genotype log10-likelihoods for AA,AB and BB genotypes, where A = ref and B = variant. Only applicable for bi-allelic sites">
+##FORMAT=<ID=NV,Number=.,Type=Integer,Description="Number of reads containing variant in this sample">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=RD,Number=1,Type=Integer,Description="Reference depth, how many reads support the reference">
+##FILTER=<ID=minCaller,Description="variant is not present in at least 2 callers">
+##FILTER=<ID=Repeat,Description="Sequence repeat of more than 8x in the reference sequence">
+##FILTER=<ID=iHpol,Description="Indel overlaps an interupted homopolymer longer than 14x in the reference sequence">
+##FILTER=<ID=BCNoise,Description="Average fraction of filtered basecalls within 50 bases of the indel exceeds 0.3">
+##FILTER=<ID=QSI_ref,Description="Normal sample is not homozygous ref or sindel Q-score < 30, ie calls with NT!=ref or QSI_NT < 30">
+##FILTER=<ID=MS,Description="Microsatellite mutation (format: #LEN#MOTIF)">
+##FILTER=<ID=LowCovNormal,Description="low coverage in the normal (<10)">
+##FILTER=<ID=HighCovNormal,Description="high coverage in the normal (>1000000)">
+##FILTER=<ID=LowCovTumor,Description="low coverage in the tumor (<4)">
+##FILTER=<ID=HighCovTumor,Description="high coverage in the tumor (>1000000)">
+##FILTER=<ID=LowVafTumor,Description="low variant allele frequency in the tumor (<0.04)">
+##FILTER=<ID=HighVafNormal,Description="high variant allele frequency in the normal (>0)">
+##FILTER=<ID=LowAltCntTumor,Description="low alternative allele count in the tumor (<3)">
+##FILTER=<ID=HighAltCntNormal,Description="high alternative allele count in the normal (>0)">
+##FILTER=<ID=LowFisherScore,Description="low Fisher's exact test score for tumor-normal allele counts (<5)">
+##FILTER=<ID=StrandBias,Description="strand bias: # of non-reference reads in either forward or reverse strand below threshold (<1)">
+##FILTER=<ID=GOF,Description="Variant fails goodness-of-fit test.">
+##FILTER=<ID=badReads,Description="Variant supported only by reads with low quality bases close to variant position, and not present on both strands.">
+##FILTER=<ID=alleleBias,Description="Variant frequency is lower than expected for het">
+##FILTER=<ID=hp10,Description="Flanking sequence contains homopolymer of length 10 or greater">
+##FILTER=<ID=Q20,Description="Variant quality is below 20.">
+##FILTER=<ID=strandBias,Description="Variant fails strand-bias filter">
+##FILTER=<ID=QualDepth,Description="Variant quality/Read depth ratio is low.">
+##FILTER=<ID=REFCALL,Description="This line represents a homozygous reference call">
+##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
+1	214816227	.	GT	G	.	minCaller	UPS_Coord=-T[214816228-214816230];SVTYPE=DEL;END=214816228;HOMLEN=2;HOMSEQ=TT;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CENPF;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:44,0	0/0:47,2
+1	214816466	.	TG	T	.	minCaller	UPS_Coord=-G[214816467-214816467];SVTYPE=DEL;END=214816467;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CENPF;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:49,0	0/0:49,1
+2	95775721	.	C	CTTTTAGTTCTTTTGCCTCTTCC	.	minCaller	UPS_Coord=+CCTTTTAGTTCTTTTGCCTCTT[95775720-95775723];SVTYPE=INS;END=95775721;HOMLEN=1;HOMSEQ=T;SVLEN=22;HGVSp_Short=nan;SYMBOL=MRPS5;Variant_Classification=Missense_Mutation	GT:AD	0/0:28,0	0/0:24,1
+2	95775789	.	G	GT	.	PASS	SS=Somatic;DP=51;VARPVAL=1.0;SOMPVAL=0.00276649964682;UPS_Coord=+T[95775790-95775791];HGVSp_Short=nan;SYMBOL=MRPS5;Variant_Classification=Splice_Region	GT:DP:AD:VAF	0/1:23:15,8:0.3478	0/0:21:21,0:0.0
+2	152552010	.	T	<DUP:TANDEM>	.	minCaller	UPS_Coord=+DUP:TANDEM>[152552011-152552011];SVTYPE=DUP:TANDEM;END=152552108;HOMLEN=0;NTLEN=0;SVLEN=98;HGVSp_Short=nan;SYMBOL=NEB;Variant_Classification=Missense_Mutation	GT:AD	0/0:121,1	0/0:119,0
+2	152552143	.	AG	A	5.66515	LowVafTumor;LowAltCntTumor;StrandBias;minCaller	UPS_Coord=-G[152552144-152552149];SOMATIC;FETS=5.66515;KMERSIZE=14;SB=5.35071;HGVSp_Short=p.P541Lfs*16;SYMBOL=NEB;Variant_Classification=Frame_Shift_Del;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/0:86,0:38,48:0,0:86	0/1:92,2:43,49:0,2:94
+4	186097179	.	GTCCTTTTTTATCTAATTGCAGAAAAGCTACAGAAAAGAAC	GGATTATTTTATTTAATTGCAAAAAAGATACAAAAAAAAACA	.	minCaller	UPS_Coord=+A[186097180-186097180];SVTYPE=RPL;END=186097219;HOMLEN=0;NTLEN=41;SVLEN=-40;HGVSp_Short=nan;SYMBOL=KIAA1430;Variant_Classification=Missense_Mutation	GT:AD	0/0:27,0	0/0:24,1
+4	186097219	.	C	CA	.	minCaller	SS=Somatic;DP=12;VARPVAL=1.0;SOMPVAL=0.0122171945701;UPS_Coord=+A[186097220-186097230];HGVSp_Short=nan;SYMBOL=KIAA1430;Variant_Classification=Intron	GT:DP:AD:VAF	1/1:9:2,7:0.7778	0/0:8:7,1:0.125
+6	32551974	.	CT	C	.	minCaller	UPS_Coord=-T[32551975-32551976];SVTYPE=DEL;END=32551975;HOMLEN=1;HOMSEQ=T;SVLEN=-1;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:0,1	0/0:0,0
+6	32552084	.	T	<RPL>	.	minCaller	UPS_Coord=+RPL>[32552085-32552085];SVTYPE=RPL;END=32552147;HOMLEN=0;NTLEN=57;SVLEN=-63;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Missense_Mutation	GT:AD	0/0:0,0	0/0:0,3
+6	32552093	.	ACCGCAC	A	.	minCaller	SS=Somatic;DP=18;VARPVAL=1.0;SOMPVAL=0.00402476780186;UPS_Coord=-CCGCAC[32552094-32552098];HGVSp_Short=p.V53_R54del;SYMBOL=HLA-DRB1;Variant_Classification=In_Frame_Del	GT:DP:AD:VAF	0/1:14:5,9:0.6429	0/0:8:8,0:0.0
+6	32552126	.	A	<RPL>	.	minCaller	UPS_Coord=+RPL>[32552127-32552127];SVTYPE=RPL;END=32552183;HOMLEN=0;NTLEN=58;SVLEN=-57;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Missense_Mutation	GT:AD	0/0:0,0	0/0:0,1
+6	32552129	.	C	<RPL>	.	minCaller	UPS_Coord=+RPL>[32552130-32552130];SVTYPE=RPL;END=32552197;HOMLEN=0;NTLEN=69;SVLEN=-68;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Missense_Mutation	GT:AD	0/0:0,0	0/0:0,1
+6	32552183	.	A	AC	104	HapScore;MQ;minCaller	UPS_Coord=+C[32552184-32552184];FR=0.5194;MMLQ=31.0;TCR=3;HP=3;WE=32552196;Source=Platypus;WS=32552161;PP=104.0;TR=3;NF=2;TCF=4;NR=1;TC=7;MGOF=202;SbPval=0.81;MQ=26.67;QD=46.3333333333;SC=ATCCGGTCACAGGGCGGCCTC;BRF=0.38;HapScore=8;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Intron	GT:GL:GOF:GQ:NR:NV:AD	0/1:-4.7,0.0,-0.0:166.0:3:3:1:3,1	1/0:-8.92,0.0,-3.12:202.0:31:4:2:4,2
+6	32552253	.	T	TG	30	MQ;minCaller	UPS_Coord=+G[32552254-32552256];FR=0.9995;MMLQ=32.0;TCR=2;HP=2;WE=32552261;Source=Platypus;WS=32552241;PP=30.0;TR=2;NF=0;TCF=0;NR=2;TC=2;MGOF=102;SbPval=1.0;MQ=29.0;QD=46.9228802356;SC=GTGCGGGCGCTGGAACCTTAA;BRF=0.0;HapScore=4;HGVSp_Short=nan;SYMBOL=HLA-DRB1;Variant_Classification=Intron	GT:GL:GOF:GQ:NR:NV:AD	./.:-4.4,0.0,-0.0:31.0:3:1:1:1,1	./.:-4.4,0.0,-0.0:102.0:3:1:1:1,1
+6	43008395	.	C	CG	.	minCaller	UPS_Coord=+G[43008396-43008398];SVTYPE=INS;END=43008395;HOMLEN=2;HOMSEQ=GG;SVLEN=1;HGVSp_Short=nan;SYMBOL=CUL7;Variant_Classification=Missense_Mutation	GT:AD	0/0:97,1	0/0:239,0
+6	43008460	.	CAG	C	.	minCaller	UPS_Coord=-AG[43008461-43008461];SVTYPE=DEL;END=43008462;HOMLEN=0;SVLEN=-2;HGVSp_Short=nan;SYMBOL=CUL7;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:111,1	0/0:229,0
+6	130761532	.	CT	C	.	minCaller	SS=Somatic;DP=114;VARPVAL=1.0;SOMPVAL=0.0451993876212;UPS_Coord=-T[130761533-130761542];HGVSp_Short=nan;SYMBOL=TMEM200A;Variant_Classification=Intron	GT:DP:AD:VAF	0/1:32:29,3:0.0938	0/0:56:56,0:0.0
+6	130761574	.	GC	G	.	minCaller	UPS_Coord=-C[130761575-130761575];SVTYPE=DEL;END=130761575;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=TMEM200A;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:80,0	0/0:69,1
+6	130761579	.	TG	T	.	minCaller	UPS_Coord=-G[130761580-130761581];SVTYPE=DEL;END=130761580;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=TMEM200A;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:81,0	0/0:68,1
+7	21907452	.	G	GT	.	minCaller	SS=Somatic;DP=33;VARPVAL=1.0;SOMPVAL=0.00903119868637;UPS_Coord=+T[21907453-21907458];HGVSp_Short=nan;SYMBOL=DNAH11;Variant_Classification=Intron	GT:DP:AD:VAF	0/1:13:8,5:0.3846	0/0:17:17,0:0.0
+7	101870893	.	TG	T	.	minCaller	UPS_Coord=-G[101870894-101870895];SVTYPE=DEL;END=101870894;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CUX1;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:67,2	0/0:80,0
+7	127251711	.	GGCACACTGCCAGGGGACTGCTA	GCACACTGCCAGGGGACTGCT	.	minCaller	UPS_Coord=-GCACACTGCAGACTGCA[127251712-127251712];SVTYPE=RPL;END=127251733;HOMLEN=0;NTLEN=20;SVLEN=-22;HGVSp_Short=nan;SYMBOL=PAX4;Variant_Classification=Missense_Mutation	GT:AD	0/0:78,2	0/0:85,0
+7	127251732	.	TA	T	.	PASS	SS=Somatic;DP=206;VARPVAL=1.0;SOMPVAL=0.0261345608007;UPS_Coord=-A[127251733-127251743];HGVSp_Short=nan;SYMBOL=PAX4;Variant_Classification=Splice_Region	GT:DP:AD:VAF	0/1:71:66,5:0.0704	0/0:74:74,0:0.0
+7	142471709	.	GT	G	39.27	PASS	UPS_Coord=-T[142471710-142471710];SOMATIC;AVGCOV=17.0;MINCOV=17;ALTCOV=98;ZYG=het;COVRATIO=0.15;CHI2=57.05;FISHERPHREDSCORE=39.27;INH=no;BESTSTATE=21/01;COVSTATE=75;HGVSp_Short=nan;SYMBOL=PRSS3P1;Variant_Classification=RNA	GT:AD:DP	0/0:75,0:75	0/1:98,17:115
+7	142471727	.	C	<INV>	.	minCaller	UPS_Coord=+INV>[142471728-142471728];SVTYPE=INV;END=142471783;HOMLEN=0;NTLEN=59,0;SVLEN=56;HGVSp_Short=nan;SYMBOL=PRSS3P1;Variant_Classification=RNA	GT:AD	0/0:97,0	0/0:130,1
+8	22422703	.	TCA	T	.	minCaller	UPS_Coord=-CA[22422704-22422706];SVTYPE=DEL;END=22422705;HOMLEN=2;HOMSEQ=CA;SVLEN=-2;HGVSp_Short=nan;SYMBOL=SORBS3;Variant_Classification=Intron	GT:AD	0/0:47,0	0/0:184,1
+8	22422728	.	T	TCCACCCCCACGGTGCGCTGCCCCTCACTGCCCAGCCTCTC	.	minCaller	UPS_Coord=+CCACCCCCACGGTGCGCTGCCCCTCACTGCCCAGCCTCTC[22422729-22422731];SVTYPE=INS;END=22422728;HOMLEN=2;HOMSEQ=CC;SVLEN=40;HGVSp_Short=nan;SYMBOL=SORBS3;Variant_Classification=Intron	GT:AD	0/0:61,0	0/0:261,1
+8	22422728	.	TC	T	2.05163	LowFisherScore;LowVafTumor;LowAltCntTumor;StrandBias;minCaller	UPS_Coord=-C[22422729-22422731];SOMATIC;FETS=2.05163;KMERSIZE=16;SB=7.2269;HGVSp_Short=nan;SYMBOL=SORBS3;Variant_Classification=Intron;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/0:75,0:42,33:0,0:75	0/1:280,2:159,121:0,2:282
+8	22422732	.	A	ACCCCCACGGTGCGCTGCCCCTCACTGCCCAGCCTCTCCCCC	.	minCaller	UPS_Coord=+CCCCCACGGTGCGCTGCCCCTCACTGCCCAGCCTCTCCCCC[22422733-22422773];SVTYPE=INS;END=22422732;HOMLEN=40;HOMSEQ=CCCCCACGGTGCGCTGCCCCTCACTGCCCAGCCTCTCCCC;SVLEN=41;HGVSp_Short=nan;SYMBOL=SORBS3;Variant_Classification=Intron	GT:AD	0/0:65,1	0/0:273,0
+8	22422816	.	C	CGCTGGAGAGAGAGCTGGCCGAGCTGAGCGCCGA	.	minCaller	UPS_Coord=+GCTGGAGAGAGAGCTGGCCGAGCTGAGCGCCGA[22422817-22422818];SVTYPE=INS;END=22422816;HOMLEN=1;HOMSEQ=G;SVLEN=33;HGVSp_Short=nan;SYMBOL=SORBS3;Variant_Classification=Missense_Mutation	GT:AD	0/0:96,0	0/0:299,1
+10	53459210	.	C	CAACTGACAACAGAACCAACCTCCGAGAAAATGTCCTTT	.	minCaller	UPS_Coord=+AACTGACAACAGAACCAACCTCCGAGAAAATGTCCTTT[53459211-53459211];SVTYPE=INS;END=53459210;HOMLEN=0;SVLEN=38;HGVSp_Short=nan;SYMBOL=CSTF2T;Variant_Classification=Missense_Mutation	GT:AD	0/0:381,0	0/0:281,1
+10	53459232	.	CT	C	.	minCaller	UPS_Coord=-T[53459233-53459233];SVTYPE=DEL;END=53459233;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CSTF2T;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:330,0	0/0:249,2
+10	73048267	.	TA	T	.	minCaller	UPS_Coord=-A[73048268-73048269];SVTYPE=DEL;END=73048268;HOMLEN=1;HOMSEQ=A;SVLEN=-1;HGVSp_Short=nan;SYMBOL=UNC5B;Variant_Classification=Intron	GT:AD	0/0:95,0	0/0:235,1
+10	75533333	.	TG	T	.	minCaller	UPS_Coord=-G[75533334-75533335];SVTYPE=DEL;END=75533334;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=FUT11;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:169,1	0/0:210,0
+10	75533449	.	GC	G	.	minCaller	UPS_Coord=-C[75533450-75533452];SVTYPE=DEL;END=75533450;HOMLEN=2;HOMSEQ=CC;SVLEN=-1;HGVSp_Short=nan;SYMBOL=FUT11;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:147,1	0/0:157,0
+10	75533603	.	CA	C	.	minCaller	UPS_Coord=-A[75533604-75533606];SVTYPE=DEL;END=75533604;HOMLEN=2;HOMSEQ=AA;SVLEN=-1;HGVSp_Short=nan;SYMBOL=FUT11;Variant_Classification=Intron	GT:AD	0/0:28,1	0/0:17,0
+11	533650	.	C	<INV>	.	minCaller	UPS_Coord=+INV>[533651-533651];SVTYPE=INV;END=533705;HOMLEN=0;NTLEN=0,0;SVLEN=67;HGVSp_Short=nan;SYMBOL=HRAS;Variant_Classification=Intron	GT:AD	0/0:31,0	0/0:128,2
+11	533803	.	TG	T	.	minCaller	UPS_Coord=-G[533804-533804];SVTYPE=DEL;END=533804;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=HRAS;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:173,0	0/0:555,2
+11	533847	.	T	<INS>	.	minCaller	UPS_Coord=+INS>[533848-533848];SVTYPE=INS;END=533847;HOMLEN=3;HOMSEQ=GGT;SVLEN=75;HGVSp_Short=nan;SYMBOL=HRAS;Variant_Classification=Missense_Mutation	GT:AD	0/0:166,0	0/0:579,1
+11	8716954	.	TC	T	.	minCaller	UPS_Coord=-C[8716955-8716957];SVTYPE=DEL;END=8716955;HOMLEN=2;HOMSEQ=CC;SVLEN=-1;HGVSp_Short=nan;SYMBOL=ST5;Variant_Classification=Intron	GT:AD	0/0:71,0	0/0:153,1
+11	8717109	.	AACAGGC	A	.	minCaller	UPS_Coord=-ACAGGC[8717110-8717115];SVTYPE=DEL;END=8717115;HOMLEN=5;HOMSEQ=ACAGG;SVLEN=-6;HGVSp_Short=nan;SYMBOL=ST5;Variant_Classification=Intron	GT:AD	0/0:33,0	0/0:41,1
+11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=152;VARPVAL=1.0;SOMPVAL=1.05852042517e-06;UPS_Coord=+A[46917759-46917760];HGVSp_Short=nan;SYMBOL=LRP4;Variant_Classification=Splice_Region	GT:DP:AD:VAF	0/1:84:55,29:0.3452	0/0:42:42,0:0.0
+11	46917848	.	T	<INS>	.	minCaller	UPS_Coord=+INS>[46917849-46917849];SVTYPE=INS;END=46917848;HOMLEN=1;HOMSEQ=C;SVLEN=56;HGVSp_Short=nan;SYMBOL=LRP4;Variant_Classification=Missense_Mutation	GT:AD	0/0:84,1	0/0:223,0
+11	46917888	.	TAG	T	.	minCaller	UPS_Coord=-AG[46917889-46917894];SVTYPE=DEL;END=46917890;HOMLEN=5;HOMSEQ=AGAGA;SVLEN=-2;HGVSp_Short=nan;SYMBOL=LRP4;Variant_Classification=Intron	GT:AD	0/0:63,0	0/0:144,1
+11	55406755	.	AGAAATCAACTTTTCT	A	.	minCaller	UPS_Coord=-GAAATCAACTTTTCT[55406756-55406759];SVTYPE=DEL;END=55406770;HOMLEN=3;HOMSEQ=GAA;SVLEN=-15;HGVSp_Short=nan;SYMBOL=OR4P4;Variant_Classification=Nonstop_Mutation	GT:AD	0/0:18,2	0/0:23,0
+11	55406761	.	CAACT	C	6.78231	HighVafNormal;HighAltCntNormal	UPS_Coord=-AACT[55406762-55406762];FETS=6.78231;SHARED;KMERSIZE=15;SB=5.39912;HGVSp_Short=p.Q310Lfs*?;SYMBOL=OR4P4;Variant_Classification=Frame_Shift_Del;LEN=4;TYPE=del	GT:AD:SR:SA:DP	0/1:9,9:2,7:1,8:18	0/1:10,6:4,6:1,5:16
+13	35733547	.	CT	C	34.6702	LowVafTumor;HighVafNormal;LowAltCntTumor;HighAltCntNormal;StrandBias;minCaller	UPS_Coord=-T[35733548-35733550];FETS=34.6702;NORMAL;KMERSIZE=17;SB=0;HGVSp_Short=p.L1081*;SYMBOL=NBEA;Variant_Classification=Frame_Shift_Del;LEN=1;TYPE=del	GT:AD:SR:SA:DP	0/1:68,33:39,29:2,31:101	0/0:23,0:15,8:0,0:23
+13	46054174	.	TG	T	.	minCaller	UPS_Coord=-G[46054175-46054177];SVTYPE=DEL;END=46054175;HOMLEN=2;HOMSEQ=GG;SVLEN=-1;HGVSp_Short=nan;SYMBOL=COG3;Variant_Classification=Intron	GT:AD	0/0:6,2	0/0:2,0
+15	51503126	.	TG	T	.	minCaller	UPS_Coord=-G[51503127-51503127];SVTYPE=DEL;END=51503127;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CYP19A1;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:33,0	0/0:54,1
+16	705522	.	GGGCCTCCCCTTCCCTGAG	G	.	minCaller	UPS_Coord=-GGGCCTCCCCTTCCCTGA[705522-705529];SVTYPE=DEL;END=705540;HOMLEN=6;HOMSEQ=GGCCTC;SVLEN=-18;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:79,0	0/0:294,1
+16	705539	.	AG	A	.	minCaller	UPS_Coord=-G[705540-705542];SVTYPE=DEL;END=705540;HOMLEN=2;HOMSEQ=GG;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:79,0	0/0:294,1
+16	705563	.	C	<DEL>	.	minCaller	UPS_Coord=+DEL>[705564-705564];SVTYPE=DEL;END=705648;HOMLEN=3;HOMSEQ=CTC;SVLEN=-85;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Missense_Mutation	GT:AD	0/0:211,0	0/0:852,1
+16	705566	.	CG	C	.	minCaller	UPS_Coord=-G[705567-705569];SVTYPE=DEL;END=705567;HOMLEN=2;HOMSEQ=GG;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:113,0	0/0:440,1
+16	705649	.	CT	C	.	minCaller	UPS_Coord=-T[705650-705650];SVTYPE=DEL;END=705650;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:213,0	0/0:861,2
+16	705703	.	GGTA	GTT	.	minCaller	UPS_Coord=-G[705703-705704];SVTYPE=RPL;END=705706;HOMLEN=0;NTLEN=2;SVLEN=-3;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:187,0	0/0:789,1
+16	705705	.	TA	T	.	minCaller	UPS_Coord=-A[705706-705707];SVTYPE=DEL;END=705706;HOMLEN=1;HOMSEQ=A;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:182,0	0/0:783,3
+16	705709	.	AG	A	.	minCaller	UPS_Coord=-G[705710-705712];SVTYPE=DEL;END=705710;HOMLEN=2;HOMSEQ=GG;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:169,0	0/0:758,1
+16	705714	.	GC	G	.	minCaller	UPS_Coord=-C[705715-705717];SVTYPE=DEL;END=705715;HOMLEN=2;HOMSEQ=CC;SVLEN=-1;HGVSp_Short=nan;SYMBOL=WDR90;Variant_Classification=Intron	GT:AD	0/0:158,0	0/0:732,1
+16	14342865	.	TG	T	.	minCaller	UPS_Coord=-G[14342866-14342867];SVTYPE=DEL;END=14342866;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=MKL2;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:183,0	0/0:247,2
+17	8796856	.	TC	T	.	minCaller	UPS_Coord=-C[8796857-8796859];SVTYPE=DEL;END=8796857;HOMLEN=2;HOMSEQ=CC;SVLEN=-1;HGVSp_Short=nan;SYMBOL=PIK3R5;Variant_Classification=Intron	GT:AD	0/0:53,0	0/0:84,1
+17	46053357	.	C	CTGAGCAGGTGGCAGAAGATGCGGTAAGATGGGCCTTGTGA	.	minCaller	UPS_Coord=+TGAGCAGGTGGCAGAAGATGCGGTAAGATGGGCCTTGTGA[46053358-46053403];SVTYPE=INS;END=46053357;HOMLEN=45;HOMSEQ=TGAGCAGGTGGCAGAAGATGCGGTAAGATGGGCCTTGTGATGAGC;SVLEN=40;HGVSp_Short=nan;SYMBOL=CDK5RAP3;Variant_Classification=Missense_Mutation	GT:AD	0/0:152,0	0/0:234,1
+19	41188842	.	CG	C	.	minCaller	UPS_Coord=-G[41188843-41188845];SVTYPE=DEL;END=41188843;HOMLEN=2;HOMSEQ=GG;SVLEN=-1;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:97,1	0/0:176,0
+19	41188852	.	C	CCACACACGTGCATTCCCCGGGACTCCTCTACCTC	.	minCaller	UPS_Coord=+CCTCCACACACGTGCATTCCCCGGGACTCCTCTA[41188849-41188853];SVTYPE=INS;END=41188852;HOMLEN=0;SVLEN=34;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Missense_Mutation	GT:AD	0/0:90,0	0/0:185,1
+19	41188889	.	AT	A	.	minCaller	UPS_Coord=-T[41188890-41188890];SVTYPE=DEL;END=41188890;HOMLEN=0;SVLEN=-1;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Intron	GT:AD	0/0:81,2	0/0:166,0
+19	41188890	.	TG	T	22.5	minCaller	UPS_Coord=-G[41188891-41188900];SOMATIC;AVGCOV=12.0;MINCOV=12;ALTCOV=114;ZYG=het;COVRATIO=0.1;CHI2=82.57;FISHERPHREDSCORE=22.5;INH=no;BESTSTATE=21/01;COVSTATE=65;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Intron	GT:AD:DP	0/0:65,0:65	0/1:114,12:126
+19	41188894	.	G	<RPL>	.	minCaller	UPS_Coord=+RPL>[41188895-41188895];SVTYPE=RPL;END=41188960;HOMLEN=0;NTLEN=68;SVLEN=-68;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Intron	GT:AD	0/0:80,0	0/0:162,1
+19	41188948	.	C	<INS>	.	minCaller	UPS_Coord=+INS>[41188949-41188949];SVTYPE=INS;END=41188948;HOMLEN=0;SVLEN=50;HGVSp_Short=nan;SYMBOL=NUMBL;Variant_Classification=Intron	GT:AD	0/0:62,0	0/0:128,1
+19	42260731	.	TG	T	.	minCaller	UPS_Coord=-G[42260732-42260733];SVTYPE=DEL;END=42260732;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=CEACAM6;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:65,0	0/0:106,2
+19	51503320	.	G	GGCCAGGCTGGGTGCAATGATCT	.	minCaller	UPS_Coord=+GCCAGGCTGGGTGCAATGATCT[51503321-51503321];SVTYPE=INS;END=51503320;HOMLEN=0;SVLEN=22;HGVSp_Short=nan;SYMBOL=KLK8;Variant_Classification=Missense_Mutation	GT:AD	0/0:33,0	0/0:36,1
+19	51503493	.	TCC	TT	.	minCaller	UPS_Coord=-C[51503494-51503496];SVTYPE=RPL;END=51503495;HOMLEN=0;NTLEN=1;SVLEN=-2;HGVSp_Short=nan;SYMBOL=KLK8;Variant_Classification=Missense_Mutation	GT:AD	0/0:113,0	0/0:194,1
+19	56896518	.	G	<DEL>	.	minCaller	UPS_Coord=+DEL>[56896519-56896519];SVTYPE=DEL;END=56896612;HOMLEN=6;HOMSEQ=AAATAA;SVLEN=-94;HGVSp_Short=nan;SYMBOL=ZNF582;Variant_Classification=Missense_Mutation	GT:AD	0/0:50,0	0/0:64,1
+19	56896524	.	A	<DEL>	.	minCaller	UPS_Coord=+DEL>[56896525-56896525];SVTYPE=DEL;END=56896594;HOMLEN=4;HOMSEQ=TTCC;SVLEN=-70;HGVSp_Short=nan;SYMBOL=ZNF582;Variant_Classification=Missense_Mutation	GT:AD	0/0:46,0	0/0:62,1
+19	56896623	.	TG	T	.	minCaller	UPS_Coord=-G[56896624-56896625];SVTYPE=DEL;END=56896624;HOMLEN=1;HOMSEQ=G;SVLEN=-1;HGVSp_Short=nan;SYMBOL=ZNF582;Variant_Classification=Intron	GT:AD	0/0:11,0	0/0:9,1
+20	17639677	.	GGCCTTCTTGCCCTGGTTCTGGGCCCCCTCA	G	.	minCaller	UPS_Coord=-GCCTTCTTGCCCTGGTTCTGGGCCCCCTCA[17639678-17639704];SVTYPE=DEL;END=17639707;HOMLEN=26;HOMSEQ=GCCTTCTTGCCCTGGTTCTGGGCCCC;SVLEN=-30;HGVSp_Short=nan;SYMBOL=RRBP1;Variant_Classification=Intron	GT:AD	0/0:19,1	0/0:22,0
+20	47705763	.	GTT	G	60.58	PASS	UPS_Coord=-TT[47705764-47705774];SOMATIC;AVGCOV=10.0;MINCOV=10;ALTCOV=0;ZYG=hom;COVRATIO=1.0;CHI2=0.0;FISHERPHREDSCORE=60.58;INH=no;BESTSTATE=20/02;COVSTATE=13;HGVSp_Short=nan;SYMBOL=CSE1L;Variant_Classification=Intron	GT:AD:DP	0/0:13,0:13	1/1:0,10:10
+22	20077599	.	A	ACCCTAGTGGGGATGTGT	.	minCaller	UPS_Coord=+CCCTAGTGGGGATGTGT[20077600-20077600];SVTYPE=INS;END=20077599;HOMLEN=0;SVLEN=17;HGVSp_Short=nan;SYMBOL=DGCR8;Variant_Classification=Missense_Mutation	GT:AD	0/0:166,1	0/0:277,0
+22	20077625	.	C	CGATGTGTCCCCCGTCAAGCCCCTGAGCCGATCT	.	minCaller	UPS_Coord=+GATGTGTCCCCCGTCAAGCCCCTGAGCCGATCT[20077626-20077629];SVTYPE=INS;END=20077625;HOMLEN=3;HOMSEQ=GAT;SVLEN=33;HGVSp_Short=nan;SYMBOL=DGCR8;Variant_Classification=Missense_Mutation	GT:AD	0/0:165,0	0/0:278,1
+22	20077701	.	AC	A	.	minCaller	UPS_Coord=-C[20077702-20077704];SVTYPE=DEL;END=20077702;HOMLEN=2;HOMSEQ=CC;SVLEN=-1;HGVSp_Short=nan;SYMBOL=DGCR8;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:93,1	0/0:140,0
+22	20077750	.	CA	C	.	minCaller	UPS_Coord=-A[20077751-20077753];SVTYPE=DEL;END=20077751;HOMLEN=2;HOMSEQ=AA;SVLEN=-1;HGVSp_Short=nan;SYMBOL=DGCR8;Variant_Classification=Frame_Shift_Del	GT:AD	0/0:33,0	0/0:56,1

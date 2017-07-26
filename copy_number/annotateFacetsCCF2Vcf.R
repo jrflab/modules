@@ -101,42 +101,49 @@ info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Fl
 info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer",
                                                         Description = "facets multiplicity", row.names = "facetsMultiplicity"))
 
-ol <- findOverlaps(rowRanges(vcf), facetsGr, select = 'first')
-ol[is.na(ol)] <- nearest(rowRanges(vcf)[is.na(ol)], facetsGr) # get nearest segment for missing values
-if (sum(!is.na(ol)) > 0) {
-    tcn <- facetsGr[ol[!is.na(ol)], ]$tcn
-    lcn <- facetsGr[ol[!is.na(ol)], ]$lcn
-    purity <- rep(purity, length(tcn))
+pass <- rowRanges(vcf)$FILTER == 'PASS'
+if (sum(pass) == 0) {
+    cat("No unfiltered variants\n")
+} else {
+    cat(sum(pass), "variants pass\n")
+    ol <- findOverlaps(rowRanges(vcf[pass]), facetsGr, select = 'first')
+    ol[is.na(ol)] <- nearest(rowRanges(vcf[pass])[is.na(ol)], facetsGr) # get nearest segment for missing values
+    if (sum(!is.na(ol)) > 0) {
+        tcn <- facetsGr[ol[!is.na(ol)], ]$tcn
+        lcn <- facetsGr[ol[!is.na(ol)], ]$lcn
+        purity <- rep(purity, length(tcn))
 
-    ref <- sapply(geno(vcf)$AD[!is.na(ol), tumorSample], function(x) x[1])
-    alt <- sapply(geno(vcf)$AD[!is.na(ol), tumorSample], function(x) x[2])
-    vaf <- alt / (alt + ref)
+        ref <- sapply(geno(vcf[pass])$AD[!is.na(ol), tumorSample], function(x) x[1])
+        alt <- sapply(geno(vcf[pass])$AD[!is.na(ol), tumorSample], function(x) x[2])
+        vaf <- alt / (alt + ref)
 
-    ccfFit <- computeCCF(vaf = vaf, tcn, lcn, purity = purity)
-    conf <- confCCF(alt = alt, ref = ref, tcn, lcn, purity = purity,
-                           multiplicity = ccfFit$multiplicity)
-    ccfLower <- conf$lower
-    ccfUpper <- conf$upper
-    clonalStatus <- ifelse(round(ccfLower, 2) >= 0.75, "clonal", 
-                           ifelse(round(ccfLower, 2) < 0.75 & ccfFit$ccf >= 0.8, 'likely_clonal', 
-                                  "subclonal"))
+        ccfFit <- computeCCF(vaf = vaf, tcn, lcn, purity = purity)
+        conf <- confCCF(alt = alt, ref = ref, tcn, lcn, purity = purity,
+                            multiplicity = ccfFit$multiplicity)
+        ccfLower <- conf$lower
+        ccfUpper <- conf$upper
+        clonalStatus <- ifelse(round(ccfLower, 2) >= 0.75, "clonal", 
+                            ifelse(round(ccfLower, 2) < 0.75 & ccfFit$ccf >= 0.8, 'likely_clonal', 
+                                    "subclonal"))
 
-    info(vcf)$facetsCF[!is.na(ol)] <- facetsGr$cf[ol[!is.na(ol)]]
-    info(vcf)$facetsTCN_EM[!is.na(ol)] <- facetsGr$tcn[ol[!is.na(ol)]]
-    info(vcf)$facetsLCN_EM[!is.na(ol)] <- facetsGr$lcn[ol[!is.na(ol)]]
-    info(vcf)$facetsMafR[!is.na(ol)] <- facetsGr$mafR[ol[!is.na(ol)]]
-    info(vcf)$facetsLOH[!is.na(ol)] <- facetsGr$lcn[ol[!is.na(ol)]] == 0
-    info(vcf)$facetsLOHCall[!is.na(ol)] <- ifelse(facetsGr$lcn[ol[!is.na(ol)]] == 0, 'true', 'false')
-    info(vcf)$facetsMultiplicity[!is.na(ol)] <- ccfFit$multiplicity
-    info(vcf)$ccf[!is.na(ol)] <- ccfFit$ccf
-    info(vcf)$clonalStatus[!is.na(ol)] <- clonalStatus
-    info(vcf)$ccfConfUpper[!is.na(ol)] <- ccfUpper
-    info(vcf)$ccfConfLower[!is.na(ol)] <- ccfLower
-    x <- is.na(info(vcf)$facetsLOH[!is.na(ol)])
-    if (sum(x) > 0) {
-        info(vcf)$facetsLOH[!is.na(ol)][x] <- facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR
-        info(vcf)$facetsLOHCall[!is.na(ol)][x] <- ifelse(facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR, 'true', 'false')
+        info(vcf)$facetsCF[pass][!is.na(ol)] <- facetsGr$cf[ol[!is.na(ol)]]
+        info(vcf)$facetsTCN_EM[pass][!is.na(ol)] <- facetsGr$tcn[ol[!is.na(ol)]]
+        info(vcf)$facetsLCN_EM[pass][!is.na(ol)] <- facetsGr$lcn[ol[!is.na(ol)]]
+        info(vcf)$facetsMafR[pass][!is.na(ol)] <- facetsGr$mafR[ol[!is.na(ol)]]
+        info(vcf)$facetsLOH[pass][!is.na(ol)] <- facetsGr$lcn[ol[!is.na(ol)]] == 0
+        info(vcf)$facetsLOHCall[pass][!is.na(ol)] <- ifelse(facetsGr$lcn[ol[!is.na(ol)]] == 0, 'true', 'false')
+        info(vcf)$facetsMultiplicity[pass][!is.na(ol)] <- ccfFit$multiplicity
+        info(vcf)$ccf[pass][!is.na(ol)] <- ccfFit$ccf
+        info(vcf)$clonalStatus[pass][!is.na(ol)] <- clonalStatus
+        info(vcf)$ccfConfUpper[pass][!is.na(ol)] <- ccfUpper
+        info(vcf)$ccfConfLower[pass][!is.na(ol)] <- ccfLower
+        x <- is.na(info(vcf)$facetsLOH[pass][!is.na(ol)])
+        if (sum(x) > 0) {
+            info(vcf)$facetsLOH[pass][!is.na(ol)][x] <- facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR
+            info(vcf)$facetsLOHCall[pass][!is.na(ol)][x] <- ifelse(facetsGr$mafR[ol[!is.na(ol)]][x] > medianMafR + sdMafR, 'true', 'false')
+        }
     }
 }
+
 
 writeVcf(vcf, opt$outFile)

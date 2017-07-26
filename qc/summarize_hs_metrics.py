@@ -51,7 +51,7 @@ if __name__ == "__main__":
     for metrics_file in args.hs_metrics_file:
         sample_metrics = pd.read_table(metrics_file, comment='#')
         sample_name = os.path.basename(metrics_file).split('.')[0] # remove suffix
-        sample_metrics = sample_metrics[column_map.values()].copy()
+        sample_metrics = sample_metrics[list(column_map.values())].copy()
         sample_metrics.loc[0, 'SAMPLE'] = sample_name
         metrics = metrics.append(sample_metrics)
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             warning_message = args.project_name + ": " + warning_message
         slack_warning(args.slack_group, args.slack_token, args.slack_channel, warning_message)
 
-    metrics.columns = column_map.keys()
+    metrics.columns = list(column_map.keys())
 
     metrics.to_csv(sys.stdout, sep='\t', index=False)
 

@@ -8,6 +8,7 @@ import re
 import os
 import sys
 import pandas as pd
+from functools import reduce
 
 
 def slack_warning(slack_group, slack_token, slack_channel, message):
@@ -51,11 +52,11 @@ if __name__ == "__main__":
     else:
         contigs = idxstats.chrom.unique().tolist()
 
-    contigs = filter(lambda x: 'Y' not in x, contigs)
+    contigs = [x for x in contigs if 'Y' not in x]
 
     num_mapped = idxstats.loc[idxstats['chrom'].isin(contigs)].select(lambda x: x.endswith('num_mapped'), axis=1)
     missing_contig_cov_samples = []
-    for (col, v) in num_mapped.iteritems():
+    for (col, v) in list(num_mapped.items()):
         s = re.sub(r'\..*', r'', col)
         if any(v == 0):
             missing_contig_cov_samples.append(s)
