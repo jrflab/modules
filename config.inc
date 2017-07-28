@@ -126,7 +126,7 @@ HISAT ?= $(HOME)/share/usr/hisat2-2.0.2-beta/hisat2
 
 TVC ?= $(HOME)/share/usr/bin/tvc
 
-ANNOVAR = $(PERL) $(HOME)/share/usr/annovar/table_annovar.pl
+ANNOVAR = $(PERL) $(HOME)/share/usr/annovar-2017-07-16/table_annovar.pl
 
 ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
 
@@ -134,6 +134,9 @@ VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
 VEP_PATH = $(VEP_ENV)/bin
 
 SPLIT_BED = python modules/scripts/split_bed.py
+
+INDEL_FILTER_VCF = python modules/vcf_tools/indel_filter_vcf.py
+SNP_FILTER_VCF = python modules/vcf_tools/snp_filter_vcf.py
 
 endif
 CONFIG_INC = true
