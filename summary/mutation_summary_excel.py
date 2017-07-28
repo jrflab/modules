@@ -209,7 +209,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
         config = yaml.load(open(summary_config))
     else:
         config = None
-    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ID,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
+    summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ID,UPS_Coord,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
         "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
         "ExAC_AF,MutationTaster_pred,provean_pred,FATHMM_pred,parssnp_pred," \

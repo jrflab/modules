@@ -2,12 +2,15 @@
 
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
-include modules/variant_callers/somatic/strelka.inc
 ##### DEFAULTS ######
 
 
 LOGDIR ?= log/strelka.$(NOW)
 PHONY += strelka strelka_vcfs strelka_mafs
+
+CONFIGURE_STRELKA = $(PERL) $(HOME)/share/usr/bin/configureStrelkaWorkflow.pl
+STRELKA_CONFIG = $(HOME)/share/usr/etc/strelka_config.ini
+STRELKA_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source strelka
 
 strelka : strelka_vcfs #strelka_mafs
 	
@@ -26,10 +29,10 @@ vcf/$1_$2.%.vcf : strelka/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<
 
 strelka/vcf/$1_$2.strelka_snps.vcf : strelka/$1_$2/task.complete
-	$$(INIT) cp -f strelka/$1_$2/results/all.somatic.snvs.vcf $$@
+	$$(INIT) $$(STRELKA_SOURCE_ANN_VCF) < strelka/$1_$2/results/all.somatic.snvs.vcf > $$@
 
 strelka/vcf/$1_$2.strelka_indels.vcf : strelka/$1_$2/task.complete
-	$$(INIT) cp -f strelka/$1_$2/results/all.somatic.indels.vcf $$@
+	$$(INIT) $$(STRELKA_SOURCE_ANN_VCF) < strelka/$1_$2/results/all.somatic.indels.vcf > $$@
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call strelka-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

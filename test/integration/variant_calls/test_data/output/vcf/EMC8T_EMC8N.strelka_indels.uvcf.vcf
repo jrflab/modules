@@ -1,13 +1,13 @@
 ##fileformat=VCFv4.1
-##fileDate=20161205
+##fileDate=20170728
 ##source=strelka
 ##source_version=2.0.15
-##startTime=Mon Dec  5 17:17:25 2016
+##startTime=Fri Jul 28 12:15:18 2017
 ##reference=file:///ifs/e63data/reis-filho/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##content=strelka somatic indel calls
 ##germlineIndelTheta=0.0001
 ##priorSomaticIndelRate=1e-06
-##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/home/limr/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
+##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/ifs/e63data/reis-filho/data/granular_cell_6575c/custom_capture_recapture/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
 ##INFO=<ID=QSI,Number=1,Type=Integer,Description="Quality score for any somatic variant, ie. for the ALT haplotype to be present at a significantly different frequency in the tumor and normal">
 ##INFO=<ID=TQSI,Number=1,Type=Integer,Description="Data tier used to compute QSI">
 ##INFO=<ID=NT,Number=1,Type=String,Description="Genotype of the normal in all data tiers, as used to classify somatic variants. One of {ref,het,hom,conflict}.">
@@ -21,6 +21,7 @@
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
 ##INFO=<ID=OVERLAP,Number=0,Type=Flag,Description="Somatic indel possibly overlaps a second indel.">
+##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
 ##INFO=<ID=UPS_Coord,Number=.,Type=String,Description="UPS-coordinate">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth for tier1">
 ##FORMAT=<ID=DP2,Number=1,Type=Integer,Description="Read depth for tier2">
@@ -119,5 +120,5 @@
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
-2	95775789	.	G	GT	.	PASS	QSI=34;TQSI=2;NT=ref;QSI_NT=34;TQSI_NT=2;SGT=ref->het;RU=T;RC=1;IC=2;IHP=2;SOMATIC;UPS_Coord=+T[95775790-95775791]	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	31:31:30,30:0,0:0,0:29.24:0.0:0.0	33:33:18,25:9,11:6,6:29.35:0.0:0.0
-11	46917758	.	C	CA	.	PASS	QSI=80;TQSI=2;NT=ref;QSI_NT=80;TQSI_NT=1;SGT=ref->het;RU=A;RC=1;IC=2;IHP=2;SOMATIC;UPS_Coord=+A[46917759-46917760]	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	50:50:50,51:0,0:0,0:55.8:0.0:0.0	98:98:54,56:34,34:8,8:114.16:0.0:0.0
+2	95775789	.	G	GT	.	PASS	QSI=34;TQSI=2;NT=ref;QSI_NT=34;TQSI_NT=2;SGT=ref->het;RU=T;RC=1;IC=2;IHP=2;SOMATIC;variantCaller=strelka;UPS_Coord=+T[95775790-95775791]	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	31:31:30,30:0,0:0,0:29.24:0.0:0.0	33:33:18,25:9,11:6,6:29.35:0.0:0.0
+11	46917758	.	C	CA	.	PASS	QSI=80;TQSI=2;NT=ref;QSI_NT=80;TQSI_NT=1;SGT=ref->het;RU=A;RC=1;IC=2;IHP=2;SOMATIC;variantCaller=strelka;UPS_Coord=+A[46917759-46917760]	DP:DP2:TAR:TIR:TOR:DP50:FDP50:SUBDP50	50:50:50,51:0,0:0,0:55.8:0.0:0.0	98:98:54,56:34,34:8,8:114.16:0.0:0.0

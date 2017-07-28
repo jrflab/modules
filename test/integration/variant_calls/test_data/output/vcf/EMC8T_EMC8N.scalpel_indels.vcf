@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=06/28/2017
+##fileDate=07/28/2017
 ##source=scalpel0.5.3 (beta), January 25 2016
 ##reference=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=AVGCOV,Number=1,Type=Float,Description="average k-mer coverage">
@@ -14,6 +14,10 @@
 ##INFO=<ID=COVSTATE,Number=1,Type=String,Description="coverage state of the mutation">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
 ##INFO=<ID=DENOVO,Number=0,Type=Flag,Description="De novo mutation">
+##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="k-mer Depth">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="k-mer depth supporting reference/indel at the site">
 ##FILTER=<ID=MS,Description="Microsatellite mutation (format: #LEN#MOTIF)">
 ##FILTER=<ID=LowCovNormal,Description="low coverage in the normal (<10)">
 ##FILTER=<ID=HighCovNormal,Description="high coverage in the normal (>1000000000)">
@@ -24,14 +28,12 @@
 ##FILTER=<ID=LowAltCntTumor,Description="low alternative allele count in the tumor (<5)">
 ##FILTER=<ID=HighAltCntNormal,Description="high alternative allele count in the normal (>0)">
 ##FILTER=<ID=LowFisherScore,Description="low Fisher's exact test score for tumor-normal allele counts (<10)">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##FORMAT=<ID=DP,Number=1,Type=Integer,Description="k-mer Depth">
-##FORMAT=<ID=AD,Number=.,Type=Integer,Description="k-mer depth supporting reference/indel at the site">
+##FILTER=<ID=noTumorVariantReads,Description="no tumor variant reads">
+##FILTER=<ID=noAF,Description="missing AF">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
-2	95775789	.	G	GT	24.58	PASS	SOMATIC;AVGCOV=8.0;MINCOV=8;ALTCOV=19;ZYG=het;COVRATIO=0.30;CHI2=4.48;FISHERPHREDSCORE=24.58;INH=no;BESTSTATE=21/01;COVSTATE=24,19/0,8/0,0	GT:AD:DP	0/0:24,0:24	0/1:19,8:27
-6	130761532	.	CT	C	10.99	LowAltCntTumor	SOMATIC;AVGCOV=3.0;MINCOV=3;ALTCOV=32;ZYG=het;COVRATIO=0.09;CHI2=24.03;FISHERPHREDSCORE=10.99;INH=no;BESTSTATE=21/01;COVSTATE=45,32/0,3/0,0	GT:AD:DP	0/0:45,0:45	0/1:32,3:35
-7	127251732	.	TA	T	17.78	PASS	SOMATIC;AVGCOV=6.0;MINCOV=6;ALTCOV=65;ZYG=het;COVRATIO=0.08;CHI2=49.03;FISHERPHREDSCORE=17.78;INH=no;BESTSTATE=21/01;COVSTATE=67,65/0,6/0,0	GT:AD:DP	0/0:67,0:67	0/1:65,6:71
-7	142471709	.	GT	G	39.27	PASS	SOMATIC;AVGCOV=17.0;MINCOV=17;ALTCOV=98;ZYG=het;COVRATIO=0.15;CHI2=57.05;FISHERPHREDSCORE=39.27;INH=no;BESTSTATE=21/01;COVSTATE=75,98/0,17/0,0	GT:AD:DP	0/0:75,0:75	0/1:98,17:115
-11	46917758	.	C	CA	55.78	PASS	SOMATIC;AVGCOV=28.0;MINCOV=28;ALTCOV=55;ZYG=het;COVRATIO=0.34;CHI2=8.78;FISHERPHREDSCORE=55.78;INH=no;BESTSTATE=21/01;COVSTATE=40,55/0,28/0,0	GT:AD:DP	0/0:40,0:40	0/1:55,28:83
-19	41188890	.	TG	T	22.50	PASS	SOMATIC;AVGCOV=12.0;MINCOV=12;ALTCOV=114;ZYG=het;COVRATIO=0.10;CHI2=82.57;FISHERPHREDSCORE=22.50;INH=no;BESTSTATE=21/01;COVSTATE=65,114/0,12/0,0	GT:AD:DP	0/0:65,0:65	0/1:114,12:126
-20	47705763	.	GTT	G	60.58	PASS	SOMATIC;AVGCOV=10.0;MINCOV=10;ALTCOV=0;ZYG=hom;COVRATIO=1.00;CHI2=0;FISHERPHREDSCORE=60.58;INH=no;BESTSTATE=20/02;COVSTATE=13,0/0,10/0,0	GT:AD:DP	0/0:13,0:13	1/1:0,10:10
+2	95775789	.	G	GT	24.58	PASS	AVGCOV=8.0;MINCOV=8;ALTCOV=19;ZYG=het;COVRATIO=0.3;CHI2=4.48;FISHERPHREDSCORE=24.58;INH=no;BESTSTATE=21/01;COVSTATE=24;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:24,0:24	0/1:19,8:27
+7	127251732	.	TA	T	17.78	PASS	AVGCOV=6.0;MINCOV=6;ALTCOV=65;ZYG=het;COVRATIO=0.08;CHI2=49.03;FISHERPHREDSCORE=17.78;INH=no;BESTSTATE=21/01;COVSTATE=67;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:67,0:67	0/1:65,6:71
+7	142471709	.	GT	G	33.45	PASS	AVGCOV=17.0;MINCOV=17;ALTCOV=122;ZYG=het;COVRATIO=0.12;CHI2=79.32;FISHERPHREDSCORE=33.45;INH=no;BESTSTATE=21/01;COVSTATE=75;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:75,0:75	0/1:122,17:139
+11	46917758	.	C	CA	55.78	PASS	AVGCOV=28.0;MINCOV=28;ALTCOV=55;ZYG=het;COVRATIO=0.34;CHI2=8.78;FISHERPHREDSCORE=55.78;INH=no;BESTSTATE=21/01;COVSTATE=40;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:40,0:40	0/1:55,28:83
+19	41188890	.	TG	T	22.5	PASS	AVGCOV=12.0;MINCOV=12;ALTCOV=114;ZYG=het;COVRATIO=0.1;CHI2=82.57;FISHERPHREDSCORE=22.5;INH=no;BESTSTATE=21/01;COVSTATE=65;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:65,0:65	0/1:114,12:126
+20	47705763	.	GTT	G	60.58	PASS	AVGCOV=10.0;MINCOV=10;ALTCOV=0;ZYG=hom;COVRATIO=1.0;CHI2=0.0;FISHERPHREDSCORE=60.58;INH=no;BESTSTATE=20/02;COVSTATE=13;SOMATIC;variantCaller=scalpel	GT:AD:DP	0/0:13,0:13	1/1:0,10:10

@@ -21,13 +21,16 @@ $(foreach chr,$(CHROMOSOMES),\
 
 INDEL_FILTER_VCF = python modules/vcf_tools/indel_filter_vcf.py
 SNP_FILTER_VCF = python modules/vcf_tools/snp_filter_vcf.py
+PLATYPUS_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source platypus
 
 vcf/%.platypus_indels.vcf : $(foreach chr,$(CHROMOSOMES),platypus/chr_vcf/%.$(chr).platypus.vcf)
-	$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $<; cat $^ | grep -v '^#' | \
-		$(VCF_SORT) $(REF_DICT) - ) | $(INDEL_FILTER_VCF) > $@")
+	$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $<; cat $^ | grep -v '^#' | \
+		$(VCF_SORT) $(REF_DICT) - ) | $(INDEL_FILTER_VCF) | $(PLATYPUS_SOURCE_ANN_VCF) > $@.tmp && \
+		$(call VERIFY_VCF,$@.tmp,$@)")
 
 vcf/%.platypus_snps.vcf : $(foreach chr,$(CHROMOSOMES),platypus/chr_vcf/%.$(chr).platypus.vcf)
-	$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $<; cat $^ | grep -v '^#' | \
-		$(VCF_SORT) $(REF_DICT) - ) | $(SNP_FILTER_VCF) > $@")
+	$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $<; cat $^ | grep -v '^#' | \
+		$(VCF_SORT) $(REF_DICT) - ) | $(SNP_FILTER_VCF) | $(PLATYPUS_SOURCE_ANN_VCF) > $@.tmp && \
+		$(call VERIFY_VCF,$@.tmp,$@)")
 
 include modules/vcf_tools/vcftools.mk

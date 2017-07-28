@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+. activate ~/share/usr/anaconda-envs/jrflab-modules-0.1.4
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source ${DIR}/../../test_functions.sh
 set -e

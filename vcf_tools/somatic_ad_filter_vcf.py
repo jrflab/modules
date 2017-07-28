@@ -10,16 +10,17 @@ parser = argparse.ArgumentParser(prog='somatic_ad_filter_vcf.py',
                                  description='filter vcf file for somatic variants')
 parser.add_argument('--tumor', '-t', nargs='?', help='tumor sample name', default='TUMOR')
 parser.add_argument('--normal', '-n', nargs='?', help='normal sample name', default='NORMAL')
+parser.add_argument('--pass_only', action='store_true', help='output only somatic variants', default=False)
 parser.add_argument('vcf_infile')
 
 args = parser.parse_args()
 
 vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
 
-vcf_reader.filters['somaticAlleleDepth'] = vcf.parser._Filter(id='somaticAlleleDepth',
-                                                              desc='filter if normal depth > 20 '
-                                                              'and normal VAF > 1/5 * tumor VAF '
-                                                              'or normal variant depth greater than 1')
+vcf_reader.filters['germline5x'] = vcf.parser._Filter(id='germline5x',
+                                                     desc='filter if normal depth > 20 '
+                                                     'and normal VAF > 1/5 * tumor VAF '
+                                                     'or normal variant depth greater than 1')
 vcf_reader.filters['depth'] = vcf.parser._Filter(id='depth',
                                                  desc='filter if normal depth < 5 or tumor depth < 5')
 vcf_reader.filters['noAF'] = vcf.parser._Filter(id='noAF', desc='missing AF')
@@ -45,11 +46,12 @@ for record in vcf_reader:
             max_normal_af = max([float(x) / normal_dp for x in normal_ao])
             if normal_dp > 20:
                 if max_normal_af > float(max_tumor_af) / 5:
-                    record.FILTER.append('somaticAlleleDepth')
+                    record.FILTER.append('germline5x')
             elif max(normal_ao) > 1:
-                record.FILTER.append('somaticAlleleDepth')
+                record.FILTER.append('germline5x')
         else:
             record.FILTER.append('noAF')
-    vcf_writer.write_record(record)
+    if not args.pass_only or len(record.FILTER) == 0:
+        vcf_writer.write_record(record)
 
 vcf_writer.close()

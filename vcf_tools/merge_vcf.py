@@ -46,12 +46,15 @@ if __name__ == '__main__':
                 rec.FILTER = []
         record = records[0]
         new_record = copy.deepcopy(record)
+        new_record.QUAL = None
         for sx in range(len(record.samples)):
             f_keys = record.FORMAT.split(':')
             f_vals = [record.samples[sx].data[vx] for vx in range(len(f_keys))]
-            if 'GT' not in f_keys:
+            if 'GT' not in f_keys or f_keys[0] != "GT":
                 f_keys.insert(0, "GT")
                 f_vals.insert(0, '0')
+            elif f_vals[0] == '':
+                f_vals[0] = '0'
             if 'AD' not in f_keys:
                 if 'NR' in f_keys and 'NV' in f_keys:
                     f_keys.append("AD")

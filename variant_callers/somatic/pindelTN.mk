@@ -11,6 +11,8 @@ PINDEL = $(HOME)/share/usr/bin/pindel
 PINDEL2VCF = $(HOME)/share/usr/bin/pindel2vcf
 
 PINDEL2VCF_OPTS = -G -co 50 -ir 2 -il 3 -pr 2 -pl 3
+PINDEL_SOMATIC_AD_FILTER_VCF = python modules/vcf_tools/somatic_ad_filter_vcf.py
+PINDEL_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source pindel
 
 .DELETE_ON_ERROR:
 .SECONDARY: 
@@ -42,14 +44,20 @@ pindel/%.pindel_timestamp : $(foreach chr,$(CHROMOSOMES),pindel/%.$(chr).pindel_
 
 define pindel-chr-vcf
 pindel/chr_vcf/%.pindel_$1.vcf : pindel/%.$1.pindel_timestamp
-	$$(INIT) $$(PINDEL2VCF) -P pindel/$$*/$1 -v $$@ -c $1 -r $$(REF_FASTA) -R $$(REF_NAME) -d $$(REF_DATE) $$(PINDEL2VCF_OPTS) &> $$(LOG)
+	$$(call LSCRIPT_CHECK_MEM,3G,4G,"$$(PINDEL2VCF) -P pindel/$$*/$1 -v $$@.tmp -c $1 -r $$(REF_FASTA) -R $$(REF_NAME) -d $$(REF_DATE) $$(PINDEL2VCF_OPTS) && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr-vcf,$(chr))))
 
 define merge-pindel-chr
-vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(chr).vcf)
+pindel/vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(chr).vcf)
 	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-pindel-chr,$(pair))))
+
+define pindel-somatic-filter
+vcf/$1_$2.pindel.vcf : pindel/vcf/$1_$2.pindel.vcf
+	$$(call LSCRIPT_CHECK_MEM,4G,7G,"$$(PINDEL_SOMATIC_AD_FILTER_VCF) --tumor $1 --normal $2 --pass_only $$< | $$(PINDEL_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call pindel-somatic-filter,$(tumor.$(pair)),$(normal.$(pair)))))
 
 include modules/vcf_tools/vcftools.mk

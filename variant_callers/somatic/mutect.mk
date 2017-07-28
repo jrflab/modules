@@ -9,7 +9,8 @@ MUTECT_MAX_ALT_IN_NORMAL ?= 500
 MUTECT_MAX_ALT_IN_NORMAL_FRACTION ?= 0.05
 MUTECT_FILTERS = DuplicateRead FailsVendorQualityCheck NotPrimaryAlignment BadMate MappingQualityUnavailable UnmappedRead BadCigar
 MUTECT_OPTS ?= --enable_extended_output --max_alt_alleles_in_normal_count $(MUTECT_MAX_ALT_IN_NORMAL) \
-			   --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach ft,$(MUTECT_FILTERS),-rf $(ft))
+			   --max_alt_allele_in_normal_fraction $(MUTECT_MAX_ALT_IN_NORMAL_FRACTION) -R $(REF_FASTA) \
+			   --dbsnp $(DBSNP) $(foreach ft,$(MUTECT_FILTERS),-rf $(ft))
 MUTECT = $(JAVA7) -Xmx11G -jar $(MUTECT_JAR) --analysis_type MuTect $(MUTECT_OPTS)
 
 MUTECT_USE_CONTEST ?= false
@@ -17,6 +18,8 @@ MUTECT_USE_CONTEST ?= false
 MUTECT_SPLIT_CHR ?= true
 
 MUT_FREQ_REPORT = modules/variant_callers/somatic/mutectReport.Rmd
+
+MUTECT_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source mutect
 
 ..DUMMY := $(shell mkdir -p version; echo "$(MUTECT) &> version/mutect.txt")
 
@@ -92,7 +95,8 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+	$$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -105,7 +109,8 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+	$$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call mutect-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

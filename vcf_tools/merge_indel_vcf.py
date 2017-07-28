@@ -22,6 +22,9 @@ if __name__ == "__main__":
     vr0.filters['minCaller'] = vcf.parser._Filter(id='minCaller',
                                                   desc='variant is not present in at least '
                                                   '{} callers'.format(args.min_keep))
+    vr0.infos['variantCaller'] = vcf.parser._Info(id='variantCaller', num='.', type='String',
+                                                  desc="variant caller(s) used to find the variant",
+                                                  source=None, version=None)
     if len(vcf_readers) > 1:
         for vcf_reader2 in vcf_readers:
             for inf in vcf_reader2.infos:
@@ -51,7 +54,15 @@ if __name__ == "__main__":
 
     vcf_writer = vcf.Writer(sys.stdout, vr0)
     for recs in ups_map.values():
-        if len(list(filter(lambda r: len(r.FILTER) == 0, recs))) >= args.min_keep:
+        pass_recs = list(filter(lambda r: len(r.FILTER) == 0, recs))
+        if len(pass_recs) >= args.min_keep:
+            if 'variantCaller' not in recs[0].INFO:
+                recs[0].INFO['variantCaller'] = []
+            if len(pass_recs) > 1:
+                for pr in pass_recs[1:]:
+                    if 'variantCaller' in pr.INFO:
+                        for vc in pr.INFO['variantCaller']:
+                            recs[0].INFO['variantCaller'].append(vc)
             vcf_writer.write_record(recs[0])
         else:
             rec = recs[0]

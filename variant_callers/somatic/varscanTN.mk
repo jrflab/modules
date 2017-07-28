@@ -23,6 +23,8 @@ VARSCAN_MEM = $(JAVA7) -Xmx$1 -jar $(VARSCAN_JAR)
 VARSCAN = $(call VARSCAN_MEM,8G)
 VARSCAN_OPTS = $(if $(findstring true,$(VALIDATION)),--validation 1 --strand-filter 0) --min-var-freq $(MIN_VAR_FREQ)
 
+VARSCAN_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source varscan
+
 VPATH ?= bam
 
 VARSCAN_VARIANT_TYPES = varscan_indels varscan_snps
@@ -79,10 +81,10 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
-	$(INIT) ln -f $< $@
+	$(INIT) $(VARSCAN_SOURCE_ANN_VCF) < $< > $@
 
 vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
-	$(INIT) ln -f $< $@
+	$(INIT) $(VARSCAN_SOURCE_ANN_VCF) < $< > $@
 
 define bamrc-chr
 bamrc/%.$1.bamrc.gz : bam/%.bam

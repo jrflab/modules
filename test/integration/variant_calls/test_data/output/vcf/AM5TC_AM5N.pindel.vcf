@@ -1,9 +1,8 @@
 ##fileformat=VCFv4.1
-##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
-##FORMAT=<ID=RD,Number=1,Type=Integer,Description="Reference depth, how many reads support the reference">
-##GATKCommandLine=<ID=CombineVariants,Version=3.1-1-gcfc45fd,Date="Mon Jul 17 18:41:36 EDT 2017",Epoch=1500331296960,CommandLineOptions="analysis_type=CombineVariants input_file=[] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[] intervals=null excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false variant=[(RodBindingCollection [(RodBinding name=variant source=pindel/chr_vcf/AM5TC_AM5N.pindel_1.vcf)]), (RodBindingCollection [(RodBinding name=variant2 source=pindel/chr_vcf/AM5TC_AM5N.pindel_2.vcf)]), (RodBindingCollection [(RodBinding name=variant3 source=pindel/chr_vcf/AM5TC_AM5N.pindel_3.vcf)]), (RodBindingCollection [(RodBinding name=variant4 source=pindel/chr_vcf/AM5TC_AM5N.pindel_4.vcf)]), (RodBindingCollection [(RodBinding name=variant5 source=pindel/chr_vcf/AM5TC_AM5N.pindel_5.vcf)]), (RodBindingCollection [(RodBinding name=variant6 source=pindel/chr_vcf/AM5TC_AM5N.pindel_6.vcf)]), (RodBindingCollection [(RodBinding name=variant7 source=pindel/chr_vcf/AM5TC_AM5N.pindel_7.vcf)]), (RodBindingCollection [(RodBinding name=variant8 source=pindel/chr_vcf/AM5TC_AM5N.pindel_8.vcf)]), (RodBindingCollection [(RodBinding name=variant9 source=pindel/chr_vcf/AM5TC_AM5N.pindel_9.vcf)]), (RodBindingCollection [(RodBinding name=variant10 source=pindel/chr_vcf/AM5TC_AM5N.pindel_10.vcf)]), (RodBindingCollection [(RodBinding name=variant11 source=pindel/chr_vcf/AM5TC_AM5N.pindel_11.vcf)]), (RodBindingCollection [(RodBinding name=variant12 source=pindel/chr_vcf/AM5TC_AM5N.pindel_12.vcf)]), (RodBindingCollection [(RodBinding name=variant13 source=pindel/chr_vcf/AM5TC_AM5N.pindel_13.vcf)]), (RodBindingCollection [(RodBinding name=variant14 source=pindel/chr_vcf/AM5TC_AM5N.pindel_14.vcf)]), (RodBindingCollection [(RodBinding name=variant15 source=pindel/chr_vcf/AM5TC_AM5N.pindel_15.vcf)]), (RodBindingCollection [(RodBinding name=variant16 source=pindel/chr_vcf/AM5TC_AM5N.pindel_16.vcf)]), (RodBindingCollection [(RodBinding name=variant17 source=pindel/chr_vcf/AM5TC_AM5N.pindel_17.vcf)]), (RodBindingCollection [(RodBinding name=variant18 source=pindel/chr_vcf/AM5TC_AM5N.pindel_18.vcf)]), (RodBindingCollection [(RodBinding name=variant19 source=pindel/chr_vcf/AM5TC_AM5N.pindel_19.vcf)]), (RodBindingCollection [(RodBinding name=variant20 source=pindel/chr_vcf/AM5TC_AM5N.pindel_20.vcf)]), (RodBindingCollection [(RodBinding name=variant21 source=pindel/chr_vcf/AM5TC_AM5N.pindel_21.vcf)]), (RodBindingCollection [(RodBinding name=variant22 source=pindel/chr_vcf/AM5TC_AM5N.pindel_22.vcf)]), (RodBindingCollection [(RodBinding name=variant23 source=pindel/chr_vcf/AM5TC_AM5N.pindel_X.vcf)]), (RodBindingCollection [(RodBinding name=variant24 source=pindel/chr_vcf/AM5TC_AM5N.pindel_MT.vcf)])] out=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub genotypemergeoption=UNSORTED filteredrecordsmergetype=KEEP_IF_ANY_UNFILTERED multipleallelesmergetype=BY_TYPE rod_priority_list=null printComplexMerges=false filteredAreUncalled=false minimalVCF=false excludeNonVariants=false setKey=set assumeIdenticalSamples=true minimumN=1 suppressCommandLineHeader=false mergeInfoWithMaxAC=false filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
+##GATKCommandLine=<ID=CombineVariants,Version=3.1-1-gcfc45fd,Date="Fri Jul 28 12:03:49 EDT 2017",Epoch=1501257829396,CommandLineOptions="analysis_type=CombineVariants input_file=[] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[] intervals=null excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=LENIENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false variant=[(RodBindingCollection [(RodBinding name=variant source=pindel/chr_vcf/AM5TC_AM5N.pindel_1.vcf)]), (RodBindingCollection [(RodBinding name=variant2 source=pindel/chr_vcf/AM5TC_AM5N.pindel_2.vcf)]), (RodBindingCollection [(RodBinding name=variant3 source=pindel/chr_vcf/AM5TC_AM5N.pindel_3.vcf)]), (RodBindingCollection [(RodBinding name=variant4 source=pindel/chr_vcf/AM5TC_AM5N.pindel_4.vcf)]), (RodBindingCollection [(RodBinding name=variant5 source=pindel/chr_vcf/AM5TC_AM5N.pindel_5.vcf)]), (RodBindingCollection [(RodBinding name=variant6 source=pindel/chr_vcf/AM5TC_AM5N.pindel_6.vcf)]), (RodBindingCollection [(RodBinding name=variant7 source=pindel/chr_vcf/AM5TC_AM5N.pindel_7.vcf)]), (RodBindingCollection [(RodBinding name=variant8 source=pindel/chr_vcf/AM5TC_AM5N.pindel_8.vcf)]), (RodBindingCollection [(RodBinding name=variant9 source=pindel/chr_vcf/AM5TC_AM5N.pindel_9.vcf)]), (RodBindingCollection [(RodBinding name=variant10 source=pindel/chr_vcf/AM5TC_AM5N.pindel_10.vcf)]), (RodBindingCollection [(RodBinding name=variant11 source=pindel/chr_vcf/AM5TC_AM5N.pindel_11.vcf)]), (RodBindingCollection [(RodBinding name=variant12 source=pindel/chr_vcf/AM5TC_AM5N.pindel_12.vcf)]), (RodBindingCollection [(RodBinding name=variant13 source=pindel/chr_vcf/AM5TC_AM5N.pindel_13.vcf)]), (RodBindingCollection [(RodBinding name=variant14 source=pindel/chr_vcf/AM5TC_AM5N.pindel_14.vcf)]), (RodBindingCollection [(RodBinding name=variant15 source=pindel/chr_vcf/AM5TC_AM5N.pindel_15.vcf)]), (RodBindingCollection [(RodBinding name=variant16 source=pindel/chr_vcf/AM5TC_AM5N.pindel_16.vcf)]), (RodBindingCollection [(RodBinding name=variant17 source=pindel/chr_vcf/AM5TC_AM5N.pindel_17.vcf)]), (RodBindingCollection [(RodBinding name=variant18 source=pindel/chr_vcf/AM5TC_AM5N.pindel_18.vcf)]), (RodBindingCollection [(RodBinding name=variant19 source=pindel/chr_vcf/AM5TC_AM5N.pindel_19.vcf)]), (RodBindingCollection [(RodBinding name=variant20 source=pindel/chr_vcf/AM5TC_AM5N.pindel_20.vcf)]), (RodBindingCollection [(RodBinding name=variant21 source=pindel/chr_vcf/AM5TC_AM5N.pindel_21.vcf)]), (RodBindingCollection [(RodBinding name=variant22 source=pindel/chr_vcf/AM5TC_AM5N.pindel_22.vcf)]), (RodBindingCollection [(RodBinding name=variant23 source=pindel/chr_vcf/AM5TC_AM5N.pindel_X.vcf)]), (RodBindingCollection [(RodBinding name=variant24 source=pindel/chr_vcf/AM5TC_AM5N.pindel_MT.vcf)])] out=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub genotypemergeoption=UNSORTED filteredrecordsmergetype=KEEP_IF_ANY_UNFILTERED multipleallelesmergetype=BY_TYPE rod_priority_list=null printComplexMerges=false filteredAreUncalled=false minimalVCF=false excludeNonVariants=false setKey=set assumeIdenticalSamples=true minimumN=1 suppressCommandLineHeader=false mergeInfoWithMaxAC=false filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
+##fileDate=20100517
+##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
+##source=pindel
 ##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">
 ##INFO=<ID=HOMLEN,Number=1,Type=Integer,Description="Length of base pair identical micro-homology at event breakpoints">
 ##INFO=<ID=HOMSEQ,Number=.,Type=String,Description="Sequence of base pair identical micro-homology at event breakpoints">
@@ -12,370 +11,240 @@
 ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Difference in length between REF and ALT alleles">
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
 ##INFO=<ID=set,Number=1,Type=String,Description="Source VCF for the merged record in CombineVariants">
-##contig=<ID=1,length=249250621,assembly=b37>
-##contig=<ID=2,length=243199373,assembly=b37>
-##contig=<ID=3,length=198022430,assembly=b37>
-##contig=<ID=4,length=191154276,assembly=b37>
-##contig=<ID=5,length=180915260,assembly=b37>
-##contig=<ID=6,length=171115067,assembly=b37>
-##contig=<ID=7,length=159138663,assembly=b37>
-##contig=<ID=8,length=146364022,assembly=b37>
-##contig=<ID=9,length=141213431,assembly=b37>
-##contig=<ID=10,length=135534747,assembly=b37>
-##contig=<ID=11,length=135006516,assembly=b37>
-##contig=<ID=12,length=133851895,assembly=b37>
-##contig=<ID=13,length=115169878,assembly=b37>
-##contig=<ID=14,length=107349540,assembly=b37>
-##contig=<ID=15,length=102531392,assembly=b37>
-##contig=<ID=16,length=90354753,assembly=b37>
-##contig=<ID=17,length=81195210,assembly=b37>
-##contig=<ID=18,length=78077248,assembly=b37>
-##contig=<ID=19,length=59128983,assembly=b37>
-##contig=<ID=20,length=63025520,assembly=b37>
-##contig=<ID=21,length=48129895,assembly=b37>
-##contig=<ID=22,length=51304566,assembly=b37>
-##contig=<ID=X,length=155270560,assembly=b37>
-##contig=<ID=Y,length=59373566,assembly=b37>
-##contig=<ID=MT,length=16569,assembly=b37>
-##contig=<ID=GL000207.1,length=4262,assembly=b37>
-##contig=<ID=GL000226.1,length=15008,assembly=b37>
-##contig=<ID=GL000229.1,length=19913,assembly=b37>
-##contig=<ID=GL000231.1,length=27386,assembly=b37>
-##contig=<ID=GL000210.1,length=27682,assembly=b37>
-##contig=<ID=GL000239.1,length=33824,assembly=b37>
-##contig=<ID=GL000235.1,length=34474,assembly=b37>
-##contig=<ID=GL000201.1,length=36148,assembly=b37>
-##contig=<ID=GL000247.1,length=36422,assembly=b37>
-##contig=<ID=GL000245.1,length=36651,assembly=b37>
-##contig=<ID=GL000197.1,length=37175,assembly=b37>
-##contig=<ID=GL000203.1,length=37498,assembly=b37>
-##contig=<ID=GL000246.1,length=38154,assembly=b37>
-##contig=<ID=GL000249.1,length=38502,assembly=b37>
-##contig=<ID=GL000196.1,length=38914,assembly=b37>
-##contig=<ID=GL000248.1,length=39786,assembly=b37>
-##contig=<ID=GL000244.1,length=39929,assembly=b37>
-##contig=<ID=GL000238.1,length=39939,assembly=b37>
-##contig=<ID=GL000202.1,length=40103,assembly=b37>
-##contig=<ID=GL000234.1,length=40531,assembly=b37>
-##contig=<ID=GL000232.1,length=40652,assembly=b37>
-##contig=<ID=GL000206.1,length=41001,assembly=b37>
-##contig=<ID=GL000240.1,length=41933,assembly=b37>
-##contig=<ID=GL000236.1,length=41934,assembly=b37>
-##contig=<ID=GL000241.1,length=42152,assembly=b37>
-##contig=<ID=GL000243.1,length=43341,assembly=b37>
-##contig=<ID=GL000242.1,length=43523,assembly=b37>
-##contig=<ID=GL000230.1,length=43691,assembly=b37>
-##contig=<ID=GL000237.1,length=45867,assembly=b37>
-##contig=<ID=GL000233.1,length=45941,assembly=b37>
-##contig=<ID=GL000204.1,length=81310,assembly=b37>
-##contig=<ID=GL000198.1,length=90085,assembly=b37>
-##contig=<ID=GL000208.1,length=92689,assembly=b37>
-##contig=<ID=GL000191.1,length=106433,assembly=b37>
-##contig=<ID=GL000227.1,length=128374,assembly=b37>
-##contig=<ID=GL000228.1,length=129120,assembly=b37>
-##contig=<ID=GL000214.1,length=137718,assembly=b37>
-##contig=<ID=GL000221.1,length=155397,assembly=b37>
-##contig=<ID=GL000209.1,length=159169,assembly=b37>
-##contig=<ID=GL000218.1,length=161147,assembly=b37>
-##contig=<ID=GL000220.1,length=161802,assembly=b37>
-##contig=<ID=GL000213.1,length=164239,assembly=b37>
-##contig=<ID=GL000211.1,length=166566,assembly=b37>
-##contig=<ID=GL000199.1,length=169874,assembly=b37>
-##contig=<ID=GL000217.1,length=172149,assembly=b37>
-##contig=<ID=GL000216.1,length=172294,assembly=b37>
-##contig=<ID=GL000215.1,length=172545,assembly=b37>
-##contig=<ID=GL000205.1,length=174588,assembly=b37>
-##contig=<ID=GL000219.1,length=179198,assembly=b37>
-##contig=<ID=GL000224.1,length=179693,assembly=b37>
-##contig=<ID=GL000223.1,length=180455,assembly=b37>
-##contig=<ID=GL000195.1,length=182896,assembly=b37>
-##contig=<ID=GL000212.1,length=186858,assembly=b37>
-##contig=<ID=GL000222.1,length=186861,assembly=b37>
-##contig=<ID=GL000200.1,length=187035,assembly=b37>
-##contig=<ID=GL000193.1,length=189789,assembly=b37>
-##contig=<ID=GL000194.1,length=191469,assembly=b37>
-##contig=<ID=GL000225.1,length=211173,assembly=b37>
-##contig=<ID=GL000192.1,length=547496,assembly=b37>
-##fileDate=20100517
-##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
-##source=pindel
+##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=RD,Number=1,Type=Integer,Description="Reference depth, how many reads support the reference">
+##FILTER=<ID=germline5x,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
+##FILTER=<ID=depth,Description="filter if normal depth < 5 or tumor depth < 5">
+##FILTER=<ID=noAF,Description="missing AF">
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5N	AM5TC
-1	52911942	.	ATTGCAATGCAC	A	.	PASS	END=52911953;HOMLEN=3;HOMSEQ=TTG;SVLEN=-11;SVTYPE=DEL	GT:AD	0/0:23,1	0/0:17,1
-1	52912114	.	TCTACATAT	TATAAAAAAA	.	PASS	END=52912122;HOMLEN=0;NTLEN=9;SVLEN=-8;SVTYPE=RPL	GT:AD	0/0:70,0	0/0:53,1
-1	52912186	.	G	<INV>	.	PASS	END=52912284;HOMLEN=0;NTLEN=0,70;SVLEN=98;SVTYPE=INV	GT:AD	0/0:111,1	0/0:61,0
-1	52912187	.	T	<INS>	.	PASS	END=52912187;HOMLEN=0;SVLEN=53;SVTYPE=INS	GT:AD	0/0:113,0	0/0:61,1
-1	52912199	.	A	<INS>	.	PASS	END=52912199;HOMLEN=0;SVLEN=73;SVTYPE=INS	GT:AD	0/0:118,0	0/0:58,1
-1	152975523	.	C	CTTACCAGCAGAAGCAGACCTTTACCCA	.	PASS	END=152975523;HOMLEN=2;HOMSEQ=TT;SVLEN=27;SVTYPE=INS	GT:AD	0/0:60,0	0/0:110,1
-1	152975538	.	T	TCAGCTTCAACAGCAGCAGGTGAAACAACCCAGC	.	PASS	END=152975538;HOMLEN=37;HOMSEQ=CAGCTTCAACAGCAGCAGGTGAAACAACCCAGCCAGC;SVLEN=33;SVTYPE=INS	GT:AD	0/0:74,1	0/0:130,0
-1	152975544	.	T	TCAGCAGAAGCAGACCTTTACCCCACCACCTCAGCTTCAA	.	PASS	END=152975544;HOMLEN=2;HOMSEQ=CA;SVLEN=39;SVTYPE=INS	GT:AD	0/0:78,0	0/0:138,1
-1	152975658	.	A	AGAGCCAGGCTGTACCAAGGTCCCT	.	PASS	END=152975658;HOMLEN=80;HOMSEQ=GAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGG;SVLEN=24;SVTYPE=INS	GT:AD	0/0:41,0	0/0:85,1
-1	152975658	.	AGAGCCAGGCTGTACCAAGGTCCCT	A	.	PASS	END=152975682;HOMLEN=56;HOMSEQ=GAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGG;SVLEN=-24;SVTYPE=DEL	GT:AD	0/0:41,1	0/0:85,0
-1	152975659	.	G	GGAGCCAGGCTGTACCAAGGTCCCT	.	PASS	END=152975659;HOMLEN=0;SVLEN=24;SVTYPE=INS	GT:AD	0/0:41,0	0/0:85,1
-1	152975702	.	TCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGTTGTACCAAGGT	T	.	PASS	END=152975750;HOMLEN=62;HOMSEQ=CCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGTTGTACCAAGGTCCCTGAGCCAGGCT;SVLEN=-48;SVTYPE=DEL	GT:AD	0/0:22,0	0/0:42,1
-1	152975736	.	A	<DUP:TANDEM>	.	PASS	END=152975832;HOMLEN=0;NTLEN=0;SVLEN=96;SVTYPE=DUP:TANDEM	GT:AD	0/0:17,0	0/0:33,1
-1	155686578	.	A	AAAAAATATA	.	PASS	END=155686578;HOMLEN=1;HOMSEQ=A;SVLEN=9;SVTYPE=INS	GT:AD	0/0:2,0	0/0:4,1
-1	155686624	.	G	<RPL>	.	PASS	END=155686719;HOMLEN=0;NTLEN=18;SVLEN=-95;SVTYPE=RPL	GT:AD	0/0:14,0	0/0:29,1
-1	155686662	.	TGGAAG	CAAGAA	.	PASS	END=155686666;HOMLEN=0;NTLEN=6;SVLEN=-6;SVTYPE=RPL	GT:AD	0/0:14,0	0/0:28,2
-1	155686687	.	T	<RPL>	.	PASS	END=155686738;HOMLEN=0;NTLEN=53;SVLEN=-53;SVTYPE=RPL	GT:AD	0/0:16,0	0/0:30,1
-1	155686738	.	TC	T	.	PASS	END=155686739;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:16,1	0/0:26,2
-1	155686739	.	C	CAAAAAAAAAATAGAAAAAAAAAAAAAAAAAACAAAAAAA	.	PASS	END=155686739;HOMLEN=10;HOMSEQ=AAAAAAAAAA;SVLEN=39;SVTYPE=INS	GT:AD	0/0:16,0	0/0:26,1
-1	155686739	.	C	<INS>	.	PASS	END=155686739;HOMLEN=11;HOMSEQ=AAAAAAAAAAA;SVLEN=50;SVTYPE=INS	GT:AD	0/0:16,0	0/0:26,1
-1	155686755	.	AAGTTTGATAACCCCGTAACACTGAAATGGTTTCTCTT	AGTTTGCTAACCCTGTTACACTGAGATTGTTTCTCCG	.	PASS	END=155686792;HOMLEN=0;NTLEN=36;SVLEN=-37;SVTYPE=RPL	GT:AD	0/0:65,2	0/0:96,0
-1	155686756	.	AGTTTGATAACCCCGTAACACTG	AAGTTTGATAACCCCGTAACACAT	.	PASS	END=155686778;HOMLEN=0;NTLEN=23;SVLEN=-22;SVTYPE=RPL	GT:AD	0/0:53,0	0/0:78,1
-1	155686756	.	A	<RPL>	.	PASS	END=155686814;HOMLEN=0;NTLEN=60;SVLEN=-58;SVTYPE=RPL	GT:AD	0/0:74,0	0/0:121,2
-1	198717225	.	T	TC	.	PASS	END=198717225;HOMLEN=0;SVLEN=1;SVTYPE=INS	GT:AD	0/0:5,0	0/0:1,1
-1	198717234	.	TCAGAGACTTCCTTCA	TTTTTGAGACTTTTTTTT	.	PASS	END=198717249;HOMLEN=0;NTLEN=17;SVLEN=-15;SVTYPE=RPL	GT:AD	0/0:7,2	0/0:3,0
-1	198717234	.	T	<RPL>	.	PASS	END=198717284;HOMLEN=0;NTLEN=51;SVLEN=-50;SVTYPE=RPL	GT:AD	0/0:7,1	0/0:3,0
-1	244755008	.	C	<INS>	.	PASS	END=244755008;HOMLEN=0;SVLEN=63;SVTYPE=INS	GT:AD	0/0:54,1	0/0:35,0
-2	38527249	.	AATTGTATGAAACCTTAGGACCCACGACACATACGGCCT	ATAGTATGAAACCTTAGAACCCACGACACATACCACCC	.	PASS	END=38527287;HOMLEN=0;NTLEN=37;SVLEN=-38;SVTYPE=RPL	GT:AD	0/0:49,2	0/0:44,0
-2	38527398	.	C	CTCTCTCTCTCTCTACCTGATACTGTCTCTGTCTGATTCTCTCTGTTTT	.	PASS	END=38527398;HOMLEN=19;HOMSEQ=TCTCTCTCTCTCTACCTGA;SVLEN=48;SVTYPE=INS	GT:AD	0/0:153,0	0/0:90,1
-2	38527438	.	A	<INS>	.	PASS	END=38527438;HOMLEN=0;SVLEN=57;SVTYPE=INS	GT:AD	0/0:137,1	0/0:76,0
-2	70066585	.	TAAGTCTGGCTACTTTTCTAGTATGTTCAGTGGTTCTTGGAAAGAATC	TTTTTTTTTTGCTTCTTTTCTAGTATTTTTATTGTTTTTTGGAAAAAAAT	.	PASS	END=70066632;HOMLEN=0;NTLEN=49;SVLEN=-47;SVTYPE=RPL	GT:AD	0/0:24,2	0/0:10,0
-2	96992636	.	G	GAGTTAGTGCTGGGGAAGAAAGACATCCAGTGACG	.	PASS	END=96992636;HOMLEN=1;HOMSEQ=A;SVLEN=34;SVTYPE=INS	GT:AD	0/0:63,1	0/0:103,0
-2	96992745	.	C	<INS>	.	PASS	END=96992745;HOMLEN=0;SVLEN=70;SVTYPE=INS	GT:AD	0/0:227,0	0/0:382,1
-2	96992782	.	A	<RPL>	.	PASS	END=96992812;HOMLEN=0;NTLEN=69;SVLEN=-30;SVTYPE=RPL	GT:AD	0/0:253,0	0/0:388,1
-2	96992933	.	GTTTGTGGAGAGT	G	.	PASS	END=96992945;HOMLEN=8;HOMSEQ=TTTGTGGA;SVLEN=-12;SVTYPE=DEL	GT:AD	0/0:116,0	0/0:152,1
-2	96992935	.	T	<INV>	.	PASS	END=96993004;HOMLEN=0;NTLEN=0,0;SVLEN=71;SVTYPE=INV	GT:AD	0/0:115,0	0/0:151,2
-2	96992962	.	T	<DEL>	.	PASS	END=96993058;HOMLEN=4;HOMSEQ=TGAG;SVLEN=-96;SVTYPE=DEL	GT:AD	0/0:43,0	0/0:52,1
-2	110325527	.	T	<RPL>	.	PASS	END=110325590;HOMLEN=0;NTLEN=64;SVLEN=-63;SVTYPE=RPL	GT:AD	0/0:79,1	0/0:58,0
-2	110325530	.	G	<INV>	.	PASS	END=110325610;HOMLEN=0;NTLEN=67,0;SVLEN=80;SVTYPE=INV	GT:AD	0/0:80,0	0/0:56,1
-2	110325569	.	A	<INS>	.	PASS	END=110325569;HOMLEN=54;HOMSEQ=AAAACAAAATCTTACTGAGGATTTTTTTTTTTAATCCTGCAGCTGTTTTTTCAC;SVLEN=56;SVTYPE=INS	GT:AD	0/0:64,0	0/0:46,1
-2	120567352	.	TAAACTACAGCTTATATTTTACGAACCTTTTATTTAGTGAA	TTATCTTCCTCTTATATTTTACGCTCCTTTTATTTAGTGAAT	.	PASS	END=120567392;HOMLEN=0;NTLEN=41;SVLEN=-40;SVTYPE=RPL	GT:AD	0/0:35,0	0/0:31,1
-2	120567405	.	T	<RPL>	.	PASS	END=120567460;HOMLEN=0;NTLEN=56;SVLEN=-55;SVTYPE=RPL	GT:AD	0/0:106,0	0/0:64,2
-2	179416526	.	A	ATTTCTTTC	.	PASS	END=179416526;HOMLEN=15;HOMSEQ=TTTCTTTCTTTCTTT;SVLEN=8;SVTYPE=INS	GT:AD	0/0:36,0	0/0:24,1
-2	179416526	.	A	ATTTCTTTCTTTC	.	PASS	END=179416526;HOMLEN=15;HOMSEQ=TTTCTTTCTTTCTTT;SVLEN=12;SVTYPE=INS	GT:AD	0/0:36,0	0/0:24,1
-2	196788378	.	T	<INV>	.	PASS	END=196788542;HOMLEN=0;NTLEN=0,0;SVLEN=166;SVTYPE=INV	GT:AD	0/0:117,1	0/0:85,1
-2	196788387	.	GTGATGAGAGG	TTTATTATATT	.	PASS	END=196788396;HOMLEN=0;NTLEN=11;SVLEN=-11;SVTYPE=RPL	GT:AD	0/0:131,2	0/0:97,0
-2	196788394	.	G	<INV>	.	PASS	END=196788486;HOMLEN=0;NTLEN=0,0;SVLEN=94;SVTYPE=INV	GT:AD	0/0:129,0	0/0:97,3
-2	211521224	.	A	<INS>	.	PASS	END=211521224;HOMLEN=18;HOMSEQ=TCCTTTTTTTTTTTTTTT;SVLEN=81;SVTYPE=INS	GT:AD	0/0:13,0	0/0:16,1
-2	211521242	.	TG	T	.	PASS	END=211521243;HOMLEN=1;HOMSEQ=G;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:13,0	0/0:18,2
-2	211521242	.	TGGCCAGGTTATCTCTCATGCCATCTCTGAACATGTTGAAGATGCAGGTG	TTTTTTTTTTTTTTTTATTCCATTTTTTAATATTTTTAATTTTTATTTT	.	PASS	END=211521291;HOMLEN=0;NTLEN=48;SVLEN=-49;SVTYPE=RPL	GT:AD	0/0:25,1	0/0:46,0
-2	211521243	.	G	<RPL>	.	PASS	END=211521295;HOMLEN=0;NTLEN=51;SVLEN=-52;SVTYPE=RPL	GT:AD	0/0:25,0	0/0:47,1
-2	215940160	.	T	<INS>	.	PASS	END=215940160;HOMLEN=0;SVLEN=52;SVTYPE=INS	GT:AD	0/0:19,0	0/0:24,1
-2	215940242	.	T	TCATAACCCTAGCTTTGCAAATGATTTATTGTGCAAC	.	PASS	END=215940242;HOMLEN=9;HOMSEQ=CATAACCCT;SVLEN=36;SVTYPE=INS	GT:AD	0/0:36,1	0/0:19,0
-2	215940263	.	CAGTTTCCTCATTTATGCAGG	AAATTTCCTAATTTATAAAAA	.	PASS	END=215940282;HOMLEN=0;NTLEN=21;SVLEN=-21;SVTYPE=RPL	GT:AD	0/0:42,1	0/0:24,0
-3	42264952	.	A	<DEL>	.	PASS	END=42265018;HOMLEN=3;HOMSEQ=TGT;SVLEN=-66;SVTYPE=DEL	GT:AD	0/0:61,0	0/0:52,1
-3	48693270	.	TGCACTGTCGCGAACCTGGGCGGGGTGGGAGGGGGTTGCG	TCCCCTGCCGCAACCCGGGGGGGGGGGGGGGGGGGTTGC	.	PASS	END=48693309;HOMLEN=0;NTLEN=38;SVLEN=-39;SVTYPE=RPL	GT:AD	0/0:1,1	0/0:1,0
-3	48693304	.	G	GT	.	PASS	END=48693304;HOMLEN=2;HOMSEQ=TT;SVLEN=1;SVTYPE=INS	GT:AD	0/0:1,0	0/0:1,1
-3	49841913	.	C	CCAGCACCCT	.	PASS	END=49841913;HOMLEN=0;SVLEN=9;SVTYPE=INS	GT:AD	0/0:12,0	0/0:9,1
-3	49841958	.	C	<INS>	.	PASS	END=49841958;HOMLEN=1;HOMSEQ=C;SVLEN=54;SVTYPE=INS	GT:AD	0/0:77,1	0/0:72,0
-3	49842036	.	C	<INS>	.	PASS	END=49842036;HOMLEN=0;SVLEN=59;SVTYPE=INS	GT:AD	0/0:103,0	0/0:126,1
-3	167159970	.	GATTCTAG	AAATATAA	.	PASS	END=167159976;HOMLEN=0;NTLEN=8;SVLEN=-8;SVTYPE=RPL	GT:AD	0/0:11,1	0/0:4,0
-3	175189415	.	TTGTTATTTCAGGATTTCAAGAAGGTTCTTCAG	TATTATTTCAGGATTTCAAGAAGGTTTTTTAA	.	PASS	END=175189447;HOMLEN=0;NTLEN=31;SVLEN=-32;SVTYPE=RPL	GT:AD	0/0:34,0	0/0:45,2
-3	175189416	.	TG	T	.	PASS	END=175189417;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:21,1	0/0:28,0
-3	175189423	.	TC	T	.	PASS	END=175189424;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:21,0	0/0:32,1
-3	175189446	.	AG	A	.	PASS	END=175189447;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:34,0	0/0:45,1
-3	175189462	.	T	TAAAAATGTTGTGGCTTATATTATTTCAGGATTTCAAGAAGGTTCTTCAA	.	PASS	END=175189462;HOMLEN=0;SVLEN=49;SVTYPE=INS	GT:AD	0/0:47,1	0/0:55,0
-3	196529931	.	T	<DEL>	.	PASS	END=196529997;HOMLEN=3;HOMSEQ=CAC;SVLEN=-66;SVTYPE=DEL	GT:AD	0/0:49,1	0/0:44,0
-3	196530073	.	T	<INS>	.	PASS	END=196530073;HOMLEN=1;HOMSEQ=G;SVLEN=72;SVTYPE=INS	GT:AD	0/0:29,0	0/0:21,1
-4	8472795	.	ACCCGTTTTTCCACAGAGAGCCTATCTCT	AACCCGGTTTTCCACAGAGGGCCTACCTTG	.	PASS	END=8472823;HOMLEN=0;NTLEN=29;SVLEN=-28;SVTYPE=RPL	GT:AD	0/0:70,0	0/0:127,1
-4	8472804	.	T	<INV>	.	PASS	END=8472863;HOMLEN=0;NTLEN=0,0;SVLEN=61;SVTYPE=INV	GT:AD	0/0:87,0	0/0:144,2
-4	55131017	.	AACCCAAACTTTATAAGATCCT	ACCCAAACTTTATAAGAACCA	.	PASS	END=55131038;HOMLEN=0;NTLEN=20;SVLEN=-21;SVTYPE=RPL	GT:AD	0/0:16,1	0/0:10,0
-4	55131045	.	CCTGTGGATTTTTAGGCCCTTGT	TTTTTTTTTTTTTAGAACCTTAA	.	PASS	END=55131066;HOMLEN=0;NTLEN=23;SVLEN=-23;SVTYPE=RPL	GT:AD	0/0:17,2	0/0:14,0
-4	55131138	.	A	<INV>	.	PASS	END=55131206;HOMLEN=0;NTLEN=0,0;SVLEN=70;SVTYPE=INV	GT:AD	0/0:4,1	0/0:5,0
-4	160274606	.	T	TTTTTTTTTTCTTTTCTTTTCTTTTCTTTTCTTTTC	.	PASS	END=160274606;HOMLEN=6;HOMSEQ=TTTTTT;SVLEN=35;SVTYPE=INS	GT:AD	0/0:1,0	0/0:2,1
-4	160274618	.	C	CTTTTTTTCTTTTCCATTTCTTTCCG	.	PASS	END=160274618;HOMLEN=0;SVLEN=25;SVTYPE=INS	GT:AD	0/0:1,1	0/0:2,0
-4	169312748	.	G	<RPL>	.	PASS	END=169312799;HOMLEN=0;NTLEN=53;SVLEN=-53;SVTYPE=RPL	GT:AD	0/0:55,1	0/0:31,0
-4	169312779	.	TCAGTAGCTGTCACTACCTAGG	TAAAAAGCTGTAAATACAAAGAA	.	PASS	END=169312800;HOMLEN=0;NTLEN=22;SVLEN=-21;SVTYPE=RPL	GT:AD	0/0:30,0	0/0:21,1
-4	169312798	.	A	AG	.	PASS	END=169312798;HOMLEN=2;HOMSEQ=GG;SVLEN=1;SVTYPE=INS	GT:AD	0/0:20,0	0/0:13,3
-4	169312799	.	G	<INS>	.	PASS	END=169312799;HOMLEN=15;HOMSEQ=GAAAAAAAAAAAAAA;SVLEN=70;SVTYPE=INS	GT:AD	0/0:18,0	0/0:12,1
-4	169312800	.	G	GGA	.	PASS	END=169312800;HOMLEN=15;HOMSEQ=AAAAAAAAAAAAAAA;SVLEN=2;SVTYPE=INS	GT:AD	0/0:19,3	0/0:12,0
-5	54701357	.	A	<INS>	.	PASS	END=54701357;HOMLEN=0;SVLEN=55;SVTYPE=INS	GT:AD	0/0:102,0	0/0:73,1
-5	54701381	.	A	<RPL>	.	PASS	END=54701447;HOMLEN=0;NTLEN=67;SVLEN=-66;SVTYPE=RPL	GT:AD	0/0:97,0	0/0:65,1
-5	54701391	.	G	<RPL>	.	PASS	END=54701447;HOMLEN=0;NTLEN=57;SVLEN=-56;SVTYPE=RPL	GT:AD	0/0:83,0	0/0:59,1
-5	54701447	.	A	ATTTTTTTTTTCATTTTTAATTTTAATTTTTG	.	PASS	END=54701447;HOMLEN=34;HOMSEQ=TTTTTTTTTTCATTTTTAATTTTAATTTTTGTTT;SVLEN=31;SVTYPE=INS	GT:AD	0/0:36,1	0/0:17,0
-5	54701458	.	CATTTTTA	C	.	PASS	END=54701465;HOMLEN=5;HOMSEQ=ATTTT;SVLEN=-7;SVTYPE=DEL	GT:AD	0/0:26,0	0/0:12,1
-5	67591024	.	T	<INV>	.	PASS	END=67591106;HOMLEN=0;NTLEN=64,0;SVLEN=82;SVTYPE=INV	GT:AD	0/0:182,0	0/0:62,1
-5	67591046	.	G	<DEL>	.	PASS	END=67591129;HOMLEN=5;HOMSEQ=AAGAC;SVLEN=-83;SVTYPE=DEL	GT:AD	0/0:203,0	0/0:82,2
-5	67591064	.	G	GCAGCTGAGTATCGAGAAATTGACAAACGTATGAACAGCATTATC	.	PASS	END=67591064;HOMLEN=42;HOMSEQ=CAGCTGAGTATCGAGAAATTGACAAACGTATGAACAGCATTA;SVLEN=44;SVTYPE=INS	GT:AD	0/0:129,0	0/0:53,1
-5	67591103	.	ATTAAACCAGACC	A	.	PASS	END=67591115;HOMLEN=3;HOMSEQ=TTA;SVLEN=-12;SVTYPE=DEL	GT:AD	0/0:187,0	0/1:71,31
-5	67591198	.	C	<INV>	.	PASS	END=67591283;HOMLEN=0;NTLEN=12,0;SVLEN=85;SVTYPE=INV	GT:AD	0/0:191,0	0/0:101,1
-5	67591227	.	CTTTTCAAAACTGT	C	.	PASS	END=67591240;HOMLEN=6;HOMSEQ=TTTTCA;SVLEN=-13;SVTYPE=DEL	GT:AD	0/0:170,2	0/0:96,0
-5	67591229	.	T	<INV>	.	PASS	END=67591283;HOMLEN=0;NTLEN=27,0;SVLEN=54;SVTYPE=INV	GT:AD	0/0:174,0	0/0:91,1
-5	67591275	.	AAAGAAGTTGAACGAGTGGTTGGGCAATGAAAACACTGAAGAGT	A	.	PASS	END=67591318;HOMLEN=3;HOMSEQ=AAG;SVLEN=-43;SVTYPE=DEL	GT:AD	0/0:175,0	0/0:97,1
-5	67591283	.	TGA	T	.	PASS	END=67591285;HOMLEN=0;SVLEN=-2;SVTYPE=DEL	GT:AD	0/0:176,0	0/1:92,41
-5	77745777	.	T	<INV>	.	PASS	END=77745889;HOMLEN=0;NTLEN=0,0;SVLEN=114;SVTYPE=INV	GT:AD	0/0:29,4	0/0:17,0
-5	77745852	.	GCATTGGTAAG	GTAATTGGTAAGT	.	PASS	END=77745862;HOMLEN=0;NTLEN=12;SVLEN=-10;SVTYPE=RPL	GT:AD	0/0:29,0	0/0:20,1
-5	77745853	.	C	CA	.	PASS	END=77745853;HOMLEN=1;HOMSEQ=A;SVLEN=1;SVTYPE=INS	GT:AD	0/1:26,17	0/1:17,13
-5	77745854	.	ATTGGTAAG	AATTGGTAAGTT	.	PASS	END=77745862;HOMLEN=0;NTLEN=11;SVLEN=-8;SVTYPE=RPL	GT:AD	0/0:29,2	0/0:20,0
-5	77745854	.	ATTGGTAAG	AATTGGTAAGT	.	PASS	END=77745862;HOMLEN=0;NTLEN=10;SVLEN=-8;SVTYPE=RPL	GT:AD	0/0:29,0	0/0:20,1
-5	77745854	.	A	<INV>	.	PASS	END=77745952;HOMLEN=0;NTLEN=67,0;SVLEN=98;SVTYPE=INV	GT:AD	0/0:26,4	0/0:17,0
-5	77745855	.	TTGGTAAGT	ATTGGTAAG	.	PASS	END=77745862;HOMLEN=0;NTLEN=9;SVLEN=-9;SVTYPE=RPL	GT:AD	0/0:31,0	0/1:20,6
-5	96503691	.	CTCTCCTAG	ATTTAAAAA	.	PASS	END=96503698;HOMLEN=0;NTLEN=9;SVLEN=-9;SVTYPE=RPL	GT:AD	0/0:12,0	0/0:9,1
-5	110835672	.	A	<INS>	.	PASS	END=110835672;HOMLEN=1;HOMSEQ=G;SVLEN=54;SVTYPE=INS	GT:AD	0/0:63,0	0/0:30,1
-5	110835676	.	C	<INV>	.	PASS	END=110835729;HOMLEN=0;NTLEN=36,0;SVLEN=53;SVTYPE=INV	GT:AD	0/0:57,0	0/0:29,1
-5	145508688	.	AAAAAAG	A	.	PASS	END=145508694;HOMLEN=5;HOMSEQ=AAAAA;SVLEN=-6;SVTYPE=DEL	GT:AD	0/1:23,12	0/1:8,6
-6	73102503	.	CCTGCAATGGGTAAGAATCAT	CTTGTAATGGGTAAGACTCA	.	PASS	END=73102523;HOMLEN=0;NTLEN=19;SVLEN=-20;SVTYPE=RPL	GT:AD	0/0:37,1	0/0:32,0
-6	73102532	.	T	<INV>	.	PASS	END=73102589;HOMLEN=0;NTLEN=29,0;SVLEN=57;SVTYPE=INV	GT:AD	0/0:22,1	0/0:15,0
-6	122767995	.	A	<DUP:TANDEM>	.	PASS	END=122768092;HOMLEN=0;NTLEN=0;SVLEN=97;SVTYPE=DUP:TANDEM	GT:AD	0/0:60,1	0/0:25,0
-6	122768028	.	G	GGTGAACATCGTCTCCATCCTCCA	.	PASS	END=122768028;HOMLEN=12;HOMSEQ=GTGAACATCGTC;SVLEN=23;SVTYPE=INS	GT:AD	0/0:93,0	0/0:32,1
-6	122768059	.	A	<INS>	.	PASS	END=122768059;HOMLEN=5;HOMSEQ=TCACT;SVLEN=77;SVTYPE=INS	GT:AD	0/0:92,1	0/0:30,0
-6	146256301	.	T	<INS>	.	PASS	END=146256301;HOMLEN=1;HOMSEQ=G;SVLEN=51;SVTYPE=INS	GT:AD	0/0:16,0	0/0:26,1
-6	146256309	.	GGAGCAG	GAAGAAAA	.	PASS	END=146256315;HOMLEN=0;NTLEN=7;SVLEN=-6;SVTYPE=RPL	GT:AD	0/0:17,1	0/0:21,0
-6	146256309	.	GGAGCAG	ATAGAAA	.	PASS	END=146256314;HOMLEN=0;NTLEN=7;SVLEN=-7;SVTYPE=RPL	GT:AD	0/0:17,0	0/0:21,1
-6	146256337	.	C	CAAAAAAAAAGATATCATCT	.	PASS	END=146256337;HOMLEN=0;SVLEN=19;SVTYPE=INS	GT:AD	0/0:17,1	0/0:22,0
-6	146256379	.	T	<DEL>	.	PASS	END=146256447;HOMLEN=4;HOMSEQ=AGTA;SVLEN=-68;SVTYPE=DEL	GT:AD	0/0:39,0	0/0:27,1
-6	146256505	.	T	<DEL>	.	PASS	END=146256572;HOMLEN=1;HOMSEQ=A;SVLEN=-67;SVTYPE=DEL	GT:AD	0/0:6,0	0/0:3,1
-7	47925640	.	C	<DUP:TANDEM>	.	PASS	END=47925735;HOMLEN=0;NTLEN=0;SVLEN=95;SVTYPE=DUP:TANDEM	GT:AD	0/0:70,0	0/0:87,1
-7	47925659	.	CA	C	.	PASS	END=47925660;HOMLEN=2;HOMSEQ=AA;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:68,0	0/1:76,32
-7	91714108	.	CAGCAAATTATTTTCTTTATTTTAGATTCTGGATCAGACTGGGGTC	TATCTATTTATTTTTTTTTTTTTATTTTCTTTATCTGATTTGTGTT	.	PASS	END=91714152;HOMLEN=0;NTLEN=46;SVLEN=-46;SVTYPE=RPL	GT:AD	0/0:37,1	0/0:39,0
-7	91714141	.	TCAGACTGG	T	.	PASS	END=91714149;HOMLEN=0;SVLEN=-8;SVTYPE=DEL	GT:AD	0/0:37,1	0/0:37,0
-7	91714226	.	C	<INS>	.	PASS	END=91714226;HOMLEN=0;SVLEN=50;SVTYPE=INS	GT:AD	0/0:26,1	0/0:36,0
-7	91714241	.	C	<INS>	.	PASS	END=91714241;HOMLEN=0;SVLEN=81;SVTYPE=INS	GT:AD	0/0:19,0	0/0:24,1
-7	92826599	.	G	<INS>	.	PASS	END=92826599;HOMLEN=76;HOMSEQ=ACAAAATAGGTATTTTTGTCAGGGATAATAATTGAGGAATAAGCATCTAAGGAAAACAACTATTTTCATAGAAACA;SVLEN=73;SVTYPE=INS	GT:AD	0/0:18,1	0/0:9,0
-7	92826634	.	A	<INV>	.	PASS	END=92826717;HOMLEN=0;NTLEN=51,0;SVLEN=83;SVTYPE=INV	GT:AD	0/0:126,0	0/0:67,1
-7	92826635	.	G	<INV>	.	PASS	END=92826767;HOMLEN=0;NTLEN=0,0;SVLEN=134;SVTYPE=INV	GT:AD	0/0:102,2	0/0:44,1
-7	92826724	.	AGAAGAAAAATGGTAAGGTTTTTTTTAGTACACATATATACAGCTTCAA	ATAATAATTATGTTAAGGTTTTTTTTAGTACACATATATACAGCTTCATT	.	PASS	END=92826772;HOMLEN=0;NTLEN=49;SVLEN=-48;SVTYPE=RPL	GT:AD	0/0:117,1	0/0:67,0
-7	100424406	.	A	AAAAG	.	PASS	END=100424406;HOMLEN=7;HOMSEQ=AAAGAAA;SVLEN=4;SVTYPE=INS	GT:AD	0/0:1,1	0/0:1,0
-7	100424586	.	CG	C	.	PASS	END=100424587;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:39,1	0/0:46,1
-7	100479242	.	T	<INS>	.	PASS	END=100479242;HOMLEN=0;SVLEN=68;SVTYPE=INS	GT:AD	0/0:133,0	0/0:190,2
-7	100479244	.	C	CCTTCTCTGCTTTA	.	PASS	END=100479244;HOMLEN=16;HOMSEQ=CTTCTCTGCTTTACTT;SVLEN=13;SVTYPE=INS	GT:AD	0/0:129,0	0/0:193,1
-7	100479326	.	TATGCT	TCTCTTG	.	PASS	END=100479331;HOMLEN=0;NTLEN=6;SVLEN=-5;SVTYPE=RPL	GT:AD	0/0:168,0	0/0:241,1
-7	100479339	.	GTGGGGGCCCAACTTATGGCCCCCCTCAGCCC	G	.	PASS	END=100479370;HOMLEN=5;HOMSEQ=TGGGG;SVLEN=-31;SVTYPE=DEL	GT:AD	0/0:153,1	0/0:226,0
-7	100479432	.	GGTGGGGCTTCTCA	GAGATCG	.	PASS	END=100479445;HOMLEN=0;NTLEN=6;SVLEN=-13;SVTYPE=RPL	GT:AD	0/0:87,1	0/0:108,0
-8	6673239	.	A	ACAGTTAACCACATCTGAACT	.	PASS	END=6673239;HOMLEN=0;SVLEN=20;SVTYPE=INS	GT:AD	0/0:29,1	0/0:38,0
-8	6673263	.	CCATTGT	CAATAGAA	.	PASS	END=6673269;HOMLEN=0;NTLEN=7;SVLEN=-6;SVTYPE=RPL	GT:AD	0/0:38,0	0/0:53,1
-8	6673377	.	CA	C	.	PASS	END=6673378;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/1:83,107	0/1:115,113
-8	6673377	.	C	<RPL>	.	PASS	END=6673410;HOMLEN=0;NTLEN=50;SVLEN=-33;SVTYPE=RPL	GT:AD	0/0:83,1	0/0:115,0
-8	6673377	.	C	<RPL>	.	PASS	END=6673427;HOMLEN=0;NTLEN=25;SVLEN=-50;SVTYPE=RPL	GT:AD	0/0:83,0	0/0:115,1
-8	6673378	.	AG	A	.	PASS	END=6673379;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:81,1	0/0:114,0
-8	28651238	.	A	<INS>	.	PASS	END=28651238;HOMLEN=0;SVLEN=58;SVTYPE=INS	GT:AD	0/0:11,0	0/0:23,1
-8	28651280	.	A	<INS>	.	PASS	END=28651280;HOMLEN=1;HOMSEQ=A;SVLEN=67;SVTYPE=INS	GT:AD	0/0:10,0	0/0:17,1
-8	28651293	.	T	TCA	.	PASS	END=28651293;HOMLEN=4;HOMSEQ=CACA;SVLEN=2;SVTYPE=INS	GT:AD	0/0:12,1	0/0:21,0
-8	28651306	.	A	AAAAAACCACGGACATACCACTCAGGAAAGAGCTGGG	.	PASS	END=28651306;HOMLEN=24;HOMSEQ=AAAAACCACGGACATACCACTCAG;SVLEN=36;SVTYPE=INS	GT:AD	0/0:22,0	0/0:34,1
-9	68427843	.	G	<INS>	.	PASS	END=68427843;HOMLEN=33;HOMSEQ=AAACAAAAATCCCAGTCATTTGCAGTATCTGTC;SVLEN=66;SVTYPE=INS	GT:AD	0/0:15,0	0/0:12,1
-9	68427900	.	T	TTAAA	.	PASS	END=68427900;HOMLEN=8;HOMSEQ=TAAATAAA;SVLEN=4;SVTYPE=INS	GT:AD	0/0:13,1	0/0:5,0
-9	68427938	.	CAT	C	.	PASS	END=68427940;HOMLEN=0;SVLEN=-2;SVTYPE=DEL	GT:AD	0/0:2,5	0/0:0,0
-9	104356925	.	C	<INS>	.	PASS	END=104356925;HOMLEN=0;SVLEN=78;SVTYPE=INS	GT:AD	0/0:86,0	0/0:150,1
-9	104356934	.	C	<INS>	.	PASS	END=104356934;HOMLEN=0;SVLEN=66;SVTYPE=INS	GT:AD	0/0:78,1	0/0:137,0
-9	104356976	.	G	<DEL>	.	PASS	END=104357072;HOMLEN=5;HOMSEQ=ATGAA;SVLEN=-96;SVTYPE=DEL	GT:AD	0/0:37,0	0/0:70,1
-9	139410300	.	TGGGGCTGA	T	.	PASS	END=139410308;HOMLEN=1;HOMSEQ=G;SVLEN=-8;SVTYPE=DEL	GT:AD	0/0:0,1	0/0:0,1
-9	139410466	.	C	CG	.	PASS	END=139410466;HOMLEN=1;HOMSEQ=G;SVLEN=1;SVTYPE=INS	GT:AD	0/0:30,0	0/1:27,19
-10	7866220	.	T	<INS>	.	PASS	END=7866220;HOMLEN=0;SVLEN=58;SVTYPE=INS	GT:AD	0/0:38,1	0/0:9,0
-10	69959232	.	G	<DUP:TANDEM>	.	PASS	END=69959326;HOMLEN=0;NTLEN=0;SVLEN=94;SVTYPE=DUP:TANDEM	GT:AD	0/0:123,1	0/0:103,0
-10	69959298	.	G	<DUP:TANDEM>	.	PASS	END=69959346;HOMLEN=0;NTLEN=52;SVLEN=48;SVTYPE=DUP:TANDEM	GT:AD	0/0:115,0	0/0:107,1
-10	69959345	.	GCTGGGA	G	.	PASS	END=69959351;HOMLEN=1;HOMSEQ=C;SVLEN=-6;SVTYPE=DEL	GT:AD	0/1:56,33	0/1:71,20
-10	74100790	.	G	<INV>	.	PASS	END=74100864;HOMLEN=0;NTLEN=0,0;SVLEN=78;SVTYPE=INV	GT:AD	0/0:72,0	0/0:87,1
-10	124214260	.	C	<INS>	.	PASS	END=124214260;HOMLEN=0;SVLEN=54;SVTYPE=INS	GT:AD	0/0:26,1	0/0:37,0
-10	124457457	.	A	<INS>	.	PASS	END=124457457;HOMLEN=56;HOMSEQ=GGAATGATTTGCGATCATTTCCATGGTATGTTAAACATTTTTTTGGTTCTTTTGAC;SVLEN=77;SVTYPE=INS	GT:AD	0/0:105,0	0/0:66,2
-10	124457492	.	ACATTTTTTTGGTTCTTTTGACTTGAAAACTACATT	A	.	PASS	END=124457527;HOMLEN=7;HOMSEQ=CATTTTT;SVLEN=-35;SVTYPE=DEL	GT:AD	0/0:109,1	0/0:71,0
-10	124457555	.	T	TTCTTTTTGTGTTTTTTCCCTCTCTCTCTTTTTCTTTT	.	PASS	END=124457555;HOMLEN=1;HOMSEQ=T;SVLEN=37;SVTYPE=INS	GT:AD	0/0:136,0	0/0:91,1
-10	124457590	.	C	<INS>	.	PASS	END=124457590;HOMLEN=0;SVLEN=79;SVTYPE=INS	GT:AD	0/0:162,1	0/0:107,0
-10	126515260	.	G	<RPL>	.	PASS	END=126515310;HOMLEN=0;NTLEN=25;SVLEN=-50;SVTYPE=RPL	GT:AD	0/0:19,1	0/0:23,0
-11	533861	.	G	<INS>	.	PASS	END=533861;HOMLEN=61;HOMSEQ=CTGTACTCCTCCTGGCCGGCGGTATCCAGGATGTCCAACAGGCACGTCTCCCCATCAATGA;SVLEN=80;SVTYPE=INS	GT:AD	0/0:120,1	0/0:122,0
-11	533952	.	A	<INV>	.	PASS	END=534047;HOMLEN=0;NTLEN=0,0;SVLEN=97;SVTYPE=INV	GT:AD	0/0:30,0	0/0:29,1
-11	763189	.	G	GCCCCGCCCTCACCTGCCCCGCCCTCACCTGC	.	PASS	END=763189;HOMLEN=44;HOMSEQ=CCCCGCCCTCACCTGCCCCGCCCTCACCTGCCCCCGCCCTCACC;SVLEN=31;SVTYPE=INS	GT:AD	0/0:0,0	0/0:0,1
-11	763283	.	CCCCCGCCCTCACCTGTCCCCGCCCTCACCTG	C	.	PASS	END=763314;HOMLEN=24;HOMSEQ=CCCCGCCCTCACCTGTCCCCGCCC;SVLEN=-31;SVTYPE=DEL	GT:AD	0/0:1,0	0/0:6,1
-11	763299	.	TCCCCGCCCTCACCTG	T	.	PASS	END=763314;HOMLEN=15;HOMSEQ=CCCCGCCCTCACCTG;SVLEN=-15;SVTYPE=DEL	GT:AD	1/1:1,11	0/0:6,3
-11	763314	.	G	GT	.	PASS	END=763314;HOMLEN=0;SVLEN=1;SVTYPE=INS	GT:AD	0/0:4,0	0/0:7,1
-11	763323	.	T	TCCCCGCCCTCACCTGT	.	PASS	END=763323;HOMLEN=1;HOMSEQ=C;SVLEN=16;SVTYPE=INS	GT:AD	0/0:8,0	0/0:12,1
-11	763324	.	C	CCCCCGCCCTCACCTGT	.	PASS	END=763324;HOMLEN=0;SVLEN=16;SVTYPE=INS	GT:AD	0/0:8,0	0/0:12,1
-11	763327	.	C	CCCCCGCCCTCACCTGT	.	PASS	END=763327;HOMLEN=0;SVLEN=16;SVTYPE=INS	GT:AD	0/0:11,0	0/0:16,1
-11	763329	.	G	GCCCCGCCCTCACCTGT	.	PASS	END=763329;HOMLEN=0;SVLEN=16;SVTYPE=INS	GT:AD	0/0:11,0	0/0:16,1
-11	763330	.	T	TCCCCGCCCTCACCTGT	.	PASS	END=763330;HOMLEN=8;HOMSEQ=CCCCGCCC;SVLEN=16;SVTYPE=INS	GT:AD	0/0:12,1	0/0:16,2
-11	1265787	.	GGCCACCATGTCCACA	G	.	PASS	END=1265802;HOMLEN=5;HOMSEQ=GCCAC;SVLEN=-15;SVTYPE=DEL	GT:AD	0/0:3,0	0/0:12,1
-11	17373609	.	T	TGGGGCG	.	PASS	END=17373609;HOMLEN=11;HOMSEQ=GGGGCGGGGGC;SVLEN=6;SVTYPE=INS	GT:AD	0/0:6,0	0/0:1,1
-11	17373614	.	C	CGGGGGTGGGGG	.	PASS	END=17373614;HOMLEN=5;HOMSEQ=GGGGG;SVLEN=11;SVTYPE=INS	GT:AD	0/0:4,0	0/0:1,1
-11	27520880	.	CAAATAG	C	.	PASS	END=27520886;HOMLEN=5;HOMSEQ=AAATA;SVLEN=-6;SVTYPE=DEL	GT:AD	0/0:33,1	0/0:19,0
-11	27521014	.	G	<INV>	.	PASS	END=27521068;HOMLEN=0;NTLEN=0,0;SVLEN=56;SVTYPE=INV	GT:AD	0/0:35,2	0/0:33,0
-11	71931986	.	C	CACAAGGACACCTCCCGCCTGT	.	PASS	END=71931986;HOMLEN=0;SVLEN=21;SVTYPE=INS	GT:AD	0/0:133,0	0/0:146,1
-11	71932009	.	C	<INS>	.	PASS	END=71932009;HOMLEN=0;SVLEN=72;SVTYPE=INS	GT:AD	0/0:203,0	0/0:228,1
-11	71932047	.	T	<INS>	.	PASS	END=71932047;HOMLEN=0;SVLEN=78;SVTYPE=INS	GT:AD	0/0:210,0	0/0:241,1
-11	71932113	.	T	TTCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=10;SVTYPE=INS	GT:AD	0/0:117,1	0/0:135,0
-11	71932113	.	T	TTCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=11;SVTYPE=INS	GT:AD	0/0:117,1	0/0:135,2
-11	71932113	.	T	TTCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=14;SVTYPE=INS	GT:AD	0/0:117,0	0/0:135,1
-11	71932113	.	T	TTTCCCCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=18;SVTYPE=INS	GT:AD	0/0:117,0	0/0:135,1
-11	71932113	.	T	TTCCCCCCCCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=21;SVTYPE=INS	GT:AD	0/0:117,0	0/0:135,1
-11	71932194	.	G	GCCCTGCCT	.	PASS	END=71932194;HOMLEN=11;HOMSEQ=CCCTGCCTCCC;SVLEN=8;SVTYPE=INS	GT:AD	0/0:120,1	0/0:166,1
-11	71932209	.	C	<INV>	.	PASS	END=71932293;HOMLEN=0;NTLEN=0,0;SVLEN=86;SVTYPE=INV	GT:AD	0/0:123,0	0/0:178,2
-11	104879661	.	G	GAACCATCCCTTTC	.	PASS	END=104879661;HOMLEN=3;HOMSEQ=AAC;SVLEN=13;SVTYPE=INS	GT:AD	0/0:77,1	0/0:39,0
-11	104879697	.	GCCAC	TTTAT	.	PASS	END=104879700;HOMLEN=0;NTLEN=5;SVLEN=-5;SVTYPE=RPL	GT:AD	0/0:45,1	0/0:27,0
-11	112832270	.	C	<INS>	.	PASS	END=112832270;HOMLEN=38;HOMSEQ=GCTGCAGGGGGGGGGGCACAGAATTTACCGCGGCAAGA;SVLEN=66;SVTYPE=INS	GT:AD	0/0:54,0	0/0:71,1
-11	112832276	.	A	<INV>	.	PASS	END=112832356;HOMLEN=0;NTLEN=0,63;SVLEN=80;SVTYPE=INV	GT:AD	0/0:54,0	0/0:71,1
-11	112832285	.	G	<RPL>	.	PASS	END=112832340;HOMLEN=0;NTLEN=54;SVLEN=-55;SVTYPE=RPL	GT:AD	0/0:54,1	0/0:71,0
-11	112832286	.	GCACAGAATTTACCGCGGCAAG	GGCACAGAATTTACCGCGGCAAGA	.	PASS	END=112832307;HOMLEN=0;NTLEN=23;SVLEN=-21;SVTYPE=RPL	GT:AD	0/0:54,7	0/0:71,1
-11	112832286	.	GCACAGAATTTACCGCGGCAAG	CACAGAATTTACCGCGGCAAGA	.	PASS	END=112832306;HOMLEN=0;NTLEN=22;SVLEN=-22;SVTYPE=RPL	GT:AD	0/0:54,1	0/0:71,0
-11	112832286	.	G	<RPL>	.	PASS	END=112832340;HOMLEN=0;NTLEN=55;SVLEN=-54;SVTYPE=RPL	GT:AD	0/0:54,3	0/0:71,0
-11	112832307	.	G	GA	.	PASS	END=112832307;HOMLEN=1;HOMSEQ=A;SVLEN=1;SVTYPE=INS	GT:AD	0/1:34,36	0/1:41,44
-11	112832309	.	CATCCCTCCCAGCCAGCAGATTACAATGCTGC	ACATCCCTCCCAGCCAGCAGATTACAATGCTG	.	PASS	END=112832339;HOMLEN=0;NTLEN=32;SVLEN=-32;SVTYPE=RPL	GT:AD	0/1:31,11	0/0:37,7
-11	112832309	.	CATCCCTCCCAGCCAGCAGATTACAATGCTGCCAAACTAAGGATT	ACATCCCTCCCAGCCAGCAGATTACAATGCTGCAAACTAAGGCTC	.	PASS	END=112832352;HOMLEN=0;NTLEN=45;SVLEN=-45;SVTYPE=RPL	GT:AD	0/0:31,0	0/0:37,3
-11	112832309	.	CATCCCTCCCAGCCAGCAGATTACAATGCTGCCAAACTAAGGATTT	ACATCCCTCCCAGCCAGCAGATTACAATGCTGCAAACTAAGGATCC	.	PASS	END=112832353;HOMLEN=0;NTLEN=46;SVLEN=-46;SVTYPE=RPL	GT:AD	0/0:31,2	0/0:37,0
-11	112832334	.	ATGCTGCCAAACTAAGGATTTCATTTGGAC	AAACTCCACCCTACTCATCTCATCTGTAT	.	PASS	END=112832363;HOMLEN=0;NTLEN=28;SVLEN=-29;SVTYPE=RPL	GT:AD	0/0:8,0	0/0:12,1
-11	112832339	.	GC	G	.	PASS	END=112832340;HOMLEN=1;HOMSEQ=C;SVLEN=-1;SVTYPE=DEL	GT:AD	0/1:4,7	0/1:8,5
-11	112832340	.	C	<RPL>	.	PASS	END=112832392;HOMLEN=0;NTLEN=50;SVLEN=-52;SVTYPE=RPL	GT:AD	0/0:4,0	0/1:7,4
-11	112832340	.	C	<RPL>	.	PASS	END=112832393;HOMLEN=0;NTLEN=50;SVLEN=-53;SVTYPE=RPL	GT:AD	0/0:4,0	0/0:7,1
-11	112832340	.	C	<RPL>	.	PASS	END=112832395;HOMLEN=0;NTLEN=50;SVLEN=-55;SVTYPE=RPL	GT:AD	0/0:5,0	0/0:7,1
-11	112832341	.	C	<RPL>	.	PASS	END=112832390;HOMLEN=0;NTLEN=51;SVLEN=-51;SVTYPE=RPL	GT:AD	0/0:4,2	0/0:7,1
-12	9334491	.	T	<DEL>	.	PASS	END=9334584;HOMLEN=7;HOMSEQ=AGTTTTC;SVLEN=-93;SVTYPE=DEL	GT:AD	0/0:31,1	0/0:19,0
-12	9334632	.	G	<INS>	.	PASS	END=9334632;HOMLEN=65;HOMSEQ=GTAAAATGGCAAAGATGAACATTCGTGCAATGGGGGCAACGTCTGACTCCACAGGGAAGGATAAG;SVLEN=74;SVTYPE=INS	GT:AD	0/0:64,1	0/0:41,0
-12	9334728	.	G	GAGTGAGACAAAATGGTCATA	.	PASS	END=9334728;HOMLEN=32;HOMSEQ=AGTGAGACAAAATGGTCATAAGTGAGACAAAA;SVLEN=20;SVTYPE=INS	GT:AD	0/1:28,9	0/1:17,5
-12	9334729	.	A	AAGTGAGACAAAATGGTCATA	.	PASS	END=9334729;HOMLEN=0;SVLEN=20;SVTYPE=INS	GT:AD	0/0:27,1	0/0:17,0
-12	9334736	.	C	CAGTGAGACAAAATGGTCATA	.	PASS	END=9334736;HOMLEN=1;HOMSEQ=A;SVLEN=20;SVTYPE=INS	GT:AD	0/0:26,1	0/0:14,0
-12	9334739	.	A	AAGTGAGACAAAATGGTCATA	.	PASS	END=9334739;HOMLEN=1;HOMSEQ=A;SVLEN=20;SVTYPE=INS	GT:AD	0/0:27,1	0/0:15,0
-12	9334746	.	A	AAGTGAGACAAAATGGTCATA	.	PASS	END=9334746;HOMLEN=0;SVLEN=20;SVTYPE=INS	GT:AD	0/0:24,1	0/0:11,0
-12	9334748	.	A	AAGTGAGACAAAATGGTCATA	.	PASS	END=9334748;HOMLEN=12;HOMSEQ=AGTGAGACAAAA;SVLEN=20;SVTYPE=INS	GT:AD	0/0:24,1	0/0:10,0
-13	28885790	.	T	TGAAGTCCTCAGAGAAATTGTT	.	PASS	END=28885790;HOMLEN=0;SVLEN=21;SVTYPE=INS	GT:AD	0/0:19,1	0/0:12,0
-14	65041161	.	CCTCCCCATC	TCTTTTTATT	.	PASS	END=65041169;HOMLEN=0;NTLEN=10;SVLEN=-10;SVTYPE=RPL	GT:AD	0/0:50,0	0/0:90,1
-15	101529315	.	T	TTGCACCAAGATGTAGGAACAGAAATTCTCCCACTAACAGAAACTTGG	.	PASS	END=101529315;HOMLEN=0;SVLEN=47;SVTYPE=INS	GT:AD	0/0:9,0	0/0:7,1
-15	101529379	.	A	<RPL>	.	PASS	END=101529477;HOMLEN=0;NTLEN=32;SVLEN=-98;SVTYPE=RPL	GT:AD	0/0:41,1	0/0:56,0
-15	101529413	.	TA	TCTCT	.	PASS	END=101529414;HOMLEN=0;NTLEN=4;SVLEN=-1;SVTYPE=RPL	GT:AD	0/1:29,14	0/1:26,35
-15	101529435	.	T	<INS>	.	PASS	END=101529435;HOMLEN=1;HOMSEQ=T;SVLEN=70;SVTYPE=INS	GT:AD	0/0:30,0	0/0:34,1
-15	101529479	.	T	<INS>	.	PASS	END=101529479;HOMLEN=2;HOMSEQ=GC;SVLEN=65;SVTYPE=INS	GT:AD	0/0:41,0	0/0:58,1
-16	20429286	.	TTTATATTAACTA	T	.	PASS	END=20429298;HOMLEN=5;HOMSEQ=TTATA;SVLEN=-12;SVTYPE=DEL	GT:AD	0/0:33,1	0/0:32,0
-16	20429361	.	CTGCCTG	TTTCTTT	.	PASS	END=20429366;HOMLEN=0;NTLEN=7;SVLEN=-7;SVTYPE=RPL	GT:AD	0/0:55,2	0/0:68,0
-16	27659934	.	C	<INS>	.	PASS	END=27659934;HOMLEN=56;HOMSEQ=AGATCAGAACAGAAGCTGGCCCACGGCTCCACATCGAACCTCCTGTGGACTATTCT;SVLEN=56;SVTYPE=INS	GT:AD	0/0:63,0	0/0:94,1
-16	27659934	.	C	<INS>	.	PASS	END=27659934;HOMLEN=61;HOMSEQ=AGATCAGAACAGAAGCTGGCCCACGGCTCCACATCGAACCTCCTGTGGACTATTCTGATGA;SVLEN=60;SVTYPE=INS	GT:AD	0/0:63,0	0/0:94,2
-16	27659977	.	C	<INV>	.	PASS	END=27660055;HOMLEN=0;NTLEN=0,0;SVLEN=80;SVTYPE=INV	GT:AD	0/0:45,2	0/0:69,0
-16	27659997	.	TTTGAGCTGTGTGGGGATGTGACT	AGATCGGAAGAGCACACGTCTGAA	.	PASS	END=27660019;HOMLEN=0;NTLEN=24;SVLEN=-24;SVTYPE=RPL	GT:AD	0/0:31,1	0/0:48,0
-16	58313561	.	A	ATTTTTTTTCTTTTTTTCTTTTT	.	PASS	END=58313561;HOMLEN=29;HOMSEQ=TTTTTTTTCTTTTTTTCTTTTTTTTTTTT;SVLEN=22;SVTYPE=INS	GT:AD	0/0:4,0	0/0:4,1
-16	58313589	.	TTG	T	.	PASS	END=58313591;HOMLEN=0;SVLEN=-2;SVTYPE=DEL	GT:AD	0/0:5,0	0/0:10,1
-16	58314141	.	C	<INS>	.	PASS	END=58314141;HOMLEN=60;HOMSEQ=AAAAGAAAACAAGCACGAAGGAAACCAAGATGATTTCTTCGGGCTGATACAACCTGTTCT;SVLEN=61;SVTYPE=INS	GT:AD	0/0:51,1	0/0:45,0
-16	58314197	.	G	GTTCTGA	.	PASS	END=58314197;HOMLEN=6;HOMSEQ=TTCTGA;SVLEN=6;SVTYPE=INS	GT:AD	0/0:99,1	0/0:102,0
-16	58314198	.	T	<INS>	.	PASS	END=58314198;HOMLEN=39;HOMSEQ=TCTGACCTGCAAAAATCCTACCTTCCCCCACCTCCCCAC;SVLEN=60;SVTYPE=INS	GT:AD	0/0:97,1	0/0:102,0
-16	74366426	.	GGGGAG	G	.	PASS	END=74366431;HOMLEN=23;HOMSEQ=GGGAGGGGAGGGGAGGGGAGGGG;SVLEN=-5;SVTYPE=DEL	GT:AD	0/0:2,0	0/0:2,1
-16	75674191	.	G	<RPL>	.	PASS	END=75674253;HOMLEN=0;NTLEN=61;SVLEN=-62;SVTYPE=RPL	GT:AD	0/0:77,0	0/0:95,1
-16	75674192	.	T	<RPL>	.	PASS	END=75674251;HOMLEN=0;NTLEN=58;SVLEN=-59;SVTYPE=RPL	GT:AD	0/0:75,1	0/0:94,0
-16	75674195	.	T	<RPL>	.	PASS	END=75674251;HOMLEN=0;NTLEN=58;SVLEN=-58;SVTYPE=RPL	GT:AD	0/0:75,1	0/0:91,0
-16	75674212	.	CTGATGAATTGCTTGACTGCGGATTTTGTAGTATTGCTGTT	ATAAAAAATTACTAGAAAAAGAATTTTAAAAAATTATAAAA	.	PASS	END=75674251;HOMLEN=0;NTLEN=41;SVLEN=-41;SVTYPE=RPL	GT:AD	0/0:65,1	0/0:76,0
-16	75674218	.	A	AATTGCTTGACTGCGGATTTTGTAGT	.	PASS	END=75674218;HOMLEN=31;HOMSEQ=ATTGCTTGACTGCGGATTTTGTAGTATTGCT;SVLEN=25;SVTYPE=INS	GT:AD	0/0:62,1	0/0:72,0
-16	75674222	.	GCTTGACTGCGGATTTTGTAGTATTGCTGTT	GATTTAATAAGAATTTTGTAGTATTGCTGTAAA	.	PASS	END=75674252;HOMLEN=0;NTLEN=32;SVLEN=-30;SVTYPE=RPL	GT:AD	0/0:57,1	0/0:69,0
-16	75674242	.	GTATTGCTGTT	GAAATGCTATAAA	.	PASS	END=75674252;HOMLEN=0;NTLEN=12;SVLEN=-10;SVTYPE=RPL	GT:AD	0/0:42,1	0/0:60,0
-16	75674244	.	A	ATTGCTGTTAAAAAAAAAAAAAAAGCCCTTCAGAAGTCGACCC	.	PASS	END=75674244;HOMLEN=23;HOMSEQ=TTGCTGTTAAAAAAAAAAAAAAA;SVLEN=42;SVTYPE=INS	GT:AD	0/0:41,0	0/0:61,1
-16	75674246	.	TGCTGTTA	TAAAG	.	PASS	END=75674253;HOMLEN=0;NTLEN=4;SVLEN=-7;SVTYPE=RPL	GT:AD	0/0:35,1	0/0:58,0
-16	75674251	.	TTA	T	.	PASS	END=75674253;HOMLEN=0;SVLEN=-2;SVTYPE=DEL	GT:AD	0/0:32,0	0/0:49,1
-16	75674255	.	A	<INS>	.	PASS	END=75674255;HOMLEN=14;HOMSEQ=AAAAAAAAAAAAAA;SVLEN=60;SVTYPE=INS	GT:AD	0/0:28,1	0/0:44,0
-16	75674266	.	A	<INV>	.	PASS	END=75674363;HOMLEN=0;NTLEN=0,0;SVLEN=99;SVTYPE=INV	GT:AD	0/0:32,2	0/0:43,0
-16	75674270	.	AG	A	.	PASS	END=75674271;HOMLEN=0;SVLEN=-1;SVTYPE=DEL	GT:AD	0/0:26,0	0/0:40,1
-16	75674270	.	A	<RPL>	.	PASS	END=75674361;HOMLEN=0;NTLEN=13;SVLEN=-91;SVTYPE=RPL	GT:AD	0/0:26,1	0/0:40,0
-16	75674274	.	C	<DEL>	.	PASS	END=75674360;HOMLEN=0;SVLEN=-86;SVTYPE=DEL	GT:AD	0/0:30,1	0/0:41,0
-17	47579306	.	G	<DEL>	.	PASS	END=47579377;HOMLEN=5;HOMSEQ=CCCAG;SVLEN=-71;SVTYPE=DEL	GT:AD	0/0:36,1	0/0:45,0
-17	47579354	.	C	<INV>	.	PASS	END=47579409;HOMLEN=0;NTLEN=0,3;SVLEN=55;SVTYPE=INV	GT:AD	0/0:93,0	0/0:111,2
-17	47579361	.	A	AACCCCCCCCCCAAAACCCCAAGGTTACCTTGGCCGCCCGCACTCCTCCC	.	PASS	END=47579361;HOMLEN=9;HOMSEQ=ACCCCCCCC;SVLEN=49;SVTYPE=INS	GT:AD	0/0:23,1	0/0:24,0
-17	47579362	.	A	ACCCCCCCCCCCCCCCCCCCCCCCTCTTTTTTCCCCCCTG	.	PASS	END=47579362;HOMLEN=8;HOMSEQ=CCCCCCCC;SVLEN=39;SVTYPE=INS	GT:AD	0/0:22,1	0/0:25,0
-17	47579406	.	C	CCCCACCCCAGCTTTCTCTTGCCAGTCTGACCCTCCGATCTATC	.	PASS	END=47579406;HOMLEN=1;HOMSEQ=C;SVLEN=43;SVTYPE=INS	GT:AD	0/0:88,0	0/0:105,1
-17	47579426	.	T	TCAGTCTGACCCTCCGATCTCCCTCCATCCAGGTGTCCCTTGT	.	PASS	END=47579426;HOMLEN=0;SVLEN=42;SVTYPE=INS	GT:AD	0/0:119,0	0/0:133,1
-17	76799385	.	A	<DEL>	.	PASS	END=76799463;HOMLEN=5;HOMSEQ=TACCT;SVLEN=-78;SVTYPE=DEL	GT:AD	0/0:71,0	0/0:125,1
-17	76799451	.	T	<INS>	.	PASS	END=76799451;HOMLEN=55;HOMSEQ=TGCTCCTGCCCTTACCTGTGCCGAAGTGGGTCCTGGTGCAGGCCGCCTTCTTCAC;SVLEN=65;SVTYPE=INS	GT:AD	0/0:62,0	0/0:102,1
-17	76799523	.	T	TCTCCTTTC	.	PASS	END=76799523;HOMLEN=0;SVLEN=8;SVTYPE=INS	GT:AD	0/0:107,1	0/0:195,0
-17	76799541	.	G	<INV>	.	PASS	END=76799633;HOMLEN=0;NTLEN=0,0;SVLEN=94;SVTYPE=INV	GT:AD	0/0:84,2	0/0:158,0
-18	2674102	.	T	<RPL>	.	PASS	END=2674164;HOMLEN=0;NTLEN=60;SVLEN=-62;SVTYPE=RPL	GT:AD	0/0:66,1	0/0:42,0
-18	3534356	.	CAGGGGTCCGGAGGAGGCAGAATAG	C	.	PASS	END=3534380;HOMLEN=7;HOMSEQ=AGGGGTC;SVLEN=-24;SVTYPE=DEL	GT:AD	0/0:39,0	0/0:85,1
-19	1037515	.	C	CTTGGCCAGGCTGGACTGGAACTCCTGACCTCAGGTGATCCTCCCACC	.	PASS	END=1037515;HOMLEN=0;SVLEN=47;SVTYPE=INS	GT:AD	0/0:131,1	0/0:161,0
-19	1037583	.	T	TCTCTCCACCATGACCTGCTCCACCCCTCCTTC	.	PASS	END=1037583;HOMLEN=39;HOMSEQ=CTCTCCACCATGACCTGCTCCACCCCTCCTTCCTCTCCA;SVLEN=32;SVTYPE=INS	GT:AD	0/0:336,1	0/0:355,0
-19	1037595	.	G	GACCTGCTAGATGGCTTTTAAAAAATATTTCCTCCAGAGTC	.	PASS	END=1037595;HOMLEN=7;HOMSEQ=ACCTGCT;SVLEN=40;SVTYPE=INS	GT:AD	0/0:345,0	0/0:368,1
-19	1037610	.	T	TCCATGACCTGCTCCACCCCTCCTTCCTCTCTCCG	.	PASS	END=1037610;HOMLEN=2;HOMSEQ=CC;SVLEN=34;SVTYPE=INS	GT:AD	0/0:350,0	0/0:361,1
-19	1037657	.	A	<INS>	.	PASS	END=1037657;HOMLEN=52;HOMSEQ=TCTATGATACCAAGCTGGGAACCGACAAGTGTGACAACTCCTCCATGTCCCT;SVLEN=53;SVTYPE=INS	GT:AD	0/0:256,1	0/0:274,0
-19	33119667	.	G	<INV>	.	PASS	END=33119720;HOMLEN=0;NTLEN=0,0;SVLEN=61;SVTYPE=INV	GT:AD	0/0:4,0	0/0:12,1
-19	33119792	.	GAATTACTC	G	.	PASS	END=33119800;HOMLEN=5;HOMSEQ=AATTA;SVLEN=-8;SVTYPE=DEL	GT:AD	0/0:19,0	0/0:18,1
-19	33119821	.	T	<INV>	.	PASS	END=33119879;HOMLEN=0;NTLEN=28,0;SVLEN=58;SVTYPE=INV	GT:AD	0/0:16,0	0/0:9,2
-19	33119845	.	GAGATGGAGTCTCGTCC	GTAGAGAAGGGGTTTTGCCA	.	PASS	END=33119861;HOMLEN=0;NTLEN=19;SVLEN=-16;SVTYPE=RPL	GT:AD	0/0:9,1	0/0:4,0
-22	37414818	.	A	<DEL>	.	PASS	END=37414870;HOMLEN=4;HOMSEQ=GAGA;SVLEN=-52;SVTYPE=DEL	GT:AD	0/0:55,2	0/0:83,0
-22	42609454	.	G	<DEL>	.	PASS	END=42609505;HOMLEN=3;HOMSEQ=CTT;SVLEN=-51;SVTYPE=DEL	GT:AD	0/0:28,0	0/0:67,1
-22	42609532	.	C	CGACAATCACCCCAACAGTCTTCTCATTAACCTTTGGGTTCCCGTCGGAT	.	PASS	END=42609532;HOMLEN=1;HOMSEQ=G;SVLEN=49;SVTYPE=INS	GT:AD	0/0:46,0	0/0:97,1
-22	42609560	.	T	<INS>	.	PASS	END=42609560;HOMLEN=9;HOMSEQ=GGTGAGGTG;SVLEN=72;SVTYPE=INS	GT:AD	0/0:57,0	0/0:114,1
-X	54574584	.	C	<RPL>	.	PASS	END=54574648;HOMLEN=0;NTLEN=65;SVLEN=-64;SVTYPE=RPL	GT:AD	0/0:50,0	0/0:83,1
-X	54574743	.	A	<INS>	.	PASS	END=54574743;HOMLEN=0;SVLEN=56;SVTYPE=INS	GT:AD	0/0:54,1	0/0:72,0
-X	135049448	.	A	ACAAAAC	.	PASS	END=135049448;HOMLEN=9;HOMSEQ=CAAAACCAA;SVLEN=6;SVTYPE=INS	GT:AD	0/0:8,1	0/0:5,0
-X	135049596	.	A	AAT	.	PASS	END=135049596;HOMLEN=4;HOMSEQ=ATAT;SVLEN=2;SVTYPE=INS	GT:AD	0/0:74,0	0/1:50,19
-X	135049596	.	A	<INV>	.	PASS	END=135049656;HOMLEN=0;NTLEN=0,9;SVLEN=60;SVTYPE=INV	GT:AD	0/0:73,0	0/0:50,1
-X	135049632	.	C	<INS>	.	PASS	END=135049632;HOMLEN=0;SVLEN=70;SVTYPE=INS	GT:AD	0/0:78,0	0/0:46,1
+1	52912114	.	TCTACATAT	TATAAAAAAA	.	PASS	END=52912122;HOMLEN=0;NTLEN=9;SVLEN=-8;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:70,0	0/0:53,1
+1	52912187	.	T	<INS>	.	PASS	END=52912187;HOMLEN=0;SVLEN=53;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:113,0	0/0:61,1
+1	52912199	.	A	<INS>	.	PASS	END=52912199;HOMLEN=0;SVLEN=73;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:118,0	0/0:58,1
+1	152975523	.	C	CTTACCAGCAGAAGCAGACCTTTACCCA	.	PASS	END=152975523;HOMLEN=2;HOMSEQ=TT;SVLEN=27;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:60,0	0/0:110,1
+1	152975544	.	T	TCAGCAGAAGCAGACCTTTACCCCACCACCTCAGCTTCAA	.	PASS	END=152975544;HOMLEN=2;HOMSEQ=CA;SVLEN=39;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:78,0	0/0:138,1
+1	152975658	.	A	AGAGCCAGGCTGTACCAAGGTCCCT	.	PASS	END=152975658;HOMLEN=80;HOMSEQ=GAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGG;SVLEN=24;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:41,0	0/0:85,1
+1	152975659	.	G	GGAGCCAGGCTGTACCAAGGTCCCT	.	PASS	END=152975659;HOMLEN=0;SVLEN=24;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:41,0	0/0:85,1
+1	152975702	.	TCCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGTTGTACCAAGGT	T	.	PASS	END=152975750;HOMLEN=62;HOMSEQ=CCCTGAGCCAGGCTGTACCAAGGTCCCTGAGCCAGGTTGTACCAAGGTCCCTGAGCCAGGCT;SVLEN=-48;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:22,0	0/0:42,1
+1	152975736	.	A	<DUP:TANDEM>	.	PASS	END=152975832;HOMLEN=0;NTLEN=0;SVLEN=96;SVTYPE=DUP:TANDEM;variantCaller=pindel	GT:AD	0/0:17,0	0/0:33,1
+1	155686624	.	G	<RPL>	.	PASS	END=155686719;HOMLEN=0;NTLEN=18;SVLEN=-95;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:14,0	0/0:29,1
+1	155686662	.	TGGAAG	CAAGAA	.	PASS	END=155686666;HOMLEN=0;NTLEN=6;SVLEN=-6;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:14,0	0/0:28,2
+1	155686687	.	T	<RPL>	.	PASS	END=155686738;HOMLEN=0;NTLEN=53;SVLEN=-53;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:16,0	0/0:30,1
+1	155686738	.	TC	T	.	PASS	END=155686739;HOMLEN=0;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:16,1	0/0:26,2
+1	155686739	.	C	CAAAAAAAAAATAGAAAAAAAAAAAAAAAAAACAAAAAAA	.	PASS	END=155686739;HOMLEN=10;HOMSEQ=AAAAAAAAAA;SVLEN=39;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:16,0	0/0:26,1
+1	155686739	.	C	<INS>	.	PASS	END=155686739;HOMLEN=11;HOMSEQ=AAAAAAAAAAA;SVLEN=50;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:16,0	0/0:26,1
+1	155686756	.	AGTTTGATAACCCCGTAACACTG	AAGTTTGATAACCCCGTAACACAT	.	PASS	END=155686778;HOMLEN=0;NTLEN=23;SVLEN=-22;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:53,0	0/0:78,1
+1	155686756	.	A	<RPL>	.	PASS	END=155686814;HOMLEN=0;NTLEN=60;SVLEN=-58;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:74,0	0/0:121,2
+2	38527398	.	C	CTCTCTCTCTCTCTACCTGATACTGTCTCTGTCTGATTCTCTCTGTTTT	.	PASS	END=38527398;HOMLEN=19;HOMSEQ=TCTCTCTCTCTCTACCTGA;SVLEN=48;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:153,0	0/0:90,1
+2	96992745	.	C	<INS>	.	PASS	END=96992745;HOMLEN=0;SVLEN=70;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:227,0	0/0:382,1
+2	96992782	.	A	<RPL>	.	PASS	END=96992812;HOMLEN=0;NTLEN=69;SVLEN=-30;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:253,0	0/0:388,1
+2	96992933	.	GTTTGTGGAGAGT	G	.	PASS	END=96992945;HOMLEN=8;HOMSEQ=TTTGTGGA;SVLEN=-12;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:116,0	0/0:152,1
+2	96992935	.	T	<INV>	.	PASS	END=96993004;HOMLEN=0;NTLEN=0,0;SVLEN=71;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:115,0	0/0:151,2
+2	96992962	.	T	<DEL>	.	PASS	END=96993058;HOMLEN=4;HOMSEQ=TGAG;SVLEN=-96;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:43,0	0/0:52,1
+2	110325530	.	G	<INV>	.	PASS	END=110325610;HOMLEN=0;NTLEN=67,0;SVLEN=80;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:80,0	0/0:56,1
+2	110325569	.	A	<INS>	.	PASS	END=110325569;HOMLEN=54;HOMSEQ=AAAACAAAATCTTACTGAGGATTTTTTTTTTTAATCCTGCAGCTGTTTTTTCAC;SVLEN=56;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:64,0	0/0:46,1
+2	120567352	.	TAAACTACAGCTTATATTTTACGAACCTTTTATTTAGTGAA	TTATCTTCCTCTTATATTTTACGCTCCTTTTATTTAGTGAAT	.	PASS	END=120567392;HOMLEN=0;NTLEN=41;SVLEN=-40;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:35,0	0/0:31,1
+2	120567405	.	T	<RPL>	.	PASS	END=120567460;HOMLEN=0;NTLEN=56;SVLEN=-55;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:106,0	0/0:64,2
+2	179416526	.	A	ATTTCTTTC	.	PASS	END=179416526;HOMLEN=15;HOMSEQ=TTTCTTTCTTTCTTT;SVLEN=8;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:36,0	0/0:24,1
+2	179416526	.	A	ATTTCTTTCTTTC	.	PASS	END=179416526;HOMLEN=15;HOMSEQ=TTTCTTTCTTTCTTT;SVLEN=12;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:36,0	0/0:24,1
+2	196788394	.	G	<INV>	.	PASS	END=196788486;HOMLEN=0;NTLEN=0,0;SVLEN=94;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:129,0	0/0:97,3
+2	211521224	.	A	<INS>	.	PASS	END=211521224;HOMLEN=18;HOMSEQ=TCCTTTTTTTTTTTTTTT;SVLEN=81;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:13,0	0/0:16,1
+2	211521242	.	TG	T	.	PASS	END=211521243;HOMLEN=1;HOMSEQ=G;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:13,0	0/0:18,2
+2	211521243	.	G	<RPL>	.	PASS	END=211521295;HOMLEN=0;NTLEN=51;SVLEN=-52;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:25,0	0/0:47,1
+2	215940160	.	T	<INS>	.	PASS	END=215940160;HOMLEN=0;SVLEN=52;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:19,0	0/0:24,1
+3	42264952	.	A	<DEL>	.	PASS	END=42265018;HOMLEN=3;HOMSEQ=TGT;SVLEN=-66;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:61,0	0/0:52,1
+3	49841913	.	C	CCAGCACCCT	.	PASS	END=49841913;HOMLEN=0;SVLEN=9;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:12,0	0/0:9,1
+3	49842036	.	C	<INS>	.	PASS	END=49842036;HOMLEN=0;SVLEN=59;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:103,0	0/0:126,1
+3	175189415	.	TTGTTATTTCAGGATTTCAAGAAGGTTCTTCAG	TATTATTTCAGGATTTCAAGAAGGTTTTTTAA	.	PASS	END=175189447;HOMLEN=0;NTLEN=31;SVLEN=-32;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:34,0	0/0:45,2
+3	175189423	.	TC	T	.	PASS	END=175189424;HOMLEN=0;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:21,0	0/0:32,1
+3	175189446	.	AG	A	.	PASS	END=175189447;HOMLEN=0;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:34,0	0/0:45,1
+3	196530073	.	T	<INS>	.	PASS	END=196530073;HOMLEN=1;HOMSEQ=G;SVLEN=72;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:29,0	0/0:21,1
+4	8472795	.	ACCCGTTTTTCCACAGAGAGCCTATCTCT	AACCCGGTTTTCCACAGAGGGCCTACCTTG	.	PASS	END=8472823;HOMLEN=0;NTLEN=29;SVLEN=-28;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:70,0	0/0:127,1
+4	8472804	.	T	<INV>	.	PASS	END=8472863;HOMLEN=0;NTLEN=0,0;SVLEN=61;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:87,0	0/0:144,2
+4	55131017	.	AACCCAAACTTTATAAGATCCT	ACCCAAACTTTATAAGAACCA	.	PASS	END=55131038;HOMLEN=0;NTLEN=20;SVLEN=-21;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:16,1	0/0:10,0
+4	55131138	.	A	<INV>	.	PASS	END=55131206;HOMLEN=0;NTLEN=0,0;SVLEN=70;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:4,1	0/0:5,0
+4	169312779	.	TCAGTAGCTGTCACTACCTAGG	TAAAAAGCTGTAAATACAAAGAA	.	PASS	END=169312800;HOMLEN=0;NTLEN=22;SVLEN=-21;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:30,0	0/0:21,1
+4	169312798	.	A	AG	.	PASS	END=169312798;HOMLEN=2;HOMSEQ=GG;SVLEN=1;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:20,0	0/0:13,3
+4	169312799	.	G	<INS>	.	PASS	END=169312799;HOMLEN=15;HOMSEQ=GAAAAAAAAAAAAAA;SVLEN=70;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:18,0	0/0:12,1
+5	54701357	.	A	<INS>	.	PASS	END=54701357;HOMLEN=0;SVLEN=55;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:102,0	0/0:73,1
+5	54701381	.	A	<RPL>	.	PASS	END=54701447;HOMLEN=0;NTLEN=67;SVLEN=-66;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:97,0	0/0:65,1
+5	54701391	.	G	<RPL>	.	PASS	END=54701447;HOMLEN=0;NTLEN=57;SVLEN=-56;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:83,0	0/0:59,1
+5	54701458	.	CATTTTTA	C	.	PASS	END=54701465;HOMLEN=5;HOMSEQ=ATTTT;SVLEN=-7;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:26,0	0/0:12,1
+5	67591024	.	T	<INV>	.	PASS	END=67591106;HOMLEN=0;NTLEN=64,0;SVLEN=82;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:182,0	0/0:62,1
+5	67591046	.	G	<DEL>	.	PASS	END=67591129;HOMLEN=5;HOMSEQ=AAGAC;SVLEN=-83;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:203,0	0/0:82,2
+5	67591064	.	G	GCAGCTGAGTATCGAGAAATTGACAAACGTATGAACAGCATTATC	.	PASS	END=67591064;HOMLEN=42;HOMSEQ=CAGCTGAGTATCGAGAAATTGACAAACGTATGAACAGCATTA;SVLEN=44;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:129,0	0/0:53,1
+5	67591103	.	ATTAAACCAGACC	A	.	PASS	END=67591115;HOMLEN=3;HOMSEQ=TTA;SVLEN=-12;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:187,0	0/1:71,31
+5	67591198	.	C	<INV>	.	PASS	END=67591283;HOMLEN=0;NTLEN=12,0;SVLEN=85;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:191,0	0/0:101,1
+5	67591229	.	T	<INV>	.	PASS	END=67591283;HOMLEN=0;NTLEN=27,0;SVLEN=54;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:174,0	0/0:91,1
+5	67591275	.	AAAGAAGTTGAACGAGTGGTTGGGCAATGAAAACACTGAAGAGT	A	.	PASS	END=67591318;HOMLEN=3;HOMSEQ=AAG;SVLEN=-43;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:175,0	0/0:97,1
+5	67591283	.	TGA	T	.	PASS	END=67591285;HOMLEN=0;SVLEN=-2;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:176,0	0/1:92,41
+5	77745852	.	GCATTGGTAAG	GTAATTGGTAAGT	.	PASS	END=77745862;HOMLEN=0;NTLEN=12;SVLEN=-10;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:29,0	0/0:20,1
+5	77745854	.	ATTGGTAAG	AATTGGTAAGT	.	PASS	END=77745862;HOMLEN=0;NTLEN=10;SVLEN=-8;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:29,0	0/0:20,1
+5	77745855	.	TTGGTAAGT	ATTGGTAAG	.	PASS	END=77745862;HOMLEN=0;NTLEN=9;SVLEN=-9;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:31,0	0/1:20,6
+5	96503691	.	CTCTCCTAG	ATTTAAAAA	.	PASS	END=96503698;HOMLEN=0;NTLEN=9;SVLEN=-9;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:12,0	0/0:9,1
+5	110835672	.	A	<INS>	.	PASS	END=110835672;HOMLEN=1;HOMSEQ=G;SVLEN=54;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:63,0	0/0:30,1
+5	110835676	.	C	<INV>	.	PASS	END=110835729;HOMLEN=0;NTLEN=36,0;SVLEN=53;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:57,0	0/0:29,1
+6	122768028	.	G	GGTGAACATCGTCTCCATCCTCCA	.	PASS	END=122768028;HOMLEN=12;HOMSEQ=GTGAACATCGTC;SVLEN=23;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:93,0	0/0:32,1
+6	146256301	.	T	<INS>	.	PASS	END=146256301;HOMLEN=1;HOMSEQ=G;SVLEN=51;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:16,0	0/0:26,1
+6	146256309	.	GGAGCAG	GAAGAAAA	.	PASS	END=146256315;HOMLEN=0;NTLEN=7;SVLEN=-6;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:17,1	0/0:21,0
+6	146256309	.	GGAGCAG	ATAGAAA	.	PASS	END=146256314;HOMLEN=0;NTLEN=7;SVLEN=-7;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:17,0	0/0:21,1
+6	146256337	.	C	CAAAAAAAAAGATATCATCT	.	PASS	END=146256337;HOMLEN=0;SVLEN=19;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:17,1	0/0:22,0
+6	146256379	.	T	<DEL>	.	PASS	END=146256447;HOMLEN=4;HOMSEQ=AGTA;SVLEN=-68;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:39,0	0/0:27,1
+7	47925640	.	C	<DUP:TANDEM>	.	PASS	END=47925735;HOMLEN=0;NTLEN=0;SVLEN=95;SVTYPE=DUP:TANDEM;variantCaller=pindel	GT:AD	0/0:70,0	0/0:87,1
+7	47925659	.	CA	C	.	PASS	END=47925660;HOMLEN=2;HOMSEQ=AA;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:68,0	0/1:76,32
+7	91714241	.	C	<INS>	.	PASS	END=91714241;HOMLEN=0;SVLEN=81;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:19,0	0/0:24,1
+7	92826599	.	G	<INS>	.	PASS	END=92826599;HOMLEN=76;HOMSEQ=ACAAAATAGGTATTTTTGTCAGGGATAATAATTGAGGAATAAGCATCTAAGGAAAACAACTATTTTCATAGAAACA;SVLEN=73;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:18,1	0/0:9,0
+7	92826634	.	A	<INV>	.	PASS	END=92826717;HOMLEN=0;NTLEN=51,0;SVLEN=83;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:126,0	0/0:67,1
+7	100479242	.	T	<INS>	.	PASS	END=100479242;HOMLEN=0;SVLEN=68;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:133,0	0/0:190,2
+7	100479244	.	C	CCTTCTCTGCTTTA	.	PASS	END=100479244;HOMLEN=16;HOMSEQ=CTTCTCTGCTTTACTT;SVLEN=13;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:129,0	0/0:193,1
+7	100479326	.	TATGCT	TCTCTTG	.	PASS	END=100479331;HOMLEN=0;NTLEN=6;SVLEN=-5;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:168,0	0/0:241,1
+8	6673263	.	CCATTGT	CAATAGAA	.	PASS	END=6673269;HOMLEN=0;NTLEN=7;SVLEN=-6;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:38,0	0/0:53,1
+8	6673377	.	C	<RPL>	.	PASS	END=6673427;HOMLEN=0;NTLEN=25;SVLEN=-50;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:83,0	0/0:115,1
+8	28651238	.	A	<INS>	.	PASS	END=28651238;HOMLEN=0;SVLEN=58;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:11,0	0/0:23,1
+8	28651280	.	A	<INS>	.	PASS	END=28651280;HOMLEN=1;HOMSEQ=A;SVLEN=67;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:10,0	0/0:17,1
+8	28651293	.	T	TCA	.	PASS	END=28651293;HOMLEN=4;HOMSEQ=CACA;SVLEN=2;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:12,1	0/0:21,0
+8	28651306	.	A	AAAAAACCACGGACATACCACTCAGGAAAGAGCTGGG	.	PASS	END=28651306;HOMLEN=24;HOMSEQ=AAAAACCACGGACATACCACTCAG;SVLEN=36;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:22,0	0/0:34,1
+9	68427843	.	G	<INS>	.	PASS	END=68427843;HOMLEN=33;HOMSEQ=AAACAAAAATCCCAGTCATTTGCAGTATCTGTC;SVLEN=66;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:15,0	0/0:12,1
+9	68427900	.	T	TTAAA	.	PASS	END=68427900;HOMLEN=8;HOMSEQ=TAAATAAA;SVLEN=4;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:13,1	0/0:5,0
+9	104356925	.	C	<INS>	.	PASS	END=104356925;HOMLEN=0;SVLEN=78;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:86,0	0/0:150,1
+9	104356976	.	G	<DEL>	.	PASS	END=104357072;HOMLEN=5;HOMSEQ=ATGAA;SVLEN=-96;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:37,0	0/0:70,1
+9	139410466	.	C	CG	.	PASS	END=139410466;HOMLEN=1;HOMSEQ=G;SVLEN=1;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:30,0	0/1:27,19
+10	69959298	.	G	<DUP:TANDEM>	.	PASS	END=69959346;HOMLEN=0;NTLEN=52;SVLEN=48;SVTYPE=DUP:TANDEM;variantCaller=pindel	GT:AD	0/0:115,0	0/0:107,1
+10	74100790	.	G	<INV>	.	PASS	END=74100864;HOMLEN=0;NTLEN=0,0;SVLEN=78;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:72,0	0/0:87,1
+10	124457457	.	A	<INS>	.	PASS	END=124457457;HOMLEN=56;HOMSEQ=GGAATGATTTGCGATCATTTCCATGGTATGTTAAACATTTTTTTGGTTCTTTTGAC;SVLEN=77;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:105,0	0/0:66,2
+10	124457555	.	T	TTCTTTTTGTGTTTTTTCCCTCTCTCTCTTTTTCTTTT	.	PASS	END=124457555;HOMLEN=1;HOMSEQ=T;SVLEN=37;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:136,0	0/0:91,1
+10	126515260	.	G	<RPL>	.	PASS	END=126515310;HOMLEN=0;NTLEN=25;SVLEN=-50;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:19,1	0/0:23,0
+11	533952	.	A	<INV>	.	PASS	END=534047;HOMLEN=0;NTLEN=0,0;SVLEN=97;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:30,0	0/0:29,1
+11	763323	.	T	TCCCCGCCCTCACCTGT	.	PASS	END=763323;HOMLEN=1;HOMSEQ=C;SVLEN=16;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:8,0	0/0:12,1
+11	763324	.	C	CCCCCGCCCTCACCTGT	.	PASS	END=763324;HOMLEN=0;SVLEN=16;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:8,0	0/0:12,1
+11	763327	.	C	CCCCCGCCCTCACCTGT	.	PASS	END=763327;HOMLEN=0;SVLEN=16;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:11,0	0/0:16,1
+11	763329	.	G	GCCCCGCCCTCACCTGT	.	PASS	END=763329;HOMLEN=0;SVLEN=16;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:11,0	0/0:16,1
+11	763330	.	T	TCCCCGCCCTCACCTGT	.	PASS	END=763330;HOMLEN=8;HOMSEQ=CCCCGCCC;SVLEN=16;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:12,1	0/0:16,2
+11	71931986	.	C	CACAAGGACACCTCCCGCCTGT	.	PASS	END=71931986;HOMLEN=0;SVLEN=21;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:133,0	0/0:146,1
+11	71932009	.	C	<INS>	.	PASS	END=71932009;HOMLEN=0;SVLEN=72;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:203,0	0/0:228,1
+11	71932047	.	T	<INS>	.	PASS	END=71932047;HOMLEN=0;SVLEN=78;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:210,0	0/0:241,1
+11	71932113	.	T	TTCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=14;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:117,0	0/0:135,1
+11	71932113	.	T	TTTCCCCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=18;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:117,0	0/0:135,1
+11	71932113	.	T	TTCCCCCCCCCCCCCCCCCCCC	.	PASS	END=71932113;HOMLEN=0;SVLEN=21;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:117,0	0/0:135,1
+11	71932209	.	C	<INV>	.	PASS	END=71932293;HOMLEN=0;NTLEN=0,0;SVLEN=86;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:123,0	0/0:178,2
+11	112832270	.	C	<INS>	.	PASS	END=112832270;HOMLEN=38;HOMSEQ=GCTGCAGGGGGGGGGGCACAGAATTTACCGCGGCAAGA;SVLEN=66;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:54,0	0/0:71,1
+11	112832276	.	A	<INV>	.	PASS	END=112832356;HOMLEN=0;NTLEN=0,63;SVLEN=80;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:54,0	0/0:71,1
+11	112832309	.	CATCCCTCCCAGCCAGCAGATTACAATGCTGCCAAACTAAGGATT	ACATCCCTCCCAGCCAGCAGATTACAATGCTGCAAACTAAGGCTC	.	PASS	END=112832352;HOMLEN=0;NTLEN=45;SVLEN=-45;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:31,0	0/0:37,3
+11	112832334	.	ATGCTGCCAAACTAAGGATTTCATTTGGAC	AAACTCCACCCTACTCATCTCATCTGTAT	.	PASS	END=112832363;HOMLEN=0;NTLEN=28;SVLEN=-29;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:8,0	0/0:12,1
+11	112832340	.	C	<RPL>	.	PASS	END=112832395;HOMLEN=0;NTLEN=50;SVLEN=-55;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:5,0	0/0:7,1
+13	28885790	.	T	TGAAGTCCTCAGAGAAATTGTT	.	PASS	END=28885790;HOMLEN=0;SVLEN=21;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:19,1	0/0:12,0
+14	65041161	.	CCTCCCCATC	TCTTTTTATT	.	PASS	END=65041169;HOMLEN=0;NTLEN=10;SVLEN=-10;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:50,0	0/0:90,1
+15	101529315	.	T	TTGCACCAAGATGTAGGAACAGAAATTCTCCCACTAACAGAAACTTGG	.	PASS	END=101529315;HOMLEN=0;SVLEN=47;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:9,0	0/0:7,1
+15	101529435	.	T	<INS>	.	PASS	END=101529435;HOMLEN=1;HOMSEQ=T;SVLEN=70;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:30,0	0/0:34,1
+15	101529479	.	T	<INS>	.	PASS	END=101529479;HOMLEN=2;HOMSEQ=GC;SVLEN=65;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:41,0	0/0:58,1
+16	27659934	.	C	<INS>	.	PASS	END=27659934;HOMLEN=56;HOMSEQ=AGATCAGAACAGAAGCTGGCCCACGGCTCCACATCGAACCTCCTGTGGACTATTCT;SVLEN=56;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:63,0	0/0:94,1
+16	27659934	.	C	<INS>	.	PASS	END=27659934;HOMLEN=61;HOMSEQ=AGATCAGAACAGAAGCTGGCCCACGGCTCCACATCGAACCTCCTGTGGACTATTCTGATGA;SVLEN=60;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:63,0	0/0:94,2
+16	58313589	.	TTG	T	.	PASS	END=58313591;HOMLEN=0;SVLEN=-2;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:5,0	0/0:10,1
+16	75674191	.	G	<RPL>	.	PASS	END=75674253;HOMLEN=0;NTLEN=61;SVLEN=-62;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:77,0	0/0:95,1
+16	75674244	.	A	ATTGCTGTTAAAAAAAAAAAAAAAGCCCTTCAGAAGTCGACCC	.	PASS	END=75674244;HOMLEN=23;HOMSEQ=TTGCTGTTAAAAAAAAAAAAAAA;SVLEN=42;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:41,0	0/0:61,1
+16	75674251	.	TTA	T	.	PASS	END=75674253;HOMLEN=0;SVLEN=-2;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:32,0	0/0:49,1
+16	75674270	.	AG	A	.	PASS	END=75674271;HOMLEN=0;SVLEN=-1;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:26,0	0/0:40,1
+17	47579354	.	C	<INV>	.	PASS	END=47579409;HOMLEN=0;NTLEN=0,3;SVLEN=55;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:93,0	0/0:111,2
+17	47579406	.	C	CCCCACCCCAGCTTTCTCTTGCCAGTCTGACCCTCCGATCTATC	.	PASS	END=47579406;HOMLEN=1;HOMSEQ=C;SVLEN=43;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:88,0	0/0:105,1
+17	47579426	.	T	TCAGTCTGACCCTCCGATCTCCCTCCATCCAGGTGTCCCTTGT	.	PASS	END=47579426;HOMLEN=0;SVLEN=42;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:119,0	0/0:133,1
+17	76799385	.	A	<DEL>	.	PASS	END=76799463;HOMLEN=5;HOMSEQ=TACCT;SVLEN=-78;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:71,0	0/0:125,1
+17	76799451	.	T	<INS>	.	PASS	END=76799451;HOMLEN=55;HOMSEQ=TGCTCCTGCCCTTACCTGTGCCGAAGTGGGTCCTGGTGCAGGCCGCCTTCTTCAC;SVLEN=65;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:62,0	0/0:102,1
+18	3534356	.	CAGGGGTCCGGAGGAGGCAGAATAG	C	.	PASS	END=3534380;HOMLEN=7;HOMSEQ=AGGGGTC;SVLEN=-24;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:39,0	0/0:85,1
+19	1037595	.	G	GACCTGCTAGATGGCTTTTAAAAAATATTTCCTCCAGAGTC	.	PASS	END=1037595;HOMLEN=7;HOMSEQ=ACCTGCT;SVLEN=40;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:345,0	0/0:368,1
+19	1037610	.	T	TCCATGACCTGCTCCACCCCTCCTTCCTCTCTCCG	.	PASS	END=1037610;HOMLEN=2;HOMSEQ=CC;SVLEN=34;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:350,0	0/0:361,1
+19	33119792	.	GAATTACTC	G	.	PASS	END=33119800;HOMLEN=5;HOMSEQ=AATTA;SVLEN=-8;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:19,0	0/0:18,1
+19	33119821	.	T	<INV>	.	PASS	END=33119879;HOMLEN=0;NTLEN=28,0;SVLEN=58;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:16,0	0/0:9,2
+22	42609454	.	G	<DEL>	.	PASS	END=42609505;HOMLEN=3;HOMSEQ=CTT;SVLEN=-51;SVTYPE=DEL;variantCaller=pindel	GT:AD	0/0:28,0	0/0:67,1
+22	42609532	.	C	CGACAATCACCCCAACAGTCTTCTCATTAACCTTTGGGTTCCCGTCGGAT	.	PASS	END=42609532;HOMLEN=1;HOMSEQ=G;SVLEN=49;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:46,0	0/0:97,1
+22	42609560	.	T	<INS>	.	PASS	END=42609560;HOMLEN=9;HOMSEQ=GGTGAGGTG;SVLEN=72;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:57,0	0/0:114,1
+X	54574584	.	C	<RPL>	.	PASS	END=54574648;HOMLEN=0;NTLEN=65;SVLEN=-64;SVTYPE=RPL;variantCaller=pindel	GT:AD	0/0:50,0	0/0:83,1
+X	135049448	.	A	ACAAAAC	.	PASS	END=135049448;HOMLEN=9;HOMSEQ=CAAAACCAA;SVLEN=6;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:8,1	0/0:5,0
+X	135049596	.	A	AAT	.	PASS	END=135049596;HOMLEN=4;HOMSEQ=ATAT;SVLEN=2;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:74,0	0/1:50,19
+X	135049596	.	A	<INV>	.	PASS	END=135049656;HOMLEN=0;NTLEN=0,9;SVLEN=60;SVTYPE=INV;variantCaller=pindel	GT:AD	0/0:73,0	0/0:50,1
+X	135049632	.	C	<INS>	.	PASS	END=135049632;HOMLEN=0;SVLEN=70;SVTYPE=INS;variantCaller=pindel	GT:AD	0/0:78,0	0/0:46,1

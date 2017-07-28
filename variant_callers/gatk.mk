@@ -13,6 +13,8 @@
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
+ifndef GATK_MK
+
 GATK_HARD_FILTER_SNPS ?= true
 GATK_POOL_SNP_RECAL ?= false
 GATK_SPLIT_CHR ?= true
@@ -130,3 +132,6 @@ vcf/all.gatk_hc.g.vcf : gatk/gvcf/all.variants.snps.filtered.g.vcf gatk/gvcf/all
 # merge variants 
 include modules/bam_tools/processBam.mk
 include modules/vcf_tools/vcftools.mk
+
+endif
+GATK_MK = true

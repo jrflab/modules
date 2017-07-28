@@ -1,12 +1,13 @@
 ##fileformat=VCFv4.1
-##GATKCommandLine=<ID=MuTect,Version=3.1-0-g72492bb,Date="Mon Jul 10 10:53:46 EDT 2017",Epoch=1499698426461,CommandLineOptions="analysis_type=MuTect input_file=[bam/EMC8T.bam, bam/EMC8N.bam] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[DuplicateRead, FailsVendorQualityCheck, NotPrimaryAlignment, BadMate, MappingQualityUnavailable, UnmappedRead, BadCigar] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=SILENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false noop=false enable_extended_output=true enable_qscore_output=false artifact_detection_mode=false tumor_sample_name=EMC8T bam_tumor_sample_name=null normal_sample_name=EMC8N force_output=false force_alleles=false only_passing_calls=false initial_tumor_lod=4.0 tumor_lod=6.3 fraction_contamination=0.02 minimum_mutation_cell_fraction=0.0 normal_lod=2.2 normal_artifact_lod=1.0 strand_artifact_lod=2.0 strand_artifact_power_threshold=0.9 dbsnp_normal_lod=5.5 minimum_normal_allele_fraction=0.0 tumor_f_pretest=0.005 min_qscore=5 gap_events_threshold=3 heavily_clipped_read_fraction=0.3 fraction_mapq0_threshold=0.5 pir_median_threshold=10.0 pir_mad_threshold=3.0 required_maximum_alt_allele_mapping_quality_score=20 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 power_constant_qscore=30 power_constant_af=0.30000001192092896 vcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub dbsnp=[(RodBinding name=dbsnp source=/home/limr/share/reference/dbsnp_138.b37.gmaf.vcf.gz)] cosmic=[] normal_panel=[] coverage_20_q20_file=null power_file=null tumor_depth_file=null normal_depth_file=null filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
+##GATKCommandLine=<ID=MuTect,Version=3.1-0-g72492bb,Date="Thu Jul 27 18:25:36 EDT 2017",Epoch=1501194336494,CommandLineOptions="analysis_type=MuTect input_file=[bam/EMC8T.bam, bam/EMC8N.bam] showFullBamList=false read_buffer_size=null phone_home=AWS gatk_key=null tag=NA read_filter=[DuplicateRead, FailsVendorQualityCheck, NotPrimaryAlignment, BadMate, MappingQualityUnavailable, UnmappedRead, BadCigar] intervals=[1] excludeIntervals=null interval_set_rule=UNION interval_merging=ALL interval_padding=0 reference_sequence=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta nonDeterministicRandomSeed=false disableDithering=false maxRuntime=-1 maxRuntimeUnits=MINUTES downsampling_type=BY_SAMPLE downsample_to_fraction=null downsample_to_coverage=1000 baq=OFF baqGapOpenPenalty=40.0 fix_misencoded_quality_scores=false allow_potentially_misencoded_quality_scores=false useOriginalQualities=false defaultBaseQualities=-1 performanceLog=null BQSR=null quantize_quals=0 disable_indel_quals=false emit_original_quals=false preserve_qscores_less_than=6 globalQScorePrior=-1.0 validation_strictness=SILENT remove_program_records=false keep_program_records=false sample_rename_mapping_file=null unsafe=null disable_auto_index_creation_and_locking_when_reading_rods=false num_threads=1 num_cpu_threads_per_data_thread=1 num_io_threads=0 monitorThreadEfficiency=false num_bam_file_handles=null read_group_black_list=null pedigree=[] pedigreeString=[] pedigreeValidationType=STRICT allow_intervals_with_unindexed_bam=false generateShadowBCF=false variant_index_type=DYNAMIC_SEEK variant_index_parameter=-1 logging_level=INFO log_to_file=null help=false version=false noop=false enable_extended_output=true enable_qscore_output=false artifact_detection_mode=false tumor_sample_name=EMC8T bam_tumor_sample_name=null normal_sample_name=EMC8N force_output=false force_alleles=false only_passing_calls=false initial_tumor_lod=4.0 tumor_lod=6.3 fraction_contamination=0.02 minimum_mutation_cell_fraction=0.0 normal_lod=2.2 normal_artifact_lod=1.0 strand_artifact_lod=2.0 strand_artifact_power_threshold=0.9 dbsnp_normal_lod=5.5 minimum_normal_allele_fraction=0.0 tumor_f_pretest=0.005 min_qscore=5 gap_events_threshold=3 heavily_clipped_read_fraction=0.3 fraction_mapq0_threshold=0.5 pir_median_threshold=10.0 pir_mad_threshold=3.0 required_maximum_alt_allele_mapping_quality_score=20 max_alt_alleles_in_normal_count=500 max_alt_alleles_in_normal_qscore_sum=20 max_alt_allele_in_normal_fraction=0.05 power_constant_qscore=30 power_constant_af=0.30000001192092896 vcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub no_cmdline_in_header=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub sites_only=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub bcf=org.broadinstitute.sting.gatk.io.stubs.VariantContextWriterStub dbsnp=[(RodBinding name=dbsnp source=/home/limr/share/reference/dbsnp_138.b37.gmaf.vcf.gz)] cosmic=[] normal_panel=[] coverage_20_q20_file=null power_file=null tumor_depth_file=null normal_depth_file=null filter_reads_with_N_cigar=false filter_mismatching_base_and_quals=false filter_bases_not_stored=false">
 ##reference=file:///home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
 ##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
 ##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic event">
 ##INFO=<ID=VT,Number=1,Type=String,Description="Variant type, can be SNP, INS or DEL">
+##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
 ##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
-##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depth">
 ##FORMAT=<ID=BQ,Number=A,Type=Float,Description="Average base quality for reads supporting alleles">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
 ##FORMAT=<ID=FA,Number=A,Type=Float,Description="Allele fraction of the alternate allele with regard to reference">
@@ -17,7 +18,7 @@
 ##FILTER=<ID=PASS,Description="Accept as a confident somatic mutation">
 ##FILTER=<ID=REJECT,Description="Rejected as a confident somatic mutation">
 ##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
-##FILTER=<ID=somaticAlleleDepth,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
+##FILTER=<ID=germline5x,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
 ##FILTER=<ID=depth,Description="filter if normal depth < 5 or tumor depth < 5">
 ##FILTER=<ID=noAF,Description="missing AF">
 ##contig=<ID=1,length=249250621>
@@ -108,120 +109,120 @@
 ##SnpSiftCmd=""
 ##INFO=<ID=ExAC_AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
-1	149898951	rs16836630	G	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:4,6:.:10:0.6	0/1:6,4:34.0:10:0.4
-1	149899046	.	T	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:57,0:.:57:0.0:0	0/1:75,8:21.0:84:0.096:2
-1	214816224	rs2666839	G	A	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.179	GT:AD:BQ:DP:FA	0:0,56:.:56:1.0	0/1:0,60:29.0:60:1.0
-1	214816368	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:49,0:.:49:0.0:0	0/1:19,18:30.0:37:0.486:2
-2	114341280	rs112263796	G	A	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	DB;offTarget	GT:AD:BQ:DP:FA	0:10,7:.:17:0.412	0/1:10,3:27.0:13:0.231
-2	114341380	rs28580044	A	G	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:24,2:.:25:0.077	0/1:21,2:30.0:23:0.087
-2	114341406	rs2418694	A	G	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:13,4:.:15:0.235	0/1:12,6:35.0:18:0.333
-2	114341451	rs8179853	A	G	.	REJECT	DB	GT:AD:BQ:DP:FA	0:13,0:.:11:0.0	0/1:9,5:35.0:14:0.357
-2	114341603	rs2418699	T	C	.	REJECT;depth;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:2,2:.:4:0.5	0/1:0,2:30.0:2:1.0
-2	152552202	.	A	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:44,1:.:46:0.022:0	0/1:37,6:19.0:43:0.14:2
-4	6878363	.	C	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0.0:0	0/1:50,37:33.0:88:0.425:2
-4	186097045	rs6855305	C	T	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.485	GT:AD:BQ:DP:FA	0:0,20:.:20:1.0	0/1:0,20:32.0:20:1.0
-5	16676220	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:58,0:.:58:0.0:0	0/1:49,21:33.0:70:0.3:2
-5	16676272	rs77848028	A	C	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.020	GT:AD:BQ:DP:FA	0:24,32:.:56:0.571	0/1:32,40:35.0:72:0.556
-5	16676322	.	T	A	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:7,12:.:19:0.632	0/1:10,13:31.0:23:0.565
-5	89938459	.	C	T	.	PASS	SOMATIC;VT=SNP;ExAC_AF=3.788e-04	GT:AD:BQ:DP:FA:SS	0:30,0:.:30:0.0:0	0/1:11,7:31.0:18:0.389:2
-5	89938587	rs2366773	C	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.735	GT:AD:BQ:DP:FA	0:0,5:.:5:1.0	0/1:0,3:30.0:3:1.0
-5	145523874	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:40,0:.:40:0.0:0	0/1:22,22:34.0:44:0.5:2
-6	10704749	.	T	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:17,0:.:17:0.0:0	0/1:17,7:19.0:24:0.292:2
-6	32551970	rs17886918	T	G	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.357	GT:AD:BQ:DP:FA	0:17,13:.:30:0.433	0/1:2,0:.:2:0.0
-6	32551995	rs17853229	A	G	.	REJECT;depth;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:22,25:.:47:0.532	0/1:2,1:27.0:3:0.333
-6	32551998	rs17853228	G	A	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.458	GT:AD:BQ:DP:FA	0:22,25:.:47:0.532	0/1:2,1:21.0:3:0.333
-6	32552016	rs17880973	C	A	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.233	GT:AD:BQ:DP:FA	0:28,22:.:50:0.44	0/1:1,2:26.0:3:0.667
-6	32552029	rs17884945	A	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.370	GT:AD:BQ:DP:FA	0:22,26:.:48:0.542	0/1:2,1:17.0:3:0.333
-6	32552039	rs150747106	C	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.225	GT:AD:BQ:DP:FA	0:26,22:.:48:0.458	0/1:1,2:32.0:3:0.667
-6	32552048	rs56158521	C	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.225	GT:AD:BQ:DP:FA	0:25,22:.:47:0.468	0/1:1,2:26.0:3:0.667
-6	32552059	rs17883134	G	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.606	GT:AD:BQ:DP:FA	0:23,14:.:37:0.378	0/1:1,1:24.0:2:0.5
-6	32552067	rs17882603	C	T	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=0.504	GT:AD:BQ:DP:FA	0:0,26:.:26:1.0	0/1:0,1:12.0:1:1.0
-6	35261669	.	G	A	.	PASS	SOMATIC;VT=SNP;ExAC_AF=9.415e-06	GT:AD:BQ:DP:FA:SS	0:84,0:.:84:0.0:0	0/1:55,44:31.0:99:0.444:2
-6	43008415	rs147056081	G	A	.	PASS	DB;SOMATIC;VT=SNP;ExAC_AF=8.097e-04	GT:AD:BQ:DP:FA:SS	0:92,0:.:92:0.0:0	0/1:131,64:31.0:195:0.328:2
-6	111694297	.	C	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:86,0:.:86:0.0:0	0/1:40,25:33.0:65:0.385:2
-7	21907458	rs4995598	A	G	.	REJECT	DB;ExAC_AF=0.533	GT:AD:BQ:DP:FA	0:4,1:.:15:0.2	0/1:5,6:35.0:11:0.545
-7	101870801	.	G	A	.	PASS	SOMATIC;VT=SNP;ExAC_AF=4.708e-05	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0.0:0	0/1:43,14:31.0:57:0.246:2
-7	127251638	.	T	G	.	REJECT	.	GT:AD:BQ:DP:FA	0:34,0:.:34:0.0	0/1:35,5:19.0:40:0.125
-7	127251792	rs327518	G	A	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:42,43:.:85:0.506	0/1:27,30:33.0:57:0.526
-7	127251826	rs146298807	C	T	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=2.219e-03	GT:AD:BQ:DP:FA	0:33,33:.:68:0.5	0/1:21,22:30.0:43:0.512
-7	142471588	.	C	G	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:21,2:.:23:0.087	0/1:17,0:.:17:0.0
-7	142471590	.	A	G	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:21,2:.:23:0.087	0/1:17,0:.:17:0.0
-7	142471596	.	T	C	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:19,7:.:26:0.269	0/1:17,0:.:17:0.0
-7	142471602	.	T	C	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:21,7:.:28:0.25	0/1:19,0:.:19:0.0
-7	142471603	.	T	A	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:21,7:.:28:0.25	0/1:18,0:.:18:0.0
-7	142471620	rs375636772	G	A	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	DB;offTarget	GT:AD:BQ:DP:FA	0:29,14:.:42:0.326	0/1:27,0:.:27:0.0
-7	142471626	.	C	T	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:41,4:.:44:0.089	0/1:29,0:.:29:0.0
-7	142471633	.	T	C	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:44,2:.:45:0.043	0/1:32,0:.:32:0.0
-7	142471635	.	T	C	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:37,10:.:46:0.213	0/1:33,0:.:33:0.0
-7	142471647	rs373991001	C	T	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	DB;offTarget	GT:AD:BQ:DP:FA	0:45,11:.:55:0.196	0/1:38,0:.:38:0.0
-7	142471659	.	T	A	.	REJECT;lowDepthOffTarget;somaticAlleleDepth	offTarget	GT:AD:BQ:DP:FA	0:62,5:.:66:0.075	0/1:42,0:.:42:0.0
-7	142471667	.	G	C	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:53,16:.:68:0.232	0/1:44,0:.:44:0.0
-7	142471671	rs376640431	C	T	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:47,20:.:66:0.299	0/1:42,0:.:42:0.0
-7	142471672	.	G	A	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:63,4:.:68:0.06	0/1:41,0:.:43:0.0
-7	142471675	rs371233983	C	G	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:54,17:.:70:0.239	0/1:45,4:31.0:49:0.082
-7	142471687	rs374265330	G	A	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:50,25:.:74:0.333	0/1:43,26:29.0:70:0.377
-7	142471719	.	G	A	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:84,16:.:98:0.16	0/1:96,19:30.0:115:0.165
-7	142471726	.	C	T	.	somaticAlleleDepth	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:98,2:.:98:0.02:0	0/1:109,12:31.0:121:0.099:2
-7	142471797	.	C	T	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:61,4:.:58:0.062	0/1:77,4:28.0:81:0.049
-7	142471799	rs371147990	T	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:40,24:.:57:0.375	0/1:62,14:33.0:76:0.184
-7	142471805	rs374213256	A	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:39,22:.:54:0.361	0/1:56,9:33.0:65:0.138
-7	142471837	rs368422767	T	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:28,21:.:43:0.429	0/1:41,1:31.0:42:0.024
-7	142471840	.	C	G	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:39,7:.:42:0.152	0/1:38,0:.:38:0.0
-7	142471842	rs371514614	T	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:24,16:.:38:0.4	0/1:36,0:.:36:0.0
-7	142471864	.	G	C	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:19,4:.:23:0.174	0/1:18,0:.:18:0.0
-7	142471869	.	C	T	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:14,5:.:19:0.263	0/1:15,0:.:15:0.0
-7	142471877	.	G	C	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:11,2:.:13:0.154	0/1:10,0:.:10:0.0
-7	142471881	.	C	T	.	REJECT	.	GT:AD:BQ:DP:FA	0:12,0:.:13:0.0	0/1:9,0:.:9:0.0
-8	8869199	rs9650616	T	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.352	GT:AD:BQ:DP:FA	0:20,12:.:32:0.375	0/1:21,8:35.0:29:0.276
-8	8869213	.	A	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:26,0:.:26:0.0:0	0/1:16,5:20.0:21:0.238:2
-8	22422842	.	T	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:67,0:.:67:0.0:0	0/1:156,42:33.0:198:0.212:2
-9	138376364	.	T	G	.	REJECT	.	GT:AD:BQ:DP:FA	0:54,0:.:54:0.0	0/1:102,6:22.0:109:0.056
-9	138376416	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:40,0:.:40:0.0:0	0/1:49,39:29.0:89:0.443:2
-10	53458998	rs2292828	A	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.195	GT:AD:BQ:DP:FA	0:19,18:.:37:0.486	0/1:10,12:29.0:22:0.545
-10	53459175	.	G	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:268,0:.:270:0.0:0	0/1:106,86:29.0:192:0.448:2
-10	54076234	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:76,0:.:76:0.0:0	0/1:37,24:30.0:61:0.393:2
-10	54076271	rs1569198	A	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.407	GT:AD:BQ:DP:FA	0:42,34:.:76:0.447	0/1:30,36:34.0:66:0.545
-10	73048335	.	G	A	.	PASS	SOMATIC;VT=SNP;ExAC_AF=4.708e-05	GT:AD:BQ:DP:FA:SS	0:123,0:.:123:0.0:0	0/1:159,88:31.0:247:0.356:2
-10	75533455	.	G	A	.	PASS	SOMATIC;VT=SNP;ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA:SS	0:130,0:.:129:0.0:0	0/1:75,57:29.0:132:0.432:2
-11	533874	rs121913233	T	C	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:142,0:.:142:0.0:0	0/1:191,236:32.0:428:0.553:2
-11	8717022	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:73,0:.:73:0.0:0	0/1:88,22:31.0:110:0.2:2
-11	85967526	.	T	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:28,0:.:28:0.0:0	0/1:22,8:34.0:30:0.267:2
-11	118243280	.	T	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:60,0:.:60:0.0:0	0/1:75,31:34.0:107:0.292:2
-13	35733583	rs187172790	T	A	.	PASS	DB;SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:72,0:.:72:0.0:0	0/1:22,8:31.0:30:0.267:2
-13	46054278	.	G	C	.	PASS	SOMATIC;VT=SNP;ExAC_AF=9.415e-06	GT:AD:BQ:DP:FA:SS	0:21,0:.:21:0.0:0	0/1:17,9:33.0:26:0.346:2
-15	51503259	.	A	C	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:22,1:.:24:0.043:0	0/1:19,6:18.0:25:0.24:2
-16	705640	rs368151213	C	T	.	PASS	DB;SOMATIC;VT=SNP;ExAC_AF=2.831e-05	GT:AD:BQ:DP:FA:SS	0:182,0:.:183:0.0:0	0/1:271,419:32.0:690:0.607:2
-16	14342914	.	C	T	.	PASS	SOMATIC;VT=SNP;ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA:SS	0:100,0:.:100:0.0:0	0/1:82,37:29.0:119:0.311:2
-17	8796933	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:107,0:.:108:0.0:0	0/1:95,53:31.0:148:0.358:2
-17	46053334	rs202125432	A	G	.	PASS	DB;SOMATIC;VT=SNP;ExAC_AF=7.442e-03	GT:AD:BQ:DP:FA:SS	0:124,1:.:125:0.008:0	0/1:181,9:34.0:190:0.047:2
-19	13476200	.	T	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:42,0:.:42:0.0:0	0/1:35,20:34.0:55:0.364:2
-19	13476394	rs1871470	T	C	.	REJECT;lowDepthOffTarget;noAF	DB;offTarget	GT:AD:BQ:DP:FA	0:0,0:.:0:0.0	0/1:0,1:37.0:1:1.0
-19	41355820	rs199702575	A	G	.	REJECT	DB;ExAC_AF=3.053e-03	GT:AD:BQ:DP:FA	0:22,1:.:23:0.043	0/1:18,5:33.0:23:0.217
-19	41355828	rs200582200	C	T	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=2.978e-03	GT:AD:BQ:DP:FA	0:26,1:.:27:0.037	0/1:20,4:32.0:24:0.167
-19	41355896	rs376970015	T	C	.	somaticAlleleDepth	DB;SOMATIC;VT=SNP;ExAC_AF=0.012	GT:AD:BQ:DP:FA:SS	0:40,2:.:42:0.048:0	0/1:46,4:29.0:50:0.08:2
-19	41355919	rs28399438	A	C	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.015	GT:AD:BQ:DP:FA	0:21,18:.:39:0.462	0/1:24,19:36.0:43:0.442
-19	42260569	rs1805223	G	A	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.297	GT:AD:BQ:DP:FA	0:11,13:.:24:0.542	0/1:16,15:28.0:31:0.484
-19	42260742	rs141329594	C	T	.	PASS	DB;SOMATIC;VT=SNP;ExAC_AF=9.509e-04	GT:AD:BQ:DP:FA:SS	0:62,0:.:62:0.0:0	0/1:81,7:31.0:88:0.08:2
-19	42260803	rs145109801	T	C	.	REJECT	ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA	0:44,0:.:44:0.0	0/1:77,5:35.0:82:0.061
-19	51503494	.	C	T	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:102,1:.:103:0.009709:0	0/1:101,67:30.0:168:0.399:2
-19	51503524	rs1701946	T	C	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.459	GT:AD:BQ:DP:FA	0:0,71:.:71:1.0	0/1:0,137:32.0:137:1.0
-19	56896557	.	A	G	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:37,0:.:37:0.0:0	0/1:32,6:32.0:38:0.158:2
-19	56896570	.	G	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:32,0:.:32:0.0:0	0/1:21,4:28.0:25:0.16:2
-20	17639653	rs111380927	T	C	.	REJECT;somaticAlleleDepth	DB	GT:AD:BQ:DP:FA	0:24,2:.:26:0.077	0/1:35,0:.:35:0.0
-20	17639668	rs13036404	A	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=1.006e-05	GT:AD:BQ:DP:FA	0:27,2:.:29:0.069	0/1:37,1:21.0:38:0.026
-20	17639786	rs62207197	T	G	.	somaticAlleleDepth	DB;SOMATIC;VT=SNP;ExAC_AF=1.529e-04	GT:AD:BQ:DP:FA:SS	0:29,1:.:30:0.033:0	0/1:28,5:30.0:33:0.152:2
-20	17639816	rs62207198	T	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=2.276e-03	GT:AD:BQ:DP:FA	0:24,4:.:27:0.143	0/1:25,2:30.0:27:0.074
-20	17639834	.	T	C	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:25,3:.:27:0.107	0/1:24,2:33.0:26:0.077
-20	17639846	rs62207199	T	G	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=1.171e-04	GT:AD:BQ:DP:FA	0:22,4:.:25:0.154	0/1:19,4:27.0:23:0.174
-20	17639850	rs111946504	C	T	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=3.676e-05	GT:AD:BQ:DP:FA	0:23,3:.:25:0.115	0/1:22,4:25.0:26:0.154
-20	17639857	rs77553739	G	T	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=0.015	GT:AD:BQ:DP:FA	0:18,7:.:24:0.28	0/1:20,6:33.0:26:0.231
-20	17639864	.	T	C	.	REJECT;somaticAlleleDepth	.	GT:AD:BQ:DP:FA	0:21,3:.:24:0.125	0/1:19,4:29.0:23:0.174
-20	17639876	rs202069077	T	G	.	REJECT	DB;ExAC_AF=1.881e-03	GT:AD:BQ:DP:FA	0:15,1:.:16:0.063	0/1:19,0:.:19:0.0
-20	17639880	rs367977419	C	T	.	REJECT	DB;ExAC_AF=1.637e-03	GT:AD:BQ:DP:FA	0:14,1:.:15:0.067	0/1:16,0:.:16:0.0
-20	17639893	rs12481263	T	C	.	REJECT;somaticAlleleDepth	DB;ExAC_AF=1.596e-03	GT:AD:BQ:DP:FA	0:7,2:.:9:0.222	0/1:7,2:32.0:9:0.222
-20	17639902	rs12480082	A	G	.	REJECT	DB	GT:AD:BQ:DP:FA	0:5,1:.:6:0.167	0/1:5,2:25.0:7:0.286
-20	17639923	rs12481272	T	C	.	REJECT;depth;somaticAlleleDepth	DB;ExAC_AF=4.027e-04	GT:AD:BQ:DP:FA	0:1,4:.:5:0.8	0/1:2,2:33.0:4:0.5
-20	17639940	.	C	T	.	REJECT;depth	.	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
-20	17639941	rs13036886	A	C	.	REJECT;depth	DB;ExAC_AF=1.027e-04	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
-20	17639947	rs112484631	A	G	.	REJECT;depth	DB;ExAC_AF=1.089e-03	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
-22	20077637	.	C	A	.	PASS	SOMATIC;VT=SNP	GT:AD:BQ:DP:FA:SS	0:150,0:.:150:0.0:0	0/1:118,82:31.0:200:0.41:2
+1	149898951	rs16836630	G	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:4,6:.:10:0.6	0/1:6,4:34.0:10:0.4
+1	149899046	.	T	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:57,0:.:57:0.0:0	0/1:75,8:21.0:84:0.096:2
+1	214816224	rs2666839	G	A	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.179	GT:AD:BQ:DP:FA	0:0,56:.:56:1.0	0/1:0,60:29.0:60:1.0
+1	214816368	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:49,0:.:49:0.0:0	0/1:19,18:30.0:37:0.486:2
+2	114341280	rs112263796	G	A	.	REJECT;lowDepthOffTarget;germline5x	DB;variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:10,7:.:17:0.412	0/1:10,3:27.0:13:0.231
+2	114341380	rs28580044	A	G	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:24,2:.:25:0.077	0/1:21,2:30.0:23:0.087
+2	114341406	rs2418694	A	G	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:13,4:.:15:0.235	0/1:12,6:35.0:18:0.333
+2	114341451	rs8179853	A	G	.	REJECT	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:13,0:.:11:0.0	0/1:9,5:35.0:14:0.357
+2	114341603	rs2418699	T	C	.	REJECT;depth;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:2,2:.:4:0.5	0/1:0,2:30.0:2:1.0
+2	152552202	.	A	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:44,1:.:46:0.022:0	0/1:37,6:19.0:43:0.14:2
+4	6878363	.	C	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0.0:0	0/1:50,37:33.0:88:0.425:2
+4	186097045	rs6855305	C	T	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.485	GT:AD:BQ:DP:FA	0:0,20:.:20:1.0	0/1:0,20:32.0:20:1.0
+5	16676220	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:58,0:.:58:0.0:0	0/1:49,21:33.0:70:0.3:2
+5	16676272	rs77848028	A	C	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.020	GT:AD:BQ:DP:FA	0:24,32:.:56:0.571	0/1:32,40:35.0:72:0.556
+5	16676322	.	T	A	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:7,12:.:19:0.632	0/1:10,13:31.0:23:0.565
+5	89938459	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=3.788e-04	GT:AD:BQ:DP:FA:SS	0:30,0:.:30:0.0:0	0/1:11,7:31.0:18:0.389:2
+5	89938587	rs2366773	C	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.735	GT:AD:BQ:DP:FA	0:0,5:.:5:1.0	0/1:0,3:30.0:3:1.0
+5	145523874	.	A	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:40,0:.:40:0.0:0	0/1:22,22:34.0:44:0.5:2
+6	10704749	.	T	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:17,0:.:17:0.0:0	0/1:17,7:19.0:24:0.292:2
+6	32551970	rs17886918	T	G	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.357	GT:AD:BQ:DP:FA	0:17,13:.:30:0.433	0/1:2,0:.:2:0.0
+6	32551995	rs17853229	A	G	.	REJECT;depth;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:22,25:.:47:0.532	0/1:2,1:27.0:3:0.333
+6	32551998	rs17853228	G	A	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.458	GT:AD:BQ:DP:FA	0:22,25:.:47:0.532	0/1:2,1:21.0:3:0.333
+6	32552016	rs17880973	C	A	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.233	GT:AD:BQ:DP:FA	0:28,22:.:50:0.44	0/1:1,2:26.0:3:0.667
+6	32552029	rs17884945	A	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.370	GT:AD:BQ:DP:FA	0:22,26:.:48:0.542	0/1:2,1:17.0:3:0.333
+6	32552039	rs150747106	C	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.225	GT:AD:BQ:DP:FA	0:26,22:.:48:0.458	0/1:1,2:32.0:3:0.667
+6	32552048	rs56158521	C	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.225	GT:AD:BQ:DP:FA	0:25,22:.:47:0.468	0/1:1,2:26.0:3:0.667
+6	32552059	rs17883134	G	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.606	GT:AD:BQ:DP:FA	0:23,14:.:37:0.378	0/1:1,1:24.0:2:0.5
+6	32552067	rs17882603	C	T	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=0.504	GT:AD:BQ:DP:FA	0:0,26:.:26:1.0	0/1:0,1:12.0:1:1.0
+6	35261669	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=9.415e-06	GT:AD:BQ:DP:FA:SS	0:84,0:.:84:0.0:0	0/1:55,44:31.0:99:0.444:2
+6	43008415	rs147056081	G	A	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=8.097e-04	GT:AD:BQ:DP:FA:SS	0:92,0:.:92:0.0:0	0/1:131,64:31.0:195:0.328:2
+6	111694297	.	C	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:86,0:.:86:0.0:0	0/1:40,25:33.0:65:0.385:2
+7	21907458	rs4995598	A	G	.	REJECT	DB;variantCaller=mutect;ExAC_AF=0.533	GT:AD:BQ:DP:FA	0:4,1:.:15:0.2	0/1:5,6:35.0:11:0.545
+7	101870801	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=4.708e-05	GT:AD:BQ:DP:FA:SS	0:69,0:.:69:0.0:0	0/1:43,14:31.0:57:0.246:2
+7	127251638	.	T	G	.	REJECT	variantCaller=mutect	GT:AD:BQ:DP:FA	0:34,0:.:34:0.0	0/1:35,5:19.0:40:0.125
+7	127251792	rs327518	G	A	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:42,43:.:85:0.506	0/1:27,30:33.0:57:0.526
+7	127251826	rs146298807	C	T	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=2.219e-03	GT:AD:BQ:DP:FA	0:33,33:.:68:0.5	0/1:21,22:30.0:43:0.512
+7	142471588	.	C	G	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:21,2:.:23:0.087	0/1:17,0:.:17:0.0
+7	142471590	.	A	G	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:21,2:.:23:0.087	0/1:17,0:.:17:0.0
+7	142471596	.	T	C	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:19,7:.:26:0.269	0/1:17,0:.:17:0.0
+7	142471602	.	T	C	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:21,7:.:28:0.25	0/1:19,0:.:19:0.0
+7	142471603	.	T	A	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:21,7:.:28:0.25	0/1:18,0:.:18:0.0
+7	142471620	rs375636772	G	A	.	REJECT;lowDepthOffTarget;germline5x	DB;variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:29,14:.:42:0.326	0/1:27,0:.:27:0.0
+7	142471626	.	C	T	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:41,4:.:44:0.089	0/1:29,0:.:29:0.0
+7	142471633	.	T	C	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:44,2:.:45:0.043	0/1:32,0:.:32:0.0
+7	142471635	.	T	C	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:37,10:.:46:0.213	0/1:33,0:.:33:0.0
+7	142471647	rs373991001	C	T	.	REJECT;lowDepthOffTarget;germline5x	DB;variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:45,11:.:55:0.196	0/1:38,0:.:38:0.0
+7	142471659	.	T	A	.	REJECT;lowDepthOffTarget;germline5x	variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:62,5:.:66:0.075	0/1:42,0:.:42:0.0
+7	142471667	.	G	C	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:53,16:.:68:0.232	0/1:44,0:.:44:0.0
+7	142471671	rs376640431	C	T	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:47,20:.:66:0.299	0/1:42,0:.:42:0.0
+7	142471672	.	G	A	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:63,4:.:68:0.06	0/1:41,0:.:43:0.0
+7	142471675	rs371233983	C	G	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:54,17:.:70:0.239	0/1:45,4:31.0:49:0.082
+7	142471687	rs374265330	G	A	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:50,25:.:74:0.333	0/1:43,26:29.0:70:0.377
+7	142471719	.	G	A	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:84,16:.:98:0.16	0/1:96,19:30.0:115:0.165
+7	142471726	.	C	T	.	germline5x	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:98,2:.:98:0.02:0	0/1:109,12:31.0:121:0.099:2
+7	142471797	.	C	T	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:61,4:.:58:0.062	0/1:77,4:28.0:81:0.049
+7	142471799	rs371147990	T	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:40,24:.:57:0.375	0/1:62,14:33.0:76:0.184
+7	142471805	rs374213256	A	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:39,22:.:54:0.361	0/1:56,9:33.0:65:0.138
+7	142471837	rs368422767	T	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:28,21:.:43:0.429	0/1:41,1:31.0:42:0.024
+7	142471840	.	C	G	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:39,7:.:42:0.152	0/1:38,0:.:38:0.0
+7	142471842	rs371514614	T	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:24,16:.:38:0.4	0/1:36,0:.:36:0.0
+7	142471864	.	G	C	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:19,4:.:23:0.174	0/1:18,0:.:18:0.0
+7	142471869	.	C	T	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:14,5:.:19:0.263	0/1:15,0:.:15:0.0
+7	142471877	.	G	C	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:11,2:.:13:0.154	0/1:10,0:.:10:0.0
+7	142471881	.	C	T	.	REJECT	variantCaller=mutect	GT:AD:BQ:DP:FA	0:12,0:.:13:0.0	0/1:9,0:.:9:0.0
+8	8869199	rs9650616	T	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.352	GT:AD:BQ:DP:FA	0:20,12:.:32:0.375	0/1:21,8:35.0:29:0.276
+8	8869213	.	A	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:26,0:.:26:0.0:0	0/1:16,5:20.0:21:0.238:2
+8	22422842	.	T	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:67,0:.:67:0.0:0	0/1:156,42:33.0:198:0.212:2
+9	138376364	.	T	G	.	REJECT	variantCaller=mutect	GT:AD:BQ:DP:FA	0:54,0:.:54:0.0	0/1:102,6:22.0:109:0.056
+9	138376416	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:40,0:.:40:0.0:0	0/1:49,39:29.0:89:0.443:2
+10	53458998	rs2292828	A	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.195	GT:AD:BQ:DP:FA	0:19,18:.:37:0.486	0/1:10,12:29.0:22:0.545
+10	53459175	.	G	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:268,0:.:270:0.0:0	0/1:106,86:29.0:192:0.448:2
+10	54076234	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:76,0:.:76:0.0:0	0/1:37,24:30.0:61:0.393:2
+10	54076271	rs1569198	A	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.407	GT:AD:BQ:DP:FA	0:42,34:.:76:0.447	0/1:30,36:34.0:66:0.545
+10	73048335	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=4.708e-05	GT:AD:BQ:DP:FA:SS	0:123,0:.:123:0.0:0	0/1:159,88:31.0:247:0.356:2
+10	75533455	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA:SS	0:130,0:.:129:0.0:0	0/1:75,57:29.0:132:0.432:2
+11	533874	rs121913233	T	C	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:142,0:.:142:0.0:0	0/1:191,236:32.0:428:0.553:2
+11	8717022	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:73,0:.:73:0.0:0	0/1:88,22:31.0:110:0.2:2
+11	85967526	.	T	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:28,0:.:28:0.0:0	0/1:22,8:34.0:30:0.267:2
+11	118243280	.	T	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:60,0:.:60:0.0:0	0/1:75,31:34.0:107:0.292:2
+13	35733583	rs187172790	T	A	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:72,0:.:72:0.0:0	0/1:22,8:31.0:30:0.267:2
+13	46054278	.	G	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=9.415e-06	GT:AD:BQ:DP:FA:SS	0:21,0:.:21:0.0:0	0/1:17,9:33.0:26:0.346:2
+15	51503259	.	A	C	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:22,1:.:24:0.043:0	0/1:19,6:18.0:25:0.24:2
+16	705640	rs368151213	C	T	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=2.831e-05	GT:AD:BQ:DP:FA:SS	0:182,0:.:183:0.0:0	0/1:271,419:32.0:690:0.607:2
+16	14342914	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA:SS	0:100,0:.:100:0.0:0	0/1:82,37:29.0:119:0.311:2
+17	8796933	.	A	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:107,0:.:108:0.0:0	0/1:95,53:31.0:148:0.358:2
+17	46053334	rs202125432	A	G	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=7.442e-03	GT:AD:BQ:DP:FA:SS	0:124,1:.:125:0.008:0	0/1:181,9:34.0:190:0.047:2
+19	13476200	.	T	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:42,0:.:42:0.0:0	0/1:35,20:34.0:55:0.364:2
+19	13476394	rs1871470	T	C	.	REJECT;lowDepthOffTarget;noAF	DB;variantCaller=mutect;offTarget	GT:AD:BQ:DP:FA	0:0,0:.:0:0.0	0/1:0,1:37.0:1:1.0
+19	41355820	rs199702575	A	G	.	REJECT	DB;variantCaller=mutect;ExAC_AF=3.053e-03	GT:AD:BQ:DP:FA	0:22,1:.:23:0.043	0/1:18,5:33.0:23:0.217
+19	41355828	rs200582200	C	T	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=2.978e-03	GT:AD:BQ:DP:FA	0:26,1:.:27:0.037	0/1:20,4:32.0:24:0.167
+19	41355896	rs376970015	T	C	.	germline5x	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=0.012	GT:AD:BQ:DP:FA:SS	0:40,2:.:42:0.048:0	0/1:46,4:29.0:50:0.08:2
+19	41355919	rs28399438	A	C	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.015	GT:AD:BQ:DP:FA	0:21,18:.:39:0.462	0/1:24,19:36.0:43:0.442
+19	42260569	rs1805223	G	A	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.297	GT:AD:BQ:DP:FA	0:11,13:.:24:0.542	0/1:16,15:28.0:31:0.484
+19	42260742	rs141329594	C	T	.	PASS	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=9.509e-04	GT:AD:BQ:DP:FA:SS	0:62,0:.:62:0.0:0	0/1:81,7:31.0:88:0.08:2
+19	42260803	rs145109801	T	C	.	REJECT	variantCaller=mutect;ExAC_AF=1.883e-05	GT:AD:BQ:DP:FA	0:44,0:.:44:0.0	0/1:77,5:35.0:82:0.061
+19	51503494	.	C	T	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:102,1:.:103:0.009709:0	0/1:101,67:30.0:168:0.399:2
+19	51503524	rs1701946	T	C	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.459	GT:AD:BQ:DP:FA	0:0,71:.:71:1.0	0/1:0,137:32.0:137:1.0
+19	56896557	.	A	G	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:37,0:.:37:0.0:0	0/1:32,6:32.0:38:0.158:2
+19	56896570	.	G	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:32,0:.:32:0.0:0	0/1:21,4:28.0:25:0.16:2
+20	17639653	rs111380927	T	C	.	REJECT;germline5x	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:24,2:.:26:0.077	0/1:35,0:.:35:0.0
+20	17639668	rs13036404	A	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=1.006e-05	GT:AD:BQ:DP:FA	0:27,2:.:29:0.069	0/1:37,1:21.0:38:0.026
+20	17639786	rs62207197	T	G	.	germline5x	DB;SOMATIC;VT=SNP;variantCaller=mutect;ExAC_AF=1.529e-04	GT:AD:BQ:DP:FA:SS	0:29,1:.:30:0.033:0	0/1:28,5:30.0:33:0.152:2
+20	17639816	rs62207198	T	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=2.276e-03	GT:AD:BQ:DP:FA	0:24,4:.:27:0.143	0/1:25,2:30.0:27:0.074
+20	17639834	.	T	C	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:25,3:.:27:0.107	0/1:24,2:33.0:26:0.077
+20	17639846	rs62207199	T	G	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=1.171e-04	GT:AD:BQ:DP:FA	0:22,4:.:25:0.154	0/1:19,4:27.0:23:0.174
+20	17639850	rs111946504	C	T	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=3.676e-05	GT:AD:BQ:DP:FA	0:23,3:.:25:0.115	0/1:22,4:25.0:26:0.154
+20	17639857	rs77553739	G	T	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=0.015	GT:AD:BQ:DP:FA	0:18,7:.:24:0.28	0/1:20,6:33.0:26:0.231
+20	17639864	.	T	C	.	REJECT;germline5x	variantCaller=mutect	GT:AD:BQ:DP:FA	0:21,3:.:24:0.125	0/1:19,4:29.0:23:0.174
+20	17639876	rs202069077	T	G	.	REJECT	DB;variantCaller=mutect;ExAC_AF=1.881e-03	GT:AD:BQ:DP:FA	0:15,1:.:16:0.063	0/1:19,0:.:19:0.0
+20	17639880	rs367977419	C	T	.	REJECT	DB;variantCaller=mutect;ExAC_AF=1.637e-03	GT:AD:BQ:DP:FA	0:14,1:.:15:0.067	0/1:16,0:.:16:0.0
+20	17639893	rs12481263	T	C	.	REJECT;germline5x	DB;variantCaller=mutect;ExAC_AF=1.596e-03	GT:AD:BQ:DP:FA	0:7,2:.:9:0.222	0/1:7,2:32.0:9:0.222
+20	17639902	rs12480082	A	G	.	REJECT	DB;variantCaller=mutect	GT:AD:BQ:DP:FA	0:5,1:.:6:0.167	0/1:5,2:25.0:7:0.286
+20	17639923	rs12481272	T	C	.	REJECT;depth;germline5x	DB;variantCaller=mutect;ExAC_AF=4.027e-04	GT:AD:BQ:DP:FA	0:1,4:.:5:0.8	0/1:2,2:33.0:4:0.5
+20	17639940	.	C	T	.	REJECT;depth	variantCaller=mutect	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
+20	17639941	rs13036886	A	C	.	REJECT;depth	DB;variantCaller=mutect;ExAC_AF=1.027e-04	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
+20	17639947	rs112484631	A	G	.	REJECT;depth	DB;variantCaller=mutect;ExAC_AF=1.089e-03	GT:AD:BQ:DP:FA	0:3,0:.:3:0.0	0/1:3,0:.:3:0.0
+22	20077637	.	C	A	.	PASS	SOMATIC;VT=SNP;variantCaller=mutect	GT:AD:BQ:DP:FA:SS	0:150,0:.:150:0.0:0	0/1:118,82:31.0:200:0.41:2
