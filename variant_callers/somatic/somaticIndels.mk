@@ -9,7 +9,7 @@ INDEL_TYPES ?= varscan_indels strelka_indels scalpel_indels lancet_indels platyp
 somatic_indels : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).somatic_indels.vcf)
 #strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
 
-UPS_INDEL = $(HOME)/share/usr/bin/ups_indel
+UPS_INDEL = LD_LIBRARY_PATH=$(HOME)/share/usr/lib $(HOME)/share/usr/bin/ups_indel
 UPS_SPLIT_CHR ?= true
 MERGE_UVCF_VCF = python modules/vcf_tools/merge_uvcf_vcf.py
 MERGE_INDEL_VCF = python modules/vcf_tools/merge_indel_vcf.py
