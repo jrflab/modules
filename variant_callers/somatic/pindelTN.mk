@@ -50,7 +50,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr-vcf,$(chr))))
 
 define merge-pindel-chr
 pindel/vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(chr).vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
+	$$(call LSCRIPT_MEM,4G,6G,"(grep '^#' $$<; grep -v '^#' $$^ ) | $$(VCF_SORT) $$(REF_DICT) - > $@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-pindel-chr,$(pair))))
 
