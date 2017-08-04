@@ -101,7 +101,10 @@ info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Fl
 info(header(vcf)) <- rbind(info(header(vcf)), DataFrame(Number = "1", Type = "Integer",
                                                         Description = "facets multiplicity", row.names = "facetsMultiplicity"))
 
-pass <- rowRanges(vcf)$FILTER == 'PASS'
+ref <- sapply(geno(vcf)$AD[, tumorSample], function(x) x[1])
+alt <- sapply(geno(vcf)$AD[, tumorSample], function(x) x[2])
+vaf <- alt / (alt + ref)
+pass <- rowRanges(vcf)$FILTER == 'PASS' & !is.na(vaf)
 if (sum(pass) == 0) {
     cat("No unfiltered variants\n")
 } else {
