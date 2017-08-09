@@ -49,7 +49,7 @@ DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf.gz
 KNOWN_INDELS ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz
 OMNI ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/1000G_omni2.5.hg19.vcf.gz
 HAPMAP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/hapmap_3.3.hg19.vcf.gz
-EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v3_v4.hg19.bed
+EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v4_hg19.bed
 MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.bigWig
 
 EXOME ?= false
