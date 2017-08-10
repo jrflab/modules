@@ -68,7 +68,7 @@ if __name__ == "__main__":
     records = list()
     query_records = list()
     for record in vcf_reader:
-        if record.is_indel and cp.requires_mt_provean(record):
+        if len(record.FILTER) == 0 and record.is_indel and cp.requires_mt_provean(record):
             query_records.append(record)
         records.append(record)
     if len(query_records) > 0 and not args.no_remote:

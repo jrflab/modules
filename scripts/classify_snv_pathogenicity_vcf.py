@@ -29,7 +29,8 @@ if __name__ == "__main__":
                                                          source=None, version=None)
     records = [x for x in vcf_reader]
     for record in records:
-        cp.classify_pathogenicity(record)
+        if len(record.FILTER) == 0 and record.is_snp:
+            cp.classify_pathogenicity(record)
 
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
     for record in records:
