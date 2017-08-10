@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
     chasm_pred_columns = [c for c in mdf.columns if "chasm_pred" in c]
     summary_columns = ("CHROM,POS,REF,ALT,SAMPLE.TUMOR,SAMPLE.NORMAL,"
-                       "UPS_Coord,SYMBOL,Variant_Classification,HGVSp_Short,"
+                       "variantCaller,UPS_Coord,SYMBOL,Variant_Classification,HGVSp_Short,"
                        "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,offTarget,"
                        "fuentes,dgd,oncoKB_level,oncoKB_cancer_type,"
                        "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,"

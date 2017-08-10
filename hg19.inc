@@ -39,8 +39,8 @@ GISTIC_REF ?= $(HOME)/share/usr/gistic_2_0_21/refgenefiles/hg19.mat
 CLINVAR ?= $(REF_DIR)/clinvar_20160531.hg19.vcf.gz
 EXAC_NONTCGA ?= $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.hg19.vcf.gz
 
-COSMIC ?= $(REF_DIR)/cosmic_v81/CosmicCodingMuts.hg19.vcf.gz
-COSMIC_NONCODING ?= $(REF_DIR)/cosmic_v81/CosmicNonCodingVariants.hg19.vcf.gz
+COSMIC ?= $(REF_DIR)/cosmic_v82/CosmicCodingMuts.hg19.vcf.gz
+COSMIC_NONCODING ?= $(REF_DIR)/cosmic_v82/CosmicNonCodingVariants.hg19.vcf.gz
 
 REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
@@ -49,7 +49,7 @@ DBSNP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/dbsnp_138.hg19.vcf.gz
 KNOWN_INDELS ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/Mills_and_1000G_gold_standard.indels.hg19.vcf.gz
 OMNI ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/1000G_omni2.5.hg19.vcf.gz
 HAPMAP ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/hapmap_3.3.hg19.vcf.gz
-EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v3_v4.hg19.bed
+EXOME_BED ?= $(REF_DIR)/target_panels/sure_select_exome_v4_hg19.bed
 MAP_BIGWIG ?= $(REF_DIR)/wgEncodeCrgMapabilityAlign100mer.bigWig
 
 EXOME ?= false
