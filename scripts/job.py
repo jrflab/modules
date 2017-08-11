@@ -124,7 +124,7 @@ class LocalJob(Job):
         os.chmod(job_script_file.name, 0o555)
         with open(self.log_file, 'w') as err:
             self.process = subprocess.Popen([self.shell, job_script_file.name],
-                                            stderr=err, shell=False)
+                                            stderr=err, stdout=err, shell=False)
 
     def wait(self):
         self.retval = self.process.wait()
