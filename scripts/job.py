@@ -1,9 +1,8 @@
 from abc import ABCMeta, abstractmethod
 import os
 import re
+import datetime
 import sys
-import errno
-import job
 import signal
 import tempfile
 import random
@@ -16,6 +15,7 @@ except ImportError:
     pass
 
 DEVNULL = open(os.devnull, 'wb')
+
 
 def time2secs(s):
     x = time.strptime(s, '%H:%M:%S')
@@ -69,6 +69,8 @@ def bytes2human(n, format="%(value)i%(symbol)s"):
 class Job:
     __metaclass__ = ABCMeta
 
+    _kill_now = False
+
     def __init__(self, out_file=None):
         self.out_file = out_file
 
@@ -104,16 +106,25 @@ class Job:
             if self._kill_now:
                 return 0
 
+
 class LocalJob(Job):
 
-    def __init__(self, job_script, out_file=None, log_file=None):
+    def __init__(self, job_script, shell=None, out_file=None, log_file=None):
         Job.__init__(self, out_file)
         self.job_script = job_script
         self.log_file = log_file
         self.retval = None
+        self.shell = shell
 
     def run_job(self):
-        self.process = subprocess.Popen(self.job_script, stderr=self.log_file, shell=True)
+        job_script_file = tempfile.NamedTemporaryFile(mode='w',
+                                                      suffix='.sh', delete=False)
+        job_script_file.write(self.job_script)
+        job_script_file.close()
+        os.chmod(job_script_file.name, 0o555)
+        with open(self.log_file, 'w') as err:
+            self.process = subprocess.Popen([self.shell, job_script_file.name],
+                                            stderr=err, shell=False)
 
     def wait(self):
         self.retval = self.process.wait()
@@ -129,11 +140,12 @@ class LocalJob(Job):
         local_file_size = super(LocalJob, self)._local_check_file(max_retry)
         if local_file_size == 0:
             return False
+        else:
+            return True
+
 
 class ClusterJob(Job):
     __metaclass__ = ABCMeta
-
-    _kill_now = False
 
     def __init__(self, out_file=None, remote_check_servers=None):
         Job.__init__(self, out_file)
@@ -161,7 +173,7 @@ class ClusterJob(Job):
     def _remote_check_file(self, local_file_size, server, max_retry):
         for attempt in range(max_retry):
             try:
-                remote_file_size = int(subprocess.\
+                remote_file_size = int(subprocess.
                                        check_output('ssh {} stat -c%s "{}"'.
                                                     format(server, os.path.abspath(self.out_file)),
                                                     stderr=DEVNULL, shell=True).strip())
@@ -177,11 +189,11 @@ class ClusterJob(Job):
                 time.sleep(10)
             except:
                 sys.stderr.write("{}: failed remote file size check\n"
-                                    .format(server))
+                                 .format(server))
                 time.sleep(10)
             else:
                 sys.stderr.write("max connection retries for "
-                                    "remote file size check\n")
+                                 "remote file size check\n")
                 return False
             if self._kill_now:
                 return False
@@ -198,7 +210,6 @@ class ClusterJob(Job):
     @abstractmethod
     def wait(self):
         pass
-
 
 
 class DRMAAJob(ClusterJob):
@@ -345,7 +356,7 @@ class PBSJob(ClusterJob):
 
     def is_finished(self):
         return self.qstat is not None and 'exit_status' in self.qstat and \
-            qstat['exit_status'] == 0 and not self._kill_now
+            self.qstat['exit_status'] == 0 and not self._kill_now
 
     def hit_mem_limit(self):
         """ True if mem limit was hit
