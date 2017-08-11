@@ -19,13 +19,13 @@ delly: $(foreach pair,$(SAMPLE_PAIRS),$(foreach type,$(DELLY_TYPES),delly/bcf/$(
 
 define delly-pair-type
 delly/bcf/$1_$2.delly_$3.bcf : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_ENV_LONG,$$(DELLY_ENV),8G,12G,"delly call -t $3 -o $$@ -g $$(REF_FASTA) $$< $$(<<)")
+	$$(call RUN,-v $$(DELLY_ENV) -w 256:00:00,8G,12G,"delly call -t $3 -o $$@ -g $$(REF_FASTA) $$< $$(<<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach type,$(DELLY_TYPES),\
 	$(eval $(call delly-pair-type,$(tumor.$(pair)),$(normal.$(pair)),$(type)))))
 
 delly/h5/%.h5 : bam/%.bam
-	$(call LSCRIPT_ENV_MEM,$(DELLY_ENV),8G,10G,"$(SUAVE_BAM_TO_H5) -s $* -c gzip -o $@ $<")
+	$(call RUN,-v $(DELLY_ENV) -s 8G -m 10G,"$(SUAVE_BAM_TO_H5) -s $* -c gzip -o $@ $<")
 
 

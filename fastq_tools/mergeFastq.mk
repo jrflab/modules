@@ -15,7 +15,7 @@ endif
 ALIGNER ?= bwamem
 
 merge_fastq : $(foreach sample,$(MERGE_SAMPLES),$(if $(wildcard bam/$(sample).bam),merged_bam/$(sample).bam,bam/$(sample).bam))
-	$(call LSCRIPT_MEM,7G,8G,"for bam in $(filter merged_bam/%.bam,$^); do \
+	$(call RUN,-s 7G -m 8G,"for bam in $(filter merged_bam/%.bam,$^); do \
 		ln -f \$${bam} bam/\$$(basename \$${bam}) && \
 		$(SAMTOOLS) index \$${bam}; \
 		done")
@@ -33,5 +33,5 @@ merged_bam/%.header.sam : merged_bam/%.1.bam merged_bam/%.2.bam
 	done | sort | uniq; } > $@
 
 merged_bam/%.bam : merged_bam/%.header.sam merged_bam/%.1.bam merged_bam/%.2.bam
-	$(call LSCRIPT_MEM,12G,15G,"$(SAMTOOLS) merge -f -h $< $(@) $(filter %.bam,$(^))")
+	$(call RUN,-s 12G -m 15G,"$(SAMTOOLS) merge -f -h $< $(@) $(filter %.bam,$(^))")
 

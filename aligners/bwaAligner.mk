@@ -34,14 +34,14 @@ BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 bwa : $(addsuffix ,$(BWA_BAMS)) $(addsuffix .bai,$(BWA_BAMS))
 
 bam/%.bam : bwa/bam/%.bwa.$(BAM_SUFFIX)
-	$(call LSCRIPT,"ln -f $(<) $(@) ")
+	$(call RUN,,"ln -f $(<) $(@) ")
 
 ifdef SPLIT_SAMPLES
 
 .SECONDEXPANSION:
 define sai-split-fastq-pair
 bwa/sai/$1.$3.sai : $2
-	$$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$$(BWA) aln $$(BWA_ALN_OPTS) -t 8 $$(REF_FASTA) $$(<) > $$(@)")
+	$$(call RUN,-n 8 -s 1G -m 1.2G,"$$(BWA) aln $$(BWA_ALN_OPTS) -t 8 $$(REF_FASTA) $$(<) > $$(@)")
 endef
 $(foreach ss,$(SPLIT_SAMPLES), \
 	$(if $(fq.$(ss)),\
@@ -50,7 +50,7 @@ $(foreach ss,$(SPLIT_SAMPLES), \
 
 define align-split-fastq
 bwa/bam/$2.bwa.bam : bwa/sai/$2.1.sai bwa/sai/$2.2.sai $3
-	$$(call LSCRIPT_MEM,4G,10G,"$$(BWA) sampe -P -r \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
+	$$(call RUN,-s 4G -m 10G,"$$(BWA) sampe -P -r \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),\
@@ -58,14 +58,14 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 endif
 
 bwa/sai/%.sai : fastq/%.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,1.2G,"$(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<) > $(@) ")
+	$(call RUN,-n 8 -s 1G -m 1.2G,"$(BWA) aln $(BWA_ALN_OPTS) -t 8 $(REF_FASTA) $(<) > $(@) ")
 
 bwa/bam/%.bwa.bam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_MEM,4G,10G,"$(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^) | $(SAMTOOLS) view -bhS - > $(@) ")
+	$(call RUN,-s 4G -m 10G,"$(BWA) sampe -P -r \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(REF_FASTA) $(^) | $(SAMTOOLS) view -bhS - > $(@) ")
 
 fastq/%.fastq.gz : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $< ")
+	$(call RUN,,"gzip -c $< > $(@) && $(RM) $< ")
 
 
 include modules/bam_tools/processBam.mk

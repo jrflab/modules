@@ -26,5 +26,5 @@ all: $(foreach sample,$(SAMPLES),gatk/read_depth/$(sample).read_depth)
 #else
 
 gatk/read_depth/%.read_depth : %.bam
-	$(call LSCRIPT_MEM,8G,12G,"$(call GATK_MEM,7G) -T DepthOfCoverage -R $(REF_FASTA) $(READ_DEPTH_ARGS) -o $@ -I $<")
+	$(call RUN,-s 8G -m 12G,"$(call GATK_MEM,7G) -T DepthOfCoverage -R $(REF_FASTA) $(READ_DEPTH_ARGS) -o $@ -I $<")
 

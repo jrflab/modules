@@ -36,12 +36,12 @@ varscan_mafs : $(foreach type,$(VARSCAN_VARIANT_TYPES),$(foreach pair,$(SAMPLE_P
 
 
 %.Somatic.txt : %.txt
-	$(call LSCRIPT_MEM,5G,8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
+	$(call RUN,-s 5G -m 8G,"$(call VARSCAN_MEM,4G) somaticFilter $< && $(call VARSCAN_MEM,4G) processSomatic $< && rename .txt.Somatic .Somatic.txt $** && rename .txt.Germline .Germline.txt $** && rename .txt.LOH .LOH.txt $** && rename .txt.hc .hc.txt $**")
 
 define varscan-somatic-tumor-normal-chr
 varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	if [[ $$$$($$(SAMTOOLS) view $$< $3 | head -1 | wc -l) -gt 0 ]]; then \
-		$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) somatic \
+		$$(call RUN,-s 9G -m 12G,"$$(VARSCAN) somatic \
 		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 		$$(VARSCAN_OPTS) \
@@ -57,7 +57,7 @@ varscan/chr_tables/$1_$2.$3.indel.txt : varscan/chr_tables/$1_$2.$3.varscan_time
 varscan/chr_tables/$1_$2.$3.snp.txt : varscan/chr_tables/$1_$2.$3.varscan_timestamp
 
 varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt bamrc/$1.$3.bamrc.gz
-	$$(call LSCRIPT_MEM,8G,55G,"$$(VARSCAN) fpfilter $$< <(zcat $$(<<)) --output-file $$@")
+	$$(call RUN,-s 8G -m 55G,"$$(VARSCAN) fpfilter $$< <(zcat $$(<<)) --output-file $$@")
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
@@ -75,7 +75,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 
 define convert-varscan-tumor-normal
 varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
-	$$(call LSCRIPT_MEM,4G,8G,"$$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@")
+	$$(call RUN,-s 4G -m 8G,"$$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -88,7 +88,7 @@ vcf/%.varscan_snps.vcf : varscan/vcf/%.snp.Somatic.vcf
 
 define bamrc-chr
 bamrc/%.$1.bamrc.gz : bam/%.bam
-	$$(call LSCRIPT_MEM,8G,12G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 | gzip > $$@ 2> /dev/null")
+	$$(call RUN,-s 8G -m 12G,"$$(BAM_READCOUNT) -f $$(REF_FASTA) $$< $1 | gzip > $$@ 2> /dev/null")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call bamrc-chr,$(chr))))
 

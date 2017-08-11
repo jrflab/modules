@@ -54,7 +54,7 @@ chimscan/bedpe/%.chimscan.bedpe : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(call LAUNCH_CHIMSCAN,$(CHIMSCAN_CORES),$(CHIMSCAN_MEM),$(CHIMSCAN_MEM),"$(CHIMERASCAN) $(CHIMERASCAN_OPTS) -v --quals illumina -p $(CHIMSCAN_CORES) $(CHIMSCAN_INDEX) $^ chimscan/$* && cp -f chimscan/$*/chimeras.bedpe $@ && rm -r chimscan/$*")
 # was 8 and 20
 %.chimscan.nft.bedpe : %.chimscan.bedpe
-	$(call LSCRIPT_MEM,2G,4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
+	$(call RUN,-s 2G -m 4G,"$(PERL) $(CHIMSCAN_NORMAL_FILTER) -w 1000 $(NORMAL_CHIMSCAN_RESULTS) $< > $@")
 
 chimscan/alltables/all.chimscan%txt : $(foreach sample,$(SAMPLES),chimscan/bedpe/$(sample).chimscan%bedpe)
 	$(INIT) head -1 $< | sed 's/^/Sample\t/; s/#//' > $@ && for i in $^; do sed "1d; s/^/$$(basename $${i%%.chimscan$*bedpe})\t/" $$i >> $@; done

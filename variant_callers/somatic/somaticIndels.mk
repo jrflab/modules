@@ -15,7 +15,7 @@ MERGE_UVCF_VCF = python modules/vcf_tools/merge_uvcf_vcf.py
 MERGE_INDEL_VCF = python modules/vcf_tools/merge_indel_vcf.py
 
 vcf/%.somatic_indels.vcf : $(foreach type,$(INDEL_TYPES),vcf/%.$(type).uvcf.vcf)
-	$(call LSCRIPT_MEM,9G,12G,"$(MERGE_INDEL_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
+	$(call RUN,-s 9G -m 12G,"$(MERGE_INDEL_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
 
 ifeq ($(UPS_SPLIT_CHR),true)
 chr_vcf/%.chr_timestamp : vcf/%.vcf
@@ -26,7 +26,7 @@ chr_vcf/%.$1.vcf : chr_vcf/%.chr_timestamp
 	if ! grep -q '^#CHROM' $$@; then rm -f $$< $$@; fi
 
 chr_uvcf/%.$1.uvcf : chr_vcf/%.$1.vcf
-	$$(call LSCRIPT_MEM,4G,6G,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1")
+	$$(call RUN,-s 4G -m 6G,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call uvcf-chr,$(chr))))
 
@@ -34,11 +34,11 @@ uvcf/%.uvcf : $(foreach chr,$(CHROMOSOMES),chr_uvcf/%.$(chr).uvcf)
 	$(INIT) (grep '^#' $<; grep -P '^CHROM\t' $<; for x in $^; do grep -v '^#' $$x | sed 1d; done) > $@
 else
 uvcf/%.uvcf : vcf/%.vcf
-	$(call LSCRIPT_MEM,4G,6G,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
+	$(call RUN,-s 4G -m 6G,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
 endif
 
 vcf/%.uvcf.vcf : uvcf/%.uvcf vcf/%.vcf
-	$(call LSCRIPT_MEM,4G,6G,"$(MERGE_UVCF_VCF) $< $(<<) > $@")
+	$(call RUN,-s 4G -m 6G,"$(MERGE_UVCF_VCF) $< $(<<) > $@")
 
 include modules/variant_callers/somatic/mutect2.mk
 include modules/variant_callers/somatic/strelka.mk

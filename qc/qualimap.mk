@@ -16,7 +16,7 @@ endif
 all : $(foreach sample,$(SAMPLES),qualimap/$(sample)_bamqc.timestamp)
 
 qualimap/%_bamqc.timestamp : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,4.5G,5G,"$(QUALIMAP) bamqc $(QUALIMAP_BAMQC_OPTS) -bam $< -nr 6 -nt 8 -outdir qualimap/$*_bamqc && touch $@")
+	$(call RUN,-n 4 -s 4.5G -m 5G,"$(QUALIMAP) bamqc $(QUALIMAP_BAMQC_OPTS) -bam $< -nr 6 -nt 8 -outdir qualimap/$*_bamqc && touch $@")
 
 
 include modules/bam_tools/processBam.mk

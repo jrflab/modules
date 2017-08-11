@@ -31,11 +31,11 @@ rseqc : $(foreach sample,$(SAMPLES), \
 	rseqc/inner_dist/$(sample).innerDistance.txt)
 
 rseqc/infer/%.infer : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_MEM,7G,8G,"$(INFER_EXPT) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) > $@")
+	$(call RUN,-s 7G -m 8G,"$(INFER_EXPT) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) > $@")
 
 rseqc/gene_body_cov/%.geneBodyCoverage.txt : bam/%.bam
-	$(call LSCRIPT_MEM,7G,8G,"$(GENEBODY_COV) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) -o rseqc/gene_body_cov/$*")
+	$(call RUN,-s 7G -m 8G,"$(GENEBODY_COV) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) -o rseqc/gene_body_cov/$*")
 
 rseqc/inner_dist/%.innerDistance.txt : bam/%.bam
-	$(call LSCRIPT_MEM,7G,8G,"$(INNER_DIST) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) -o rseqc/inner_dist/$*")
+	$(call RUN,-s 7G -m 8G,"$(INNER_DIST) -i $< -r $(REF_HOUSEKEEPING_GENE_BED) -o rseqc/inner_dist/$*")
 

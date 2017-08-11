@@ -61,10 +61,10 @@ freec/%.config.txt : %.bam
 	$(INIT) echo -e "$(call FREEC_CONFIG,$<,$(word 2,$^),$(@D))" | sed 's/ //' > $@
 
 freec/%.bam_ratio.txt : freec/%.config.txt
-	$(call LSCRIPT_PARALLEL_MEM,$(FREEC_THREADS),$(FREEC_MEM),$(FREEC_HMEM),"$(FREEC) -conf $<")
+	$(call RUN,-n $(FREEC_THREADS) -s $(FREEC_MEM) -m $(FREEC_HMEM),"$(FREEC) -conf $<")
 
 freec/%.bam_ratio.txt.png : freec/%.bam_ratio.txt
-	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
+	$(call RUN,-s 2G -m 4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $<")
 
 freec/cnvs.png : $(foreach sample,$(SAMPLES),freec/$(sample).bam_ratio.txt)
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outFile $@ --centromereTable $(CENTROMERE_TABLE) $^

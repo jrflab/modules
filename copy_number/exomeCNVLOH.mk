@@ -31,7 +31,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define exomecnv-loh-pair
 exomecnv/loh/$1.loh.txt : exomecnv/baf/$1.baf_1.txt exomecnv/baf/$1.baf_2.txt
-	$$(call LSCRIPT_MEM,4G,6G,"$$(RSCRIPT) $$(EXOMECNVLOH) --tumor $$< --normal $$(word 2,$$^) --outPrefix $$(@D)/$1")
+	$$(call RUN,-s 4G -m 6G,"$$(RSCRIPT) $$(EXOMECNVLOH) --tumor $$< --normal $$(word 2,$$^) --outPrefix $$(@D)/$1")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-loh-pair,$(pair))))
 

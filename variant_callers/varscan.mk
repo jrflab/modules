@@ -62,7 +62,7 @@ vcfs : $(VCFS)
 ifeq ($(SPLIT_CHR),true)
 define varscan-chr-type
 varscan/chr_vcf/%.$1.$2.vcf : bam/%.bam bam/%.bam.bai
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$2 \
+	$$(call RUN,-s 9G -m 12G,"$$(VARSCAN) mpileup2$2 \
 	<($$(SAMTOOLS) mpileup -r $1 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 	--output-vcf $$(VARSCAN_OPTS)  --vcf-sample-list $$* | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
 endef
@@ -70,7 +70,7 @@ $(foreach chr,$(CHROMOSOMES),$(foreach type,snp indel,$(eval $(call varscan-chr-
 
 define merge-varscan-vcfs
 varscan/vcf/$1.%.vcf : $$(foreach chr,$$(CHROMOSOMES),varscan/chr_vcf/$1.$$(chr).%.vcf)
-	$$(call LSCRIPT_MEM,4G,5G,"grep '^##' $$< > $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+	$$(call RUN,-s 4G -m 5G,"grep '^##' $$< > $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call merge-varscan-vcfs,$(sample))))
 
@@ -78,7 +78,7 @@ else # no splitting by chr
 
 define varscan-type
 varscan/vcf/%.$1.vcf : bam/%.bam bam/%.bam.bai
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VARSCAN) mpileup2$1 \
+	$$(call RUN,-s 9G -m 12G,"$$(VARSCAN) mpileup2$1 \
 	<($$(SAMTOOLS) mpileup -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 	--output-vcf --vcf-sample-list $$* $$(VARSCAN_OPTS) | $$(FIX_VARSCAN_VCF) -s $$* > $$@")
 endef

@@ -29,11 +29,11 @@ MAP_DIR = $(HOME)/share/reference/gc_b37
 all: $(foreach pair,$(SAMPLE_PAIRS),oncoseq/$(pair).oncoseq_timestamp)
 
 oncoseq/infile/%.oncoseq.txt.gz : bam/%.bam
-	$(call LSCRIPT_MEM,4G,6G,"$(PROCESS_PILEUP) --infile <($(SAMTOOLS) mpileup -f $(REF_FASTA) $<) --outfile >(gzip -c > $@) --snpfile $(DBSNP_BED)")
+	$(call RUN,-s 4G -m 6G,"$(PROCESS_PILEUP) --infile <($(SAMTOOLS) mpileup -f $(REF_FASTA) $<) --outfile >(gzip -c > $@) --snpfile $(DBSNP_BED)")
 
 define oncoseq-tumor-normal
 oncoseq/$1_$2.oncoseq_timestamp : oncoseq/infile/$1.oncoseq.txt.gz oncoseq/infile/$2.oncoseq.txt.gz
-	$$(call LSCRIPT_MEM,8G,12G,"mkdir -p $$(@D)/$1_$2; \
+	$$(call RUN,-s 8G -m 12G,"mkdir -p $$(@D)/$1_$2; \
 		$$(ONCOSEQ) $$(MCR_DIR) \
 		--normalcontamination \
 		--tumourheterogeneity \

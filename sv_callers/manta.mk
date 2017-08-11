@@ -14,7 +14,7 @@ manta/%/runWorkflow.py : bam/%.bam bam/%.bam.bai
 	$(INIT) $(CONFIG_MANTA) $(CONFIG_MANTA_OPTS) --tumorBam $< --runDir $(@D) 
 
 manta/%/results/variants/tumorSV.vcf.gz manta/%/results/variants/candidateSmallIndels.vcf.gz manta/%/results/variants/candidateSV.vcf.gz : manta/%/runWorkflow.py
-	$(call LSCRIPT_PARALLEL_MEM,8,2G,2G,"python $< -m local -j 8")
+	$(call RUN,-n 8 -s 2G -m 2G,"python $< -m local -j 8")
 
 vcf/%.manta_sv.vcf : manta/%/results/variants/tumorSV.vcf.gz
 	$(INIT) zcat $< > $@

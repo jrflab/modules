@@ -23,13 +23,13 @@ all : $(foreach sample,$(SAMPLES),hydra/breaks/$(sample).breaks)
 #$(INIT) $(SAMTOOLS) view -uF 2 $< | $(BAM_TO_FASTQ) -bam stdin -fq1 >( gzip -c > hydra/disc_fastq/$*.disc.1.fastq.gz) -fq2  >( gzip -c > hydra/disc_fastq/$*.disc.2.fastq.gz)
 
 hydra/bam/%.disc.bam : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) view -bF 2 $< > $@")
+	$(call RUN,,"$(SAMTOOLS) view -bF 2 $< > $@")
 
 hydra/bed/%.disc.bedpe : hydra/bam/%.disc.bam
-	$(call LSCRIPT,"$(BAM_TO_BED) -i $< -tag NM | $(PAIR_DISCORDANTS) -i stdin -m hydra -z 800 > $@")
+	$(call RUN,,"$(BAM_TO_BED) -i $< -tag NM | $(PAIR_DISCORDANTS) -i stdin -m hydra -z 800 > $@")
 
 hydra/bed/%.disc.dedup.bedpe : hydra/bed/%.disc.bedpe
-	$(call LSCRIPT,"$(DEDUP_DISCORDANTS) -i $< -s 3 > $@")
+	$(call RUN,,"$(DEDUP_DISCORDANTS) -i $< -s 3 > $@")
 
 hydra/breaks/%.breaks : hydra/bed/%.disc.dedup.bedpe
-	$(call LSCRIPT,"$(HYDRA) -in $< -out $@ $(HYDRA_OPTS)")
+	$(call RUN,,"$(HYDRA) -in $< -out $@ $(HYDRA_OPTS)")

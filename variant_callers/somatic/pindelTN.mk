@@ -25,7 +25,7 @@ pindel : pindel_vcfs
 pindel_vcfs : $(PINDEL_VCFS)
 
 pindel/ins_size/%.insert_size.txt : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(GET_INSERT_SIZE) - > $@")
+	$(call RUN,,"$(SAMTOOLS) view $< | $(GET_INSERT_SIZE) - > $@")
 
 define pindel-config-tumor-normal
 pindel/config/$1_$2.pindel_config.txt : bam/$1.bam bam/$2.bam pindel/ins_size/$1.insert_size.txt pindel/ins_size/$2.insert_size.txt
@@ -35,7 +35,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call pindel-config-tumor-normal,$(tumor.
 
 define pindel-chr
 pindel/%.$1.pindel_timestamp : pindel/config/%.pindel_config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,4,3G,6G,"$$(MKDIR) pindel/$$* && $$(PINDEL) -T 4 -f $$(REF_FASTA) -i $$< -o pindel/$$*/$1 -c $1 && touch $$@")
+	$$(call RUN,-n 4 -s 3G -m 6G,"$$(MKDIR) pindel/$$* && $$(PINDEL) -T 4 -f $$(REF_FASTA) -i $$< -o pindel/$$*/$1 -c $1 && touch $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr,$(chr))))
 
@@ -44,19 +44,19 @@ pindel/%.pindel_timestamp : $(foreach chr,$(CHROMOSOMES),pindel/%.$(chr).pindel_
 
 define pindel-chr-vcf
 pindel/chr_vcf/%.pindel_$1.vcf : pindel/%.$1.pindel_timestamp
-	$$(call LSCRIPT_CHECK_MEM,3G,4G,"$$(PINDEL2VCF) -P pindel/$$*/$1 -v $$@.tmp -c $1 -r $$(REF_FASTA) -R $$(REF_NAME) -d $$(REF_DATE) $$(PINDEL2VCF_OPTS) && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+	$$(call RUN,-c -s 3G -m 4G,"$$(PINDEL2VCF) -P pindel/$$*/$1 -v $$@.tmp -c $1 -r $$(REF_FASTA) -R $$(REF_NAME) -d $$(REF_DATE) $$(PINDEL2VCF_OPTS) && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr-vcf,$(chr))))
 
 define merge-pindel-chr
 pindel/vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(chr).vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"(grep '^#' $$<; grep -v '^#' $$^ ) | $$(VCF_SORT) $$(REF_DICT) - > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+	$$(call RUN,-s 4G -m 6G,"(grep '^#' $$<; grep -v '^#' $$^ ) | $$(VCF_SORT) $$(REF_DICT) - > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call merge-pindel-chr,$(pair))))
 
 define pindel-somatic-filter
 vcf/$1_$2.pindel.vcf : pindel/vcf/$1_$2.pindel.vcf
-	$$(call LSCRIPT_CHECK_MEM,4G,7G,"$$(PINDEL_SOMATIC_AD_FILTER_VCF) --tumor $1 --normal $2 --pass_only $$< | $$(PINDEL_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+	$$(call RUN,-c -s 4G -m 7G,"$$(PINDEL_SOMATIC_AD_FILTER_VCF) --tumor $1 --normal $2 --pass_only $$< | $$(PINDEL_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call pindel-somatic-filter,$(tumor.$(pair)),$(normal.$(pair)))))
 

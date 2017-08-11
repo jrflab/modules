@@ -16,22 +16,22 @@ sufam_sampleset: $(foreach set,$(SAMPLE_SETS),vcf_ann/$(set).sufam.vcf) tsv/sufa
 
 define sufam-set
 sufam/$1.set.vcf : $$(foreach pair,$$(pairs.$1),vcf_ann/$$(pair).somatic_variants.vcf.gz vcf_ann/$$(pair).somatic_variants.vcf.gz.tbi)
-	$$(call LSCRIPT_MEM,6G,8G,"bcftools merge -O v --force-samples $$(filter %.vcf.gz,$$^) > $$@")
+	$$(call RUN,-s 6G -m 8G,"bcftools merge -O v --force-samples $$(filter %.vcf.gz,$$^) > $$@")
 
 vcf/$1.sufam.vcf : sufam/$1.set.vcf $$(foreach sample,$$(set.$1),bam/$$(sample).bam)
-	$$(call LSCRIPT_ENV_MEM,$$(SUFAM_ENV),2G,3G,"sufam --sample_name $$(set.$1) $$(SUFAM_OPTS) $$(REF_FASTA) $$^ > $$@")
+	$$(call RUN,-v $$(SUFAM_ENV) -s 2G -m 3G,"sufam --sample_name $$(set.$1) $$(SUFAM_OPTS) $$(REF_FASTA) $$^ > $$@")
 
 vcf_ann/$1.sufam.vcf : vcf/$1.sufam.vcf $$(foreach pair,$$(pairs.$1),vcf_ann/$$(pair).somatic_variants.vcf.gz)
-	$$(call LSCRIPT_MEM,2G,3G,"$$(ANNOTATE_SUFAM_GT_VCF) $$^ > $$@")
+	$$(call RUN,-s 2G -m 3G,"$$(ANNOTATE_SUFAM_GT_VCF) $$^ > $$@")
 
 tsv/$1.sufam.tsv : vcf_ann/$1.sufam.vcf.gz
-	$$(call LSCRIPT_MEM,4G,6G,"$$(SOMATIC_VCF2TSV) --normal $$(normal.$1) $$< > $$@")
+	$$(call RUN,-s 4G -m 6G,"$$(SOMATIC_VCF2TSV) --normal $$(normal.$1) $$< > $$@")
 
 endef
 $(foreach set,$(SAMPLE_SETS),$(eval $(call sufam-set,$(set))))
 
 tsv/sufam_variants.tsv : $(foreach set,$(SAMPLE_SETS),tsv/$(set).sufam.tsv)
-	$(call LSCRIPT_MEM,4G,6G,"(sed -n 1p $<; for x in $^; do sed 1d \$$x; done) > $@")
+	$(call RUN,-s 4G -m 6G,"(sed -n 1p $<; for x in $^; do sed 1d \$$x; done) > $@")
 
 
 include modules/vcf_tools/vcftools.mk

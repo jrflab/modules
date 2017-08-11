@@ -38,7 +38,7 @@ vcfs : $(VCFS)
 tables : $(TABLES)
 
 pindel/ins_size/%.insert_size.txt : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | $(GET_INSERT_SIZE) - > $@")
+	$(call RUN,,"$(SAMTOOLS) view $< | $(GET_INSERT_SIZE) - > $@")
 
 define pindel-config
 pindel/config/$$(subst $$( ),_,$1).pindel_config.txt : $$(foreach sample,$1,bam/$$(sample).bam pindel/ins_size/$$(sample).insert_size.txt )
@@ -48,7 +48,7 @@ $(foreach i,$(shell seq 1 $(NUM_SETS)),$(eval $(call pindel-config,$(set.$i))))
 
 define pindel-chr
 pindel/%.$1.pindel_timestamp : pindel/config/%.pindel_config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,4,3G,6G,"$$(MKDIR) pindel/$$* && $$(PINDEL) -T 4 -f $$(REF_FASTA) -i $$< -o pindel/$$*/$1 -c $1 && touch $$@")
+	$$(call RUN,-n 4 -s 3G -m 6G,"$$(MKDIR) pindel/$$* && $$(PINDEL) -T 4 -f $$(REF_FASTA) -i $$< -o pindel/$$*/$1 -c $1 && touch $$@")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr,$(chr))))
 
@@ -63,7 +63,7 @@ $(foreach chr,$(CHROMOSOMES),$(eval $(call pindel-chr-vcf,$(chr))))
 
 define merge-pindel-chr
 vcf/$1.pindel.vcf : $$(foreach chr,$$(CHROMOSOMES),pindel/chr_vcf/$1.pindel_$$(chr).vcf)
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
+	$$(call RUN,-s 4G -m 6G,"$$(call GATK_MEM,3G) -T CombineVariants --assumeIdenticalSamples $$(foreach i,$$^, --variant $$i) -R $$(REF_FASTA) -o $$@ &> $$(LOG)")
 endef
 $(foreach set,$(SAMPLE_SETS),$(eval $(call merge-pindel-chr,$(set))))
 

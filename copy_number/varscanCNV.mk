@@ -51,13 +51,13 @@ geneCN : varscan/segment/geneCN.txt
 
 define varscan-copynum-tumor-normal
 varscan/copynum/$1_$2.copynumber :  bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_CHECK_MEM,9G,12G,"$$(SAMTOOLS) mpileup $$(MPILEUP_OPTS) -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
+	$$(call RUN,-c -s 9G -m 12G,"$$(SAMTOOLS) mpileup $$(MPILEUP_OPTS) -f $$(REF_FASTA) $$(word 2,$$^) $$< | awk 'NF == 9 { print }' |  $$(VARSCAN) copynumber - $$(basename $$@) --mpileup 1")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call varscan-copynum-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 varscan/copycall/%.copycall : varscan/copynum/%.copynumber
-	$(call LSCRIPT_CHECK_MEM,9G,12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \
+	$(call RUN,-c -s 9G -m 12G,"n=`awk '{ total += \$$7 } END { print total / NR }' $<`; \
 	if [ \$$(bc <<< \"\$$n > 0\") -eq 1 ]; then \
 		recenter_opt=\"--recenter-up \$$n\"; \
 	else \
@@ -67,20 +67,20 @@ varscan/copycall/%.copycall : varscan/copynum/%.copynumber
 	$(VARSCAN) copyCaller $< --output-file $@ \$$recenter_opt")
 
 varscan/segment/%.segment.Rdata varscan/segment/%.seg.txt varscan/segment/%.collapsed_seg.txt : varscan/copycall/%.copycall
-	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+	$(call RUN,-c -v $(VARSCAN_CNV_ENV) -s 4G -m 6G,"$(RSCRIPT) $(SEGMENTCNV) --alpha $(SEG_ALPHA) --smoothRegion $(SEG_SMOOTH) --undoSD $(SEG_SD) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 varscan/segment/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),varscan/segment/$(pair).collapsed_seg.txt)
-	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(VARSCAN_GENE_CN) $(VARSCAN_GENE_CN_OPTS) --outFile $@ $^")	
+	$(call RUN,-c -v $(VARSCAN_CNV_ENV) -s 4G -m 6G,"$(VARSCAN_GENE_CN) $(VARSCAN_GENE_CN_OPTS) --outFile $@ $^")	
 
 varscan/segment/%.cgh_call.txt : varscan/segment/%.segment.Rdata
-	$(call LSCRIPT_ENV_CHECK_MEM,$(VARSCAN_CNV_ENV),4G,6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
+	$(call RUN,-c -v $(VARSCAN_CNV_ENV) -s 4G -m 6G,"$(RSCRIPT) $(CGHCALL) --centromereFile=$(CENTROMERE_TABLE2) --prefix=$(@D)/$* $<")
 
 define varscan-segment-sd-alpha-smooth
 varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata : varscan/copycall/%.copycall
-	$$(call LSCRIPT_CHECK_NAMED_MEM,$$*_seg_$1_$2_$3,4G,6G,"$$(RSCRIPT) $$(SEGMENTCNV) --undoSD $1 --alpha $2 --smoothRegion $3 --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
+	$$(call RUN,-c -N 4G -s 4G -m 6G,"$$(RSCRIPT) $$(SEGMENTCNV) --undoSD $1 --alpha $2 --smoothRegion $3 --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
 
 varscan/segment_sd$1_alpha$2_smooth$3/%.cgh_call.txt : varscan/segment_sd$1_alpha$2_smooth$3/%.segment.Rdata
-	$$(call LSCRIPT_CHECK_NAMED_MEM,$$*_cgh_$1_$2_$3,4G,6G,"$$(RSCRIPT) $$(CGHCALL) --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
+	$$(call RUN,-c -N 4G -s 4G -m 6G,"$$(RSCRIPT) $$(CGHCALL) --centromereFile=$$(CENTROMERE_TABLE2) --prefix=$$(@D)/$$* $$<")
 endef
 $(foreach sd,$(SEG_SDS),\
 	$(foreach alpha,$(SEG_ALPHAS),\

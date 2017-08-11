@@ -31,7 +31,7 @@ all : $(foreach eff,$(EFF_TYPES),$(foreach tumor,$(TUMOR_SAMPLES),merged_tables/
 
 define select-tumor-variants-platform
 merged_vcf/$1.$3_%.vcf : $3/vcf/$1_$2.%.vcf
-	$$(call LSCRIPT_MEM,4G,6G,"$$(call GATK_MEM,3G) -T SelectVariants \
+	$$(call RUN,-s 4G -m 6G,"$$(call GATK_MEM,3G) -T SelectVariants \
 	-R $$(REF_FASTA)  --variant $$<  -o $$@ -sn $1 &> $$(LOG)")
 endef
 $(foreach platform,$(PLATFORMS),$(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call select-tumor-variants-platform,$(tumor),$(normal_lookup.$(tumor)),$(platform)))))
@@ -43,7 +43,7 @@ endef
 $(foreach platform,$(PLATFORMS),$(foreach sample,$(SAMPLES),$(eval $(call variants-platform,$(sample),$(platform)))))
 
 merged_vcf/%.$(MERGE_SUFFIX).vcf : $(foreach suff,$(MERGE_SUFFIXES),merged_vcf/%.$(suff).vcf)
-	$(call LSCRIPT_MEM,6G,8G,"$(call GATK_MEM,5G) -T CombineVariants -R $(REF_FASTA) $(foreach suff,$(MERGE_SUFFIXES),--variant:$(suff) merged_vcf/$*.$(suff).vcf ) -o $@ -genotypeMergeOptions UNIQUIFY")
+	$(call RUN,-s 6G -m 8G,"$(call GATK_MEM,5G) -T CombineVariants -R $(REF_FASTA) $(foreach suff,$(MERGE_SUFFIXES),--variant:$(suff) merged_vcf/$*.$(suff).vcf ) -o $@ -genotypeMergeOptions UNIQUIFY")
 
 merged_tables/%.$(MERGE_SUFFIX).$(VCF_SUFFIX).txt : merged_vcf/%.$(MERGE_SUFFIX).$(VCF_SUFFIX).vcf
 	$(INIT) S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \

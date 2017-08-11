@@ -20,10 +20,10 @@ strelka_mafs : $(foreach type,$(STRELKA_VARIANT_TYPES),$(foreach pair,$(SAMPLE_P
 
 define strelka-tumor-normal
 strelka/$1_$2/Makefile : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_NAMED,strelka_$1_$2,"rm -rf $$(@D) && $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=$$(@D)")
+	$$(call RUN,-N strelka_$1_$2,"rm -rf $$(@D) && $$(CONFIGURE_STRELKA) --tumor=$$< --normal=$$(<<) --ref=$$(REF_FASTA) --config=$$(STRELKA_CONFIG) --output-dir=$$(@D)")
 
 strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$1_$2.strelka,10,1G,1.5G,"make -j 10 -C $$(<D)")
+	$$(call RUN,-N $1_$2.strelka -n 10 -s 1G -m 1.5G,"make -j 10 -C $$(<D)")
 
 vcf/$1_$2.%.vcf : strelka/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<

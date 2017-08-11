@@ -58,7 +58,7 @@ $(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 define mutect-tumor-normal-chunk
 mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam \
 	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chunk_tables mutect/cov; \
+	$$(call RUN,-c -s 12G -m 15G,"$$(MKDIR) mutect/chunk_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
 		$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),--fraction_contamination `csvcut -t -c contamination $$(<<<<) | sed 1d`) \
 		--intervals $$< \
@@ -74,7 +74,7 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 define mutect-tumor-normal-chr
 mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam \
 	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,12G,15G,"$$(MKDIR) mutect/chr_tables mutect/cov; \
+	$$(call RUN,-c -s 12G -m 15G,"$$(MKDIR) mutect/chr_tables mutect/cov; \
 		$$(MUTECT) --tumor_sample_name $1 --normal_sample_name $2 \
 		$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),--fraction_contamination `csvcut -t -c contamination $$(<<<) | sed 1d`) \
 		--intervals $3 -I:tumor $$(<) -I:normal $$(<<) --out mutect/chr_tables/$1_$2.$3.mutect.txt  \
@@ -95,7 +95,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
-	$$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -109,7 +109,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
-	$$(call LSCRIPT_CHECK_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -117,13 +117,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 endif
 
 mutect/report/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_NAMED_MEM,mutect_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) $^")
+	$(call RUN,-N mutect_report -s 6G -m 35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) $^")
 
 mutect/lowAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_NAMED_MEM,mutect_lowaf_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --lowAF $^")
+	$(call RUN,-N mutect_lowaf_report -s 6G -m 35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --lowAF $^")
 
 mutect/highAFreport/index.html: $(foreach pair,$(SAMPLE_PAIRS),mutect/tables/$(pair).mutect.txt)
-	$(call LSCRIPT_NAMED_MEM,mutect_highaf_report,6G,35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --highAF $^")
+	$(call RUN,-N mutect_highaf_report -s 6G -m 35G,"$(KNIT) $(MUT_FREQ_REPORT) $(@D) --highAF $^")
 
 include modules/vcf_tools/vcftools.mk
 include modules/contamination/contest.mk

@@ -29,7 +29,7 @@ VCF_FIELDS += set
 all : $(foreach suff,$(TABLE_SUFFIXES),alltables/allTN.$(MERGE_SUFFIX).$(suff).txt)
 
 vcf/%.$(MERGE_SUFFIX).vcf : $(foreach suff,$(VCF_SUFFIXES),vcf/%.$(suff).vcf)
-	$(call LSCRIPT_MEM,6G,8G,"$(call GATK_MEM,5G) -T CombineVariants -R $(REF_FASTA) $(foreach type,$(VCF_TYPES),--variant:$(type) vcf/$*.$(VCF_SUFFIX.$(type)).vcf ) -o $@ -genotypeMergeOptions UNSORTED")
+	$(call RUN,-s 6G -m 8G,"$(call GATK_MEM,5G) -T CombineVariants -R $(REF_FASTA) $(foreach type,$(VCF_TYPES),--variant:$(type) vcf/$*.$(VCF_SUFFIX.$(type)).vcf ) -o $@ -genotypeMergeOptions UNSORTED")
 
 #tables/%.$(MERGE_SUFFIX).$(VCF_SUFFIX).txt : vcf/%.$(MERGE_SUFFIX).$(VCF_SUFFIX).vcf
 #S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \
@@ -38,7 +38,7 @@ vcf/%.$(MERGE_SUFFIX).vcf : $(foreach suff,$(VCF_SUFFIXES),vcf/%.$(suff).vcf)
 alltables/%.ft.txt : alltables/%.txt
 	grep -v 'FilteredInAll' $< > $@
 
-#$(call LSCRIPT_MEM,2G,5G,"S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \
+#$(call RUN,-s 2G -m 5G,"S1=`grep '^#CHROM' $< | cut -f 10`; S2=`grep '^#CHROM' $< | cut -f 11`; \
 #$(VCF_EFF_ONE_PER_LINE) < $< | $(call SNP_SIFT_MEM,2G) extractFields $< $(ALL_VCF_EFF_FIELDS) set | sed \"1s/GEN\[0\]/\$$S1/g; 1s/GEN\[1\]/\$$S2/g\" | $(PERL) $(VCF_JOIN_EFF) > $@")
 
 include modules/vcf_tools/vcftools.mk

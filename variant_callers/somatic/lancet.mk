@@ -49,7 +49,7 @@ $(foreach i,$(LANCET_CHUNKS),$(eval $(call lancet-interval-chunk,$i)))
 
 define lancet-chunk-tumor-normal
 lancet/chunk_vcf/$2_$3.lancet.$1.vcf : lancet/interval_chunk/chunk$1.bed bam/$2.bam bam/$3.bam
-	$$(call LSCRIPT_PARALLEL_MEM,4,2G,3G,"$$(LANCET) --num-threads 4 --tumor $$(<<) --normal $$(<<<) $$(LANCET_OPTS) \
+	$$(call RUN,-n 4 -s 2G -m 3G,"$$(LANCET) --num-threads 4 --tumor $$(<<) --normal $$(<<<) $$(LANCET_OPTS) \
 		--bed $$(<) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chunk,$(LANCET_CHUNKS), \
@@ -58,10 +58,10 @@ $(foreach chunk,$(LANCET_CHUNKS), \
 
 define lancet-tumor-normal
 lancet/vcf/$1_$2.lancet_snps.vcf : $$(foreach chunk,$$(LANCET_CHUNKS),lancet/chunk_vcf/$1_$2.lancet.$$(chunk).vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(SNP_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 lancet/vcf/$1_$2.lancet_indels.vcf : $$(foreach chunk,$$(LANCET_CHUNKS),lancet/chunk_vcf/$1_$2.lancet.$$(chunk).vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -70,7 +70,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 else
 define lancet-chr-tumor-normal
 lancet/chr_vcf/$2_$3.lancet.$1.vcf : bam/$2.bam bam/$3.bam
-	$$(call LSCRIPT_CHECK_PARALLEL_MEM,4,2G,3G,"$$(LANCET) --num-threads 4 --tumor $$(<) --normal $$(<<) \
+	$$(call RUN,-c -n 4 -s 2G -m 3G,"$$(LANCET) --num-threads 4 --tumor $$(<) --normal $$(<<) \
 		$$(LANCET_OPTS) --reg $1 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chr,$(CHROMOSOMES), \
@@ -79,10 +79,10 @@ $(foreach chr,$(CHROMOSOMES), \
 
 define lancet-tumor-normal
 lancet/vcf/$1_$2.lancet_snps.vcf : $$(foreach chr,$$(CHROMOSOMES),lancet/chr_vcf/$1_$2.lancet.$$(chr).vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(SNP_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 lancet/vcf/$1_$2.lancet_indels.vcf : $$(foreach chr,$$(CHROMOSOMES),lancet/chr_vcf/$1_$2.lancet.$$(chr).vcf)
-	$$(call LSCRIPT_MEM,4G,8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -91,7 +91,7 @@ endif
 
 define filter_lancet-tumor-normal
 vcf/$1_$2.lancet_%.vcf : lancet/vcf/$1_$2.lancet_%.vcf
-	$$(call LSCRIPT_MEM,1G,2G,"$$(LANCET_SOURCE_ANN_VCF) < $$< | \
+	$$(call RUN,-s 1G -m 2G,"$$(LANCET_SOURCE_ANN_VCF) < $$< | \
 		$$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\

@@ -14,10 +14,10 @@ define merged-bam
 	$$(INIT) $$(SAMTOOLS2) view -H $$< > $$@
 
 merged_bam/$1.header.sam : $$(merge.$1:.bam=.header.sam)
-	$$(call LSCRIPT_MEM,16G,18G,"$$(call PICARD,MergeSamFiles,13G) $$(foreach sam,$$^,I=$$(sam) ) O=$$@")
+	$$(call RUN,-s 16G -m 18G,"$$(call PICARD,MergeSamFiles,13G) $$(foreach sam,$$^,I=$$(sam) ) O=$$@")
 
 merged_bam/$1.bam : merged_bam/$1.header.sam $$(merge.$1)
-	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS2) merge -f -h $$< $$(@) $$(filter %.bam,$$^)")
+	$$(call RUN,-s 12G -m 15G,"$$(SAMTOOLS2) merge -f -h $$< $$(@) $$(filter %.bam,$$^)")
 endef
 define rename-bam
 bam/$1.bam : $2

@@ -13,7 +13,7 @@ LOGDIR ?= log/fastqc.$(NOW)
 fastqc : $(foreach sample,$(SAMPLES),fastqc/$(sample)_fastqc/summary.txt) fastqc/all_summary.txt
 
 fastqc/%_fastqc.zip : bam/%.bam
-	$(call LSCRIPT_NAMED_MEM,$*_fastqc,4G,12G,"$(FASTQC) -o fastqc $^")
+	$(call RUN,-N $*_fastqc -s 4G -m 12G,"$(FASTQC) -o fastqc $^")
 
 fastqc/%_fastqc/summary.txt : fastqc/%_fastqc.zip
 	$(INIT) $(UNZIP) -o -d fastqc $< &> $(LOG) && touch $@

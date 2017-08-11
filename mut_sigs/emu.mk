@@ -41,19 +41,19 @@ emu/cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_
 
 ifeq ($(NO_CNV),false)
 emu/mutations.txt.mut.matrix : emu/mutations.txt emu/cnv.txt
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
+	$(call RUN,-s 4G -m 8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --cnv $(<<) --mut $< --pre $(@D) --regions $(EMU_TARGETS_FILE)")
 else
 emu/mutations.txt.mut.matrix : emu/mutations.txt
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --chr $(EMU_REF_DIR) --mut $< --pre $(@D)")
+	$(call RUN,-s 4G -m 8G,"$(EMU_PREPARE) $(EMU_PREPARE_OPTS) --chr $(EMU_REF_DIR) --mut $< --pre $(@D)")
 endif
 
 emu/emu_results_bic.txt : emu/mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
+	$(call RUN,-s 4G -m 8G,"$(EMU) --mut $< --opp human-exome --pre emu/emu_results")
 
 RESULT_TIMESTAMPS = 
 ifdef NUM_SPECTRA
 emu/emu_$(NUM_SPECTRA).timestamp : emu/mutations.txt.mut.matrix
-	$(call LSCRIPT_MEM,4G,8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results && touch $@")
+	$(call RUN,-s 4G -m 8G,"$(EMU) --force $(NUM_SPECTRA) --mut $< --opp human-exome --pre emu/emu_results && touch $@")
 
 RESULT_TIMESTAMPS += emu/emu_$(NUM_SPECTRA).timestamp
 endif
@@ -62,6 +62,6 @@ emu/samples.txt :
 	$(INIT) echo "$(SAMPLE_PAIRS)" | sed 's/ /\n/g' > $@
 
 emu/report/index.html : emu/emu_results_bic.txt emu/samples.txt emu/mutations.txt $(RESULT_TIMESTAMPS)
-	$(call LSCRIPT_MEM,4G,16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
+	$(call RUN,-s 4G -m 16G,"$(PLOT_EMU) --inPrefix $(<D)/emu_results --outDir $(@D) --sampleSubset $(<<) --mutations $(<<<) --samples $(<<<).samples")
 
 include modules/vcf_tools/vcftools.mk

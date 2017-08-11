@@ -44,32 +44,32 @@ cuffdiff : cufflinks/cuffdiff/gene_exp.diff
 cuffnorm : cufflinks/cuffnorm/gene_exp.txt
 
 cufflinks/gtf/%.transcripts.gtf cufflinks/fpkm_tracking/%.isoforms.fpkm_tracking cufflinks/fpkm_tracking/%.genes.fpkm_tracking : bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,$(NUM_CORES),2G,4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $<  && \
+	$(call RUN,-n $(NUM_CORES) -s 2G -m 4G,"${CUFFLINKS} ${CUFFLINKS_OPTS} -o cufflinks/$* $<  && \
 		mkdir -p cufflinks/gtf cufflinks/fpkm_tracking && \
 		ln cufflinks/$*/transcripts.gtf cufflinks/gtf/$*.transcripts.gtf && \
 		ln cufflinks/$*/isoforms.fpkm_tracking cufflinks/fpkm_tracking/$*.isoforms.fpkm_tracking && \
 		ln cufflinks/$*/genes.fpkm_tracking cufflinks/fpkm_tracking/$*.genes.fpkm_tracking")
 
 cufflinks/cuffcmp/cc.stats : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
-	$(call LSCRIPT_MEM,10G,20G,"$(CUFFCOMPARE) $(CUFFCOMPARE_OPTS) -o $(@:.stats=) $^")
+	$(call RUN,-s 10G -m 20G,"$(CUFFCOMPARE) $(CUFFCOMPARE_OPTS) -o $(@:.stats=) $^")
 
 cufflinks/assembly_list.txt : $(foreach sample,$(SAMPLES),cufflinks/gtf/$(sample).transcripts.gtf)
 	$(INIT) echo "$^" | tr ' ' '\n' > $@
 
 cufflinks/gtf/merged.gtf : cufflinks/assembly_list.txt
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2.5G,"$(CUFFMERGE) $(CUFFMERGE_OPTS) -o $(@D) -g $(GENES_GTF) -p 8 $<")
+	$(call RUN,-n 8 -s 1G -m 2.5G,"$(CUFFMERGE) $(CUFFMERGE_OPTS) -o $(@D) -g $(GENES_GTF) -p 8 $<")
 
 cufflinks/cxb/%.cxb : cufflinks/gtf/merged.gtf bam/%.bam
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,2.5G,"mkdir -p cufflinks/$* && \
+	$(call RUN,-n 4 -s 1G -m 2.5G,"mkdir -p cufflinks/$* && \
 	   	$(CUFFQUANT) $(CUFFQUANT_OPTS) -o cufflinks/$* -b $(REF_FASTA) -p 4 $^ && \
 		ln cufflinks/$*/abundances.cxb $@")
 
 cufflinks/cuffdiff/gene_exp.diff : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,4G,"$(CUFFDIFF) $(CUFFDIFF_OPTS) -o $(@D) -p 8 $< \
+	$(call RUN,-n 8 -s 1G -m 4G,"$(CUFFDIFF) $(CUFFDIFF_OPTS) -o $(@D) -p 8 $< \
 		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb))) \
 		-L $(subst $( ),$(,),$(PHENOTYPES))")
 
 cufflinks/cuffnorm/gene_exp.txt : cufflinks/gtf/merged.gtf $(foreach sample,$(SAMPLES),cufflinks/cxb/$(sample).cxb)
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"$(CUFFNORM) $(CUFFNORM_OPTS) -o $(@D) -p 8 $< \
+	$(call RUN,-n 8 -s 1G -m 2G,"$(CUFFNORM) $(CUFFNORM_OPTS) -o $(@D) -p 8 $< \
 		$(foreach pheno,$(PHENOTYPES),$(subst $( ),$(,),$(foreach s,$(pheno.$(pheno)),cufflinks/cxb/$s.cxb))) \
 		-L $(subst $( ),$(,),$(PHENOTYPES))")

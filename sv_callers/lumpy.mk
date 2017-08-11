@@ -44,32 +44,32 @@ lumpy_tables : $(foreach sample,$(SAMPLES),vcf/$(sample).lumpy.$(LUMPY_SUFFIX).t
 endif
 
 lumpy/bam/%.split.bam : bam/%.bam
-	$(call LSCRIPT_MEM,7G,9G,"$(SAMTOOLS2) view -h $< | $(EXTRACT_DISCORDANT) -i stdin | $(SAMTOOLS2) view -b - > $@")
+	$(call RUN,-s 7G -m 9G,"$(SAMTOOLS2) view -h $< | $(EXTRACT_DISCORDANT) -i stdin | $(SAMTOOLS2) view -b - > $@")
 
 lumpy/bam/%.disc.bam : bam/%.bam
-	$(call LSCRIPT_MEM,7G,9G,"$(SAMTOOLS2) view -b -F 1294 $< > $@")
+	$(call RUN,-s 7G -m 9G,"$(SAMTOOLS2) view -b -F 1294 $< > $@")
 
 lumpy/metrics/%.read_len : bam/%.bam
 	$(INIT) $(SAMTOOLS) view $< | tail -n+100000 | head -1 | awk '{ print length($$10) }' > $@
 
 lumpy/metrics/%.histo lumpy/metrics/%.histo.txt: bam/%.bam lumpy/metrics/%.read_len
 	READ_LEN=`cat $(word 2,$^)`; \
-	$(call LSCRIPT,"$(SAMTOOLS) view $< | tail -n+100000 | $(LUMPY_HISTO) -rl $$READ_LEN -X 4 -N 10000 -o lumpy/metrics/$*.histo > lumpy/metrics/$*.histo.txt")
+	$(call RUN,,"$(SAMTOOLS) view $< | tail -n+100000 | $(LUMPY_HISTO) -rl $$READ_LEN -X 4 -N 10000 -o lumpy/metrics/$*.histo > lumpy/metrics/$*.histo.txt")
 
 lumpy/vcf/%.lumpy.vcf : bam/%.bam lumpy/bam/%.split.bam lumpy/bam/%.disc.bam
-	$(call LSCRIPT_MEM,15G,20G,"$(LUMPYEXPRESS) $(LUMPYEXPRESS_OPTS) -B $<$ -S $(<<) -D $(<<<) -o $@")
+	$(call RUN,-s 15G -m 20G,"$(LUMPYEXPRESS) $(LUMPYEXPRESS_OPTS) -B $<$ -S $(<<) -D $(<<<) -o $@")
 
 ifdef SAMPLE_PAIRS
 define lumpy-tumor-normal
 lumpy/vcf/$1_$2.lumpy.vcf : bam/$1.bam bam/$2.bam lumpy/bam/$1.split.bam lumpy/bam/$2.split.bam lumpy/bam/$1.disc.bam lumpy/bam/$2.disc.bam
-	$$(call LSCRIPT_MEM,30G,60G,"$$(LUMPYEXPRESS) $$(LUMPYEXPRESS_OPTS) -B $$<$$(,)$$(<<) -S $$(<<<)$$(,)$$(<<<<) -D $$(word 5,$$^)$$(,)$$(word 6,$$^) -o $$@")
+	$$(call RUN,-s 30G -m 60G,"$$(LUMPYEXPRESS) $$(LUMPYEXPRESS_OPTS) -B $$<$$(,)$$(<<) -S $$(<<<)$$(,)$$(<<<<) -D $$(word 5,$$^)$$(,)$$(word 6,$$^) -o $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call lumpy-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
 SORT_VCF = $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 vcf/%.lumpy.vcf : lumpy/vcf/%.lumpy.vcf
-	$(call LSCRIPT,"$(SORT_VCF) $(REF_DICT) $< > $@")
+	$(call RUN,,"$(SORT_VCF) $(REF_DICT) $< > $@")
 
 include modules/vcf_tools/vcftools.mk
 

@@ -30,7 +30,7 @@ metrics/%.read_len : %.bam
 
 define exomecnv-cnv-tumor-normal
 $$(OUTDIR)/cnv/$1_$2.cnv.txt : gatk/read_depth/$1.read_depth gatk/read_depth/$2.read_depth 
-	$$(call LSCRIPT_MEM,8,1G,1.5G,"$$(RSCRIPT) $$(EXOMECNV) --cbsSensSpec $$(CBS_SENS_SPEC) --sensSpec $$(SENS_SPEC) --admixtureRate $$(ADMIXTURE_RATE) --numThreads 8 --readLen $$(READ_LENGTH) --outDir $$(@D) $$<.sample_interval_summary $$(<<).sample_interval_summary")
+	$$(call RUN,-s 8 -m 1G,1.5G,"$$(RSCRIPT) $$(EXOMECNV) --cbsSensSpec $$(CBS_SENS_SPEC) --sensSpec $$(SENS_SPEC) --admixtureRate $$(ADMIXTURE_RATE) --numThreads 8 --readLen $$(READ_LENGTH) --outDir $$(@D) $$<.sample_interval_summary $$(<<).sample_interval_summary")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-cnv-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
@@ -45,7 +45,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-baf-tumor-normal,$(tumor.$
 
 define exomecnv-loh-tumor-normal
 $(OUTDIR)/loh/$1_$2.loh.txt : $(OUTDIR)/baf/$1.baf.txt $(OUTDIR)/baf/$2.baf.txt
-	$$(call LSCRIPT_MEM,4G,6G,"$$(RSCRIPT) $$(EXOMECNVLOH) --outDir $$(@D) $$^") 
+	$$(call RUN,-s 4G -m 6G,"$$(RSCRIPT) $$(EXOMECNVLOH) --outDir $$(@D) $$^") 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call exomecnv-loh-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 

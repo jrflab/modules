@@ -91,7 +91,7 @@ $(foreach pair,$(SAMPLE_PAIRS),
 
 define freec-tumor-normal
 freec/$1_$2/$1.bam_ratio.txt : freec/config/$1_$2.config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$<")
+	$$(call RUN,-n $$(FREEC_THREADS) -s $$(FREEC_MEM) -m $$(FREEC_HMEM),"$$(FREEC) -conf $$<")
 	
 freec/$1_$2/$1.bam_CNVs : freec/$1_$2/$1.bam_ratio.txt
 endef
@@ -103,7 +103,7 @@ freec/%.bam_ratio.png : freec/%.bam_ratio.txt
 	$(INIT) $(PLOT_FREEC_LOG_RATIO) --outFile $(@) --centromereTable $(CENTROMERE_TABLE) $^
 
 freec/annotated_cnv.txt : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_CNVs)
-	$(call LSCRIPT_MEM,2G,4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $^")
+	$(call RUN,-s 2G -m 4G,"$(ANNOTATE_FREEC) --outDir $(@D) --txdb $(ENSEMBL_TXDB) --knownVariants $(KNOWN_CNVS) $^")
 
 freec/cnvs.png : $(foreach pair,$(SAMPLE_PAIRS),freec/$(pair)/$(tumor.$(pair)).bam_ratio.txt)
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outPrefix $(@:.png=) --centromereTable $(CENTROMERE_TABLE) $^

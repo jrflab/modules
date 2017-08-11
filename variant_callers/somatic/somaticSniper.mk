@@ -40,7 +40,7 @@ somsniper_tables : $(foreach suff,$(TABLE_SUFFIXES),$(foreach pair,$(SAMPLE_PAIR
 
 define somsniper-tumor-normal
 som_sniper/vcf/$1_$2.som_sniper.vcf : bam/$1.bam bam/$2.bam
-	$$(call LSCRIPT_MEM,4G,8G,"$$(SOMATIC_SNIPER) $$(SOMATIC_SNIPER_OPTS) -F vcf -f $$(REF_FASTA) $$< $$(word 2,$$^) $$@")
+	$$(call RUN,-s 4G -m 8G,"$$(SOMATIC_SNIPER) $$(SOMATIC_SNIPER_OPTS) -F vcf -f $$(REF_FASTA) $$< $$(word 2,$$^) $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call somsniper-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -50,7 +50,7 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 #$$(INIT) grep '^##' $$< > $$@; echo "##PEDIGREE=<Derived=$1,Original=$2>" >> $$@; grep '^#[^#]' $$< >> $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@ 2> $$(LOG)
 define pedigree-tumor-normal
 vcf/$1_$2.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.fp.fixAD.vcf
-	$$(call LSCRIPT_MEM,4G,5G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
+	$$(call RUN,-s 4G -m 5G,"grep '^#' $$< > $$@; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) - >> $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
 	$(eval $(call pedigree-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -63,7 +63,7 @@ som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf : som_sniper/vcf/$1_$2.som_sniper.vcf
 	$$(INIT) grep '^#' $$< > $$@ && grep -P '^$3\t' $$< >> $$@ || true
 
 som_sniper/chr_vcf/$1_$2.$3.som_sniper.fp.vcf : som_sniper/chr_vcf/$1_$2.$3.som_sniper.vcf bam/$1.bam
-	$$(call LSCRIPT_MEM,8G,35G,"$$(FP_FILTER) --output-basename $$@ --snp-file $$< --readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) &> /dev/null && mv $$@.fp_pass $$@")
+	$$(call RUN,-s 8G -m 35G,"$$(FP_FILTER) --output-basename $$@ --snp-file $$< --readcount-file <($$(BAM_READCOUNT) -f $$(REF_FASTA) $$(<<) $3) &> /dev/null && mv $$@.fp_pass $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach chr,$(CHROMOSOMES),\

@@ -53,14 +53,14 @@ absoluteTN : $(foreach pair,$(SAMPLE_PAIRS),absolute/$(pair).timestamp)
 
 define hapseg-tumor-normal
 hapseg/$1_$2/segdat.Rdata : apt/$$(GENOTYPE_PATHWAY).calls.txt apt/$$(GENOTYPE_PATHWAY).snp-models.txt apt/$$(SUMMARIZE_PATHWAY).summary.txt
-	$$(call LSCRIPT_MEM,8G,10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersFile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) --outFile $$(@F) $1 $2")
+	$$(call RUN,-s 8G -m 10G,"$$(HAPSEG) $$(HAPSEG_OPTS) --callsFile $$(word 1,$$^) --clustersFile $$(word 2,$$^) --summaryFile $$(word 3,$$^) --resultsDir $$(@D) --outFile $$(@F) $1 $2")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call hapseg-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define absolute-tumor-normal
 absolute/$1_$2.timestamp : hapseg/$1_$2/segdat.Rdata
-	$$(call LSCRIPT_MEM,8G,10G,"$$(ABSOLUTE) --tumour $1 --outPrefix segdat --resultsDir $$(@D) $$< && touch $$@")
+	$$(call RUN,-s 8G -m 10G,"$$(ABSOLUTE) --tumour $1 --outPrefix segdat --resultsDir $$(@D) $$< && touch $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call absolute-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -71,18 +71,18 @@ endif
 
 # APT birdseed-v1
 apt/%.summary.txt : $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
-	$(call LSCRIPT_MEM,8G,10G,"$(APT_SUMMARIZE) -a $(SUMMARIZE_PATHWAY_FULL.$*) $(APT_SUMMARIZE_OPTS) -out-dir $(@D) $^")
+	$(call RUN,-s 8G -m 10G,"$(APT_SUMMARIZE) -a $(SUMMARIZE_PATHWAY_FULL.$*) $(APT_SUMMARIZE_OPTS) -out-dir $(@D) $^")
 
 apt/%.calls.txt apt/%.snp-models.txt :  $(foreach sample,$(SAMPLES),cel/$(sample).CEL)
-	$(call LSCRIPT_MEM,8G,10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
+	$(call RUN,-s 8G -m 10G,"$(APT_GENOTYPE) $(APT_GENOTYPE_OPTS) -a $* --out-dir $(@D) $^")
 
 hapseg/%/segdat.Rdata : apt/$(GENOTYPE_PATHWAY).calls.txt apt/$(GENOTYPE_PATHWAY).snp-models.txt apt/$(SUMMARIZE_PATHWAY).summary.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersFile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
+	$(call RUN,-s 8G -m 10G,"$(HAPSEG) $(HAPSEG_OPTS) --callsFile $(word 1,$^) --clustersFile $(word 2,$^) --summaryFile $(word 3,$^) --resultsDir $(@D) --outFile $(@F) $*")
 
 ifeq ($(SNP6_USE_MAF),true)
 absolute/%.timestamp : hapseg/%/segdat.Rdata absolute/maf/%.maf.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --mafFile $(<<) --minMutAF 0 --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
+	$(call RUN,-s 8G -m 10G,"$(ABSOLUTE) --tumour $* --mafFile $(<<) --minMutAF 0 --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
 else
 absolute/%.timestamp : hapseg/%/segdat.Rdata
-	$(call LSCRIPT_MEM,8G,10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
+	$(call RUN,-s 8G -m 10G,"$(ABSOLUTE) --tumour $* --outPrefix $* --resultsDir $(@D)/$* $< && touch $@")
 endif

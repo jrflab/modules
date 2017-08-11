@@ -45,11 +45,11 @@ bam/%.bam : tophat/bam/%.tophat.$(BAM_SUFFIX)
 	$(INIT) ln -f $(<) $(@) 
 
 tophat/bam/%.tophat.sorted.bam : tophat/%/accepted_hits.sorted.bam tophat/%/unmapped.sorted.bam tophat/%/accepted_hits.sorted.bam.bai tophat/%/unmapped.sorted.bam.bai
-	$(call LSCRIPT_MEM,7G,7G,"$(SAMTOOLS) merge -f $(@) $(<) $(<<)")
+	$(call RUN,-s 7G -m 7G,"$(SAMTOOLS) merge -f $(@) $(<) $(<<)")
 
 define align-split-fastq
 tophat/$2/accepted_hits.bam : $3
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_tophat,4,6G,10G,"$$(TOPHAT) \
+	$$(call RUN,-N $2_tophat -n 4 -s 6G -m 10G,"$$(TOPHAT) \
 		$$(TOPHAT_OPTS) \
 		--rg-id $2 --rg-library $1 \
 		--rg-platform $$(SEQ_PLATFORM) --rg-sample $1 \
@@ -61,7 +61,7 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 	$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 tophat/%/accepted_hits.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_tophat,4,6G,10G,"LBID=`echo \"$*\" | sed 's/_.\+//'`; \
+	$(call RUN,-N $*_tophat -n 4 -s 6G -m 10G,"LBID=`echo \"$*\" | sed 's/_.\+//'`; \
 		$(TOPHAT) $(TOPHAT_OPTS) \
 		--rg-id $* --rg-library \"\$${LBID}\" \
 		--rg-platform \"${SEQ_PLATFORM}\" --rg-sample \"\$${LBID}\" \

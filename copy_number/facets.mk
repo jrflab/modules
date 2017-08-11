@@ -61,14 +61,14 @@ facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt facets/plot
 	facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
 
 facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
-	$(call LSCRIPT_CHECK_MEM,8G,12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
+	$(call RUN,-c -s 8G -m 12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
 
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
-	$(call LSCRIPT_CHECK_MEM,4G,6G,"$(call GATK_MEM,3G) $(if $(TARGETS_FILE),-L $(TARGETS_FILE)) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
+	$(call RUN,-c -s 4G -m 6G,"$(call GATK_MEM,3G) $(if $(TARGETS_FILE),-L $(TARGETS_FILE)) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
 # flag homozygous calls
 %.het.vcf : %.vcf
-	$(call LSCRIPT_CHECK_MEM,9G,12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
+	$(call RUN,-c -s 9G -m 12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
 
 # no flag target definitions
 facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
@@ -77,28 +77,28 @@ facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 ifeq ($(CONVERT_BASECOUNT),true)
 CONVERT_BC_TO_SNP_PILEUP = python modules/copy_number/convert_basecount_to_snp_pileup.py
 facets/snp_pileup/%.snp_pileup.gz : facets/base_count/%.bc.gz
-	$(call LSCRIPT_MEM,12G,14G,"$(CONVERT_BC_TO_SNP_PILEUP) $< | gzip -c > $@")
+	$(call RUN,-s 12G -m 14G,"$(CONVERT_BC_TO_SNP_PILEUP) $< | gzip -c > $@")
 else
 # normal is first, tumor is second
 define snp-pileup-tumor-normal
 facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
-	$$(call LSCRIPT_CHECK_MEM,8G,20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
+	$$(call RUN,-c -s 8G -m 20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
 
 facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
-	$(call LSCRIPT_ENV_CHECK_MEM,$(FACETS_ENV),8G,60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
+	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
 facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
-	$(call LSCRIPT_ENV_MEM,$(FACETS_ENV),4G,6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
+	$(call RUN,-v $(FACETS_ENV) -s 4G -m 6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
 
 facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
-	$(call LSCRIPT_CHECK_MEM,8G,30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
+	$(call RUN,-c -s 8G -m 30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
 facets/geneCN.pdf : facets/geneCN.txt
-	$(call LSCRIPT_MEM,8G,10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
+	$(call RUN,-s 8G -m 10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
 
 
 

@@ -29,12 +29,12 @@ integrate : $(foreach sample,$(SAMPLES),integrate/oncofuse/$(sample).oncofuse.tx
 
 define integrate-rna-tumor-normal
 integrate/sum/$1.sum.tsv : bam/$1.bam $$(WGSEQ_DIR)/bam/$2.bam $$(WGSEQ_DIR)/bam/$3.bam bam/$1.bam.bai $$(WGSEQ_DIR)/bam/$2.bam.bai $$(WGSEQ_DIR)/bam/$3.bam.bai
-	$$(call LSCRIPT_MEM,8G,80G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $$(INTEGRATE) fusion -reads integrate/reads/$1.reads.txt -sum integrate/sum/$1.sum.tsv -ex integrate/exons/$1.exons.tsv -bk integrate/breakpoints/$1.breakpoints.tsv $$(REF_FASTA) $$(INTEGRATE_ANN) $$(INTEGRATE_BWTS) $$(<) $$(<) $$(<<) $$(<<<)")
+	$$(call RUN,-s 8G -m 80G,"mkdir -p integrate/reads integrate/sum integrate/exons integrate/breakpoints; $$(INTEGRATE) fusion -reads integrate/reads/$1.reads.txt -sum integrate/sum/$1.sum.tsv -ex integrate/exons/$1.exons.tsv -bk integrate/breakpoints/$1.breakpoints.tsv $$(REF_FASTA) $$(INTEGRATE_ANN) $$(INTEGRATE_BWTS) $$(<) $$(<) $$(<<) $$(<<<)")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call integrate-rna-tumor-normal,$(sample),$(tumor.$(sample)),$(normal.$(sample)))))
 
 integrate/oncofuse/%.oncofuse.txt : integrate/sum/%.sum.tsv
-	$(call LSCRIPT_MEM,7G,10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
+	$(call RUN,-s 7G -m 10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
 		--sumFile $< \
 		--exonsFile integrate/exons/$*.exons.tsv \
 		--breakpointsFile integrate/breakpoints/$*.breakpoints.tsv \

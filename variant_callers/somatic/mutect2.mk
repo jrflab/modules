@@ -48,7 +48,7 @@ $(foreach i,$(MUTECT2_CHUNKS),$(eval $(call interval-chunk,$i)))
 #$(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect2-tumor-normal-chunk
 mutect2/chunk_vcf/$1_$2.chunk$3.mutect_snps_indels.vcf.gz : mutect2/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
-	$$(call LSCRIPT_CHECK_MEM,12G,12G,"$$(MUTECT2) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) | bgzip -c > $$@ ")
+	$$(call RUN,-c -s 12G -m 12G,"$$(MUTECT2) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) | bgzip -c > $$@ ")
 endef
 $(foreach chunk,$(MUTECT2_CHUNKS), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
@@ -57,7 +57,7 @@ $(foreach chunk,$(MUTECT2_CHUNKS), \
 define mutect2-tumor-normal
 mutect2/vcf/$1_$2.mutect_snps_indels.vcf : $$(foreach chunk,$$(MUTECT2_CHUNKS),mutect2/chunk_vcf/$1_$2.chunk$$(chunk).mutect_snps_indels.vcf.gz \
 	mutect2/chunk_vcf/$1_$2.chunk$$(chunk).mutect_snps_indels.vcf.gz.tbi)
-	$$(call LSCRIPT_MEM,4G,8G,"$$(BCFTOOLS) concat -D -a -o $$@ -O v $$(filter %.vcf.gz,$$^)")
+	$$(call RUN,-s 4G -m 8G,"$$(BCFTOOLS) concat -D -a -o $$@ -O v $$(filter %.vcf.gz,$$^)")
 
 vcf/$1_$2.%.vcf : mutect2/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@
@@ -66,6 +66,6 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call mutect2-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 mutect2/vcf/%.mutect_snps.vcf mutect2/vcf/%.mutect_indels.vcf: mutect2/vcf/%.mutect_snps_indels.vcf
-	$(call LSCRIPT_MEM,4G,6G,"$(SPLIT_SNPS_INDELS_VCF) -s mutect2/vcf/$*.mutect_snps.vcf -i mutect2/vcf/$*.mutect_indels.vcf $<")
+	$(call RUN,-s 4G -m 6G,"$(SPLIT_SNPS_INDELS_VCF) -s mutect2/vcf/$*.mutect_snps.vcf -i mutect2/vcf/$*.mutect_indels.vcf $<")
 
 include modules/vcf_tools/vcftools.mk

@@ -23,12 +23,12 @@ GATK_VCFS = $(foreach sample,$(SAMPLES),\
 			$(foreach type,gatk_snps gatk_indels,\
 			vcf_ann/$(sample).$(type).norm.vcf.gz))
 gemini/gatk_gemini.timestamp : $(if $(SAMPLE_PAIRS),gemini/samples.ped) $(GATK_VCFS) $(addsuffix .tbi,$(GATK_VCFS))
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"for vcf in $(filter %.vcf.gz,$^); do $(GEMINI) load --cores 8 $(GEMINI_LOAD_OPTS) -v $$vcf $(if $(SAMPLE_PAIRS),-p $(filter %.ped,$^)) $(GEMINI_DB) ; done && touch $@")
+	$(call RUN,-n 8 -s 1G -m 2G,"for vcf in $(filter %.vcf.gz,$^); do $(GEMINI) load --cores 8 $(GEMINI_LOAD_OPTS) -v $$vcf $(if $(SAMPLE_PAIRS),-p $(filter %.ped,$^)) $(GEMINI_DB) ; done && touch $@")
 
 ifdef SAMPLE_PAIRS
 MUTECT_VCFS = $(foreach pair,$(SAMPLE_PAIRS),vcf_ann/$(pair).mutect_snps.norm.vcf.gz vcf_ann/$(pair).mutect_indels.norm.vcf.gz)
 gemini/mutect_gemini.timestamp : gemini/samples.ped $(MUTECT_VCFS) $(addsuffix .tbi,$(MUTECT_VCFS))
-	$(call LSCRIPT_PARALLEL_MEM,8,1G,2G,"for vcf in $(filter %.vcf.gz,$^); do $(GEMINI) load --cores 8 $(GEMINI_LOAD_OPTS) -v \$$vcf -p $< $(GEMINI_DB); done && touch $@")
+	$(call RUN,-n 8 -s 1G -m 2G,"for vcf in $(filter %.vcf.gz,$^); do $(GEMINI) load --cores 8 $(GEMINI_LOAD_OPTS) -v \$$vcf -p $< $(GEMINI_DB); done && touch $@")
 endif
 
 

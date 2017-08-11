@@ -28,10 +28,10 @@ all : $(foreach type,$(SUM_TYPE),$(foreach sample,$(SAMPLES),sumreads/$(sample).
 #sumintrons : $(foreach sample,$(SAMPLES),sumintrons/$(sample).sumintrons.txt)
 
 sumreads/%.sumreads.byGene.txt : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_ENV_MEM,$(SUM_READS_ENV),30G,90G,"$(SUM_READS_RSCRIPT) --genome $(REF) --outFile $@ $(SUM_READS_OPTS) $<")
+	$(call RUN,-v $(SUM_READS_ENV) -s 30G -m 90G,"$(SUM_READS_RSCRIPT) --genome $(REF) --outFile $@ $(SUM_READS_OPTS) $<")
 
 sumreads/%.sumreads.byExon.txt : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_ENV_MEM,$(SUM_READS_ENV),20G,90G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
+	$(call RUN,-v $(SUM_READS_ENV) -s 20G -m 90G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
 
 sumreads/geneRPKM.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byGene.txt)
 	cut -f 2 $< > $@; \

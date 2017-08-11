@@ -16,7 +16,7 @@ vcf : $(foreach sample,$(SAMPLES),dindel/vcf/$(sample).dindel.sorted.annotated.v
 
 # extract candidate indels and insert size dist
 dindel/candidate/%.variants.txt dindel/candidate/%.libraries.txt : %.bam %.bam.bai
-	    $(call LSCRIPT_MEM,10G,15G,"$(DINDEL) --analysis getCIGARindels --bamFile $< --outputFile dindel/candidate/$* --ref $(REF_FASTA)")
+	    $(call RUN,-s 10G -m 15G,"$(DINDEL) --analysis getCIGARindels --bamFile $< --outputFile dindel/candidate/$* --ref $(REF_FASTA)")
 
 # make realignment windows
 # dindel/%.realn_windows_timestamp : dindel/candidate/%.variants.txt
@@ -25,7 +25,7 @@ dindel/candidate/%.variants.txt dindel/candidate/%.libraries.txt : %.bam %.bam.b
 #     # realignment
 define find-indels-window
 dindel/windows/$1.variants.%.glf.txt : $1.bam dindel/windows/$1.realn_windows.%.txt dindel/candidate/$1.libraries.txt $1.bam.bai
-	$$(call LSCRIPT_MEM,5G,10G,"$$(DINDEL) --analysis indels --doDiploid --bamFile $$< --ref $$(REF_FASTA) --varFile $$(word 2,$$^) --libFile $$(word 3,$$^) --outputFile $$(@:.glf.txt=)")
+	$$(call RUN,-s 5G -m 10G,"$$(DINDEL) --analysis indels --doDiploid --bamFile $$< --ref $$(REF_FASTA) --varFile $$(word 2,$$^) --libFile $$(word 3,$$^) --outputFile $$(@:.glf.txt=)")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call find-indels-window,$(sample))))
 
@@ -36,6 +36,6 @@ endef
 $(foreach sample,$(SAMPLES),$(eval $(call file-list,$(sample))))
 
 dindel/vcf/%.dindel.vcf : dindel/%.variants_filelist.txt
-	$(call LSCRIPT_MEM,5G,10G,"$(MERGE_OUTPUT) --inputFiles $< --outputFile $@ --ref $(REF_FASTA)")
+	$(call RUN,-s 5G -m 10G,"$(MERGE_OUTPUT) --inputFiles $< --outputFile $@ --ref $(REF_FASTA)")
 
 include modules/vcf_tools/vcftools.mk

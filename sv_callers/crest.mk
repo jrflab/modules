@@ -23,17 +23,17 @@ crest : $(foreach sample,$(SAMPLES),crest/$(sample).crest_timestamp)
 endif
 
 crest/%.read_len : bam/%.bam
-	$(call LSCRIPT_MEM,3G,5G,"$(SAMTOOLS) view $< | tail -n+100000 | head -1 | awk '{ print length(\$$10) }' > $@")
+	$(call RUN,-s 3G -m 5G,"$(SAMTOOLS) view $< | tail -n+100000 | head -1 | awk '{ print length(\$$10) }' > $@")
 
 crest/%.sclip.txt : bam/%.bam
-	$(call LSCRIPT_MEM,6G,8G,"$(EXTRACT_SCLIP) $(EXTRACT_SCLIP_OPTS) -p $(@D)/$* -i $<")
+	$(call RUN,-s 6G -m 8G,"$(EXTRACT_SCLIP) $(EXTRACT_SCLIP_OPTS) -p $(@D)/$* -i $<")
 
 crest/%.crest_timestamp : bam/%.bam crest/%.sclip.txt crest/%.read_len
-	$(call LSCRIPT_MEM,15G,60G,"$(CREST) $(CREST_OPTS) -f $(<<) -d $< -p $(@D)/$* -l `cat $(<<<)` && touch $@")
+	$(call RUN,-s 15G -m 60G,"$(CREST) $(CREST_OPTS) -f $(<<) -d $< -p $(@D)/$* -l `cat $(<<<)` && touch $@")
 
 define crest-tumor-normal
 crest/$1_$2.crest_timestamp : bam/$1.bam bam/$2.bam crest/$1.sclip.txt crest/$1.read_len
-	$$(call LSCRIPT_MEM,15G,60G,"$$(CREST) $$(CREST_OPTS) -f $$(<<<) -d $$< -g $$(<<) -p $$(@D)/$1_$2 -l `cat $$(<<<<)` && touch $$@")
+	$$(call RUN,-s 15G -m 60G,"$$(CREST) $$(CREST_OPTS) -f $$(<<<) -d $$< -g $$(<<) -p $$(@D)/$1_$2 -l `cat $$(<<<<)` && touch $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call crest-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 

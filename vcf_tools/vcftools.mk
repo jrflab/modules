@@ -17,10 +17,10 @@ SNP_SIFT_OPTS = -c $(SNP_EFF_CONFIG)
 MUT_ASS = $(RSCRIPT) modules/vcf_tools/mutAssVcf.R
 
 %.vcf.idx : %.vcf
-	$(call LSCRIPT_CHECK_MEM,4G,8G,"$(IGVTOOLS) index $< && sleep 10")
+	$(call RUN,-c -s 4G -m 8G,"$(IGVTOOLS) index $< && sleep 10")
 
 %.pass.vcf : %.vcf
-	$(call CHECK_VCF,$(call LSCRIPT_CHECK_MEM,8G,12G,"$(call SNP_SIFT_MEM,7G) filter $(SNP_SIFT_OPTS) \
+	$(call CHECK_VCF,$(call RUN,-c -s 8G -m 12G,"$(call SNP_SIFT_MEM,7G) filter $(SNP_SIFT_OPTS) \
 		-f $< \"( na FILTER ) | (FILTER = 'PASS')\" > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 define rename-samples-tumor-normal
@@ -31,10 +31,10 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call rename-samples-tumor-normal,$(tumor
 
 # VariantEval: generate vcf report
 reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
-	$(call LSCRIPT_MEM,2G,5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
+	$(call RUN,-s 2G -m 5G,"$(call GATK_MEM,2G) -T VariantEval $(foreach sm,$(REPORT_STRATIFICATION), --stratificationModule $(sm)) -R $(REF_FASTA) --dbsnp $(DBSNP) $(foreach eval,$(filter %.vcf,$^), --eval:$(call strip-suffix,$(notdir $(eval))) $(eval)) -o $@")
 
 %.norm.vcf.gz : %.vcf
-	$(call LSCRIPT_MEM,9G,12G,"sed '/^##GATKCommandLine/d;/^##MuTect/d;' $< | \
+	$(call RUN,-s 9G -m 12G,"sed '/^##GATKCommandLine/d;/^##MuTect/d;' $< | \
 		$(VT) view -h -f PASS - | \
 		$(VT) decompose -s - | \
 		$(VT) normalize -r $(REF_FASTA) - | \
@@ -42,14 +42,14 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 		bgzip -c > $@.tmp && if zgrep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi")
 
 %.vcf.gz.tbi : %.vcf.gz
-	$(call LSCRIPT_CHECK_SHORT,3G,5G,"$(BCFTOOLS2) index -t -f $<")
+	$(call RUN,-c -w 1:00:00,3G,5G,"$(BCFTOOLS2) index -t -f $<")
 
 %.vcf.gz : %.vcf
-	$(call LSCRIPT_MEM,2G,3G,"bgzip -c $< > $@")
+	$(call RUN,-s 2G -m 3G,"bgzip -c $< > $@")
 
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf_ann/$1_$2.%.vcf
-	$$(call LSCRIPT_ENV_CHECK_MEM,$$(VEP_ENV),9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --filter-vcf $$(EXAC_NONTCGA) --ref-fasta $$(REF_FASTA) --tmp-dir `mktemp -d` --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@.tmp && sed '/^#/d' $$@.tmp > $$@")
+	$$(call RUN,-c -v $$(VEP_ENV) -s 9G -m 12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 --normal-id $2 --filter-vcf $$(EXAC_NONTCGA) --ref-fasta $$(REF_FASTA) --tmp-dir `mktemp -d` --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --output-maf $$@.tmp && sed '/^#/d' $$@.tmp > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call vcf2maf-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
@@ -58,7 +58,7 @@ maf/allTN.%.maf : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).%.maf)
 
 define vcf2maf-sample
 maf/$1.%.maf : vcf_ann/$1.%.vcf
-	$$(call LSCRIPT_MEM,9G,12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 $$(if $$(EXAC_NONTCGA),--filter-vcf $$(EXAC_NONTCGA)) --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --tmp-dir `mktemp -d` --output-maf $$@")
+	$$(call RUN,-s 9G -m 12G,"$$(VCF2MAF) --input-vcf $$< --tumor-id $1 $$(if $$(EXAC_NONTCGA),--filter-vcf $$(EXAC_NONTCGA)) --ref-fasta $$(REF_FASTA) --vep-path $$(VEP_PATH) --vep-data $$(VEP_DATA) --tmp-dir `mktemp -d` --output-maf $$@")
 endef
 $(foreach sample,$(SAMPLES),$(eval $(call vcf2maf-sample,$(sample))))
 
@@ -67,14 +67,14 @@ maf/all.%.maf : $(foreach sample,$(SAMPLES),maf/$(sample).%.maf)
 
 ifdef SAMPLE_PAIRS
 alltables/allTN.%.txt : $(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).%.txt)
-	$(call LSCRIPT_MEM,5G,12G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
+	$(call RUN,-s 5G -m 12G,"$(RSCRIPT) $(RBIND) --tumorNormal $^ > $@")
 endif
 
 # extract vcf to table
 VCF_FIELDS = CHROM POS ID REF ALT FILTER
 ANN_FIELDS = $(addprefix ANN[*].,ALLELE EFFECT IMPACT GENE GENEID FEATURE FEATUREID BIOTYPE RANK HGVS_C HGVS_P CDNA_POS CDNA_LEN CDS_POS CDS_LEN AA_POS AA_LEN DISTANCE ERRORS)
 tables/%.opl_tab.txt : vcf_ann/%.vcf
-	$(call LSCRIPT_CHECK_MEM,9G,15G,"format_fields=\$$(grep '^##FORMAT=<ID=' $< | sed 's/CGC_Other_Syndrome\/Disease/CGC_Other_Syndrome_or_Disease/; s/GERP++/GERPpp/; s/(/_/; s/)//; s/.*ID=//; s/,.*//;' | tr '\n' ' '); \
+	$(call RUN,-c -s 9G -m 15G,"format_fields=\$$(grep '^##FORMAT=<ID=' $< | sed 's/CGC_Other_Syndrome\/Disease/CGC_Other_Syndrome_or_Disease/; s/GERP++/GERPpp/; s/(/_/; s/)//; s/.*ID=//; s/,.*//;' | tr '\n' ' '); \
 	N=\$$(expr \$$(grep '^#CHROM' $< | wc -w) - 10); \
 	fields='$(VCF_FIELDS)'; \
 	for f in \$$format_fields; do \
@@ -91,7 +91,7 @@ tables/%.opl_tab.txt : vcf_ann/%.vcf
 	done")
 
 %.tab.txt : %.opl_tab.txt
-	$(call LSCRIPT_MEM,8G,20G,"$(PERL) $(VCF_JOIN_EFF) < $< > $@")
+	$(call RUN,-s 8G -m 20G,"$(PERL) $(VCF_JOIN_EFF) < $< > $@")
 
 %.high_moderate.txt : %.txt
 	col=$$(head -1 $< | tr '\t' '\n' | grep -n "IMPACT" | sed 's/:.*//'); \

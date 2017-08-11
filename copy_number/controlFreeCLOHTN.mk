@@ -83,7 +83,7 @@ png : freec/cnvs.png
 tables : freec/recurrent_cnv.txt
 
 pileup/%.pileup.gz : bam/%.bam
-	$(call LSCRIPT,"$(SAMTOOLS) mpileup $(PILEUP_OPTS) -f $(REF_FASTA) $< | sed '/^MT/d' | gzip -c > $@")
+	$(call RUN,,"$(SAMTOOLS) mpileup $(PILEUP_OPTS) -f $(REF_FASTA) $< | sed '/^MT/d' | gzip -c > $@")
 
 #$(call config-tumor-normal,tumor,normal)
 define freec-config-tumor-normal
@@ -95,13 +95,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define freec-tumor-normal
 freec/$1.pileup_ratio.txt : freec/$1_$2.config.txt
-	$$(call LSCRIPT_PARALLEL_MEM,$$(FREEC_THREADS),$$(FREEC_MEM),$$(FREEC_HMEM),"$$(FREEC) -conf $$< &> $$(LOG)")
+	$$(call RUN,-n $$(FREEC_THREADS) -s $$(FREEC_MEM) -m $$(FREEC_HMEM),"$$(FREEC) -conf $$< &> $$(LOG)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call freec-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 freec/%.pileup_ratio.txt.png : freec/%.pileup_ratio.txt
-	$(call LSCRIPT_MEM,2G,4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
+	$(call RUN,-s 2G -m 4G,"cat $(MAKE_GRAPH) | $(R) --slave --args 2 $< &> $(LOG)")
 
 freec/cnvs.png : $(foreach i,$(SETS_SEQ),$(foreach tumor,$(call get_tumors,$(set.$i)),freec/$(tumor).pileup_ratio.txt))
 	$(INIT) $(PLOT_FREEC_COPY_NUM) --outFile $@ --centromereTable $(CENTROMERE_TABLE) $^

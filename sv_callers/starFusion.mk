@@ -11,7 +11,7 @@ PHONY += star_fusion
 star_fusion : $(foreach sample,$(SAMPLES),star_fusion/$(sample).star_fusion_timestamp)
 	
 star_fusion/%.star_fusion_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_MEM,8G,12G,"$(STAR_FUSION) \
+	$(call RUN,-s 8G -m 12G,"$(STAR_FUSION) \
 		--genome_lib_dir $(STAR_CTAT_DIR) \
 		-J $< --verbose_level 2 \
 		--left_fq $^ --right_fq $(<<) && touch $@")

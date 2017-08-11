@@ -30,7 +30,7 @@ sample_tables : $(foreach sample,$(SAMPLES),soapfuse/tables/$(sample).sfuse.txt 
 soapfuse : $(foreach sample,$(SAMPLES),soapfuse/$(sample).timestamp)
 
 soapfuse/%.timestamp : soapfuse/sample_lists/%.txt
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_soapfuse,4,3G,5G,"$(PERL) $(SOAPFUSE) -c $(SOAPFUSE_CONFIG) -fd $(@D) -l $< -o $(@D)/$* && touch $@ && $(RM) -rf soapfuse/$*/alignWG")
+	$(call RUN,-N $*_soapfuse -n 4 -s 3G -m 5G,"$(PERL) $(SOAPFUSE) -c $(SOAPFUSE_CONFIG) -fd $(@D) -l $< -o $(@D)/$* && touch $@ && $(RM) -rf soapfuse/$*/alignWG")
 
 soapfuse/sample_lists/%.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	$(INIT) SAMPLEDIR=soapfuse/$*/$*; \

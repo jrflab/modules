@@ -21,11 +21,11 @@ run_models : $(foreach pair,$(SAMPLE_PAIRS),pyloh/$(pair).run_timestamp)
 heatmaps : $(foreach pair,$(SAMPLE_PAIRS),pyloh/$(pair).PyLOH.heatmap.pkl)
 
 pyloh/%.readpos_timestamp : bam/%.bam
-	$(call LSCRIPT_MEM,6G,8G,"mkdir -p pyloh/$*_readpos && $(SAMTOOLS_UNIQ) view -U BWA$(,)pyloh/$*_readpos/$(,)N$(,)N $< && touch $@")
+	$(call RUN,-s 6G -m 8G,"mkdir -p pyloh/$*_readpos && $(SAMTOOLS_UNIQ) view -U BWA$(,)pyloh/$*_readpos/$(,)N$(,)N $< && touch $@")
 
 define bicseq-tumor-normal-chr
 pyloh/$1_$2_chr_segments/$3.bicseq.txt : pyloh/$1.readpos_timestamp pyloh/$2.readpos_timestamp
-	$$(call LSCRIPT_MEM,6G,8G,"$$(BICSEQ) -l 10 pyloh/$1_readpos/$3.seq pyloh/$2_readpos/$3.seq > $$@")
+	$$(call RUN,-s 6G -m 8G,"$$(BICSEQ) -l 10 pyloh/$1_readpos/$3.seq pyloh/$2_readpos/$3.seq > $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach chr,$(CHROMOSOMES),\
@@ -38,12 +38,12 @@ pyloh/$1_$2.segments.bed : $$(foreach chr,$$(CHROMOSOMES),pyloh/$1_$2_chr_segmen
 	done
 
 pyloh/$1_$2.preprocess_timestamp : bam/$1.bam bam/$2.bam pyloh/$1_$2.segments.bed
-	$$(call LSCRIPT_PARALLEL_MEM,6,1G,2G,"$$(PYLOH) preprocess $$(REF_FASTA) $$< $$(<<) pyloh/$1_$2 --segments_bed $$(<<<) --min_depth 20 --min_base_qual 10 --min_map_qual 10 --process_num 6 && touch $$@")
+	$$(call RUN,-n 6 -s 1G -m 2G,"$$(PYLOH) preprocess $$(REF_FASTA) $$< $$(<<) pyloh/$1_$2 --segments_bed $$(<<<) --min_depth 20 --min_base_qual 10 --min_map_qual 10 --process_num 6 && touch $$@")
 
 pyloh/$1_$2.run_timestamp : pyloh/$1_$2.preprocess_timestamp
-	$$(call LSCRIPT_MEM,7G,10G,"$$(PYLOH) run_model pyloh/$1_$2 --allelenumber_max 2 --max_iters 100 --stop_value 1e-7 && touch $$@")
+	$$(call RUN,-s 7G -m 10G,"$$(PYLOH) run_model pyloh/$1_$2 --allelenumber_max 2 --max_iters 100 --stop_value 1e-7 && touch $$@")
 
 pyloh/$1_$2.PyLOH.heatmap.pkl : pyloh/$1_$2.preprocess_timestamp
-	$$(call LSCRIPT_MEM,6G,8G,"$$(PYLOH) BAF_heatmap pyloh/$1_$2")
+	$$(call RUN,-s 6G -m 8G,"$$(PYLOH) BAF_heatmap pyloh/$1_$2")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call pyloh-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

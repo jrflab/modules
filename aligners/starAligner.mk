@@ -34,7 +34,7 @@ star_chimeric_junctions : $(foreach sample,$(SAMPLES),star/$(sample).Chimeric.ou
 
 define align-split-fastq
 star/$2.star_align_timestamp : $3
-	$$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$$(STAR) $$(STAR_OPTS) \
+	$$(call RUN,-n 4 -s 6G -m 10G,"$$(STAR) $$(STAR_OPTS) \
 		--outFileNamePrefix star/$2. --runThreadN 4 \
 		--outSAMattrRGline \"ID:$2\" \"LB:$1\" \"SM:$1\" \"PL:$${SEQ_PLATFORM}\" \
 		--readFilesIn $$^ --readFilesCommand zcat && touch $$@")
@@ -46,7 +46,7 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 	$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 star/%.Aligned.sortedByCoord.out.bam star/%.Chimeric.out.junction : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,4,6G,10G,"$(STAR) $(STAR_OPTS) \
+	$(call RUN,-n 4 -s 6G -m 10G,"$(STAR) $(STAR_OPTS) \
 		--outFileNamePrefix star/$*. --runThreadN 4 \
 		--outSAMattrRGline \"ID:$*\" \"LB:$*\" \"SM:$*\" \"PL:${SEQ_PLATFORM}\" \
 		--readFilesIn $^ --readFilesCommand zcat")

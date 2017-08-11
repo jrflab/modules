@@ -69,6 +69,6 @@ defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
 
 defuse/alltables/%.oncofuse.txt : defuse/alltables/%.txt
-	$(call LSCRIPT_CHECK_MEM,7G,8G,"$(DEFUSE_ONCOFUSE) --outPrefix $(@D)/$* $(DEFUSE_ONCOFUSE_OPTS) $<")
+	$(call RUN,-c -s 7G -m 8G,"$(DEFUSE_ONCOFUSE) --outPrefix $(@D)/$* $(DEFUSE_ONCOFUSE_OPTS) $<")
 
 include modules/fastq_tools/fastq.mk

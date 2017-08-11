@@ -18,7 +18,7 @@ tvc : tvc_vcfs
 tvc_vcfs : $(foreach sample,$(SAMPLES),vcf/$(sample).tvc_snps_indels.vcf)
 
 vcf/%.tvc_snps_indels.vcf : bam/%.bam bam/%.bam.bai
-	$(call LSCRIPT_PARALLEL_MEM,4,1G,2G,"$(TVC) $(TVC_OPTS) -n 4 -o $(@) -b $<")
+	$(call RUN,-n 4 -s 1G -m 2G,"$(TVC) $(TVC_OPTS) -n 4 -o $(@) -b $<")
 
 .PHONY: $(PHONY)
 

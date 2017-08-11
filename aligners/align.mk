@@ -9,7 +9,7 @@ $(foreach sample,$(SAMPLES),\
 
 define merged-bam
 $$(ALIGNER)/bam/$1.$$(ALIGNER).sorted.bam : $$(ALIGNER)/sam/$1.header.sam $$(foreach split,$2,$$(ALIGNER)/bam/$$(split).$$(ALIGNER).sorted.bam)
-	$$(call LSCRIPT_MEM,12G,15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$^) && $$(RM) $$^")
+	$$(call RUN,-s 12G -m 15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$^) && $$(RM) $$^")
 endef
 define rename-bam
 $$(ALIGNER)/bam/$1.$$(ALIGNER).bam : $$(ALIGNER)/bam/$2.$$(ALIGNER).bam

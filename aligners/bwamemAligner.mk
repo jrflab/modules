@@ -39,25 +39,25 @@ BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
 
 bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
-	$(call LSCRIPT,"ln -f $(<) $(@)")
+	$(call RUN,,"ln -f $(<) $(@)")
 
 #$(call align-split-fastq,name,split-name,fastqs)
 define align-split-fastq
 bwamem/bam/$2.bwamem.bam : $3
-	$$(call LSCRIPT_PARALLEL_MEM,$$(BWAMEM_THREADS),1G,$$(BWAMEM_MEM_PER_THREAD),"$$(BWA) mem -t $$(BWAMEM_THREADS) $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
+	$$(call RUN,-n $$(BWAMEM_THREADS) -s 1G -m $$(BWAMEM_MEM_PER_THREAD),"$$(BWA) mem -t $$(BWAMEM_THREADS) $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),$(if $(fq.$(ss)),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 bwamem/bam/%.bwamem.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,$(BWAMEM_THREADS),1G,$(BWAMEM_MEM_PER_THREAD),"$(BWA) mem -t $(BWAMEM_THREADS) $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
+	$(call RUN,-n $(BWAMEM_THREADS) -s 1G -m $(BWAMEM_MEM_PER_THREAD),"$(BWA) mem -t $(BWAMEM_THREADS) $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
 bwamem/bam/%.bwamem.bam : fastq/%.fastq.gz
 	LBID=`echo "$*" | sed 's/_[A-Za-z0-9]\+//'`; \
-	$(call LSCRIPT_PARALLEL_MEM,$(BWAMEM_THREADS),1G,$(BWAMEM_MEM_PER_THREAD),"$(BWA) mem -t $(BWAMEM_THREADS) $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
+	$(call RUN,-n $(BWAMEM_THREADS) -s 1G -m $(BWAMEM_MEM_PER_THREAD),"$(BWA) mem -t $(BWAMEM_THREADS) $(BWA_ALN_OPTS) -R \"@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$${LBID}\" $(BWAMEM_REF_FASTA) $^ | $(SAMTOOLS) view -bhS - > $@")
 
 fastq/%.fastq.gz : fastq/%.fastq
-	$(call LSCRIPT,"gzip -c $< > $(@) && $(RM) $<")
+	$(call RUN,,"gzip -c $< > $(@) && $(RM) $<")
 
 include modules/bam_tools/processBam.mk
 include modules/fastq_tools/fastq.mk

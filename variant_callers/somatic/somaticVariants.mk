@@ -13,7 +13,7 @@ all_somatic: somatic_vcfs somatic_tables facets
 CONCAT_VCF = python modules/vcf_tools/concat_vcf.py
 
 vcf/%.somatic_variants.vcf : vcf/%.$(SNV_TYPE).vcf vcf/%.$(INDEL_TYPE).vcf
-	$(call LSCRIPT_MEM,9G,12G,"$(CONCAT_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
+	$(call RUN,-s 9G -m 12G,"$(CONCAT_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
 
 include modules/variant_callers/somatic/mutect.mk
 include modules/variant_callers/somatic/somaticIndels.mk

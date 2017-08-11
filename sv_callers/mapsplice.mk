@@ -23,7 +23,7 @@ endif
 all : $(foreach sample,$(SAMPLES),mapsplice/$(sample).mapsplice_timestamp)
 
 mapsplice/%.mapsplice_timestamp : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_PARALLEL_MEM,6,2G,3G,"TMP1=`mktemp --tmpdir=$(TMPDIR)`.1.fastq; \
+	$(call RUN,-n 6 -s 2G -m 3G,"TMP1=`mktemp --tmpdir=$(TMPDIR)`.1.fastq; \
 		TMP2=`mktemp --tmpdir=$(TMPDIR)`.2.fastq; \
 		gzip -c $< | sed 's:^@\(.*\)/1\$$:@\1:' > \$$TMP1; gzip -c $(<<) | 's:^@\(.*\)/2\$$:@\1:' > \$$TMP2; \
 		mkdir -p mapsplice/$*; \

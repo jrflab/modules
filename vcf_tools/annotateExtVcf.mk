@@ -25,7 +25,7 @@ all : vcfs
 vcfs : $(foreach type,$(VARIANT_TYPES),$(foreach sample,$(SAMPLES),vcf_ann/$(sample).$(type).vcf))
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
-MERGE_SCRIPT = $(call LSCRIPT_CHECK_MEM,6G,7G,"$(MERGE_VCF) --ignore_filter $^ | $(VCF_SORT) $(REF_DICT) - > $@")
+MERGE_SCRIPT = $(call RUN,-c -s 6G -m 7G,"$(MERGE_VCF) --ignore_filter $^ | $(VCF_SORT) $(REF_DICT) - > $@")
 
 # first filter round
 # first annotation round

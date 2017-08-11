@@ -23,11 +23,11 @@ tvc_tables : $(call SOMATIC_TABLES,tvc_snps_indels)
 	$(INIT) awk '{print "##contig=<ID=" $$1 ",length=" $$2 ",assembly=$(REF)>"'} $(REF_FASTA).fai | $(BCFTOOLS2) annotate -h - $< > $@ 
 
 %.vcf.gz : %.vcf
-	$(call LSCRIPT,"bgzip -c $< > $@")
+	$(call RUN,,"bgzip -c $< > $@")
 
 define tvc-tumor
 vcf/$1.tvc_snps_indels.vcf : bam/$1.bam bam/$1.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,1G,2G,"$$(TVC) $$(TVC_OPTS) -b $$< -o $$@ -n 4")
+	$$(call RUN,-n 4 -s 1G -m 2G,"$$(TVC) $$(TVC_OPTS) -b $$< -o $$@ -n 4")
 endef
 $(foreach tumor,$(TUMOR_SAMPLES),$(eval $(call tvc-tumor,$(tumor))))
 
@@ -36,7 +36,7 @@ vcf/$1.tumor_tvc_snps_indels.vcf : $$(foreach tumor,$2,vcf/$$(tumor).tvc_snps_in
 	$$(INIT) $$(BCFTOOLS2) merge $$(filter %.vcf.gz,$$^) > $$@
 
 vcf/$1.tvc_snps_indels.vcf : bam/$1.bam vcf/$1.tumor_tvc_snps_indels.vcf bam/$1.bam.bai
-	$$(call LSCRIPT_PARALLEL_MEM,4,1G,2G,"$$(TVC) $$(TVC_OPTS) -c $$(<<) -b $$< -o $$@ -n 4")
+	$$(call RUN,-n 4 -s 1G -m 2G,"$$(TVC) $$(TVC_OPTS) -c $$(<<) -b $$< -o $$@ -n 4")
 endef
 $(foreach normal,$(NORMAL_SAMPLES),$(eval $(call tvc-normal,$(normal),$(tumor.$(normal)))))
 

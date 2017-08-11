@@ -37,7 +37,7 @@ bam/%.bam : hisat/bam/%.hisat.$(BAM_SUFFIX)
 	$(INIT) ln -f $(<) $(@) 
 
 hisat/bam/%.hisat.bam hisat/unmapped_bam/%.hisat_unmapped.bam : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(call LSCRIPT_NAMED_PARALLEL_MEM,$*_hisat,8,1G,1.5G,"mkdir -p hisat/bam hisat/unmapped_bam; \
+	$(call RUN,-N $*_hisat -n 8 -s 1G -m 1.5G,"mkdir -p hisat/bam hisat/unmapped_bam; \
 		LBID=`echo \"$*\" | sed 's/_.\+//'`; \
 		$(HISAT) $(HISAT_OPTS) \
 		--rg-id $* --rg \"SM:\$${LBID}\" \
@@ -49,7 +49,7 @@ hisat/bam/%.hisat.bam hisat/unmapped_bam/%.hisat_unmapped.bam : fastq/%.1.fastq.
 # usage $(eval $(call align-merged-split-fastq,merged-sample,split,fastq(s)))
 define align-merged-split-fastq
 hisat/bam/$2.hisat.bam : $3
-	$$(call LSCRIPT_NAMED_PARALLEL_MEM,$2_hisat,8,1G,1.5G,"mkdir -p hisat/bam hisat/unmapped_bam; \
+	$$(call RUN,-N $2_hisat -n 8 -s 1G -m 1.5G,"mkdir -p hisat/bam hisat/unmapped_bam; \
 		$$(HISAT) $$(HISAT_OPTS) \
 		--rg-id $2 --rg \"SM:$1\" \
 		--rg PL:$${SEQ_PLATFORM} --rg \"LB:\$1\" \

@@ -21,9 +21,9 @@ SNV_TYPE ?= mutect
 mutect_mutsig_reports : mutsig_report/mutect/mutsig_report.timestamp
 
 mutsig_report/mutect/mutsig_report.timestamp : $(foreach pair,$(SAMPLE_PAIRS),mutsig_report/vrange/$(pair).$(SNV_TYPE).ft.VRanges.Rdata)
-	$(call LSCRIPT_ENV_NAMED_PARALLEL_MEM,$(MUTSIG_REPORT_ENV),mutect_mutsig_report,4,3G,5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
+	$(call RUN,-N mutect_mutsig_report -v $(MUTSIG_REPORT_ENV) -n 4 -s 3G -m 5G,"$(KNIT) $(MUTSIG_REPORT) $(@D) --ncores 4 --outDir $(@D) $(MUTSIG_REPORT_OPTS) $^ && touch $@")
 
 mutsig_report/vrange/%.VRanges.Rdata : vcf/%.vcf
-	$(call LSCRIPT_ENV_MEM,$(MUTSIG_REPORT_ENV),7G,10G,"$(VCF2VRANGES) --genome $(REF) --outFile $@ $<")
+	$(call RUN,-v $(MUTSIG_REPORT_ENV) -s 7G -m 10G,"$(VCF2VRANGES) --genome $(REF) --outFile $@ $<")
 
 include modules/vcf_tools/vcftools.mk

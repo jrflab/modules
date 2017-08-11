@@ -22,13 +22,13 @@ VIRUS_MATE = <(grep '/$2$$' -A3 --no-group-separator $1)
 PYTHON_ENV ?= /ifs/e63data/reis-filho/usr/anaconda-envs/pyenv27-chasm
 
 virus/fastq/%.unmapped.il.fq virus/fastq/%.unmapped.single.fq: bam/%.bam
-	$(call LSCRIPT_MEM,2G,3G,"$(MKDIR) $(@D);  samtools view -uf 4 $< | samtools bam2fq - -s $(@D)/$*.unmapped.single.fq > $(@D)/$*.unmapped.il.fastq")
+	$(call RUN,-s 2G -m 3G,"$(MKDIR) $(@D);  samtools view -uf 4 $< | samtools bam2fq - -s $(@D)/$*.unmapped.single.fq > $(@D)/$*.unmapped.il.fastq")
 
 virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam: virus/fastq/%.unmapped.il.fq virus/fastq/%.unmapped.single.fq
-	$(call LSCRIPT_MEM,2G,3G,"$(MKDIR) $(@D); bowtie2 -x $(VIRUS_DB) -U $(<<) -1 $(call VIRUS_MATE,$<,1) -2 $(call VIRUS_MATE,$<,2) | samtools view -bS - | samtools sort - -O bam -T `mktemp` > $@")
+	$(call RUN,-s 2G -m 3G,"$(MKDIR) $(@D); bowtie2 -x $(VIRUS_DB) -U $(<<) -1 $(call VIRUS_MATE,$<,1) -2 $(call VIRUS_MATE,$<,2) | samtools view -bS - | samtools sort - -O bam -T `mktemp` > $@")
 
 virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.txt: virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam
-	$(call LSCRIPT_MEM,2G,3G,"genomeCoverageBed -ibam $< > $@")
+	$(call RUN,-s 2G -m 3G,"genomeCoverageBed -ibam $< > $@")
 
 virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.summary.txt: virus/bowtie2/default/$(VIRUS_DB_NAME)/%.bam.bedcov.txt
 	$(INIT) unset PYTHONPATH && \
