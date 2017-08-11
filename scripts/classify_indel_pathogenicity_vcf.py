@@ -87,6 +87,7 @@ if __name__ == "__main__":
             query.run_query()
 
     for record in records:
-        cp.classify_pathogenicity(record, no_remote=args.no_remote)
+        if len(record.FILTER) == 0 and record.is_indel:
+            cp.classify_pathogenicity(record, no_remote=args.no_remote)
         vcf_writer.write_record(record)
     vcf_writer.close()

@@ -95,7 +95,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chr,$$(CHROMOSOMES),mutect/chr_vcf/$1_$2.$$(chr).mutect.vcf)
-	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | grep PASS | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -109,7 +109,7 @@ $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call ext-mutect-tumor-normal,$(pair))))
 
 define mutect-tumor-normal
 vcf/$1_$2.mutect.vcf : $$(foreach chunk,$$(MUTECT_CHUNKS),mutect/chunk_vcf/$1_$2.chunk$$(chunk).mutect.vcf)
-	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
+	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | grep PASS | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(MUTECT_SOURCE_ANN_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\

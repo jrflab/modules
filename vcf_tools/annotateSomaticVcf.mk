@@ -86,7 +86,7 @@ somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	alltables/allTN.$(type).tab.txt) tsv/all.somatic_variants.tsv
 
 MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
-MERGE_SCRIPT = $(call RUN,-c -s 6G -m 7G,"$(MERGE_VCF) --out_file $@.tmp $^ && $(call VERIFY_VCF,$@.tmp,$@)")
+MERGE_SCRIPT = $(call RUN,-c -s 6G -m 7G,"$(MERGE_VCF) --pass_only --out_file $@.tmp $^ && $(call VERIFY_VCF,$@.tmp,$@)")
 define somatic-merged-vcf
 # first filter round
 vcf/%.$1.ft.vcf : $$(if $$(strip $$(call SOMATIC_FILTER1,$1)),$$(foreach ft,$$(call SOMATIC_FILTER1,$1),vcf/%.$1.$$(ft).vcf),vcf/%.$1.vcf)
@@ -102,7 +102,7 @@ vcf/%.$1.ft2.ann2.vcf : $$(if $$(strip $$(call SOMATIC_ANN2,$1)),$$(foreach ann,
 	$$(MERGE_SCRIPT)
 vcf/%.$1.ft2.ann3.vcf : $$(if $$(strip $$(call SOMATIC_ANN3,$1)),$$(foreach ann,$$(call SOMATIC_ANN3,$1),vcf/%.$1.ft2.ann2.$$(ann).vcf),vcf/%.$1.ft2.ann2.vcf)
 	$$(MERGE_SCRIPT)
-vcf_ann/%.$1.vcf : vcf/%.$1.ft2.ann3.pass.vcf
+vcf_ann/%.$1.vcf : vcf/%.$1.ft2.ann3.vcf
 	$$(INIT) cp $$< $$@
 PHONY += $1_vcfs
 $1_vcfs : $$(foreach pair,$$(SAMPLE_PAIRS),vcf_ann/$$(pair).$1.vcf vcf/$$(pair).$1.ft2.ann2.vcf vcf/$$(pair).$1.ft2.vcf vcf/$$(pair).$1.ft.ann.vcf vcf/$$(pair).$1.ft.vcf)

@@ -10,8 +10,9 @@ from itertools import izip_longest
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog='merge_vcf.py',
-                                    description='merge vcf files')
+                                     description='merge vcf files')
     parser.add_argument('vcf_files', nargs='+', help='vcf files to merge')
+    parser.add_argument('--pass_only', action='store_true', default=False, help='write only passing variants')
     parser.add_argument('--ignore_filter', action='store_true', default=False, help='ignore filter column')
     parser.add_argument('--out_file', nargs='?', help='merged vcf output file', default=sys.stdout,
                         type=argparse.FileType('w'))
@@ -63,11 +64,11 @@ if __name__ == '__main__':
                         f_vals.append(map(lambda x: int(x), record.samples[sx]['NV']))
                     else:
                         f_vals.append([int(record.samples[sx]['NR']),
-                                    int(record.samples[sx]['NV'])])
+                                       int(record.samples[sx]['NV'])])
                 if 'TIR' in f_keys and 'TAR' in f_keys:
                     f_keys.append("AD")
                     f_vals.append([int(record.samples[sx]['DP']) - int(record.samples[sx]['TIR'][0]),
-                                int(record.samples[sx]['TIR'][0])])
+                                   int(record.samples[sx]['TIR'][0])])
             new_record.samples[sx].data = collections.namedtuple('CallData', f_keys)
             handy_dict = dict(zip(f_keys, f_vals))
             new_vals = [handy_dict[x] for x in f_keys]
@@ -96,6 +97,7 @@ if __name__ == '__main__':
                 for inf in record2.INFO.keys():
                     if inf is not None and inf != '.' and inf not in new_record.INFO:
                         new_record.add_info(inf, record2.INFO[inf])
-        vcf_writer.write_record(new_record)
+        if not args.pass_only or len(new_record.FILTER) == 0:
+            vcf_writer.write_record(new_record)
 
     vcf_writer.close()
