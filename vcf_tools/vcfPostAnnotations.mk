@@ -10,11 +10,12 @@ CLASSIFY_INDEL_PATHOGENICITY_OPTS = --provean_script $(PROVEAN_SCRIPT) \
 							  --cluster_mode none) \
 							  --num_provean_threads 6 --mem_per_thread 3G $(if $(findstring true,$(SUMMARY_NO_REMOTE)),--no_remote)
 vcf/%.snp_pathogen.vcf : vcf/%.vcf
-	$(call CHECK_VCF,$(call RUN,-c -s 5G -m 8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
+	$(call CHECK_VCF,$(call RUN,-c -s 5G -m 8G,"$(CLASSIFY_SNV_PATHOGENICITY) $(CLASSIFY_SNV_PATHOGENICITY_OPTS) $< \
+		> $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 vcf/%.indel_pathogen.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call RUN,--internet -s 2G -m 5G,"$(CLASSIFY_INDEL_PATHOGENICITY) \
-		$(CLASSIFY_INDEL_PATHOGENICITY_OPTS) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
+		$(CLASSIFY_INDEL_PATHOGENICITY_OPTS) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
 MUTATION_TASTER = $(PYTHON) modules/vcf_tools/mutation_taster_vcf.py
 vcf/%.mut_taste.vcf : vcf/%.vcf
