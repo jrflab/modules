@@ -120,12 +120,12 @@ if __name__ == '__main__':
         if args.internet:
             qsub_args += ' -R "select[internet]"'
         if args.num_cores > 1:
-            qsub_args += " -n {num_cores}".format(num_cores=args.num_cores)
-        total_hard_mem_gb = int(math.ceil(total_hard_mem / 1000000000.0))
-        total_soft_mem_gb = int(math.ceil(total_soft_mem / 1000000000.0))
+            qsub_args += ' -n {num_cores} -R "span[ptile={num_cores}]"'.format(num_cores=args.num_cores)
+        hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
+        soft_mem_gb = int(math.ceil(job.human2bytes(args.soft_memory) / 1000000000.0))
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
         qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]" -W {walltime}'.format(
-            hard_mem_gb=total_hard_mem_gb, soft_mem_gb=total_soft_mem_gb, walltime=walltime)
+            hard_mem_gb=hard_mem_gb, soft_mem_gb=soft_mem_gb, walltime=walltime)
         my_job = job.DRMAAJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
                               remote_check_servers=args.servers)
     else:
