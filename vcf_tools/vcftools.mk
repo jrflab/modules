@@ -42,7 +42,7 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 		bgzip -c > $@.tmp && if zgrep -q '^#CHROM' $@.tmp; then mv $@.tmp $@; else false; fi")
 
 %.vcf.gz.tbi : %.vcf.gz
-	$(call RUN,-c -w 1:00:00,3G,5G,"$(BCFTOOLS2) index -t -f $<")
+	$(call RUN,-c -w 1:00:00 -s 3G -m 5G,"$(BCFTOOLS2) index -t -f $<")
 
 %.vcf.gz : %.vcf
 	$(call RUN,-s 2G -m 3G,"bgzip -c $< > $@")
