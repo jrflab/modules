@@ -81,7 +81,7 @@ if __name__ == '__main__':
     elif args.job_name is not None:
         job_name = args.job_name
     elif args.project_name is not None and args.out_file is not None:
-        job_name = "{}_{}".format(args.project_name, args.out_file)
+        job_name = "{}_{}".format(args.project_name, os.path.basename(args.out_file))
 
     if args.local or (args.internet and args.cluster_engine != 'lsf'):
         my_job = job.LocalJob(job_script=job_script, out_file=args.out_file, log_file=args.log_file, shell=args.shell)
