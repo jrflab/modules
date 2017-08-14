@@ -19,6 +19,15 @@ if __name__ == "__main__":
     vcf_reader.infos['variantCaller'] = vcf.parser._Info(id='variantCaller', num='.', type='String',
                                                          desc="variant caller(s) used to find the variant",
                                                          source=None, version=None)
+
+    if args.source == 'lancet':
+        vcf_reader.infos['LEN'] = vcf.parser._Info(id='LEN', num='1', type='Integer',
+                                                   desc="length of insertion/deletion",
+                                                   source=None, version=None)
+        vcf_reader.infos['TYPE'] = vcf.parser._Info(id='TYPE', num='1', type='String',
+                                                    desc="insertion or deletion",
+                                                    source=None, version=None)
+
     vcf_writer = vcf.Writer(sys.stdout, vcf_reader)
 
     for record in vcf_reader:
