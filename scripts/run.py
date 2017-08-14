@@ -94,8 +94,8 @@ if __name__ == '__main__':
         if args.num_cores > 1:
             qsub_args += " -pe {penv} {num_cores}".format(penv=args.sge_parallel_env,
                                                           num_cores=args.num_cores)
-        qsub_args += "-l virtual_free={soft_mem},h_vmem={hard_mem}".format(soft_mem=args.soft_memory,
-                                                                           hard_mem=args.hard_memory)
+        qsub_args += " -l virtual_free={soft_mem},h_vmem={hard_mem}".format(soft_mem=args.soft_memory,
+                                                                            hard_mem=args.hard_memory)
         my_job = job.DRMAAJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
                               remote_check_servers=args.servers)
     elif cluster_engine == 'pbs':
