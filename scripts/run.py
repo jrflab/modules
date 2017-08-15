@@ -96,8 +96,9 @@ if __name__ == '__main__':
                                                           num_cores=args.num_cores)
         qsub_args += " -l virtual_free={soft_mem},h_vmem={hard_mem}".format(soft_mem=args.soft_memory,
                                                                             hard_mem=args.hard_memory)
-        my_job = job.DRMAAJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
-                              remote_check_servers=args.servers)
+        import drmaa_job
+        my_job = drmaa_job.DRMAAJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
+                                    remote_check_servers=args.servers)
     elif cluster_engine == 'pbs':
         qsub_args = "-d {pwd} -S {shell}".format(pwd=os.getcwd(), shell=args.shell)
         if job_name is not None:
@@ -126,8 +127,8 @@ if __name__ == '__main__':
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
         qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]" -W {walltime}'.format(
             hard_mem_gb=hard_mem_gb, soft_mem_gb=soft_mem_gb, walltime=walltime)
-        my_job = job.DRMAAJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
-                              remote_check_servers=args.servers)
+        my_job = job.LSFJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
+                            remote_check_servers=None)  # checking filesize on remote servers not supported
     else:
         raise ValueError("invalid cluster engine. supported engines are sge, pbs, and lsf")
 
