@@ -98,6 +98,7 @@ GATK_JAR2 ?= $(JARDIR)/GenomeAnalysisTK-3.7.jar
 VT ?= $(HOME)/share/usr/bin/vt
 TABIX ?= $(HOME)/share/usr/bin/tabix
 
+CLUSTER_ENGINE ?= SGE
 ifeq ($(CLUSTER_ENGINE),PBS)
 MYSQLDB_HOST = cpu-6-2
 EMBL_MYSQLDB_HOST = cpu-6-2
