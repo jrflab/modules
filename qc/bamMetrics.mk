@@ -24,7 +24,7 @@ flagstats : $(foreach sample,$(SAMPLES),metrics/$(sample).flagstats)
 PHONY += summary_metrics
 summary_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).alignment_summary_metrics)
 PHONY += wgs_metrics
-wgs_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).wgs_metrics)
+wgs_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).wgs_metrics) metrics/wgs_metrics_summary.tsv
 PHONY += dup
 dup : $(foreach sample,$(SAMPLES),metrics/$(sample).dup_metrics)
 PHONY += gc
@@ -34,6 +34,9 @@ idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sa
 
 metrics/%.alignment_summary_metrics : bam/%.bam
 	$(call RUN,-s 12G -m 13G,"$(COLLECT_METRICS) I=$< O=metrics/$* REFERENCE_SEQUENCE=$(REF_FASTA)")
+
+metrics/wgs_metrics_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).wgs_metrics)
+	$(INIT) (grep GENOME_TERRITORY $< | sed 's/^/SAMPLE\t/'; for x in $(SAMPLES); do grep -A1 GENOME_TERRITORY metrics/$$x.wgs_metrics | sed 1d | sed "s/^/$$x\t/" ; done) > $@
 
 metrics/%.wgs_metrics : bam/%.bam
 	$(call RUN,-s 12G -m 13G,"$(COLLECT_WGS_METRICS) I=$< O=$@ REFERENCE_SEQUENCE=$(REF_FASTA)")
