@@ -228,7 +228,7 @@ class LSFJob(ClusterJob):
         self.job_script_file.close()
         os.chmod(self.job_script_file.name, 0o555)
 
-        cmd = "bsub -K {args} {script}".format(self.qsub_args, self.job_script_file.name)
+        cmd = "bsub -K {args} {script}".format(args=self.qsub_args, script=self.job_script_file.name)
         self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
 
     def wait(self):
