@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for f in args.vcf_files:
         vcf_reader = vcf.Reader(open(f, 'r'))
         for record in vcf_reader:
-            recid = "{}:{}:{}{}".format(record.CHROM, record.POS, record.REF, record.ALT)
+            recid = "{}:{}:{}/{}".format(record.CHROM, record.POS, record.REF, record.ALT)
             s = record.samples[0].sample
             sample_variants[s].add(recid)
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
                                                                    version=None)
     vcf_writer = vcf.Writer(sys.stdout, sufam_vcf_reader)
     for record in sufam_vcf_reader:
-        recid = "{}:{}:{}{}".format(record.CHROM, record.POS, record.REF, record.ALT)
+        recid = "{}:{}:{}/{}".format(record.CHROM, record.POS, record.REF, record.ALT)
         for s, v in list(sample_variants.items()):
             if recid in v:
                 if 'samples_called_in' not in record.INFO:
