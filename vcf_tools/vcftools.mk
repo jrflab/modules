@@ -45,7 +45,7 @@ reports/%.grp : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).%.vcf)
 	$(call RUN,-c -w 1:00:00 -s 3G -m 5G,"$(BCFTOOLS2) index -t -f $<")
 
 %.vcf.gz : %.vcf
-	$(call RUN,-s 2G -m 3G,"bgzip -c $< > $@")
+	$(call RUN,-c -s 2G -m 3G,"bgzip -c $< > $@")
 
 define vcf2maf-tumor-normal
 maf/$1_$2.%.maf : vcf_ann/$1_$2.%.vcf
