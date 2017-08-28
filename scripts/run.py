@@ -125,7 +125,7 @@ if __name__ == '__main__':
         hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
         soft_mem_gb = int(math.ceil(job.human2bytes(args.soft_memory) / 1000000000.0))
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
-        qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]" -W {walltime}'.format(
+        qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]"'.format(
             hard_mem_gb=hard_mem_gb, soft_mem_gb=soft_mem_gb, walltime=walltime)
         my_job = job.LSFJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
                             remote_check_servers=None)  # checking filesize on remote servers not supported
