@@ -121,7 +121,7 @@ if __name__ == '__main__':
         if args.internet:
             qsub_args += ' -R "select[internet]"'
         if args.num_cores > 1:
-            qsub_args += ' -n {num_cores} -R "span[ptile={num_cores}]"'.format(num_cores=args.num_cores)
+            qsub_args += ' -n {num_cores} -R "span[hosts=1]"'.format(num_cores=args.num_cores)
         hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
         soft_mem_gb = int(math.ceil(job.human2bytes(args.soft_memory) / 1000000000.0))
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
