@@ -104,7 +104,7 @@ HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v2.vcf.gz
 HOTSPOT_VCF.int = $(HOTSPOT_VCF_DIR)/hotspot-v1.vcf.gz
 
 HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.bed
-CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.b37.2016-10-14.bed
+CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.b37.2017-05-25.bed
 KANDOTH_BED ?= $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.bed
 LAWRENCE_BED ?= $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.bed
 

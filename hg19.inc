@@ -91,7 +91,7 @@ ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
 ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 
 HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.hg19.bed
-CANCER_GENE_CENSUS_BED ?= $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.hg19.bed
+CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.hg19.2017-05-25.bed
 KANDOTH_BED ?= $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.hg19.bed
 LAWRENCE_BED ?= $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.hg19.bed
 
