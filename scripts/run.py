@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--hard_memory', default='1G', help='hard memory limit per core')
     parser.add_argument('-n', '--num_cores', default=1, type=int, help='number of cores')
     parser.add_argument('--sge_parallel_env', default='smp', help='SGE parallel env')
-    parser.add_argument('-w', '--walltime', default='24:00:00', help='wall time')
+    parser.add_argument('-w', '--walltime', default='6:00:00', help='wall time')
     parser.add_argument('-c', '--check', default=False, action='store_true', help='check for non-zero file size')
     parser.add_argument('-d', '--docker', default=False, action='store_true', help='request docker support')
     parser.add_argument('-I', '--internet', default=False, action='store_true', help='request internet access')
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         hard_mem_gb = int(math.ceil(job.human2bytes(args.hard_memory) / 1000000000.0))
         soft_mem_gb = int(math.ceil(job.human2bytes(args.soft_memory) / 1000000000.0))
         walltime = re.sub(r'(\d+):(\d+):(\d+)', r'\g<1>:\g<2>', args.walltime)
-        qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]"'.format(
+        qsub_args += ' -M {hard_mem_gb} -R "rusage[mem={soft_mem_gb}]" -W {walltime}'.format(
             hard_mem_gb=hard_mem_gb, soft_mem_gb=soft_mem_gb, walltime=walltime)
         my_job = job.LSFJob(job_script=job_script, qsub_args=qsub_args, out_file=args.out_file,
                             remote_check_servers=None)  # checking filesize on remote servers not supported
