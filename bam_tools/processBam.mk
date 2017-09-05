@@ -103,7 +103,7 @@ endif
 #	$(call RUN,-n 4 -s 3G -m 3G,"$(SAMTOOLS2) sort -m 2.8G -o $@ -O bam --reference $(REF_FASTA) -@ 4 $<")
 
 %.sorted.bam : %.bam
-	$(call RUN,-s 20G -m 25G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=coordinate VERBOSITY=ERROR && $(RM) $<")
+	$(call RUN,-s 30G -m 30G,"$(call SORT_SAM_MEM,19G,4500000) I=$< O=$@ SO=coordinate VERBOSITY=ERROR && $(RM) $<")
 
 
 #sort only if necessary
@@ -118,7 +118,7 @@ endif
 
 # mark duplicates
 %.markdup.bam : %.bam
-	$(call RUN,-s 19G -m 19G,"$(MKDIR) metrics; $(call MARK_DUP_MEM,12G) I=$< O=$@ METRICS_FILE=metrics/$(call strip-suffix,$(@F)).dup_metrics.txt && $(RM) $<")
+	$(call RUN,-s 22G -m 22G,"$(MKDIR) metrics; $(call MARK_DUP_MEM,10G) I=$< O=$@ METRICS_FILE=metrics/$(call strip-suffix,$(@F)).dup_metrics.txt && $(RM) $<")
 
 %.rmdup.bam : %.bam
 	$(call RUN,-s 4G -m 7G,"$(SAMTOOLS) rmdup $< $@ && $(RM) $<")
