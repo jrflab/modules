@@ -14,7 +14,10 @@ LANCET_MIN_COV ?= 5
 LANCET_DIR = $(HOME)/share/usr/lancet
 LANCET = export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(LANCET_DIR)/bamtools-2.3.0/lib/; \
 	$(LANCET_DIR)/lancet
-LANCET_OPTS = --ref $(REF_FASTA) --cov-thr $(LANCET_MIN_COV)
+
+LANCET_THREADS = 4
+LANCET_RUN_OPTS = -c -n $(LANCET_THREADS) -s 2G -m 3G -w 36:00:00
+LANCET_OPTS = --ref $(REF_FASTA) --cov-thr $(LANCET_MIN_COV) --num-threads $(LANCET_THREADS)
 
 LANCET_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source lancet
 TUMOR_VARIANT_READ_FILTER_VCF = python modules/vcf_tools/tumor_variant_read_filter_vcf.py --pass_only
@@ -41,7 +44,6 @@ lancet/interval_chunk/chunk.timestamp : $(TARGETS_FILE)
 	#$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_LANCET_CHUNKS) $<  && touch $@
 #endif
 
-
 define lancet-interval-chunk
 lancet/interval_chunk/chunk$1.bed : lancet/interval_chunk/chunk.timestamp
 endef
@@ -49,7 +51,7 @@ $(foreach i,$(LANCET_CHUNKS),$(eval $(call lancet-interval-chunk,$i)))
 
 define lancet-chunk-tumor-normal
 lancet/chunk_vcf/$2_$3.lancet.$1.vcf : lancet/interval_chunk/chunk$1.bed bam/$2.bam bam/$3.bam
-	$$(call RUN,-n 4 -s 2G -m 3G,"$$(LANCET) --num-threads 4 --tumor $$(<<) --normal $$(<<<) $$(LANCET_OPTS) \
+	$$(call RUN,$$(LANCET_RUN_OPTS),"$$(LANCET) --tumor $$(<<) --normal $$(<<<) $$(LANCET_OPTS) \
 		--bed $$(<) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chunk,$(LANCET_CHUNKS), \
@@ -70,7 +72,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 else
 define lancet-chr-tumor-normal
 lancet/chr_vcf/$2_$3.lancet.$1.vcf : bam/$2.bam bam/$3.bam
-	$$(call RUN,-c -n 4 -s 2G -m 3G,"$$(LANCET) --num-threads 4 --tumor $$(<) --normal $$(<<) \
+	$$(call RUN,$$(LANCET_RUN_OPTS),"$$(LANCET) --tumor $$(<) --normal $$(<<) \
 		$$(LANCET_OPTS) --reg $1 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach chr,$(CHROMOSOMES), \
