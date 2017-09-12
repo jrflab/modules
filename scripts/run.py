@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     if args.log_file is not None:
         log_dir = os.path.dirname(args.log_file)
-        if not os.path.exists(log_dir):
+        if log_dir != "" and not os.path.exists(log_dir):
             try:
                 os.makedirs(log_dir)
             except OSError as e:
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     if args.out_file is not None:
         out_dir = os.path.dirname(args.out_file)
-        if not os.path.exists(out_dir):
+        if out_dir != "" and not os.path.exists(out_dir):
             try:
                 os.makedirs(out_dir)
             except OSError as e:
