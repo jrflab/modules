@@ -1,6 +1,10 @@
 ---
 ref: b37
 
+cluster_engine: SGE
+
+use_cluster: true
+
 aligner: bwamem #tophat hisat bwa bowtie tmap
 bam_chr1_base_recal: false
 bam_dup_type: markdup
