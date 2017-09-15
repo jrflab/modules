@@ -90,17 +90,17 @@ ONCOTATOR_DB ?= $(REF_DIR)/oncotator_v1_ds_Jan262014
 
 ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 
-HAPLOTYPE_INSUF_BED ?= $(HOME)/share/reference/haplo_insuff_genes.hg19.bed
+HAPLOTYPE_INSUF_BED ?= modules/reference/gene_lists/haplo_insuff_genes.hg19.bed
 CANCER_GENE_CENSUS_BED ?= modules/reference/gene_lists/cancer_gene_census.hg19.2017-05-25.bed
-KANDOTH_BED ?= $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.hg19.bed
-LAWRENCE_BED ?= $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.hg19.bed
+KANDOTH_BED ?= modules/reference/gene_lists/Kandoth_127genes.hg19.bed
+LAWRENCE_BED ?= modules/reference/gene_lists/Lawrence_cancer5000-S.hg19.bed
 
 CN_ENDOMETRIAL_SUBTYPES = CN_high CN_low Endometrioid_MSI_H Endometrioid_MSS Endometrioid MSI POLE Serous
 CN_BREAST_SUBTYPES = ER_negative ER_positive HER2_postitive Pam50_Basal Pam50_Her2 Pam50_LumA Pam50_LumB Pam50_Normal Triple_negative
 CN_ENDOMETRIAL_BED = $(foreach set,$(CN_ENDOMETRIAL_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/endometrial/copy_number_regulated_genes_subtype_$(set)_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
 CN_BREAST_BED = $(foreach set,$(CN_BREAST_SUBTYPES), $(HOME)/share/reference/annotation_gene_lists/cn_reg/breast/metabric_subtype_$(set)_copy_number_regulated_genes_std0.5_spearmanrsquare0.4_fdrbh_adjp_lt0.05.HUGO.hg19.bed)
 
-HOTSPOT_VCF_DIR = $(REF_DIR)/hotspot.new/
+HOTSPOT_VCF_DIR = modules/reference/hotspots
 HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v2.hg19.vcf.gz
 HOTSPOT_VCF.int = $(HOTSPOT_VCF_DIR)/hotspot-v1.hg19.vcf.gz
 

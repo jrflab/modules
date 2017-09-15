@@ -41,7 +41,6 @@ vcf/%.eff.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call RUN,-c -s 18G -m 20G,"$(call SNP_EFF_MEM,11G) ann $(SNP_EFF_OPTS) $(SNP_EFF_GENOME) -s $(@D)/$*.eff_summary.html $< > $@.tmp \
 		&& $(call VERIFY_VCF,$@.tmp,$@)"))
 
-
 vcf/%.clinvar.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call RUN,-c -s 18G -m 23G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
 		$(CLINVAR) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
@@ -61,11 +60,6 @@ chr_vcf/%.gnomad.$1.vcf : vcf/%.vcf
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call gnomad-chr,$(chr))))
  
-HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
-CANCER_GENE_CENSUS_BED = $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
-KANDOTH_BED = $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.bed
-LAWRENCE_BED = $(HOME)/share/reference/annotation_gene_lists/Lawrence_cancer5000-S.bed
-
 ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) modules/vcf_tools/addGeneListAnnotationToVcf.R
 vcf/%.gene_ann.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call RUN,-c -s 8G -m 12G,"$(ADD_GENE_LIST_ANNOTATION) --genome $(REF) \
