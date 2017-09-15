@@ -191,6 +191,7 @@ PBS_NODES = gpu-2-14 cpu-6-1 gpu-1-4
 SGE_PARALLEL_ENV = smp
 SGE_NODES = e01 e02 e06
 SGE_QSUB_SCRIPT = python modules/scripts/qsub.py
+export SGE_ROOT = /common/sge
 
 MAKE_PID := $(shell echo $$PPID)
 JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$(MAKE)")))
