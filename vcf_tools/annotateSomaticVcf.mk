@@ -14,7 +14,6 @@ endif
 
 SNV_TYPE ?= mutect
 INDEL_TYPE ?= somatic_indels
-#strelka_indels varscan_indels strelka_varscan_indels
 VARIANT_TYPES ?= $(SNV_TYPE) $(INDEL_TYPE)
 
 DEPTH_FILTER ?= 5
