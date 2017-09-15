@@ -212,7 +212,7 @@ def write_mutation_summary(snps_high_moderate, snps_low_modifier,
     summary_columns = "CHROM,POS,TUMOR_SAMPLE,NORMAL_SAMPLE,ID,UPS_Coord,variantCaller,ANN[*].GENE,ANN[*].EFFECT,ANN[*].HGVS_P," \
         "SYMBOL,Variant_Classification,HGVSp_Short," \
         "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP," \
-        "ExAC_AF,MutationTaster_pred,provean_pred,FATHMM_pred,parssnp_pred," \
+        "AF,ExAC_AF,MutationTaster_pred,provean_pred,FATHMM_pred,parssnp_pred," \
         "fuentes,dgd,oncoKB_level,oncoKB_cancer_type,offTarget," \
         "facetsLOHCall,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot,clonalStatus,ccf".split(",")
     # find chasm score columns, they are prefixed with chosen classifier

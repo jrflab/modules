@@ -50,6 +50,17 @@ vcf/%.exac_nontcga.vcf : vcf/%.vcf
 	$(call CHECK_VCF,$(call RUN,-c -s 18G -m 20G,"$(call SNP_SIFT_MEM,11G) annotate $(SNP_SIFT_OPTS) \
 		-info ExAC_AF $(EXAC_NONTCGA) $< > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)"))
 
+GNOMAD_INFO ?= AF
+vcf/%.gnomad.vcf : $(foreach chr,$(GNOMAD_CHROMOSOMES),chr_vcf/%.gnomad.$(chr).vcf)
+	$(call RUN, -c -s 6G -m 7G,"$(MERGE_VCF) --out_file $@.tmp $^ && $(call VERIFY_VCF,$@.tmp,$@)")
+
+define gnomad-chr
+chr_vcf/%.gnomad.$1.vcf : vcf/%.vcf
+	$$(call CHECK_VCF,$$(call RUN,-c -s 18G -m 20G,"$$(call SNP_SIFT_MEM,11G) annotate $$(SNP_SIFT_OPTS) \
+		-info $$(GNOMAD_INFO) $$(GNOMAD_DB_DIR)/$$(GNOMAD_PREFIX).$1.vcf.gz $$< > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)"))
+endef
+$(foreach chr,$(CHROMOSOMES),$(eval $(call gnomad-chr,$(chr))))
+ 
 HAPLOTYPE_INSUF_BED = $(HOME)/share/reference/haplo_insuff_genes.bed
 CANCER_GENE_CENSUS_BED = $(HOME)/share/reference/annotation_gene_lists/cancer_gene_census_genes_v20150303.bed
 KANDOTH_BED = $(HOME)/share/reference/annotation_gene_lists/Kandoth_127genes.bed

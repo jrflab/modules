@@ -32,7 +32,7 @@ endif
 
 SOMATIC_ANN1 = $(if $(or $(findstring GRCm38,$(REF)),$(findstring mm10,$(REF))),mgp_dbsnp,dbsnp) \
     $(if $(findstring GRCh37,$(VEP_REF)),cmo_ann) eff $(if $(ANNOVAR_REF),$(ANNOVAR_REF)_multianno)\
-    $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),cosmic cosmic_nc gene_ann cn_reg clinvar exac_nontcga hotspot_int_ann hotspot_ext_ann)
+    $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),cosmic cosmic_nc gene_ann cn_reg clinvar gnomad exac_nontcga hotspot_int_ann hotspot_ext_ann)
 
 ifeq ($(HRUN),true)
 SOMATIC_INDEL_ANN2 += hrun
@@ -84,7 +84,6 @@ somatic_tables : $(foreach type,$(VARIANT_TYPES),\
 	$(foreach pair,$(SAMPLE_PAIRS),tables/$(pair).$(type).tab.txt) \
 	alltables/allTN.$(type).tab.txt) tsv/all.somatic_variants.tsv
 
-MERGE_VCF = $(PYTHON) modules/vcf_tools/merge_vcf.py
 MERGE_SCRIPT = $(call RUN,-c -s 6G -m 7G,"$(MERGE_VCF) --pass_only --out_file $@.tmp $^ && $(call VERIFY_VCF,$@.tmp,$@)")
 define somatic-merged-vcf
 # first filter round

@@ -130,7 +130,7 @@ if __name__ == "__main__":
                        "TUMOR_MAF,NORMAL_MAF,TUMOR_DP,NORMAL_DP,offTarget,"
                        "fuentes,dgd,oncoKB_level,oncoKB_cancer_type,"
                        "cancer_gene_census,kandoth,lawrence,num_cancer_gene,hap_insuf,"
-                       "ExAC_AF,MutationTaster_pred,PROVEAN_pred,FATHMM_pred," +
+                       "AF,ExAC_AF,MutationTaster_pred,PROVEAN_pred,FATHMM_pred," +
                        ",".join(chasm_pred_columns) + ',' +
                        "facetsLOHCall,parssnp_pred,pathogenicity,HOTSPOT,HOTSPOT_INTERNAL,cmo_hotspot," +
                        "clonalStatus,ccf,samples_called_in").split(",")

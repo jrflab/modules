@@ -148,5 +148,7 @@ SPLIT_BED = python modules/scripts/split_bed.py
 INDEL_FILTER_VCF = python modules/vcf_tools/indel_filter_vcf.py
 SNP_FILTER_VCF = python modules/vcf_tools/snp_filter_vcf.py
 
+MERGE_VCF = python modules/vcf_tools/merge_vcf.py
+
 endif
 CONFIG_INC = true
