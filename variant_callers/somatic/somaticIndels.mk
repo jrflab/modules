@@ -9,7 +9,8 @@ INDEL_TYPES ?= varscan_indels strelka_indels scalpel_indels lancet_indels platyp
 somatic_indels : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).somatic_indels.vcf)
 #strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
 
-UPS_INDEL = LD_LIBRARY_PATH=$(HOME)/share/usr/lib $(HOME)/share/usr/bin/ups_indel
+UPS_INDEL_DIR = $(HOME)/share/usr/ups-indel
+UPS_INDEL = ln -fs $(UPS_INDEL_DIR)/ext .; LD_LIBRARY_PATH=$(UPS_INDEL_DIR):$(HOME)/share/usr/lib $(UPS_INDEL_DIR)/ups_indel
 UPS_SPLIT_CHR ?= true
 MERGE_UVCF_VCF = python modules/vcf_tools/merge_uvcf_vcf.py
 MERGE_INDEL_VCF = python modules/vcf_tools/merge_indel_vcf.py
@@ -26,7 +27,7 @@ chr_vcf/%.$1.vcf : chr_vcf/%.chr_timestamp
 	if ! grep -q '^#CHROM' $$@; then rm -f $$< $$@; fi
 
 chr_uvcf/%.$1.uvcf : chr_vcf/%.$1.vcf
-	$$(call RUN,-s 4G -m 6G,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1")
+	$$(call RUN,-s 4G -m 12G,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1 -hd=true")
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call uvcf-chr,$(chr))))
 
@@ -34,7 +35,7 @@ uvcf/%.uvcf : $(foreach chr,$(CHROMOSOMES),chr_uvcf/%.$(chr).uvcf)
 	$(INIT) (grep '^#' $<; grep -P '^CHROM\t' $<; for x in $^; do grep -v '^#' $$x | sed 1d; done) > $@
 else
 uvcf/%.uvcf : vcf/%.vcf
-	$(call RUN,-s 4G -m 6G,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
+	$(call RUN,-s 4G -m 12G,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
 endif
 
 vcf/%.uvcf.vcf : uvcf/%.uvcf vcf/%.vcf
