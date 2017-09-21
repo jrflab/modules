@@ -1,5 +1,7 @@
 ##fileformat=VCFv4.1
-##fileDate=Thu Sep 21 14:40:30 2017
+##fileDate=Thu Sep 21 14:40:32 2017
+##SnpSiftVersion="SnpSift 4.3m (build 2017-05-05 18:41), by Pablo Cingolani"
+##SnpSiftCmd=""
 ##INFO=<ID=SS,Number=1,Type=String,Description="somatic status">
 ##INFO=<ID=DP,Number=1,Type=Integer,Description="depth">
 ##INFO=<ID=VARPVAL,Number=1,Type=Float,Description="variant p-value">
@@ -68,6 +70,8 @@
 ##INFO=<ID=HOMSEQ,Number=.,Type=String,Description="Sequence of base pair identical micro-homology at event breakpoints">
 ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Difference in length between REF and ALT alleles">
 ##INFO=<ID=NTLEN,Number=.,Type=Integer,Description="Number of bases inserted in place of deleted code">
+##INFO=<ID=offTarget,Number=0,Type=Flag,Description="no overlap with target intervals">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency among genotypes, for each ALT allele, in the same order as listed">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depth">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="sample depth">
@@ -116,6 +120,7 @@
 ##FILTER=<ID=REFCALL,Description="This line represents a homozygous reference call">
 ##FILTER=<ID=germline5x,Description="filter if normal depth > 20 and normal VAF > 1/5 * tumor VAF or normal variant depth greater than 1">
 ##FILTER=<ID=depth,Description="filter if normal depth < 5 or tumor depth < 5">
+##FILTER=<ID=lowDepthOffTarget,Description="low depth (< 50) and no overlap with intervals">
 ##contig=<ID=1,length=249250621>
 ##contig=<ID=2,length=243199373>
 ##contig=<ID=3,length=198022430>
@@ -200,17 +205,19 @@
 ##contig=<ID=GL000194.1,length=191469>
 ##contig=<ID=GL000225.1,length=211173>
 ##contig=<ID=GL000192.1,length=547496>
-#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8T	EMC8N
-4	186097219	.	C	CA	.	minCaller	SS=Somatic;DP=15;VARPVAL=1.0;SOMPVAL=0.00916884972613;variantCaller=varscan;UPS_Coord=+A[186097220-186097230]	GT:DP:AD:VAF	0/1:11:3,8:0.7273	0/0:9:8,1:0.1111
-6	32552093	.	ACCGCAC	A	.	minCaller	SS=Somatic;DP=18;VARPVAL=1.0;SOMPVAL=0.00402476780186;variantCaller=varscan;UPS_Coord=-CCGCAC[32552094-32552098]	GT:DP:AD:VAF	0/1:14:5,9:0.6429	0/0:8:8,0:0.0
-6	32552183	.	A	AC	104	HapScore;MQ;minCaller	variantCaller=platypus;UPS_Coord=+C[32552184-32552184];FR=0.5194;MMLQ=31.0;TCR=3;HP=3;WE=32552196;Source=Platypus;WS=32552161;PP=104.0;TR=3;NF=2;TCF=4;NR=1;TC=7;MGOF=202;SbPval=0.81;MQ=26.67;QD=46.3333333333;SC=ATCCGGTCACAGGGCGGCCTC;BRF=0.38;HapScore=8	GT:GL:GOF:GQ:NR:NV	0/1:-4.7,0.0,-0.0:166.0:3:3:1	1/0:-8.92,0.0,-3.12:202.0:31:4:2
-6	32552253	.	T	TG	30	MQ;minCaller	variantCaller=platypus;UPS_Coord=+G[32552254-32552256];FR=0.9995;MMLQ=32.0;TCR=2;HP=2;WE=32552261;Source=Platypus;WS=32552241;PP=30.0;TR=2;NF=0;TCF=0;NR=2;TC=2;MGOF=102;SbPval=1.0;MQ=29.0;QD=46.9228802356;SC=GTGCGGGCGCTGGAACCTTAA;BRF=0.0;HapScore=4	GT:GL:GOF:GQ:NR:NV	./.:-4.4,0.0,-0.0:31.0:3:1:1	./.:-4.4,0.0,-0.0:102.0:3:1:1
-6	130761532	.	CT	C	.	minCaller	SS=Somatic;DP=118;VARPVAL=1.0;SOMPVAL=0.0195908959954;variantCaller=varscan;UPS_Coord=-T[130761533-130761542]	GT:DP:AD:VAF	0/1:35:31,4:0.1143	0/0:56:56,0:0.0
-7	21907452	.	G	GT	.	minCaller	SS=Somatic;DP=33;VARPVAL=1.0;SOMPVAL=0.00903119868637;variantCaller=varscan;UPS_Coord=+T[21907453-21907458]	GT:DP:AD:VAF	0/1:13:8,5:0.3846	0/0:17:17,0:0.0
-7	127251732	.	TA	T	.	PASS	SS=Somatic;DP=210;VARPVAL=1.0;SOMPVAL=0.0140635226842;variantCaller=varscan,scalpel;UPS_Coord=-A[127251733-127251743]	GT:DP:AD:VAF	0/1:74:68,6:0.0811	0/0:74:74,0:0.0
-7	142471709	.	GT	G	1960	alleleBias;minCaller	variantCaller=platypus;UPS_Coord=-T[142471710-142471710];FR=0.5;MMLQ=30.0;TCR=91;HP=2;WE=142471734;Source=Platypus;WS=142471699;PP=1960.0;TR=22;NF=8;TCF=76;NR=14;TC=167;MGOF=13;SbPval=0.83;MQ=46.35;QD=90.6818181818;SC=GGCTATGGCTGTGCCCAGAAG;BRF=0.29;HapScore=1	GT:GL:GOF:GQ:NR:NV	1/0:-56.04,0.0,-283.64:9.0:99:74:9	1/0:-83.3,0.0,-299.35:13.0:99:93:13
-11	46917758	.	C	CA	.	PASS	SS=Somatic;DP=157;VARPVAL=1.0;SOMPVAL=1.12153183646e-06;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=+A[46917759-46917760]	GT:DP:AD:VAF	0/1:86:57,29:0.3372	0/0:43:43,0:0.0
-11	46917768	.	C	CA	67.6122	minCaller	variantCaller=lancet;UPS_Coord=+A[46917769-46917769];SOMATIC;FETS=67.6122;KMERSIZE=16;SB=10.8368;LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/0:45,0:32,13:0,0:45	0/1:61,34:47,14:22,12:95
-11	55406761	.	CAACT	C	568	minCaller	variantCaller=platypus;UPS_Coord=-AACT[55406762-55406762];FR=0.5;MMLQ=31.0;TCR=40;HP=2;WE=55406772;Source=Platypus;WS=55406751;PP=568.0;TR=14;NF=0;TCF=4;NR=14;TC=44;MGOF=2;SbPval=1.0;MQ=57.46;QD=44.3413615692;SC=GAAAAGAAATCAACTTTTCTG;BRF=0.05;HapScore=1	GT:GL:GOF:GQ:NR:NV	0/1:-38.98,0.0,-80.18:0.0:99:22:8	0/1:-24.28,0.0,-92.88:2.0:99:22:6
-19	41188890	.	TG	T	22.5	minCaller	variantCaller=scalpel;UPS_Coord=-G[41188891-41188900];SOMATIC;AVGCOV=12.0;MINCOV=12;ALTCOV=114;ZYG=het;COVRATIO=0.1;CHI2=82.57;FISHERPHREDSCORE=22.5;INH=no;BESTSTATE=21/01;COVSTATE=65	GT:AD:DP	0/0:65,0:65	0/1:114,12:126
-20	47705763	.	GTT	G	60.58	PASS	variantCaller=scalpel,platypus;UPS_Coord=-TT[47705764-47705774];SOMATIC;AVGCOV=10.0;MINCOV=10;ALTCOV=0;ZYG=hom;COVRATIO=1.0;CHI2=0.0;FISHERPHREDSCORE=60.58;INH=no;BESTSTATE=20/02;COVSTATE=13	GT:AD:DP	0/0:13,0:13	1/1:0,10:10
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	AM5TC	AM5N
+1	155686739	.	C	CA	.	PASS	SS=Somatic;DP=157;VARPVAL=1.0;SOMPVAL=0.0372237475824;variantCaller=varscan,scalpel;UPS_Coord=+A[155686740-155686757]	GT:DP:AD:VAF	0/1:71:58,13:0.1831	0/0:41:39,2:0.0488
+2	96992792	rs751146992	TGAG	T	.	PASS	SS=Somatic;DP=1038;VARPVAL=1.0;SOMPVAL=0.00047640362788;variantCaller=varscan,scalpel;UPS_Coord=-GAG[96992793-96992807];AF=0.0	GT:DP:AD:VAF	0/1:397:376,21:0.0529	0/0:286:284,2:0.007
+2	110325590	rs756789129	AT	A	.	PASS	SS=Somatic;DP=149;VARPVAL=1.0;SOMPVAL=0.0133463804761;variantCaller=varscan,scalpel;UPS_Coord=-T[110325591-110325601];AF=0.00160873	GT:DP:AD:VAF	0/1:50:43,7:0.14	0/0:63:62,1:0.0159
+2	120567392	.	A	AT	.	PASS	SS=Somatic;DP=116;VARPVAL=1.0;SOMPVAL=0.0131415159819;variantCaller=varscan,scalpel;UPS_Coord=+T[120567393-120567406]	GT:DP:AD:VAF	0/1:45:31,14:0.3111	0/0:54:48,6:0.1111
+4	169312798	rs150634123	A	AG	.	PASS	SS=Somatic;DP=90;VARPVAL=1.0;SOMPVAL=0.0336511600779;variantCaller=varscan,scalpel;UPS_Coord=+G[169312799-169312801];AF=0.0142173	GT:DP:AD:VAF	0/1:30:26,4:0.1333	0/0:38:38,0:0.0
+5	67591103	.	ATTAAACCAGACC	A	.	PASS	SS=Somatic;DP=326;VARPVAL=1.0;SOMPVAL=3.44609609327e-13;variantCaller=varscan,strelka,scalpel;UPS_Coord=-TTAAACCAGACC[67591104-67591107]	GT:DP:AD:VAF	0/1:97:72,25:0.2577	0/0:182:182,0:0.0
+5	67591283	.	TGA	T	.	PASS	SS=Somatic;DP=308;VARPVAL=1.0;SOMPVAL=4.03884375767e-22;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=-GA[67591284-67591284]	GT:DP:AD:VAF	0/1:109:65,44:0.4037	0/0:178:178,0:0.0
+7	47925659	.	CA	C	.	PASS	SS=Somatic;DP=187;VARPVAL=1.0;SOMPVAL=1.18277086123e-10;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=-A[47925660-47925662]	GT:DP:AD:VAF	0/1:90:57,33:0.3667	0/0:73:73,0:0.0
+8	6673269	.	TA	T	.	PASS	SS=Somatic;DP=166;VARPVAL=1.0;SOMPVAL=0.0377801970928;variantCaller=varscan,scalpel;UPS_Coord=-A[6673270-6673281]	GT:DP:AD:VAF	0/1:68:56,12:0.1765	0/0:54:51,3:0.0556
+9	139410466	.	C	CG	.	PASS	SS=Somatic;DP=45;VARPVAL=1.0;SOMPVAL=1.47659222364e-09;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=+G[139410467-139410468]	GT:DP:AD:VAF	0/1:26:6,20:0.7692	0/0:33:32,1:0.0303
+10	98273390	.	GGCA	G	.	PASS	SS=Somatic;DP=134;VARPVAL=1.0;SOMPVAL=0.0144248077238;variantCaller=varscan,strelka;UPS_Coord=-GCA[98273391-98273404]	GT:DP:AD:VAF	0/1:44:39,5:0.1136	0/0:56:56,0:0.0
+10	124457552	.	G	GT	.	PASS	SS=Somatic;DP=366;VARPVAL=1.0;SOMPVAL=2.70906980325e-14;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=+T[124457553-124457559]	GT:DP:AD:VAF	0/1:138:99,39:0.2826	0/0:168:167,1:0.006
+11	112832391	.	AT	A	.	PASS	SS=Somatic;DP=170;VARPVAL=1.0;SOMPVAL=0.0390800379525;variantCaller=varscan,scalpel;UPS_Coord=-T[112832392-112832405]	GT:DP:AD:VAF	0/1:71:60,11:0.1549	0/0:50:48,2:0.04
+X	54574648	.	A	AT	.	PASS	SS=Somatic;DP=228;VARPVAL=1.0;SOMPVAL=0.0795189234524;variantCaller=varscan,scalpel;UPS_Coord=+T[54574649-54574658]	GT:DP:AD:VAF	0/1:90:85,5:0.0556	0/0:58:58,0:0.0
+X	135049596	.	A	AAT	.	PASS	SS=Somatic;DP=144;VARPVAL=1.0;SOMPVAL=8.36469749313e-09;variantCaller=varscan,strelka,scalpel,platypus;UPS_Coord=+AT[135049597-135049601]	GT:DP:AD:VAF	0/1:54:35,19:0.3519	0/0:74:74,0:0.0

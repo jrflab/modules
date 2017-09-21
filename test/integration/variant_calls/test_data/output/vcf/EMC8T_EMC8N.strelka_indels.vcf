@@ -1,13 +1,13 @@
 ##fileformat=VCFv4.1
-##fileDate=20170728
+##fileDate=20170921
 ##source=strelka
 ##source_version=2.0.15
-##startTime=Fri Jul 28 12:15:18 2017
+##startTime=Thu Sep 21 14:37:46 2017
 ##reference=file:///ifs/e63data/reis-filho/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##content=strelka somatic indel calls
 ##germlineIndelTheta=0.0001
 ##priorSomaticIndelRate=1e-06
-##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/ifs/e63data/reis-filho/data/granular_cell_6575c/custom_capture_recapture/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
+##cmdline=/ifs/e63data/reis-filho/usr/libexec/consolidateResults.pl --config=/ifs/e63data/reis-filho/tmp/tmp.b8cUeMFz6x/modules/test/integration/variant_calls/test_data/strelka/EMC8T_EMC8N/config/run.config.ini
 ##INFO=<ID=QSI,Number=1,Type=Integer,Description="Quality score for any somatic variant, ie. for the ALT haplotype to be present at a significantly different frequency in the tumor and normal">
 ##INFO=<ID=TQSI,Number=1,Type=Integer,Description="Data tier used to compute QSI">
 ##INFO=<ID=NT,Number=1,Type=String,Description="Genotype of the normal in all data tiers, as used to classify somatic variants. One of {ref,het,hom,conflict}.">
