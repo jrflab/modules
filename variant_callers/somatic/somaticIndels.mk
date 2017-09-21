@@ -10,13 +10,13 @@ somatic_indels : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).somatic_indels.vcf)
 #strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
 
 UPS_INDEL_DIR = $(HOME)/share/usr/ups-indel
-UPS_INDEL = ln -fs $(UPS_INDEL_DIR)/ext .; LD_LIBRARY_PATH=$(UPS_INDEL_DIR):$(HOME)/share/usr/lib $(UPS_INDEL_DIR)/ups_indel
+UPS_INDEL = if [ ! -f ext/SnpSift.jar ]; then mkdir -p ext; ln -fs $(UPS_INDEL_DIR)/ext/SnpSift.jar ext/SnpSift.jar; fi ; LD_LIBRARY_PATH=$(UPS_INDEL_DIR):$(HOME)/share/usr/lib $(UPS_INDEL_DIR)/ups_indel
 UPS_SPLIT_CHR ?= true
 MERGE_UVCF_VCF = python modules/vcf_tools/merge_uvcf_vcf.py
 MERGE_INDEL_VCF = python modules/vcf_tools/merge_indel_vcf.py
 
 vcf/%.somatic_indels.vcf : $(foreach type,$(INDEL_TYPES),vcf/%.$(type).uvcf.vcf)
-	$(call RUN,-s 9G -m 12G,"$(MERGE_INDEL_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@")
+	$(call RUN,-s 9G -m 12G -c,"$(MERGE_INDEL_VCF) $^ | $(VCF_SORT) $(REF_DICT) - > $@.tmp && $(call VERIFY_VCF,$@.tmp,$@)")
 
 ifeq ($(UPS_SPLIT_CHR),true)
 chr_vcf/%.chr_timestamp : vcf/%.vcf
@@ -27,19 +27,22 @@ chr_vcf/%.$1.vcf : chr_vcf/%.chr_timestamp
 	if ! grep -q '^#CHROM' $$@; then rm -f $$< $$@; fi
 
 chr_uvcf/%.$1.uvcf : chr_vcf/%.$1.vcf
-	$$(call RUN,-s 4G -m 12G,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1 -hd=true")
+	$$(call CHECK_UVCF,$$(call RUN,-s 4G -m 12G -c,"$$(UPS_INDEL) $$(REF_FASTA) $$< $$(@D)/$$*.$1 -hd=true"))
 endef
 $(foreach chr,$(CHROMOSOMES),$(eval $(call uvcf-chr,$(chr))))
 
 uvcf/%.uvcf : $(foreach chr,$(CHROMOSOMES),chr_uvcf/%.$(chr).uvcf)
-	$(INIT) (grep '^#' $<; grep -P '^CHROM\t' $<; for x in $^; do grep -v '^#' $$x | sed 1d; done) > $@
+	$(INIT) h=`find $^ -size +1 | head -n1`; \
+		if [[ ! -z $$h ]]; then \
+		(grep -s '^#' $$h; grep -P '^CHROM\t' $$h; \
+		for x in $^; do grep -v '^#' $$x || true; done) > $@; else touch $@; fi
 else
 uvcf/%.uvcf : vcf/%.vcf
-	$(call RUN,-s 4G -m 12G,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
+	$(call RUN,-s 4G -m 12G -c,"$(UPS_INDEL) $(REF_FASTA) $< $(@D)/$*")
 endif
 
-vcf/%.uvcf.vcf : uvcf/%.uvcf vcf/%.vcf
-	$(call RUN,-s 4G -m 6G,"$(MERGE_UVCF_VCF) $< $(<<) > $@")
+vcf/%.uvcf.vcf : vcf/%.vcf uvcf/%.uvcf
+	$(call CHECK_VCF,$(call RUN,-s 4G -m 6G,"$(MERGE_UVCF_VCF) $(<<) $(<) > $@"))
 
 include modules/variant_callers/somatic/mutect2.mk
 include modules/variant_callers/somatic/strelka.mk

@@ -226,6 +226,7 @@ CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi
 # check for valid header, ie non-empty vcf file
 CHECK_VCF = mkdir -p $(@D); if [ `grep -v '^\#' $< | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $< | wc -l` -eq 1 ]; then cp $< $@; else $1; fi
 CHECK_MAF = mkdir -p $(@D); if [ `grep -v '^\#' $< | wc -l` -eq 1 ] && [ `grep '^Hugo_Symbol' $< | wc -l` -eq 1 ]; then cp $< $@; else $1; fi
+CHECK_UVCF = mkdir -p $(@D); if [ `grep -v '^\#' $< | wc -l` -eq 0 ] && [ `grep '^\#CHROM' $< | wc -l` -eq 1 ]; then sed 's/FILTER\tINFO/FILTER\tUPS-COORDINATE\tINFO/' $< > $@; else $1; fi
 
 # verify that vcf files have #CHROM
 # usage: $(call VERIFY_VCF,tmp,final_dest)

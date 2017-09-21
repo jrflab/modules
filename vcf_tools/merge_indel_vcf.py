@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     vcf_readers = [vcf.Reader(open(f, 'r')) for f in args.vcf_file]
     vr0 = vcf_readers[0]
-    assert all(['UPS_Coord' in vr.infos for vr in vcf_readers])
+    #assert all(['UPS_Coord' in vr.infos for vr in vcf_readers])
 
     vr0.filters['minCaller'] = vcf.parser._Filter(id='minCaller',
                                                   desc='variant is not present in at least '
