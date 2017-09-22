@@ -138,6 +138,10 @@ GNOMAD_DB_DIR = $(REF_DIR)/gnomad_data/vcf/genomes/
 GNOMAD_PREFIX = gnomad.genomes.r2.0.1.sites
 GNOMAD_CHROMOSOMES = 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X
 
+GENE_DB = $(REF_DIR)/genes_homo_sapiens.GRCh37.75.db
+
+ERICSCRIPT_DB = $(REF_DIR)/ericscript_db_hg38_84
+
 endif
 B37_INC = true
 
