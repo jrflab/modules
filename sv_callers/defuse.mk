@@ -17,6 +17,8 @@ DEFUSE_ONCOFUSE = $(RSCRIPT) modules/sv_callers/defuseOncofuse.R
 DEFUSE_ONCOFUSE_OPTS = --oncofuseJar $(ONCOFUSE_JAR) --oncofuseTissueType $(ONCOFUSE_TISSUE_TYPE) --java $(JAVA_BIN) 
 ONCOFUSE_TISSUE_TYPE ?= EPI
 
+DEFUSE_TO_USV = python modules/sv_callers/defuse2usv.py
+
 LOGDIR = log/defuse.$(NOW)
 
 # Runs defuse locally on the same node
@@ -70,5 +72,8 @@ defuse/alltables/%.coord.txt : defuse/alltables/%.txt
 
 defuse/alltables/%.oncofuse.txt : defuse/alltables/%.txt
 	$(call RUN,-c -s 7G -m 8G,"$(DEFUSE_ONCOFUSE) --outPrefix $(@D)/$* $(DEFUSE_ONCOFUSE_OPTS) $<")
+
+usv/%.defuse.tsv : defuse/tables/%.defuse.txt
+	$(call RUN,,"$(DEFUSE_TO_USV) -i $< > $@")
 
 include modules/fastq_tools/fastq.mk

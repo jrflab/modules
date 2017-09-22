@@ -6,7 +6,9 @@ suppressPackageStartupMessages(library("GenomicRanges"));
 suppressPackageStartupMessages(library("rtracklayer"));
 suppressPackageStartupMessages(library("VariantAnnotation"));
 
-options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+}
 
 optList <- list(
         make_option("--genome", default = 'b37', help = "genome build [default %default]"),

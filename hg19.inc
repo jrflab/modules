@@ -119,6 +119,8 @@ VEP_SPECIES = homo_sapiens
 
 ONCOKB = $(REF_DIR)/allActionableVariants.txt
 
+ERICSCRIPT_DB = $(REF_DIR)/ericscript_db_hg38_84
+
 endif
 HG19_INC = true
 

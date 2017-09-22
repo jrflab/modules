@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Thu Jul 27 18:36:25 2017
+##fileDate=Thu Sep 21 14:39:37 2017
 ##source=lancet 1.0.0 (beta), September 18 2016
 ##reference=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=FETS,Number=1,Type=Float,Description="phred-scaled p-value of the Fisher's exact test for tumor-normal allele counts (right-sided)">
@@ -10,6 +10,8 @@
 ##INFO=<ID=KMERSIZE,Number=1,Type=Integer,Description="K-mer size used to assemble the locus">
 ##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias of the Fisher's exact test (two-sided)">
 ##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
+##INFO=<ID=LEN,Number=1,Type=Integer,Description="length of insertion/deletion">
+##INFO=<ID=TYPE,Number=1,Type=String,Description="insertion or deletion">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Depth">
 ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="allele depth: # of supporting reference,mutation reads at the site">

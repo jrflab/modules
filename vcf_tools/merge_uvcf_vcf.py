@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
     vcf_reader = vcf.Reader(open(args.vcf_infile, 'r'))
     uvcf = pd.read_csv(args.uvcf_infile, comment='#', sep='\t')
+    uvcf.columns = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'UPS-COORDINATE', 'INFO']
 
     vcf_reader.infos['UPS_Coord'] = vcf.parser._Info(id='UPS_Coord', num='.', type='String',
                                                      desc="UPS-coordinate", source=None, version=None)

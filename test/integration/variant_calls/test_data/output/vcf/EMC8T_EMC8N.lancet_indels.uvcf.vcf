@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.1
-##fileDate=Fri Jul 28 12:11:34 2017
+##fileDate=Thu Sep 21 14:41:26 2017
 ##source=lancet 1.0.0 (beta), September 18 2016
 ##reference=/home/limr/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 ##INFO=<ID=FETS,Number=1,Type=Float,Description="phred-scaled p-value of the Fisher's exact test for tumor-normal allele counts (right-sided)">
@@ -10,6 +10,8 @@
 ##INFO=<ID=KMERSIZE,Number=1,Type=Integer,Description="K-mer size used to assemble the locus">
 ##INFO=<ID=SB,Number=1,Type=Integer,Description="Phred-scaled strand bias of the Fisher's exact test (two-sided)">
 ##INFO=<ID=variantCaller,Number=.,Type=String,Description="variant caller(s) used to find the variant">
+##INFO=<ID=LEN,Number=1,Type=Integer,Description="length of insertion/deletion">
+##INFO=<ID=TYPE,Number=1,Type=String,Description="insertion or deletion">
 ##INFO=<ID=UPS_Coord,Number=.,Type=String,Description="UPS-coordinate">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Depth">
@@ -30,5 +32,5 @@
 ##FILTER=<ID=noTumorVariantReads,Description="no tumor variant reads">
 ##FILTER=<ID=noAF,Description="missing AF">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	EMC8N	EMC8T
-2	95775790	.	G	GT	21.1765	PASS	FETS=21.1765;SOMATIC;KMERSIZE=15;SB=4.59591;variantCaller=lancet;UPS_Coord=+T[95775790-95775791];LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/0:21,0:13,8:0,0:21	0/1:17,7:10,7:4,3:24
-11	46917768	.	C	CA	67.6122	PASS	FETS=67.6122;SOMATIC;KMERSIZE=16;SB=10.8368;variantCaller=lancet;UPS_Coord=+A[46917769-46917769];LEN=1;TYPE=ins	GT:AD:SR:SA:DP	0/0:45,0:32,13:0,0:45	0/1:61,34:47,14:22,12:95
+2	95775790	.	G	GT	21.1765	PASS	FETS=21.1765;SOMATIC;KMERSIZE=15;SB=4.59591;variantCaller=lancet;LEN=1;TYPE=ins;UPS_Coord=N/A[]	GT:AD:SR:SA:DP	0/0:21,0:13,8:0,0:21	0/1:17,7:10,7:4,3:24
+11	46917768	.	C	CA	67.6122	PASS	FETS=67.6122;SOMATIC;KMERSIZE=16;SB=10.8368;variantCaller=lancet;LEN=1;TYPE=ins;UPS_Coord=+A[46917769-46917769]	GT:AD:SR:SA:DP	0/0:45,0:32,13:0,0:45	0/1:61,34:47,14:22,12:95
