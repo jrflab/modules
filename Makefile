@@ -91,6 +91,10 @@ TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 
+TARGETS += haplotype_caller
+haplotype_caller : 
+	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
+
 TARGETS += gatk
 gatk : 
 	$(call RUN_MAKE,modules/variant_callers/gatk.mk)

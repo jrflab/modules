@@ -4,7 +4,6 @@
 ifndef VCFTOOLS_MK
 
 include modules/Makefile.inc
-#include modules/variant_callers/gatk.inc
 
 LOGDIR ?= log/vcf.$(NOW)
 

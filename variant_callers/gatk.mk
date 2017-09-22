@@ -54,9 +54,9 @@ REPORT_STRATIFICATION := Filter
 gatk_vcfs : $(foreach sample,$(SAMPLES),vcf_ann/$(sample).gatk_snps.vcf vcf_ann/$(sample).gatk_indels.vcf)
 gatk_vcfs : $(foreach sample,$(SAMPLES),vcf_ann/$(sample).gatk_snps.vcf vcf_ann/$(sample).gatk_indels.vcf)
 
-vcf_ann/%.gatk_snps.vcf : vcf/%.gatk_snps.$(ANNOVAR_REF)_multianno.vcf
+vcf_ann/%.gatk_snps.vcf : vcf/%.gatk_snps.pass.eff.vcf
 	mkdir -p $(@D); ln -f $< $@
-vcf_ann/%.gatk_indels.vcf : vcf/%.gatk_indels.$(ANNOVAR_REF)_multianno.vcf
+vcf_ann/%.gatk_indels.vcf : vcf/%.gatk_indels.pass.eff.vcf
 	mkdir -p $(@D); ln -f $< $@
 
 ###### RECIPES #######
