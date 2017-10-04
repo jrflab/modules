@@ -58,7 +58,7 @@ chr_vcf/%.gnomad.$1.vcf : vcf/%.vcf
 	$$(call CHECK_VCF,$$(call RUN,-c -s 18G -m 20G,"$$(call SNP_SIFT_MEM,11G) annotate $$(SNP_SIFT_OPTS) \
 		-info $$(GNOMAD_INFO) $$(GNOMAD_DB_DIR)/$$(GNOMAD_PREFIX).$1.vcf.gz $$< > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)"))
 endef
-$(foreach chr,$(CHROMOSOMES),$(eval $(call gnomad-chr,$(chr))))
+$(foreach chr,$(GNOMAD_CHROMOSOMES),$(eval $(call gnomad-chr,$(chr))))
  
 ADD_GENE_LIST_ANNOTATION = $(RSCRIPT) modules/vcf_tools/addGeneListAnnotationToVcf.R
 vcf/%.gene_ann.vcf : vcf/%.vcf
