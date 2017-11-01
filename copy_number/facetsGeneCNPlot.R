@@ -41,7 +41,7 @@ if ("showtext" %in% rownames(installed.packages())) {
     fontfamily <- "serif"
 }
 
-plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamily, sample_names=NULL, summaryConfig=NULL, col=c("red", "darksalmon", "white", "lightblue", "blue"), zlim=c(-2,2)) {
+plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamily, sample_names=NULL, summaryConfig=NULL, col=c("blue", "lightblue", "white", "darksalmon", "red" ), zlim=c(-2,2)) {
     mm <- facets_tab
     if (is.null(sample_names)) { sample_names <- list(sort(colnames(mm)[sapply(colnames(mm), function(x) {grepl(paste(sample_column_postfix,"$",sep=""), x)})])) }
     # user order from summary_config.yaml if available
@@ -63,7 +63,7 @@ plot_heatmap <- function(facets_tab, plot_file, sample_column_postfix, fontfamil
     }, mm)
     par(xpd=FALSE);
     legend("bottom", inset=c(0,-.1), legend=c("Homozygous deletion", "Loss", "Gain", "Amplification"),
-           fill=c("red", "darksalmon", "lightblue", "blue"), xpd=TRUE, ncol=2)
+           fill=c("blue", "lightblue", "darksalmon", "red"), xpd=TRUE, ncol=2)
     par(xpd=TRUE);
     dev.off()
 }
