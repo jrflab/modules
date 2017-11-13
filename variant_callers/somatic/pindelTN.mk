@@ -25,7 +25,7 @@ pindel : pindel_vcfs
 pindel_vcfs : $(PINDEL_VCFS)
 
 pindel/ins_size/%.insert_size.txt : bam/%.bam
-	$(call RUN,,"$(SAMTOOLS) view $< | head -10000 | $(GET_INSERT_SIZE) - > $@")
+	$(call RUN,,"$(SAMTOOLS) view $< | head -10000 | $(GET_INSERT_SIZE) - > $@ || true")
 
 define pindel-config-tumor-normal
 pindel/config/$1_$2.pindel_config.txt : bam/$1.bam bam/$2.bam pindel/ins_size/$1.insert_size.txt pindel/ins_size/$2.insert_size.txt
