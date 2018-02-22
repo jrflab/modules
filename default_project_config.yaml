@@ -1,5 +1,5 @@
 ---
-cluster_engine: SGE # PBS LSF
+cluster_engine: LSF # PBS SGE
 
 use_cluster: true
 
