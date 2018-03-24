@@ -19,6 +19,7 @@ SCALPEL_OPTS = --ref $(REF_FASTA) --format vcf --covthr $(SCALPEL_MIN_COV)
 SCALPEL2VCF = $(PERL) modules/variant_callers/somatic/scalpelToVcf.pl
 
 SCALPEL_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --source scalpel
+TUMOR_VARIANT_READ_FILTER_VCF = python modules/vcf_tools/tumor_variant_read_filter_vcf.py --pass_only
 
 ..DUMMY := $(shell mkdir -p version; echo "$(SCALPEL) $(SCALPEL_OPTS) > version/scalpel.txt")
 
