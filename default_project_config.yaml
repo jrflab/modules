@@ -1,11 +1,11 @@
 ---
-cluster_engine: LSF # PBS SGE
+cluster_engine: LSF ## PBS ## SGE
 
 use_cluster: true
 
 ref: b37
 
-aligner: bwamem #tophat hisat bwa bowtie tmap
+aligner: bwamem ## tophat ## hisat ## bwa ## bowtie ## tmap
 bam_chr1_base_recal: true
 bam_dup_type: markdup
 bam_no_filter: false
