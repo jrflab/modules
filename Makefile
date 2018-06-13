@@ -333,6 +333,22 @@ merge_split_fastq :
 TARGETS += extract_fastq
 extract_fastq :
 	$(call RUN_MAKE,modules/fastq_tools/extractFastq.mk)
+	
+TARGETS += extract_unmapped
+extract_unmapped :
+	$(call RUN_MAKE,modules/fastq_tools/extractReads.mk)
+	
+TARGETS += bam_to_fasta
+bam_to_fasta :
+	$(call RUN_MAKE,modules/fastq_tools/bamtoFasta.mk)
+	
+TARGETS += blast_reads
+blast_reads :
+	$(call RUN_MAKE,modules/fastq_tools/blastReads.mk)
+
+TARGETS += krona_classify
+krona_classify :
+	$(call RUN_MAKE,modules/fastq_tools/kronaClassify.mk)
 
 TARGETS += process_bam
 process_bam : 
