@@ -182,6 +182,10 @@ sufam:
 TARGETS += platypus
 platypus:
 	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
+	
+TARGETS += macsTN
+macsTN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/macsTN.mk)
 
 #####
 # copy number
