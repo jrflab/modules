@@ -183,9 +183,13 @@ TARGETS += platypus
 platypus:
 	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
 	
-TARGETS += macsTN
-macsTN:
-	$(call RUN_MAKE,modules/variant_callers/somatic/macsTN.mk)
+TARGETS += macs2narrowTN
+macs2narrowTN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/macs2narrowTN.mk)
+	
+TARGETS += macs2broadTN
+macs2broadTN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/macs2broadTN.mk)
 
 #####
 # copy number
