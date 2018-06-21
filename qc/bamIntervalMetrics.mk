@@ -22,11 +22,11 @@ SUMMARIZE_IDXSTATS = python modules/qc/summarize_idxstats.py
 
 .SECONDARY: 
 
-.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics insert_size_metrics idxstats
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report #non_ref_metrics insert_size_metrics idxstats
 
-bam_interval_metrics : hs_metrics interval_report non_ref_metrics idxstats
+bam_interval_metrics : hs_metrics interval_report #non_ref_metrics idxstats
 
-non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
+#non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
 
 hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv metrics/hs_metrics.summary.tsv
 
@@ -34,9 +34,9 @@ amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metric
 
 interval_report : metrics/interval_report/interval_report.timestamp
 
-insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
+#insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
 
-idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
+#idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
 
 # interval metrics per sample
 metrics/%.hs_metrics.tsv metrics/%.interval_hs_metrics.tsv : bam/%.bam bam/%.bam.bai
