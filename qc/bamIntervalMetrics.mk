@@ -17,7 +17,6 @@ NON_REF_FREQ_BIN_SIZE = 0.01
 SUMMARIZE_HS_METRICS = python modules/qc/summarize_hs_metrics.py
 SUMMARIZE_IDXSTATS = python modules/qc/summarize_idxstats.py
 
-
 .DELETE_ON_ERROR:
 
 .SECONDARY: 
