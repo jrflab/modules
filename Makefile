@@ -277,10 +277,9 @@ TARGETS += integrate
 integrate :
 	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
 
-NUM_DEFUSE_JOBS ?= 5
 TARGETS += defuse
 defuse :
-	$(call RUN_MAKE_J,modules/sv_callers/defuse.mk,$(NUM_DEFUSE_JOBS))
+	$(call RUN_MAKE,modules/sv_callers/defuse.mk)
 
 NUM_CHIMSCAN_JOBS ?= 5
 TARGETS += chimscan
