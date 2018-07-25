@@ -239,6 +239,14 @@ exomecnvloh :
 TARGETS += gistic
 gistic :
 	$(call RUN_MAKE,modules/copy_number/gistic.mk)
+	
+TARGETS += genome_altered
+genome_altered :
+	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
+	
+TARGETS += lst_score
+lst_score :
+	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
 
 
 ####
@@ -473,7 +481,10 @@ recurrent_mutations :
 TARGETS += mutsig_report
 mutsig_report :
 	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
-
+	
+TARGETS += genome_stats
+genome_stats :
+	$(call RUN_MAKE,modules/misc/genomestats.mk)
 
 ###
 # annotations
