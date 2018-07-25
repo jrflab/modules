@@ -484,7 +484,7 @@ mutsig_report :
 	
 TARGETS += genome_stats
 genome_stats :
-	$(call RUN_MAKE,modules/misc/genomestats.mk)
+	$(call RUN_MAKE,modules/summary/genomestats.mk)
 
 ###
 # annotations
