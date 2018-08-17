@@ -382,7 +382,7 @@ if (opt$type=="log2") {
 	abline(v=max(CN[,"pos"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
 	
-	load(gsub("total", "ascat", opt$file_out))
+	load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
 	
 	for (k in 1:8) {
 		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="darkorange", lty=3)
