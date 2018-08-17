@@ -54,9 +54,8 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-run-ascat,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define ascat-total
-ascat/total/$1_$2.pdf : ascat/ascat/$1_$2.RData
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type total-copy --file_in $$< --file_out ascat/total/$1_$2.pdf")
-	
+ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type total-copy --file_in $$< --file_out ascat/total/$1_$2.pdf")	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-total,$(tumor.$(pair)),$(normal.$(pair)))))
