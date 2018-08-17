@@ -344,8 +344,6 @@ if (opt$type=="log2") {
 		return(x)
 	}
 
-
-	load(gsub("ascat/ascat/", "facets/cncf/", gsub(".RData", ".Rdata", opt$file_in)))
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
 	tmp = pcf(data=winsorize(data=CN, method="mad", tau=2.5, k=25, verbose=FALSE), kmin = 250, gamma=250, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
@@ -383,6 +381,9 @@ if (opt$type=="log2") {
 	}
 	abline(v=max(CN[,"pos"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
+	
+	load(gsub("total", "ascat", opt$file_out))
+	
 	for (k in 1:8) {
 		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="darkorange", lty=3)
 		mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="darkorange")
