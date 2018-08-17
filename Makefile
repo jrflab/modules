@@ -247,7 +247,10 @@ genome_altered :
 TARGETS += lst_score
 lst_score :
 	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
-
+	
+TARGETS += ascat
+ascat :
+	$(call RUN_MAKE,modules/copy_number/ascat.mk)
 
 ####
 # SV callers
