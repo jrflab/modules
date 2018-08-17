@@ -49,7 +49,7 @@ define ascat-run-ascat
 ascat/ascat/$1_$2.pdf : ascat/mad/$1_$2.RData
 	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type run-ascat --file_in $$< --file_out ascat/ascat/$1_$2.pdf")
 	
-ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata
+ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type total-copy --file_in $$< --file_out ascat/total/$1_$2.pdf")	
 
 endef
