@@ -337,6 +337,10 @@ delly :
 # pre-processing
 ###
 
+TARGETS += fix_bam
+fix_bam :
+	$(call RUN_MAKE,modules/bam_tools/fixBam.mk)
+
 TARGETS += fix_rg
 fix_rg :
 	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
