@@ -1,29 +1,26 @@
-# Author: David Brown <ndbronw6@gmail.com>
-
 include modules/Makefile.inc
+include modules/b37.inc
 
 LOGDIR ?= log/fix_bam.$(NOW)
-
-.DELETE_ON_ERROR:
-.SECONDARY:
-.PHONY: fix_bam
+PHONY += fixed_bam
 
 VPATH = fixed_bam unprocessed_bam
+PICARD_JAR = ~/share/usr/picard/bin/picard.jar
 
-fixed_bam : $(foreach sample,$(SAMPLES),unprocessed_bam/$(sample).bam)
+fix_bam : $(foreach sample,$(SAMPLES),fixed_bam/$(sample).bam)
 
 define fix-bam
-fixed_bam/%.bam : %.bam
-	$$(call RUN,-c -n 1 -s 1G -m 2G,"echo $$<")
-  #java -Xmx8G -jar picard.jar RevertSam I=../data/${ID}.bam O=../res/${ID}.ubam SANITIZE=true MAX_DISCARD_FRACTION=0.005 ATTRIBUTE_TO_CLEAR=XT ATTRIBUTE_TO_CLEAR=XN ATTRIBUTE_TO_CLEAR=AS ATTRIBUTE_TO_CLEAR=OC ATTRIBUTE_TO_CLEAR=OP SORT_ORDER=queryname RESTORE_ORIGINAL_QUALITIES=true REMOVE_DUPLICATE_INFORMATION=true REMOVE_ALIGNMENT_INFORMATION=true
-  #java -jar -Xmx8G -jar picard.jar MergeBamAlignment R=/ifs/depot/assemblies/H.sapiens/b37_dmp/b37.fasta UNMAPPED_BAM=../res/${ID}.ubam ALIGNED_BAM=../data/${ID}.bam O=../res/${ID}.fixed.bam CREATE_INDEX=true ADD_MATE_CIGAR=true CLIP_ADAPTERS=true CLIP_OVERLAPPING_READS=true INCLUDE_SECONDARY_ALIGNMENTS=false MAX_INSERTIONS_OR_DELETIONS=-1
-  #java -jar -Xmx8G picard.jar MarkDuplicates I=../res/${ID}.fixed.bam O=../res/${ID}.dedup.bam M=../res/${ID}.txt
-  #java -jar picard.jar AddOrReplaceReadGroups I=../res/${ID}.dedup.bam O=../res/${ID}.bam RGID=${ID} RGLB=${LB} RGPL=${PL} RGPU=${PU} RGSM=${SM}
-  #samtools index ../res/${ID}.bam
-  #cp ../res/${ID}.bam.bai ../res/${ID}.bai
- endef
- $(foreach pair,$(SAMPLES),\
-		$(eval $(call fix-bam,$(sample)))
+unprocessed_bam/%.ubam : unprocessed_bam/%.bam
+	$$(call RUN,-c -n 1 -s 8G -m 16G,"java -Xmx8G -jar $$(PICARD_JAR) RevertSam I=$$(<) O=unprocessed_bam/$$(*).ubam SANITIZE=true MAX_DISCARD_FRACTION=0.005 ATTRIBUTE_TO_CLEAR=XT ATTRIBUTE_TO_CLEAR=XN ATTRIBUTE_TO_CLEAR=AS ATTRIBUTE_TO_CLEAR=OC ATTRIBUTE_TO_CLEAR=OP SORT_ORDER=queryname RESTORE_ORIGINAL_QUALITIES=true REMOVE_DUPLICATE_INFORMATION=true REMOVE_ALIGNMENT_INFORMATION=true")
+unprocessed_bam/%.fixed.bam : unprocessed_bam/%.ubam
+	$$(call RUN, -c -n 1 -s 8G -m 16G,"java -Xmx8G -jar $$(PICARD_JAR) MergeBamAlignment R=$$(REF_FASTA) UNMAPPED_BAM=$$(<) ALIGNED_BAM=unprocessed_bam/$$(*).bam O=unprocessed_bam/$$(*).fixed.bam CREATE_INDEX=true ADD_MATE_CIGAR=true CLIP_ADAPTERS=true CLIP_OVERLAPPING_READS=true INCLUDE_SECONDARY_ALIGNMENTS=false MAX_INSERTIONS_OR_DELETIONS=-1")
+unprocessed_bam/%.dedup.bam : unprocessed_bam/%.fixed.bam
+	$$(call RUN, -c -n 1 -s 8G -m 16G,"java -Xmx8G -jar $$(PICARD_JAR) MarkDuplicates I=$$(<) O=unprocessed_bam/$$(*).dedup.bam M=unprocessed_bam/$$(*).txt")
+fixed_bam/%.bam : unprocessed_bam/%.dedup.bam
+	$$(call RUN, -c -n 1 -s 8G -m 16G,"java -Xmx8G -jar $$(PICARD_JAR) AddOrReplaceReadGroups I=$$(<) O=fixed_bam/$$(*).bam RGID=$$(*) RGLB=$$(*) RGPL=illumina RGPU=NA RGSM=$$(*) && samtools index fixed_bam/$$(*).bam && cp fixed_bam/$$(*).bam.bai fixed_bam/$$(*).bai")
+endef
+ $(foreach sample,$(SAMPLES),\
+		$(eval $(call fix-bam,$(sample))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
