@@ -105,66 +105,37 @@ fix_facet_segs <- function(dat) {
     return(invisible(dat))
 }
 
-chrom_arm_LST_score <- function(dat) {
-	score <- 0
-	segs <- c()
-	SIZE_THRESH <- 10e6
-	SPACE_THRESH <- 3e6
-	if ( nrow(dat) >= 2 ) {
-		for (x in 2:nrow(dat)) {
-			if ( 	(dat[x-1,"size"] >= SIZE_THRESH) && 
-					(dat[x,"size"] >= SIZE_THRESH) &&
-					( (dat[x,"startBP"] - dat[x-1,"endBP"]) <= SPACE_THRESH)
-			) {
-				score <- score +1
-				segs <- rbind(dat[x-1,], segs)
-			}
+score_ntAI <- function(dat, chromInfo, min_size=1000, shrink=FALSE) {
+	index <- dat[,"chromosome"] %in% c("MT", "Y", "24")
+	dat <- dat[!index,]
+	index <- dat[,"size"] < min_size
+	dat <- dat[!index,]
+	if (shrink) {
+		dat <- join_adjacent_segments(dat)
+	}
+	chrList <- unique(dat[,"chromosome"])
+	ntAI_score <- 0
+	ntAI_segs <- NULL
+	for (x in chrList) {
+		index <- dat[,"chromosome"] == x
+		chr_segs <- dat[index,]
+		cNum <- chromStrToNum(x)
+		if (nrow(chr_segs) < 2 ) {
+			next
+		}
+		if ( (chr_segs[1,"nA"] != chr_segs[1,"nB"]) && (chromInfo[cNum,"centstart"] > chr_segs[1,"endBP"]) ) {
+			ntAI_score <- ntAI_score+1
+			ntAI_segs <- rbind(chr_segs[1,],ntAI_segs)
+		}
+		eSeg <- nrow(chr_segs)
+		if ( (chr_segs[eSeg, "nA"] != chr_segs[eSeg, "nB"]) && (chr_segs[eSeg,"startBP"] > chromInfo[cNum,"centend"]) ) {
+			ntAI_score <- ntAI_score+1
+			ntAI_segs <- rbind(chr_segs[eSeg,],ntAI_segs)
 		}
 	}
 	tmp <- list()
-	tmp$score <- score
-	tmp$segs <- segs
-	return(invisible(tmp))
-}
-
-lst_filter <- function(dat, size_thresh) {
-	i <- which(dat[,"size"] < size_thresh)
-	sz <- dat[i,"size"]
-	i <- i[order(sz)]
-	segs_removed <- 0
-	while (length(i) > 0) {
-		dat <- dat[-i[1], ]
-		dat <- join_adjacent_segments(dat)
-		i<- which(dat[,"size"] < size_thresh)
-		sz <- dat[i,"size"]
-		i <- i[order(sz)]	
-		segs_removed <- segs_removed + 1
-	}
-	return(invisible(dat))
-}
-
-score_LST <- function(dat, chromInfo) {
-	score <- 0
-	segs <- c()
-	dat <- lst_filter(dat, 3e6)
-	for (c in unique(dat[,"chromosome"]) ) {
-		i <- which(dat[,"chromosome"] == c)
-		csegs <- dat[i,]
-		cNum <- chromStrToNum(c)
-		i <- which(csegs[,"startBP"] <= chromInfo[cNum,"centstart"])
-		parm <- csegs[i,]
-		tmp <- chrom_arm_LST_score(parm)
-		score <- score + tmp$score
-		segs <- rbind(tmp$segs, segs)
-		i <- which(csegs[,"endBP"] >= chromInfo[cNum,"centend"])
-		qarm <- csegs[i,]
-		tmp <- chrom_arm_LST_score(qarm)
-		score <- score + tmp$score
-		segs <- rbind(tmp$segs, segs)
-	}
-	tmp <- list()
-	tmp$score <- score
-	tmp$segs <- segs
+	tmp$segs <- ntAI_segs
+	tmp$score <- ntAI_score
 	return(invisible(tmp))
 }
 
@@ -172,8 +143,8 @@ dat = read.table(opt$file_in, sep="\t", header=TRUE, stringsAsFactor=FALSE)
 dat = fix_facets_column_names(dat)
 segs = fix_facet_segs(dat)
 chromInfo = GetChrominfo()
-lst = score_LST(segs, chromInfo)
-cat(paste0(gsub("facets/cncf/","", gsub(".cncf.txt", "", opt$file_in)), "\t", lst$score), file = opt$file_out, append=FALSE)
+ntai = score_ntAI(segs, chromInfo)
+cat(paste0(gsub("facets/cncf/","", gsub(".cncf.txt", "", opt$file_in)), "\t", ntai$score), file = opt$file_out, append=FALSE)
 cat("\n", file = opt$file_out, append=TRUE)
 
 warnings()
