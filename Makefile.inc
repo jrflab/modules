@@ -90,7 +90,7 @@ ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
 SHELL = /bin/bash
 
-export TMPDIR := $(HOME)/share/tmp
+export TMPDIR := $(HOME)/share/data/$(USER)/tmp
 
 # PICARD tools
 PICARD_MEM = 10G

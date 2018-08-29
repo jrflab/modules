@@ -17,16 +17,15 @@ NON_REF_FREQ_BIN_SIZE = 0.01
 SUMMARIZE_HS_METRICS = python modules/qc/summarize_hs_metrics.py
 SUMMARIZE_IDXSTATS = python modules/qc/summarize_idxstats.py
 
-
 .DELETE_ON_ERROR:
 
 .SECONDARY: 
 
-.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report non_ref_metrics insert_size_metrics idxstats
+.PHONY: bam_interval_metrics hs_metrics amplicon_metrics interval_report #non_ref_metrics insert_size_metrics idxstats
 
-bam_interval_metrics : hs_metrics interval_report non_ref_metrics idxstats
+bam_interval_metrics : hs_metrics interval_report #non_ref_metrics idxstats
 
-non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
+#non_ref_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).interval_nonref_freq.tsv)
 
 hs_metrics : metrics/hs_metrics.tsv metrics/interval_hs_metrics.tsv metrics/hs_metrics.summary.tsv
 
@@ -34,9 +33,9 @@ amplicon_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).amplicon_metric
 
 interval_report : metrics/interval_report/interval_report.timestamp
 
-insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
+#insert_size_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
 
-idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
+#idxstats : metrics/idxstats_summary.tsv $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
 
 # interval metrics per sample
 metrics/%.hs_metrics.tsv metrics/%.interval_hs_metrics.tsv : bam/%.bam bam/%.bam.bai
@@ -77,27 +76,27 @@ metrics/hs_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metric
 metrics/interval_report/interval_report.timestamp : metrics/hs_metrics.tsv
 	$(call RUN,-s 7G -m 10G,"$(PLOT_HS_METRICS) --outDir $(@D) $< && touch $@")
 
-metrics/%.interval_nonref_freq.tsv : bam/%.bam
-	$(call RUN,-s 8G -m 10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
+#metrics/%.interval_nonref_freq.tsv : bam/%.bam
+#	$(call RUN,-s 8G -m 10G,"$(SAMTOOLS) mpileup -l $(TARGETS_FILE) -f $(REF_FASTA) $< | $(NON_REF_FREQ) -b $(NON_REF_FREQ_BIN_SIZE) > $@")
 
-metrics/%.insert_size_metrics.tsv : bam/%.bam
-	$(call RUN,-s 8G -m 10G,"$(call PICARD,CollectInsertSizeMetrics,8G) INPUT=$< OUTPUT=$@ \
-		REFERENCE_SEQUENCE=$(REF_FASTA) HISTOGRAM_FILE=$(@:.tsv=.pdf)")
+#metrics/%.insert_size_metrics.tsv : bam/%.bam
+#	$(call RUN,-s 8G -m 10G,"$(call PICARD,CollectInsertSizeMetrics,8G) INPUT=$< OUTPUT=$@ \
+#		REFERENCE_SEQUENCE=$(REF_FASTA) HISTOGRAM_FILE=$(@:.tsv=.pdf)")
 
-metrics/insert_size_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
-	$(INIT) \
-		{ \
-		sed '/^$$/d; /^#/d; s/SAMPLE.*//; s/\s$$//; s/^/SAMPLE\t/' $< | head -1; \
-		for metrics in $^; do \
-			samplename=$$(basename $${metrics%%.insert_size_metrics.tsv}); \
-			grep -A1 '^MEDIAN_INSERT_SIZE' $$metrics | sed "1d; s/^/$$samplename\t/; s/\t\+$$//";  \
-		done; \
-		} > $@
+#metrics/insert_size_metrics.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_size_metrics.tsv)
+#	$(INIT) \
+#		{ \
+#		sed '/^$$/d; /^#/d; s/SAMPLE.*//; s/\s$$//; s/^/SAMPLE\t/' $< | head -1; \
+#		for metrics in $^; do \
+#			samplename=$$(basename $${metrics%%.insert_size_metrics.tsv}); \
+#			grep -A1 '^MEDIAN_INSERT_SIZE' $$metrics | sed "1d; s/^/$$samplename\t/; s/\t\+$$//";  \
+#		done; \
+#		} > $@
 
-metrics/%.idxstats : bam/%.bam bam/%.bam.bai
-	$(call RUN,,"samtools idxstats $< > $@")
+#metrics/%.idxstats : bam/%.bam bam/%.bam.bai
+#	$(call RUN,,"samtools idxstats $< > $@")
 
-metrics/idxstats_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
-	$(INIT) $(SUMMARIZE_IDXSTATS) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME) --targets_file $(TARGETS_FILE) $^ > $@ 2> $(LOG)
+#metrics/idxstats_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).idxstats)
+#	$(INIT) $(SUMMARIZE_IDXSTATS) --excel_file $(@:.tsv=.xlsx) --project_name $(PROJECT_NAME) --targets_file $(TARGETS_FILE) $^ > $@ 2> $(LOG)
 
 include modules/bam_tools/processBam.mk

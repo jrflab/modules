@@ -1,9 +1,3 @@
-# Top-level Makefile
-#
-#
-# Author: Raymond Lim <raylim@mm.st>
-#
-
 ifneq ("$(wildcard config.inc)", "")
 include config.inc
 endif
@@ -31,9 +25,9 @@ endef
 RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
 
 
-#####
-# Aligners
-#####
+#==================================================
+# aligners
+#==================================================
 
 TARGETS += bwa
 bwa : NUM_ATTEMPTS = 50
@@ -74,9 +68,9 @@ TARGETS += star_fusion_aligner
 star_fusion_aligner:
 	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
 
-#####
+#==================================================
 # variant callers
-####
+#==================================================
 
 TARGETS += msisensor
 msisensor :
@@ -182,10 +176,14 @@ sufam:
 TARGETS += platypus
 platypus:
 	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
-
-#####
+	
+TARGETS += macs2TN
+macs2TN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
+	
+#==================================================
 # copy number
-####
+#==================================================
 
 TARGETS += norm_copynum
 norm_copynum :
@@ -234,11 +232,30 @@ exomecnvloh :
 TARGETS += gistic
 gistic :
 	$(call RUN_MAKE,modules/copy_number/gistic.mk)
+	
+TARGETS += genome_altered
+genome_altered :
+	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
+	
+TARGETS += lst_score
+lst_score :
+	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
+	
+TARGETS += ntai_score
+ntai_score :
+	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
+	
+TARGETS += myriad_score
+myriad_score :
+	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
+	
+TARGETS += ascat
+ascat :
+	$(call RUN_MAKE,modules/copy_number/ascat.mk)
 
-
-####
-# SV callers
-####
+#==================================================
+# structural variant callers
+#==================================================
 
 TARGETS += star_fusion
 star_fusion:
@@ -272,10 +289,9 @@ TARGETS += integrate
 integrate :
 	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
 
-NUM_DEFUSE_JOBS ?= 5
 TARGETS += defuse
 defuse :
-	$(call RUN_MAKE_J,modules/sv_callers/defuse.mk,$(NUM_DEFUSE_JOBS))
+	$(call RUN_MAKE,modules/sv_callers/defuse.mk)
 
 NUM_CHIMSCAN_JOBS ?= 5
 TARGETS += chimscan
@@ -318,9 +334,13 @@ TARGETS += delly
 delly :
 	$(call RUN_MAKE,modules/sv_callers/delly.mk)
 
-###
+#==================================================
 # pre-processing
-###
+#==================================================
+
+TARGETS += fix_bam
+fix_bam :
+	$(call RUN_MAKE,modules/bam_tools/fixBam.mk)
 
 TARGETS += fix_rg
 fix_rg :
@@ -333,6 +353,22 @@ merge_split_fastq :
 TARGETS += extract_fastq
 extract_fastq :
 	$(call RUN_MAKE,modules/fastq_tools/extractFastq.mk)
+	
+TARGETS += extract_unmapped
+extract_unmapped :
+	$(call RUN_MAKE,modules/fastq_tools/extractReads.mk)
+	
+TARGETS += bam_to_fasta
+bam_to_fasta :
+	$(call RUN_MAKE,modules/fastq_tools/bamtoFasta.mk)
+	
+TARGETS += blast_reads
+blast_reads :
+	$(call RUN_MAKE,modules/fastq_tools/blastReads.mk)
+
+TARGETS += krona_classify
+krona_classify :
+	$(call RUN_MAKE,modules/fastq_tools/kronaClassify.mk)
 
 TARGETS += process_bam
 process_bam : 
@@ -343,10 +379,9 @@ TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
-
-###
-# QC
-###
+#==================================================
+# quality control
+#==================================================
 
 TARGETS += bam_metrics
 bam_metrics :
@@ -380,10 +415,9 @@ TARGETS += bam_stats
 bam_stats :
 	$(call RUN_MAKE,modules/qc/bamStats.mk)
 
-
-###
-# RNAseq
-###
+#==================================================
+# rna sequencing
+#==================================================
 
 TARGETS += sum_reads
 sum_reads :
@@ -393,19 +427,17 @@ TARGETS += snp6
 snp6 :
 	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
-
-###
+#==================================================
 # ploidy
-###
+#==================================================
 
 TARGETS += pyloh
 pyloh :
 	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
 
-
-###
+#==================================================
 # clonality
-###
+#==================================================
 
 TARGETS += clonehd
 clonehd :
@@ -415,19 +447,17 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 
-
-###
-# mutation signatures
-###
+#==================================================
+# mutational signatures
+#==================================================
 
 TARGETS += emu
 emu :
 	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
 
-
-###
-# misc
-###
+#==================================================
+# miscellaneous
+#==================================================
 
 TARGETS += cluster_samples
 cluster_samples :
@@ -441,10 +471,9 @@ TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 
-
-###
+#==================================================
 # reports
-###
+#==================================================
 
 TARGETS += recurrent_mutations
 recurrent_mutations :
@@ -453,13 +482,15 @@ recurrent_mutations :
 TARGETS += mutsig_report
 mutsig_report :
 	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
+	
+TARGETS += genome_summary
+genome_summary :
+	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 
-
-###
+#==================================================
 # annotations
-###
+#==================================================
 
-## annotate external vcfs
 TARGETS += ann_ext_vcf
 ann_ext_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateExtVcf.mk)
@@ -477,9 +508,9 @@ mutation_summary :
 	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 
 
-###
+#==================================================
 # workflows
-###
+#==================================================
 
 TARGETS += tseq_workflow
 tseq_workflow: tseq_workflow_ann
@@ -500,9 +531,9 @@ tseq_workflow_ann: tseq_workflow_post_align
 	$(MAKE) -f modules/vcf_tools/annotateVcf.mk
 
 
-###
-# cleanup
-###
+#==================================================
+# clean up
+#==================================================
 
 TARGETS += clean_variants
 clean_variants :

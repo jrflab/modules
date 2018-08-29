@@ -1,79 +1,67 @@
-# This module is used for running defuse
-# input: $(SAMPLES) 
-# Options: BAM_PHRED64 = true/false
-# Authors: Fong Chun Chan <fongchunchan@gmail.com>
-#
 include modules/Makefile.inc
 
-DEFUSE_CONFIG_FILE = $(HOME)/share/usr/defuse-0.6.1/scripts/config.txt
-#DEFUSE_CONFIG_FILE = /opt/common/defuse/defuse-0.6.1/scripts/config.txt
+LOGDIR ?= log/defuse.$(NOW)
 
-DEFUSE_FILTER = $(PERL) modules/sv_callers/filterDefuse.pl
-DEFUSE_NORMAL_FILTER = $(PERL) modules/sv_callers/normalFilterDefuse.pl
+DEFUSE_SCRIPTS = /opt/common/CentOS_7/defuse/defuse-0.8.0/scripts
+CONFIG = modules/scripts/config.txt
+RELEASE = Grch37.p13
+G38 = /lila/data/reis-filho/genomes/homo_sapiens/Ensembl/Grch38.p5
+HSA = /lila/data/reis-filho/genomes/homo_sapiens/Ensembl/${RELEASE}
+H37 = ${HSA}/Sequence/WholeGenomeFasta/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa
+WGFASTA_DIR = ${HSA}/Sequence/WholeGenomeFasta/
+BWA = ${HSA}/Sequence/BWAIndex/genome.fa
+BWT2 = ${HSA}/Sequence/Bowtie2Index/genome
+BWT = ${HSA}/Sequence/BowtieIndex/Homo_sapiens.GRCh37.75.dna.primary_assembly
+STARG = ${HSA}/Sequence/StarGenome/
+STAR2PG = ${HSA}/Sequence/Star2pass/
+RSEM = ${HSA}/Sequence/RSEMIndex/Grch37.p13
+RTG = ${HSA}/Sequence/RTGIndex/SDF
+CTAT19 = ${HSA}/Sequence/CTAT/GRCh37_gencode_v19/
+CTAT19v2 = ${HSA}/Sequence/CTAT/GRCh37_gencode_v19_CTAT_lib_July192017/ctat_genome_lib_build_dir/
+CTAT25 = ${HSA}/Sequence/CTAT/GRCh37_gencode_v25/
+DEFUSE69 = ${HSA}/Sequence/defuse_e69/
+DEFUSE75 = ${HSA}/Sequence/defuse_e75/
+GMAP_DB = ${HSA}/Sequence/GmapDB
+ERIC74 = ${HSA}/Sequence/ericscript_db/e74/
+ERIC83 = $G38/Sequence/ericscript_db/
+VARBIN_DIR = ${HSA}/Sequence/varbin/
+VARBIN_BWT = ${VARBIN_DIR}/GRCh37.p13
+ENSEMBL66 = ${HSA}/Genes/Homo_sapiens.GRCh37.66.gtf
+GTF = ${HSA}/Annotation/Genes/gencode.v25lift37.annotation.gtf
+REFFLAT = ${HSA}/Annotation/Genes/Homo.sapiens.annot.ucsc.txt
+DBSNP = ${HSA}/Annotation/Variation/Homo_sapiens.vcf.gz
+DBSNP_IC = ${HSA}/Annotation/Variation/Homo_sapiens_incl_consequences.vcf.gz
+DBSNP_SOMATIC = ${HSA}/Annotation/Variation/Homo_sapiens_somatic.vcf.gz
+DBSNP_SOMATIC_IC = ${HSA}/Annotation/Variation/Homo_sapiens_somatic_incl_consequences.vcf.gz
+INDELVCF = ${HSA}/Annotation/Variation/
+INDELMO = ${HSA}/Annotation/Variation/
+SANGERINDEL = ${HSA}/Annotation/Variation/
+SV_ALL = ${HSA}/Annotation/Variation/
+SV_NE = ${HSA}/Annotation/Variation/
+PERL = /usr/bin/perl
 
-RECURRENT_FUSIONS = $(RSCRIPT) modules/sv_callers/recurrentFusions.R
-#EXTRACT_COORDS = $(PERL) modules/sv_callers/extractCoordsFromDefuse.pl
-DEFUSE_ONCOFUSE = $(RSCRIPT) modules/sv_callers/defuseOncofuse.R
-DEFUSE_ONCOFUSE_OPTS = --oncofuseJar $(ONCOFUSE_JAR) --oncofuseTissueType $(ONCOFUSE_TISSUE_TYPE) --java $(JAVA_BIN) 
-ONCOFUSE_TISSUE_TYPE ?= EPI
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: defuse
 
-DEFUSE_TO_USV = python modules/sv_callers/defuse2usv.py
+VPATH = fastq defuse defuse/tables
 
-LOGDIR = log/defuse.$(NOW)
+defuse : $(foreach sample,$(SAMPLES),defuse/$(sample).taskcomplete)
 
-# Runs defuse locally on the same node
-LOCAL ?= FALSE
+define defuse-single-sample
+fastq/%.1.fastq fastq/%.2.fastq : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
+	$$(call RUN,-c -s 4G -m 9G,"gzip -d $$(<) $$(<<)")
 
-# Only applies if LOCAL is set to TRUE
-NUM_CORES ?= 2
+defuse/tables/%.results.filtered.tsv : fastq/%.1.fastq fastq/%.2.fastq
+	$$(call RUN,-c -n 10 -s 3G -m 4G -w 540,"$$(PERL) $$(DEFUSE_SCRIPTS)/defuse_run.pl -c $$(CONFIG) -d $$(DEFUSE75) -o defuse/$$* --res defuse/tables/$$*.results.tsv -resfil defuse/tables/$$*.results.filtered.tsv -1 fastq/$$*.1.fastq -2 fastq/$$*.2.fastq -p 10 -s direct")
+	
+defuse/%.taskcomplete : defuse/tables/%.results.filtered.tsv
+	$$(call RUN,-c -s 1G -m 3G,"echo $$* > defuse/$$*.taskcomplete")
+endef
 
-ifeq ($(LOCAL),true)
-	DEFUSE_OPTS = -p $(NUM_CORES)
-else
-	DEFUSE_OPTS = -s sge -p 10
-endif
-
-.PHONY : all tables
-
-
-#all : $(foreach sample,$(SAMPLES),defuse/$(sample).defuse_timestamp)
-ALL = $(foreach sample,$(SAMPLES),defuse/tables/$(sample).defuse.txt)
-ifdef NORMAL_DEFUSE_RESULTS
-ALLTABLE = defuse/alltables/all.defuse.nft.oncofuse.txt
-ALLTABLE += defuse/alltables/all.defuse_ft.nft.oncofusetxt
-ALL += defuse/recur_tables/recurFusions.defuse.nft.gene.txt
-ALL += defuse/recur_tables/recurFusions.defuse_ft.nft.gene.txt
-else
-ALLTABLE = defuse/alltables/all.defuse.oncofuse.txt
-ALLTABLE += defuse/alltables/all.defuse_ft.oncofuse.txt
-ALL += defuse/recur_tables/recurFusions.defuse.gene.txt
-ALL += defuse/recur_tables/recurFusions.defuse_ft.gene.txt
-endif
-all : $(ALLTABLE) $(ALL)
-
-
-defuse/tables/%.defuse.txt defuse/tables/%.defuse_ft.txt : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
-	$(INIT) $(DEFUSE) -c $(DEFUSE_CONFIG_FILE) -1 $(word 1,$(^M)) -2 $(word 2,$(^M)) -o defuse/$* $(DEFUSE_OPTS) &> $(LOG) && \
-	$(DEFUSE_FILTER) defuse/$*/results.filtered.tsv > defuse/tables/$*.defuse_ft.txt 2>> $(LOG) && \
-	$(DEFUSE_FILTER) defuse/$*/results.tsv > defuse/tables/$*.defuse.txt 2>> $(LOG) \
-	&& $(RMR) defuse/$*
-
-defuse/alltables/all.%.txt : $(foreach sample,$(SAMPLES),defuse/tables/$(sample).%.txt)
-	$(INIT) head -1 $< > $@ && for x in $^; do sed '1d' $$x >> $@; done
-
-defuse/alltables/%.nft.txt : defuse/alltables/%.txt
-	$(INIT) $(DEFUSE_NORMAL_FILTER) -w 1000 $(NORMAL_DEFUSE_RESULTS) $< > $@
-
-defuse/recur_tables/recurFusions.%.gene.txt : defuse/alltables/all.%.txt
-	$(INIT) $(RECURRENT_FUSIONS) --geneCol1 upstream_gene --geneCol2 downstream_gene --sampleCol library_name --outPrefix $(@D)/recurFusions.$* $< 
-
-defuse/alltables/%.coord.txt : defuse/alltables/%.txt
-	$(INIT) $(EXTRACT_COORDS) -t $(ONCOFUSE_TISSUE_TYPE) $< > $@ 2> $(LOG)
-
-defuse/alltables/%.oncofuse.txt : defuse/alltables/%.txt
-	$(call RUN,-c -s 7G -m 8G,"$(DEFUSE_ONCOFUSE) --outPrefix $(@D)/$* $(DEFUSE_ONCOFUSE_OPTS) $<")
-
-usv/%.defuse.tsv : defuse/tables/%.defuse.txt
-	$(call RUN,,"$(DEFUSE_TO_USV) -i $< > $@")
-
-include modules/fastq_tools/fastq.mk
+$(foreach sample,$(SAMPLES),\
+		$(eval $(call defuse-single-sample,$(sample))))
+		
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY)
