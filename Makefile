@@ -246,6 +246,10 @@ TARGETS += ntai_score
 ntai_score :
 	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
 	
+TARGETS += myriad_score
+myriad_score :
+	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
+	
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)
