@@ -483,8 +483,8 @@ TARGETS += mutsig_report
 mutsig_report :
 	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 	
-TARGETS += genome_stats
-genome_stats :
+TARGETS += genome_summary
+genome_summary :
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 
 #==================================================
