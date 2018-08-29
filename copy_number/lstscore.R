@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-# compute the LST score
 
 suppressPackageStartupMessages(library("optparse"));
 
