@@ -181,7 +181,6 @@ TARGETS += macs2TN
 macs2TN:
 	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
 	
-
 #==================================================
 # copy number
 #==================================================
@@ -380,7 +379,6 @@ TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
-
 #==================================================
 # quality control
 #==================================================
@@ -437,7 +435,6 @@ TARGETS += pyloh
 pyloh :
 	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
 
-
 #==================================================
 # clonality
 #==================================================
@@ -458,7 +455,6 @@ TARGETS += emu
 emu :
 	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
 
-
 #==================================================
 # miscellaneous
 #==================================================
@@ -475,7 +471,6 @@ TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 
-
 #==================================================
 # reports
 #==================================================
@@ -490,7 +485,7 @@ mutsig_report :
 	
 TARGETS += genome_stats
 genome_stats :
-	$(call RUN_MAKE,modules/summary/genomestats.mk)
+	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 
 #==================================================
 # annotations
