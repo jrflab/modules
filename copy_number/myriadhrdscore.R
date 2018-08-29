@@ -146,27 +146,27 @@ lst_filter <- function(dat, size_thresh) {
 score_myriad_HRD <- function(dat, thresh=15e6) {
 	chrDel <- NULL
 	hrdSegs <- NULL
-  hrd_score <- 0
+  	hrd_score <- 0
 	chrList <- unique(dat[,"chromosome"])
 	for (x in chrList) {
-      index <- which(dat[,"chromosome"] == x)
-      totalnB <- sum(dat[index,"nB"], na.rm=TRUE)
-		  if (totalnB == 0) {
-			    chrDel <- c(x, chrDel)
-		  }
+		index <- which(dat[,"chromosome"] == x)
+      		totalnB <- sum(dat[index,"nB"], na.rm=TRUE)
+		if (totalnB == 0) {
+			chrDel <- c(x, chrDel)
+		}
 	}
 	for (x in 1:nrow(dat)) {
-      if ( dat[x,"chromosome"] %in% chrDel ) {
-			  next
-		  }
-		  if ( dat[x,"nB"] != 0 ) {
-			  next
-		  }
-		  if (dat[x,"size"] < thresh) {
-			  next
-		  }
-		  hrd_score <- hrd_score+1
-		  hrdSegs <- rbind(dat[x,], hrdSegs)
+      		if ( dat[x,"chromosome"] %in% chrDel ) {
+			next
+		}
+		if ( dat[x,"nB"] != 0 ) {
+			next
+		}
+		if (dat[x,"size"] < thresh) {
+			next
+		}
+		hrd_score <- hrd_score + 1
+		hrdSegs <- rbind(dat[x,], hrdSegs)
 	}
 	tmp <- list()
 	tmp$score = hrd_score
@@ -179,8 +179,8 @@ dat = read.table(opt$file_in, sep="\t", header=TRUE, stringsAsFactor=FALSE)
 dat = fix_facets_column_names(dat)
 segs = fix_facet_segs(dat)
 chromInfo = GetChrominfo()
-mhs = score_myriad_HRD(segs)
-cat(paste0(gsub("facets/cncf/","", gsub(".cncf.txt", "", opt$file_in)), "\t", mhs$score), file = opt$file_out, append=FALSE)
+mrs = score_myriad_HRD(segs)
+cat(paste0(gsub("facets/cncf/","", gsub(".cncf.txt", "", opt$file_in)), "\t", mrs$score), file = opt$file_out, append=FALSE)
 cat("\n", file = opt$file_out, append=TRUE)
 
 warnings()
