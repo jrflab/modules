@@ -242,6 +242,10 @@ TARGETS += lst_score
 lst_score :
 	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
 	
+TARGETS += ntai_score
+ntai_score :
+	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
+	
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)
