@@ -1,7 +1,4 @@
 include modules/Makefile.inc
-## This receipt pulls all the paired reads sequence from the 'extract_unmapped' pipeline receipt
-# 	- Input: unmapped_reads/%.bam
-# 	- Output: extracted_reads/unmapped_pairs/%_1.fastq, %_2.fastq
 
 LOGDIR ?= log/extract_unmapped_pairs.$(NOW)
 
@@ -13,7 +10,6 @@ VPATH = bam
 JAVA = $(HOME)/share/usr/jdk1.8.0_121/bin/java
 PICARD = /lila/data/riazlab/lib/src/picard.jar
 
-# Extracting all the paired reads from the 'unmapped' above
 extract_unmapped_pairs : $(foreach sample,$(SAMPLES),extracted_reads/unmapped_pairs/$(sample)_1.fastq)
 
 define extract-unmapped-pairs
