@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/hla_optitype.$(NOW)
 PHONY += hla_optitype
 
-hla_optitype : $(foreach sample,$(SAMPLES),hla_optitype/$(sample)/$(sample).bam)
+hla_optitype : $(foreach sample,$(SAMPLES),hla_optitype/$(sample)/$(sample).fastq)
 
 define hla-optitype
 hla_optitype/%/%fastq : bam/%.bam
