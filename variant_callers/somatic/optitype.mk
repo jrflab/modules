@@ -3,10 +3,10 @@ include modules/Makefile.inc
 LOGDIR ?= log/hla_optitype.$(NOW)
 PHONY += hla_optitype
 
-hla_optitype : $(foreach sample,$(SAMPLES),hla_optitype/$(sample)/$(sample).fastq)
+hla_optitype : $(foreach sample,$(SAMPLES),hla_optitype/$(sample).fastq)
 
 define hla-optitype
-hla_optitype/%/%fastq : bam/%.bam
+hla_optitype/%fastq : bam/%.bam
 	$$(call RUN,-n 8 -s 12G -m 24G, "source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate \
 									 /home/${USER}/share/usr/anaconda-envs/optitype && \
 								 	 if [ ! -d hla_optitype/$* ]; then mkdir hla_optitype/$*; fi && \
