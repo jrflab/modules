@@ -15,6 +15,10 @@ hla_optitype/%.bam : %.bam
 	$$(call RUN,-n 4 -s 12G -m 16G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate \
 								 	/home/${USER}/share/usr/anaconda-envs/optitype && \
 								 	$(SAMTOOLS2) view -@ 4 $$< 6 -b -o hla_optitype/$$*.bam")
+hla_optitype/%_1.fastq hla_optitype/%_2.fastq : hla_optitype/%.bam
+	$$(call RUN,-n 4 -s 12G -m 16G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate \
+								 	/home/${USER}/share/usr/anaconda-envs/optitype && \
+								 	$(SAMTOOLS2) sort -T $$(<D)/$$* -O bam -n -@ 4 -m 6G $$< | $(SAMTOOLS2) fastq -f 1 -1 > hla_optitype/$$*.1.fastq -2 > hla_optitype/$$*.2.fastq -")	
 endef
 $(foreach pair,$(SAMPLES),\
 		$(eval $(call hla-optitype,$sample)))
