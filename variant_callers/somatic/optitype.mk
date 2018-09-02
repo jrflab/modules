@@ -14,7 +14,7 @@ define hla-optitype
 hla_optitype/%.bam : %.bam
 	$$(call RUN,-n 4 -s 12G -m 16G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate \
 								 	/home/${USER}/share/usr/anaconda-envs/optitype && \
-								 	$(SAMTOOLS2) view -f 0x04 -h -@ 4 -b $$< -o hla_optitype/$$*.fastq")
+								 	$(SAMTOOLS2) view -@ 4 $$< 6 -b -o hla_optitype/$$*.bam")
 endef
 $(foreach pair,$(SAMPLES),\
 		$(eval $(call hla-optitype,$sample)))
