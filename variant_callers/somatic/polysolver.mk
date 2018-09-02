@@ -12,7 +12,7 @@ hla_polysolver/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
 									  export CONDA_PREFIX=/home/${USER}/share/usr/anaconda-envs/hla-polysolver/ && \
 									  export PERL5LIB=/home/${USER}/share/usr/anaconda-envs/hla-polysolver/lib/perl5/5.22.0/ && \
 								 	  if [ ! -d hla_polysolver/$1_$2 ]; then mkdir hla_polysolver/$1_$2; fi && \
-								 	  shell_call_hla_type bam/$2.bam Unknown 1 hg19 STDFQ 0 hla-polysolver/$1_$2")
+								 	  shell_call_hla_type bam/$2.bam Unknown 1 hg19 STDFQ 0 hla_polysolver/$1_$2")
 
 #hla_polysolver/$1_$2/$1_$2.taskcomplete : hla_polysolver/$1_$2/winners.hla.txt
 #	$$(call RUN,-s 1G -m 1G,"echo $$< $$(<<) > hla_polysolver/$1_$2/$1_$2.taskcomplete")
