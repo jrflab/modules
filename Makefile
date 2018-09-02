@@ -89,7 +89,6 @@ TARGETS += samtools_het
 samtools_het :
 	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
-
 TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
