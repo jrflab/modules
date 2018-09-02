@@ -68,9 +68,18 @@ TARGETS += star_fusion_aligner
 star_fusion_aligner:
 	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
 
+
 #==================================================
 # variant callers
 #==================================================
+
+TARGETS += hla_polysolver
+hla_polysolver :
+	$(call RUN_MAKE,modules/variant_callers/somatic/polysolver.mk)
+	
+TARGETS += hla_optitype
+hla_optitype :
+	$(call RUN_MAKE,modules/variant_callers/somatic/optitype.mk)
 
 TARGETS += msisensor
 msisensor :
@@ -180,6 +189,7 @@ platypus:
 TARGETS += macs2TN
 macs2TN:
 	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
+
 	
 #==================================================
 # copy number
@@ -252,6 +262,7 @@ myriad_score :
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)
+
 
 #==================================================
 # structural variant callers
@@ -334,6 +345,7 @@ TARGETS += delly
 delly :
 	$(call RUN_MAKE,modules/sv_callers/delly.mk)
 
+
 #==================================================
 # pre-processing
 #==================================================
@@ -383,6 +395,7 @@ TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
+
 #==================================================
 # quality control
 #==================================================
@@ -419,6 +432,7 @@ TARGETS += bam_stats
 bam_stats :
 	$(call RUN_MAKE,modules/qc/bamStats.mk)
 
+
 #==================================================
 # rna sequencing
 #==================================================
@@ -431,6 +445,7 @@ TARGETS += snp6
 snp6 :
 	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
+
 #==================================================
 # ploidy
 #==================================================
@@ -438,6 +453,7 @@ snp6 :
 TARGETS += pyloh
 pyloh :
 	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
+
 
 #==================================================
 # clonality
@@ -451,6 +467,7 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 
+
 #==================================================
 # mutational signatures
 #==================================================
@@ -458,6 +475,7 @@ absolute_seq :
 TARGETS += emu
 emu :
 	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
+
 
 #==================================================
 # miscellaneous
@@ -475,6 +493,7 @@ TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 
+
 #==================================================
 # reports
 #==================================================
@@ -490,6 +509,7 @@ mutsig_report :
 TARGETS += genome_summary
 genome_summary :
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
+
 
 #==================================================
 # annotations
