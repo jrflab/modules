@@ -15,7 +15,7 @@ hla_polysolver/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
 								 	   shell_call_hla_type bam/$2.bam Unknown 1 hg19 STDFQ 0 hla-polysolver/$1_$2")
 
 hla_polysolver/$1_$2/$1_$2.taskcomplete : hla_polysolver/$1_$2/winners.hla.txt
-	$$(call RUN,-c -s 1G -m 1G,"echo $$< $$(<<) > hla_polysolver/$1_$2/$1_$2.taskcomplete")
+	$$(call RUN,-s 1G -m 1G,"echo $$< $$(<<) > hla_polysolver/$1_$2/$1_$2.taskcomplete")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hla-polysolver,$(tumor.$(pair)),$(normal.$(pair)))))
