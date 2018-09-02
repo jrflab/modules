@@ -8,7 +8,7 @@ hla_polysolver : $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).t
 define hla-polysolver
 hla_polysolver/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -n 8 -s 12G -m 24G -v /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/, \
-									  "activate /home/${USER}/share/usr/anaconda-envs/hla-polysolver && \
+									  "source activate /home/${USER}/share/usr/anaconda-envs/hla-polysolver && \
 									   export CONDA_PREFIX=/home/${USER}/share/usr/anaconda-envs/hla-polysolver && \
 									   export PERL5LIB=/home/${USER}/share/usr/anaconda-envs/hla-polysolver/lib/perl5/5.22.0/ && \
 								 	   mkdir -f hla_polysolver/$1_$2 && shell_call_hla_type bam/$2.bam Unknown 1 hg19 STDFQ 0 hla-polysolver/$1_$2")
