@@ -1,22 +1,19 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/hla_optitype.$(NOW)
-PHONY += hla_optitype 
+PHONY += hla_optitype
 
-hla_optitype : $(foreach pair,$(SAMPLE_PAIRS),hla_optitype/$(pair)/$(pair).taskcomplete)
+hla_optitype : $(foreach sample,$(SAMPLES),hla_optitype/$(sample)/$(sample).bam)
 
 define hla-optitype
-hla_optitype/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
+hla_optitype/%/%fastq : bam/%.bam
 	$$(call RUN,-n 8 -s 12G -m 24G, "source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate \
 									 /home/${USER}/share/usr/anaconda-envs/optitype && \
-								 	 if [ ! -d hla_optitype/$1_$2 ]; then mkdir hla_optitype/$1_$2; fi && \
-								 	 ")
-								 	  
-hla_optitype/$1_$2/$1_$2.taskcomplete : hla_optitype/$1_$2/
-	$$(call RUN,-s 1G -m 1G,"touch hla_optitype/$1_$2/$1_$2.taskcomplete")
+								 	 if [ ! -d hla_optitype/$* ]; then mkdir hla_optitype/$*; fi && \
+								 	 razers3 -i 95 -m 1 -dr 0 -o hla_optitype/$*/$*.bam /home/${USER}/share/usr/anaconda-envs/optitype/share/optitype-1.3.2-1/data/hla_reference_dna.fasta hla_optitype/$*/$*.fastq")
 endef
-$(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call hla-optitype,$(tumor.$(pair)),$(normal.$(pair)))))
+$(foreach pair,$(SAMPLES),\
+		$(eval $(call hla-optitype,$(sample),$(sample))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
