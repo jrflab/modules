@@ -18,7 +18,7 @@ hla_optitype/%/%.bam : %.bam
 								 	$(SAMTOOLS2) view -f 0x04 -h -@ 4 -b $$< -o hla_optitype/$$*/$$*.fastq")
 endef
 $(foreach pair,$(SAMPLES),\
-		$(eval $(call hla-optiytpe,$sample)))
+		$(eval $(call hla-optitype,$sample)))
 
 
 # hla_optitype/$$*.bam /home/${USER}/share/usr/anaconda-envs/optitype/share/optitype-1.3.2-1/data/hla_reference_dna.fasta hla_optitype/$$*.fastq")
