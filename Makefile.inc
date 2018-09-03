@@ -12,7 +12,7 @@ endif
 
 # default reference: 
 REF ?= hg19
-include modules/$(REF).inc
+include modules/genome_inc/$(REF).inc
 
 ifndef MAKEFILE_INC
 

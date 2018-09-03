@@ -261,6 +261,10 @@ myriad_score :
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)
+	
+TARGETS += snp6
+snp6 :
+	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
 
 #==================================================
@@ -389,7 +393,6 @@ TARGETS += process_bam
 process_bam : 
 	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
 
-# standalone bam file merger
 TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
@@ -439,10 +442,6 @@ bam_stats :
 TARGETS += sum_reads
 sum_reads :
 	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
-
-TARGETS += snp6
-snp6 :
-	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
 
 #==================================================

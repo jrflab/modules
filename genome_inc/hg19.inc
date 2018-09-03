@@ -1,5 +1,3 @@
-# vim: set ft=make:
-
 ifndef HG19_INC
 REF = hg19
 REF_DIR = $(HOME)/share/reference
