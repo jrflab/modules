@@ -11,7 +11,7 @@ include config.inc
 endif
 
 # default reference: 
-REF ?= hg19
+REF ?= b37
 include modules/genome_inc/$(REF).inc
 
 ifndef MAKEFILE_INC
