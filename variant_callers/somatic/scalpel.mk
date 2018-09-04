@@ -60,7 +60,9 @@ define scalpel-tumor-normal
 vcf/$1_$2.scalpel_indels.vcf : $$(foreach chunk,$$(SCALPEL_CHUNKS),scalpel/$1_$2/$$(chunk)/main/somatic.indel.vcf)
 	$$(call RUN,-c -s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
 		$$(SCALPEL_SOURCE_ANN_VCF) | $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && \
-		$$(call VERIFY_VCF,$$@.tmp,$$@)")
+		$$(call VERIFY_VCF,$$@.tmp,$$@) && \
+		$$(RSCRIPT) modules/scripts/swapvcf.R --file $$@ --tumor $1 --normal $2 && \
+		mv $$@.tmp $$@")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
