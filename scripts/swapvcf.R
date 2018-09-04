@@ -12,7 +12,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-vcf = read.csv(file=opt$file_in, header=FALSE, stringsAsFactors=FALSE)
+vcf = read.table(file=opt$file_in, header=FALSE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 n = ncol(vcf)
 n1 = vcf[,n,drop=TRUE]
 n2 = vcf[,n-1,drop=TRUE]
