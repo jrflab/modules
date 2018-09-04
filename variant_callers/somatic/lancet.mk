@@ -87,6 +87,7 @@ endif
 define filter_lancet-tumor-normal
 vcf/$1_$2.lancet_%.vcf lancet/vcf/$1_$2.lancet_%.vcf.tmp : lancet/vcf/$1_$2.lancet_%.vcf
 	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file $$< --tumor $1 --normal $2 && \
+							 cp $$<.tmp $$< \
 							 $$(LANCET_SOURCE_ANN_VCF) < $$< | \
 							 $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
