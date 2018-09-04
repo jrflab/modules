@@ -16,13 +16,13 @@ unless (-e "Makefile") {
 close OUT;
 
 unless (-e "project_config.yaml") {
-    copy("modules/default_project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
+    copy("modules/default_yaml/project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
 }
 
 unless (-e "summary_config.yaml") {
-    copy("modules/default_summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
+    copy("modules/default_yaml/summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
 }
 
 unless (-e "sample_attr.yaml") {
-    copy("modules/default_sample_attr.yaml", "sample_attr.yaml") or die "Unable to create sample_attr.yaml: $!";
+    copy("modules/default_yaml/sample_attr.yaml", "sample_attr.yaml") or die "Unable to create sample_attr.yaml: $!";
 }
