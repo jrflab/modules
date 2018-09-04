@@ -7,7 +7,6 @@ INDEL_TYPES ?= varscan_indels strelka_indels scalpel_indels lancet_indels platyp
 
 .PHONY : somatic_indels
 somatic_indels : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).somatic_indels.vcf)
-#strelka_varscan_merge_mafs : $(foreach pair,$(SAMPLE_PAIRS),maf/$(pair).strelka_varscan_indels.vcf)
 
 UPS_INDEL_DIR = $(HOME)/share/usr/ups-indel
 UPS_INDEL = if [ ! -f ext/SnpSift.jar ]; then mkdir -p ext; ln -fs $(UPS_INDEL_DIR)/ext/SnpSift.jar ext/SnpSift.jar; fi ; LD_LIBRARY_PATH=$(UPS_INDEL_DIR):$(HOME)/share/usr/lib $(UPS_INDEL_DIR)/ups_indel

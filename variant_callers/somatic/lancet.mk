@@ -26,23 +26,16 @@ TUMOR_VARIANT_READ_FILTER_VCF = python modules/vcf_tools/tumor_variant_read_filt
 
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: all lancet_vcfs # lancet_mafs
+.PHONY: all lancet_vcfs
 
-lancet : lancet_vcfs #lancet_mafs
+lancet : lancet_vcfs
 
 
 lancet_vcfs : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).lancet_indels.vcf)
-#lancet_mafs : $(foreach pair,$(SAMPLE_PAIR),maf/$(pair).lancet_indels.maf)
 
 ifeq ($(LANCET_TARGET_ONLY),true)
 lancet/interval_chunk/chunk.timestamp : $(TARGETS_FILE)
 	$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_LANCET_CHUNKS) $<  && touch $@
-#else
-#lancet_genome_sliding_window.bed : $(REF_DICT)
-	#$(INIT) bedtools makewindows -g <(sed 's/.*SN:\([^\s]\+\)\sLN:\([0-9]\+\).*/\1\t\2/' $<) -w 10000 -s 9900 > $@
-#lancet/interval_chunk/chunk.timestamp : lancet_genome_sliding_window.bed
-	#$(INIT) $(SPLIT_BED) --out_prefix $(@D)/chunk --num_chunks $(NUM_LANCET_CHUNKS) $<  && touch $@
-#endif
 
 define lancet-interval-chunk
 lancet/interval_chunk/chunk$1.bed : lancet/interval_chunk/chunk.timestamp
@@ -64,7 +57,7 @@ lancet/vcf/$1_$2.lancet_snps.vcf : $$(foreach chunk,$$(LANCET_CHUNKS),lancet/chu
 		$$(SNP_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 lancet/vcf/$1_$2.lancet_indels.vcf : $$(foreach chunk,$$(LANCET_CHUNKS),lancet/chunk_vcf/$1_$2.lancet.$$(chunk).vcf)
 	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
-		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call SWAP_VCF,$$@.tmp) && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call lancet-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -85,7 +78,7 @@ lancet/vcf/$1_$2.lancet_snps.vcf : $$(foreach chr,$$(CHROMOSOMES),lancet/chr_vcf
 		$$(SNP_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 lancet/vcf/$1_$2.lancet_indels.vcf : $$(foreach chr,$$(CHROMOSOMES),lancet/chr_vcf/$1_$2.lancet.$$(chr).vcf)
 	$$(call RUN,-s 4G -m 8G,"(grep '^#' $$<; cat $$^ | grep -v '^#' | $$(VCF_SORT) $$(REF_DICT) -) | \
-		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
+		$$(INDEL_FILTER_VCF) > $$@.tmp && $$(call SWAP_VCF,$$@.tmp) && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call lancet-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

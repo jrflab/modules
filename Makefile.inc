@@ -229,6 +229,7 @@ CHECK_UVCF = mkdir -p $(@D); if [ `grep -v '^\#' $< | wc -l` -eq 0 ] && [ `grep 
 
 # verify that vcf files have #CHROM
 # usage: $(call VERIFY_VCF,tmp,final_dest)
+SWAP_VCF = $(RSCRIPT) modules/scripts/swapvcf.R
 VERIFY_VCF = if grep -q '^\#CHROM' $1; then mv $1 $2 && if [ -s $1.idx ]; then mv $1.idx $2.idx; fi ; else false; fi
 VERIFY_VCF_GZ = if zgrep -q '^\#CHROM' $1; then mv $1 $2 && if [ -s $1.tbi ]; then mv $1.tbi $2.tbi; fi ; else false; fi
 
