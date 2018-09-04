@@ -8,7 +8,7 @@ if (!interactive()) {
 
 args_list <- list(make_option("--file", default = NA, type = 'character', help = "input file name"),
 				  make_option("--tumor", default = NA, type = 'character', help = "tumor sample name"),
-				  make_option("--normal", default = NA, type = 'character', help = "normal sample name"),)
+				  make_option("--normal", default = NA, type = 'character', help = "normal sample name"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
