@@ -62,7 +62,7 @@ vcf/$1_$2.scalpel_indels.vcf : $$(foreach chunk,$$(SCALPEL_CHUNKS),scalpel/$1_$2
 		$$(SCALPEL_SOURCE_ANN_VCF) | $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && \
 		$$(call VERIFY_VCF,$$@.tmp,$$@) && \
 		$$(RSCRIPT) modules/scripts/swapvcf.R --file $$@ --tumor $1 --normal $2 && \
-		mv $$@.tmp $$@")
+		$$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
@@ -83,7 +83,7 @@ vcf/$1_$2.scalpel_indels.vcf : $$(foreach chr,$$(CHROMOSOMES),scalpel/$1_$2/$$(c
 		$$(SCALPEL_SOURCE_ANN_VCF) | $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && \
 		$$(call VERIFY_VCF,$$@.tmp,$$@) && \
 		$$(RSCRIPT) modules/scripts/swapvcf.R --file $$@ --tumor $1 --normal $2 && \
-		mv $$@.tmp $$@")
+		$$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call scalpel-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
