@@ -85,11 +85,9 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 endif
 
 define filter_lancet-tumor-normal
-lancet/$1_$2.lancet_%.vcf.tmp : lancet/vcf/$1_$2.lancet_%.vcf
-	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file_in $$<")
-
-vcf/$1_$2.lancet_%.vcf : lancet/vcf/$1_$2.lancet_%.vcf.tmp
-	$$(call RUN,-s 1G -m 2G,"$$(LANCET_SOURCE_ANN_VCF) < $$< | \
+vcf/$1_$2.lancet_%.vcf : lancet/vcf/$1_$2.lancet_%.vcf
+	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file_in $$< && \
+							 $$(LANCET_SOURCE_ANN_VCF) < $$< | \
 							 $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
