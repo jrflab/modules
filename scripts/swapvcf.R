@@ -21,8 +21,8 @@ n2 = vcf[,n-1,drop=TRUE]
 vcf[,n-1] = n1
 vcf[,n] = n2
 colnames(vcf) = c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", opt$tumor, opt$normal)
-system(paste0("grep '##' ", opt$file_in, " > ", opt$file_in, ".tmp"))
-write.table(vcf, file=paste0(opt$file_in, ".tmp"), append=TRUE, quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE)
+system(paste0("grep '##' ", opt$file, " > ", opt$file, ".tmp"))
+write.table(vcf, file=paste0(opt$file, ".tmp"), append=TRUE, quote=FALSE, sep="\t", row.names=FALSE, col.names=TRUE)
 #file.copy(from=paste0(opt$file_in, ".tmp"), to=opt$file_in, overwrite=TRUE)
 
 warnings()
