@@ -84,15 +84,11 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call lancet-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
-define swap_lancet-tumor-normal
-lancet/$1_$2.lancet_%.swapped.vcf : lancet/vcf/$1_$2.lancet_%.vcf
-	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file_in $$<")
-endef
-$(foreach pair,$(SAMPLE_PAIRS),\
-	$(eval $(call swap_lancet-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
-
 define filter_lancet-tumor-normal
-vcf/$1_$2.lancet_%.vcf : lancet/vcf/$1_$2.lancet_%.vcf
+lancet/$1_$2.lancet_%.vcf2 : lancet/vcf/$1_$2.lancet_%.vcf
+	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file_in $$<")
+
+vcf/$1_$2.lancet_%.vcf : lancet/vcf/$1_$2.lancet_%.vcf2
 	$$(call RUN,-s 1G -m 2G,"$$(LANCET_SOURCE_ANN_VCF) < $$< | \
 							 $$(TUMOR_VARIANT_READ_FILTER_VCF) -t $1 -n $2 > $$@.tmp && $$(call VERIFY_VCF,$$@.tmp,$$@)")
 endef
