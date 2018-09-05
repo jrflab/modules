@@ -28,9 +28,11 @@ strelka/$1_$2/task.complete : strelka/$1_$2/Makefile
 vcf/$1_$2.%.vcf : strelka/vcf/$1_$2.%.vcf
 	$$(INIT) perl -ne 'if (/^#CHROM/) { s/NORMAL/$2/; s/TUMOR/$1/; } print;' $$< > $$@ && $$(RM) $$<
 	
-vcf/$1_$2.%.vcf : vcf/$1_$2.%.vcf
+strelka/vcf/$1_$2.%.vcf : vcf/$1_$2.%.vcf
 	$$(call RUN,-s 1G -m 2G,"$$(RSCRIPT) modules/scripts/swapvcf.R --file $$< --tumor $1 --normal $2 && \
-							 $$(call VERIFY_VCF,$$@.tmp,$$@)")
+							 mv $$<.tmp $$@ && \
+							 rm $$< && \
+							 $$(call VERIFY_VCF,$$@,$$<)")
 	
 strelka/vcf/$1_$2.strelka_snps.vcf : strelka/$1_$2/task.complete
 	$$(INIT) $$(STRELKA_SOURCE_ANN_VCF) < strelka/$1_$2/results/all.somatic.snvs.vcf > $$@
