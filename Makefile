@@ -443,6 +443,10 @@ TARGETS += sum_reads
 sum_reads :
 	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
 
+TARGETS += exon_counts
+exon_counts :
+	$(call RUN_MAKE,modules/rnaseq/dexseq.mk)
+
 
 #==================================================
 # ploidy
