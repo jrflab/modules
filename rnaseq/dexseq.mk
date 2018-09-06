@@ -7,7 +7,7 @@ dexseq : $(foreach sample,$(TUMOR_SAMPLES),dexseq/$(sample).taskcomplete)
 
 define exon-count
 dexseq/%.txt : star/bam/%.star.sorted.filtered.bam
-	$$(call RUN,-c -s 8G -m 12G -w 1440,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules.0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/dexseq && \
+	$$(call RUN,-c -s 8G -m 12G -w 1440,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/dexseq && \
 								 /home/${USER}/share/usr/anaconda-envs/dexseq/lib/R/library/DEXSeq/python_scripts/dexseq_count.py -f bam -p yes -r pos /home/${USER}/share/reference/Ensembl/Homo_sapiens.GRCh37.75.gff $$< dexseq/$$*.txt")
 dexseq/%.taskcomplete : dexseq/%.txt
 	$$(call RUN,-c -s 1G -m 1G,"touch $$<")
