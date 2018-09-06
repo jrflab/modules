@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/exon_counts.$(NOW)
 PHONY += dexseq
 
-dexseq : $(foreach sample,$(TUMOR_SAMPLES),dex_seq/$(sample).taskcomplete)
+dexseq : $(foreach sample,$(TUMOR_SAMPLES),dexseq/$(sample).taskcomplete)
 
 define exon-count
 dexseq/%.txt : star/bam/%.star.sorted.filtered.bam
