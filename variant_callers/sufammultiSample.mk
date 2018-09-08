@@ -7,7 +7,7 @@ sufal_multisample : $(foreach sample,$(NORMAL_SAMPLES),sufam_multisample/$(sampl
 
 define combine-samples
 sufam_multisample/%.tsv : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combineSamples.R --patient $$<<")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combineSamples.R --patient $$*")
 	
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
