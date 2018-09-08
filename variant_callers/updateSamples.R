@@ -32,7 +32,7 @@ write.table(vcf, file=paste0("sufam/", opt$patient, ".vcf"), sep="\t", col.names
 
 for (i in 1:length(sample_names)) {
 	system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".tmp"))
-	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".tmp"), hedare=TRUE, sep="\t", stringsAsFactors=FALSE)
+	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".tmp"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	## fix depth
 	index = grep("DP", colnames(vars))
 	vars[,index[i]] = tmp[,"cov"]
