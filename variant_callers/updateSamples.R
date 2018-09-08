@@ -15,6 +15,7 @@ opt <- arguments$options
 vars = read.csv(file=paste0("sufam/", opt$patient, ".txt"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 index = grep("MAF", colnames(vars))
 sample_names = unlist(lapply(strsplit(colnames(vars)[index], "_"), function(x) {return(x[2])}))
+sample_names[1] = opt$patient
 
 ## run sufam
 chr = vars$Chromosome
