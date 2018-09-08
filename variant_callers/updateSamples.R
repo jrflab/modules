@@ -54,8 +54,8 @@ for (i in 2:length(sample_names)) {
 	q2 = apply(tmp3$seg[,c("nA","nB")], 1, max)
 	index = rep(NA, nrow(vars))
 	for (j in 1:nrow(vars)) {
-		indx = which(Chromosomes==vars[j,"Chromosomes"] & Start<=vars[j,""] & End>=vars[j,""])
-		if (indx) {
+		indx = which(Chromosomes==vars[j,"Chromosome"] & Start<=vars[j,"Position"] & End>=vars[j,"Position"])
+		if (length(indx)!=0) {
 			index[j] = indx
 		} else {
 			index[j] = NA
@@ -64,6 +64,8 @@ for (i in 2:length(sample_names)) {
 	q_t = cbind(q_t, qt[index])
 	q_2 = cbind(q_2, q2[index])
 }
+q_t[is.na(q_t)] = 2
+q_2[is.na(q_2)] = 1
 colnames(q_t) = colnames(q_2) = c("N", sample_names[2:length(sample_names)])
 colnames(q_t) = paste0("qt_", colnames(q_t))
 colnames(q_2) = paste0("q2_", colnames(q_2))
