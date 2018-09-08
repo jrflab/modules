@@ -41,4 +41,31 @@ for (i in 1:length(sample_names)) {
 	vars[,index[i]] = tmp[,"val_maf"]
 }
 
+q_t = rep(2, nrow(vars))
+q_2 = rep(1, nrow(vars))
+for (i in 2:length(sample_names)) {
+	## fix qt and q2
+	load(paste0("ascat/ascat/", sample_names[i], "_", sample_names[1], ".RData"))
+	Chromosomes = tmp2$SNPpos[tmp3$seg[,"start"],1]
+	Chromosomes[Chromosomes==23] = "X"
+	Start = tmp2$SNPpos[tmp3$seg[,"start"],2]
+	End = tmp2$SNPpos[tmp3$seg[,"end"],2]
+	qt = tmp3$seg[,"nA"] + tmp3$seg[,"nB"]
+	q2 = apply(tmp3$seg[,c("nA","nB")], 1, max)
+	index = rep(NA, nrow(vars))
+	for (j in 1:nrow(vars)) {
+		indx = which(Chromosomes==vars[j,"Chromosomes"] & Start<=vars[j,""] & End>=vars[j,""])
+		if (indx) {
+			index[j] = indx
+		} else {
+			index[j] = NA
+		}
+	}
+	q_t = cbind(q_t, qt[index])
+	q_2 = cbind(q_2, q2[index])
+}
+colnames(q_t) = colnames(q_2) = c("N", sample_names[2:length(sample_names)])
+colnames(q_t) = paste0("qt_", colnames(q_t))
+colnames(q_2) = paste0("q2_", colnames(q_2))
+
 write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
