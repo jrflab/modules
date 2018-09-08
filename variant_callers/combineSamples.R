@@ -88,5 +88,4 @@ colnames(LOH) = paste0("LOH_", colnames(LOH))
 colnames(CCF) = paste0("CCF_", colnames(CCF))
 colnames(Clonal_Status) = paste0("Clonal_Status_", colnames(Clonal_Status))
 vars = cbind(vars, VAF, DEPTH, LOH, CCF, Clonal_Status)
-write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
-
+write.table(vars, file=paste0("sufam/", opt$patient, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
