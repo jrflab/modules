@@ -67,6 +67,10 @@ star:
 TARGETS += star_fusion_aligner
 star_fusion_aligner:
 	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
+	
+TARGETS += blast_reads
+blast_reads :
+	$(call RUN_MAKE,modules/fastq_tools/blastReads.mk)
 
 
 #==================================================
@@ -176,6 +180,10 @@ somatic_variants:
 TARGETS += sufam
 sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamSampleSet.mk)
+	
+TARGETS += sufam_multisample
+sufam_multisample:
+	$(call RUN_MAKE,modules/variant_callers/sufammultiSample.mk)
 
 TARGETS += platypus
 platypus:
@@ -381,14 +389,6 @@ TARGETS += bam_to_fasta
 bam_to_fasta :
 	$(call RUN_MAKE,modules/fastq_tools/bamtoFasta.mk)
 	
-TARGETS += blast_reads
-blast_reads :
-	$(call RUN_MAKE,modules/fastq_tools/blastReads.mk)
-
-TARGETS += krona_classify
-krona_classify :
-	$(call RUN_MAKE,modules/fastq_tools/kronaClassify.mk)
-
 TARGETS += process_bam
 process_bam : 
 	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
@@ -494,6 +494,10 @@ contest :
 TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
+	
+TARGETS += krona_classify
+krona_classify :
+	$(call RUN_MAKE,modules/fastq_tools/kronaClassify.mk)
 
 
 #==================================================
