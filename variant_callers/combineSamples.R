@@ -83,4 +83,5 @@ for (j in 1:nrow(tmp_vars)) {
 	Clonal_Status[ukey,sample_name] = tmp_vars[j,"clonalStatus"]
 }
 vars = cbind(vars, VAF, DEPTH, LOH, CCF, Clonal_Status)
-write.table(by_vars[[i]], file=paste0("sufam_multisample/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
+write.table(vars, file=paste0("sufam_multisample/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
+
