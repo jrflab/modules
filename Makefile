@@ -105,10 +105,6 @@ TARGETS += jsm
 jsm :
 	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
 
-TARGETS += merge_fastq
-merge_fastq : 
-	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
-
 TARGETS += mutect
 mutect :
 	$(call RUN_MAKE,modules/variant_callers/somatic/mutect.mk)
@@ -352,6 +348,10 @@ delly :
 #==================================================
 # pre-processing
 #==================================================
+
+TARGETS += merge_fastq
+merge_fastq : 
+	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
 
 TARGETS += fix_bam
 fix_bam :
