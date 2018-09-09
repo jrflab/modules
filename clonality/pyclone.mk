@@ -24,8 +24,8 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call build-mutations-file,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define complete-task
-pyclone/%.taskcomplete : pyclone/%.timestamp
+pyclone/$2.taskcomplete : pyclone/$2.timestamp pyclone/$2/$1.yaml
 	$$(call RUN,-c -s 1G -m 1G,"touch pyclone/$$*.taskcomplete")
 endef
-$(foreach sample,$(NORMAL_SAMPLES),\
-		$(eval $(call complete-task,$(sample))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call complete-task,$(tumor.$(pair)),$(normal.$(pair)))))
