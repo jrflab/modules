@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/pyclone.$(NOW)
+LOGDIR ?= log/setup_pyclone.$(NOW)
 PHONY += pyclone
 
-pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml)
+setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml)
 
 define make-input-pyclone
 pyclone/$2/$1.tsv : sufam/$2.tsv
