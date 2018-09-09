@@ -22,9 +22,6 @@ var_counts = round((mutation_summary[,paste0("MAF_", opt$sample_name)])*mutation
 normal_cn = rep(2, length(mutation_id))
 minor_cn = mutation_summary[,paste0("qt_", opt$sample_name)] - mutation_summary[,paste0("q2_", opt$sample_name)]
 major_cn = mutation_summary[,paste0("q2_", opt$sample_name)]
-index = major_cn==0
-major_cn[index] = 1
-minor_cn[index] = 1
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 write.table(sample_summary, paste0(gsub(".tsv", "/", gsub("sufam/", "pyclone/", opt$file_name)), opt$sample_name, ".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 
