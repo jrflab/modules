@@ -84,4 +84,10 @@ colnames(VAF) = paste0("MAF_", colnames(VAF))
 colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
 vars = cbind(vars, VAF, DEPTH, LOH)
+
+index = grepl("mutect", vars[,"Variant_Caller"]) | grepl("varscan", vars[,"Variant_Caller"])
+vars = vars[index,,drop=FALSE]
+index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation")
+vars = vars[index,,drop=FALSE]
+
 write.table(vars, file=paste0("sufam/", opt$patient, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
