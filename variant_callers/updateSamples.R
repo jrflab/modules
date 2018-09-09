@@ -97,6 +97,46 @@ for (i in 2:length(sample_names)) {
 #====================================
 # ccf
 #====================================
+cancer_cell_fraction = NULL
+ccf_95CI_low = NULL
+ccf_95CI_high = NULL
+pr_somatic_clonal = NULL
+ll = NULL
+sq = NULL
+for (i in 2:length(sample_names)) {
+	load(paste0("ascat/ascat/", sample_names[i], "_", sample_names[1], ".RData"))
+	f_hat = vars[,paste0("MAF_", sample_names[i])]
+	n = vars[,paste0("DP_", sample_names[i])]
+	qt = vars[,paste0("qt_", sample_names[i])]
+	qt[qt>10] = 10
+	q2 = vars[,paste0("q2_", sample_names[i])]
+	q2[q2>10] = 10
+	alpha = seq(.1, to=.9, length=50)
+	alpha_hat = list()
+	for (j in 1:length(alpha)) {
+		alpha_hat[[j]] = cancercellFraction(f_hat, n, qt, q2, alpha[j], e=0.01)
+	}
+	LL = unlist(lapply(alpha_hat, function(x) {sum(x[,"LL"])}))
+	index = which.max(LL)
 
+	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[[index]][,"cancer_cell_frac"])
+	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[[index]][,"ccf_95CI_low"])
+	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[[index]][,"ccf_95CI_high"])
+	pr_somatic_clonal = cbind(pr_somatic_clonal, alpha_hat[[index]][,"Pr_somatic_clonal"])
+	ll = cbind(ll, alpha_hat[[index]][,"LL"])
+	sq = cbind(sq, alpha_hat[[index]][,"sq"])
+}
+colnames(cancer_cell_fraction) = colnames(ccf_95CI_low) = colnames(ccf_95CI_high) = colnames(pr_somatic_clonal) = colnames(ll) = colnames(sq) = sample_names[2:length(sample_names)]
+colnames(ccf_95CI_low) = paste0("CCF_95CI_Low_", colnames(ccf_95CI_low))
+colnames(ccf_95CI_high) = paste0("CCF_95CI_High_", colnames(ccf_95CI_high))
+colnames(pr_somatic_clonal) = paste0("Pr_Somatic_Clonal_", colnames(pr_somatic_clonal))
+colnames(ll) = paste0("LL_", colnames(ll))
+colnames(sq) = paste0("sq_", colnames(sq))
+vars = cbind(vars, cancer_cell_fraction,
+				   ccf_95CI_low,
+				   ccf_95CI_high,
+				   pr_somatic_clonal,
+				   ll,
+				   sq)
 
 write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)

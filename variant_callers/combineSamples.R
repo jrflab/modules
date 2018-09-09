@@ -72,20 +72,16 @@ for (i in 1:length(ukeys)) {
 					     "HOTSPOT_INTERNAL"=HOTSPOT_INTERNAL,
 					     "HOTSPOT_CMO"=CMO_HOTSPOT))
 }
-VAF = DEPTH = LOH = CCF = Clonal_Status = matrix(NA, nrow=length(ukeys), ncol=length(unique(tmp_vars$TUMOR_SAMPLE))+1, dimnames=list(ukeys, c("N", unique(tmp_vars$TUMOR_SAMPLE))))
+VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(unique(tmp_vars$TUMOR_SAMPLE))+1, dimnames=list(ukeys, c("N", unique(tmp_vars$TUMOR_SAMPLE))))
 for (j in 1:nrow(tmp_vars)) {
 	sample_name = tmp_vars[j,"TUMOR_SAMPLE"]
 	ukey = paste0(tmp_vars$CHROM[j], ":", tmp_vars$POS[j], ":", tmp_vars$REF[j], ":", tmp_vars$ALT[j])
 	VAF[ukey,sample_name] = tmp_vars[j,"TUMOR_MAF"]; VAF[ukey,"N"] = tmp_vars[j,"NORMAL_MAF"]
 	DEPTH[ukey,sample_name] = tmp_vars[j,"TUMOR_DP"]; DEPTH[ukey,"N"] = tmp_vars[j,"NORMAL_DP"]
 	LOH[ukey,sample_name] = tmp_vars[j,"facetsLOHCall"]
-	CCF[ukey,sample_name] = tmp_vars[j,"ccf"]
-	Clonal_Status[ukey,sample_name] = tmp_vars[j,"clonalStatus"]
 }
 colnames(VAF) = paste0("MAF_", colnames(VAF))
 colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
-colnames(CCF) = paste0("CCF_", colnames(CCF))
-colnames(Clonal_Status) = paste0("Clonal_Status_", colnames(Clonal_Status))
-vars = cbind(vars, VAF, DEPTH, LOH, CCF, Clonal_Status)
+vars = cbind(vars, VAF, DEPTH, LOH)
 write.table(vars, file=paste0("sufam/", opt$patient, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
