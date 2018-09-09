@@ -78,6 +78,7 @@ q_2[is.na(q_2)] = 1
 colnames(q_t) = colnames(q_2) = c("N", sample_names[2:length(sample_names)])
 colnames(q_t) = paste0("qt_", colnames(q_t))
 colnames(q_2) = paste0("q2_", colnames(q_2))
+vars = cbind(vars, q_t, q_2)
 
 #====================================
 # loh
