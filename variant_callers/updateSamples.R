@@ -85,7 +85,7 @@ colnames(q_2) = paste0("q2_", colnames(q_2))
 for (i in 2:length(sample_names)) {
 	loh = rep(0, nrow(vars))
 	for (j in 1:nrow(vars)) {
-		if (qt[j,i]==q2[j,i]) {
+		if (q_t[j,i]==q_2[j,i]) {
 			loh[j] = 1
 		}
 	}
