@@ -15,7 +15,7 @@ mutation_id = paste0(mutation_summary[,"Gene_Symbol"], "_", mutation_summary[,"H
 
 for (i in 1:length(sample_names)) {
 	ref_counts = round((1-mutation_summary[,paste0("MAF_", sample_names[i])])*mutation_summary[,paste0("DP_", sample_names[i])])
-	var_coults = round((mutation_summary[,paste0("MAF_", sample_names[i])])*mutation_summary[,paste0("DP_", sample_names[i])])
+	var_counts = round((mutation_summary[,paste0("MAF_", sample_names[i])])*mutation_summary[,paste0("DP_", sample_names[i])])
 	normal_cn = rep(2, length(mutation_id))
 	minor_cn = mutation_summary[,paste0("qt_", sample_names[i])] - mutation_summary[,paste0("q2_", sample_names[i])]
 	major_cn = mutation_summary[,paste0("q2_", sample_names[i])]
