@@ -118,7 +118,6 @@ for (i in 2:length(sample_names)) {
 	}
 	LL = unlist(lapply(alpha_hat, function(x) {sum(x[,"LL"])}))
 	index = which.max(LL)
-
 	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[[index]][,"cancer_cell_frac"])
 	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[[index]][,"ccf_95CI_low"])
 	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[[index]][,"ccf_95CI_high"])
