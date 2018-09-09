@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/pyclone.$(NOW)
 PHONY += pyclone
 
-pyclone : $(foreach sample,$(NORMAL_SAMPLES),sufam/$(sample).taskcomplete)
+pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample).taskcomplete)
 
 define make-input-pyclone
 pyclone/%.taskcomplete : sufam/%.tsv
