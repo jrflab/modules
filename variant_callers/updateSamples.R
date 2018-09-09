@@ -130,6 +130,7 @@ for (i in 2:length(sample_names)) {
 	clonal_status = cbind(clonal_status, clonal_estimate)
 }
 colnames(cancer_cell_fraction) = colnames(ccf_95CI_low) = colnames(ccf_95CI_high) = colnames(pr_somatic_clonal) = colnames(ll) = colnames(sq) = colnames(clonal_status) = sample_names[2:length(sample_names)]
+colnames(cancer_cell_fraction) = paste0("CCF_", colnames(cancer_cell_fraction))
 colnames(ccf_95CI_low) = paste0("CCF_95CI_Low_", colnames(ccf_95CI_low))
 colnames(ccf_95CI_high) = paste0("CCF_95CI_High_", colnames(ccf_95CI_high))
 colnames(pr_somatic_clonal) = paste0("Pr_Somatic_Clonal_", colnames(pr_somatic_clonal))
