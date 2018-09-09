@@ -20,6 +20,6 @@ for (i in 1:length(sample_names)) {
 	minor_cn = mutation_summary[,paste0("qt_", sample_names[i])] - mutation_summary[,paste0("q2_", sample_names[i])]
 	major_cn = mutation_summary[,paste0("q2_", sample_names[i])]
 	sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
-	write.table(sample_summary, paste0(gsub(".tsv", "/", gsub("sufam/", "pyclone/", opt$file_name)), sample_names, ".tsv"))
+	write.table(sample_summary, paste0(gsub(".tsv", "/", gsub("sufam/", "pyclone/", opt$file_name)), sample_names[i], ".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 }
 
