@@ -103,6 +103,7 @@ ccf_95CI_high = NULL
 pr_somatic_clonal = NULL
 ll = NULL
 sq = NULL
+clonal_status = NULL
 for (i in 2:length(sample_names)) {
 	load(paste0("ascat/ascat/", sample_names[i], "_", sample_names[1], ".RData"))
 	f_hat = vars[,paste0("MAF_", sample_names[i])]
@@ -124,18 +125,24 @@ for (i in 2:length(sample_names)) {
 	pr_somatic_clonal = cbind(pr_somatic_clonal, alpha_hat[[index]][,"Pr_somatic_clonal"])
 	ll = cbind(ll, alpha_hat[[index]][,"LL"])
 	sq = cbind(sq, alpha_hat[[index]][,"sq"])
+	clonal_estimate = rep("Subclonal", nrow(vars))
+	clonal_estimate[pr_somatic_clonal>.5 | ccf_95CI_low>.9] = "Clonal"
+	clonal_status = cbind(clonal_status, clonal_estimate)
 }
-colnames(cancer_cell_fraction) = colnames(ccf_95CI_low) = colnames(ccf_95CI_high) = colnames(pr_somatic_clonal) = colnames(ll) = colnames(sq) = sample_names[2:length(sample_names)]
+colnames(cancer_cell_fraction) = colnames(ccf_95CI_low) = colnames(ccf_95CI_high) = colnames(pr_somatic_clonal) = colnames(ll) = colnames(sq) = colnames(clonal_status) = sample_names[2:length(sample_names)]
 colnames(ccf_95CI_low) = paste0("CCF_95CI_Low_", colnames(ccf_95CI_low))
 colnames(ccf_95CI_high) = paste0("CCF_95CI_High_", colnames(ccf_95CI_high))
 colnames(pr_somatic_clonal) = paste0("Pr_Somatic_Clonal_", colnames(pr_somatic_clonal))
 colnames(ll) = paste0("LL_", colnames(ll))
 colnames(sq) = paste0("sq_", colnames(sq))
+colnames(clonal_status) = paste0("Clonal_Status_", colnames(clonal_status))
+
 vars = cbind(vars, cancer_cell_fraction,
 				   ccf_95CI_low,
 				   ccf_95CI_high,
 				   pr_somatic_clonal,
 				   ll,
-				   sq)
+				   sq,
+				   clonal_status)
 
 write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
