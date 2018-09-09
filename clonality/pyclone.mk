@@ -16,7 +16,7 @@ $(foreach sample,$(NORMAL_SAMPLES),\
 		$(eval $(call make-input-pyclone,$(sample))))
 
 define build-mutations-file
-pyclone/$2/$1.yaml : pyclone/$2/$1.tsv
+pyclone/$2/$1.yaml : pyclone/$2/$1.tsv pyclone/$2.timestamp
 	$$(call RUN,-c -s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 								PyClone build_mutations_file --in_file $$< --out_file $$<< --prior parental_copy_number")
 endef
@@ -24,7 +24,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call build-mutations-file,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define complete-task
-pyclone/$2.taskcomplete : pyclone/$2.timestamp pyclone/$2/$1.yaml
+pyclone/$2.taskcomplete : pyclone/$2/$1.yaml pyclone/$2.timestamp
 	$$(call RUN,-c -s 1G -m 1G,"touch pyclone/$$*.taskcomplete")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
