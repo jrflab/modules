@@ -468,6 +468,10 @@ clonehd :
 TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
+	
+TARGETS += pyclone
+pyclone :
+	$(call RUN_MAKE,modules/clonality/pyclone.mk)
 
 
 #==================================================
