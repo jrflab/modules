@@ -114,19 +114,21 @@ for (i in 2:length(sample_names)) {
 	q2[q2>10] = 10
 	alpha = seq(.1, to=.9, length=50)
 	alpha_hat = list()
+	indx = f_hat>.1
 	for (j in 1:length(alpha)) {
-		alpha_hat[[j]] = cancercellFraction(f_hat, n, qt, q2, alpha[j], e=0.01)
+		alpha_hat[[j]] = cancercellFraction(f_hat[indx], n[indx], qt[indx], q2[indx], alpha[j], e=0.01)
 	}
 	LL = unlist(lapply(alpha_hat, function(x) {sum(x[,"LL"])}))
 	index = which.max(LL)
-	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[[index]][,"cancer_cell_frac"])
-	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[[index]][,"ccf_95CI_low"])
-	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[[index]][,"ccf_95CI_high"])
-	pr_somatic_clonal = cbind(pr_somatic_clonal, alpha_hat[[index]][,"Pr_somatic_clonal"])
-	ll = cbind(ll, alpha_hat[[index]][,"LL"])
-	sq = cbind(sq, alpha_hat[[index]][,"sq"])
+	alpha_hat = cancercellFraction(f_hat, n, qt, q2, alpha[index], e=0.01)
+	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[,"cancer_cell_frac"])
+	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[,"ccf_95CI_low"])
+	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[,"ccf_95CI_high"])
+	pr_somatic_clonal = cbind(pr_somatic_clonal, alpha_hat[,"Pr_somatic_clonal"])
+	ll = cbind(ll, alpha_hat[,"LL"])
+	sq = cbind(sq, alpha_hat[,"sq"])
 	clonal_estimate = rep("Subclonal", nrow(vars))
-	clonal_estimate[pr_somatic_clonal>.5 | ccf_95CI_low>.9] = "Clonal"
+	clonal_estimate[cancer_cell_fraction>.75 | pr_somatic_clonal>.5 | ccf_95CI_low>.9] = "Clonal"
 	clonal_status = cbind(clonal_status, clonal_estimate)
 }
 colnames(cancer_cell_fraction) = colnames(ccf_95CI_low) = colnames(ccf_95CI_high) = colnames(pr_somatic_clonal) = colnames(ll) = colnames(sq) = colnames(clonal_status) = sample_names[2:length(sample_names)]
