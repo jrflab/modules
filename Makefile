@@ -473,6 +473,10 @@ TARGETS += setup_pyclone
 setup_pyclone :
 	$(call RUN_MAKE,modules/clonality/setuppyclone.mk)
 
+TARGETS += run_pyclone
+run_pyclone :
+	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+
 
 #==================================================
 # mutational signatures
