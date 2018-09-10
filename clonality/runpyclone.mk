@@ -11,4 +11,4 @@ pyclone/%/trace/alpha.tsv.bz2 : pyclone/%/config.yaml
 								PyClone run_analysis --config_file pyclone/$$*/config.yaml --seed 210783")
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
-		$(eval $(call combine-samples,$(sample))))
+		$(eval $(call run-pyclone,$(sample))))
