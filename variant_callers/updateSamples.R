@@ -114,7 +114,7 @@ for (i in 2:length(sample_names)) {
 	q2[q2>10] = 10
 	alpha = seq(.1, to=.9, length=50)
 	alpha_hat = list()
-	indx = f_hat>.1
+	indx = f_hat>.15
 	for (j in 1:length(alpha)) {
 		alpha_hat[[j]] = cancercellFraction(f_hat[indx], n[indx], qt[indx], q2[indx], alpha[j], e=0.01)
 	}
