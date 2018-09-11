@@ -132,7 +132,7 @@ for (i in 2:length(sample_names)) {
 	dev.off()
 	
 	index = which.max(LL)
-	alpha_hat = cancercellFraction(f_hat, n, qt, q2, alpha[index]-.1, e=0.01)
+	alpha_hat = cancercellFraction(f_hat, n, qt, q2, alpha[index]-.2, e=0.01)
 	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[,"cancer_cell_frac"])
 	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[,"ccf_95CI_low"])
 	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[,"ccf_95CI_high"])
