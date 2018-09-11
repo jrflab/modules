@@ -119,6 +119,18 @@ for (i in 2:length(sample_names)) {
 		alpha_hat[[j]] = cancercellFraction(f_hat[indx], n[indx], qt[indx], q2[indx], alpha[j], e=0.01)
 	}
 	LL = unlist(lapply(alpha_hat, function(x) {sum(x[,"LL"])}))
+	
+	pdf(file=paste0("sufam/", sample_names[i], "_", sample_names, ".pdf"))
+	plot(alpha, LL, type="o", col="steelblue", axes=FALSE, frame.plot=FALSE, xlab="", ylab="")
+	axis(1, at = NULL, cex.axis = 1.5, padj = 0.25)
+    axis(2, at = NULL, cex.axis = 1.5, las = 1)
+    mtext(side = 1, text = expression(alpha), line = 4, cex = 1.5)
+    mtext(side = 2, text = expression(Sigma~"LL"), line = 4, cex = 1.5)
+    index = which.max(LL)
+    title(main = paste0("alpha_hat = ", signif(alpha[index], 3)), cex.main = 1.5)
+    box(lwd = 2)
+	dev.off()
+	
 	index = which.max(LL)
 	alpha_hat = cancercellFraction(f_hat, n, qt, q2, alpha[index], e=0.01)
 	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[,"cancer_cell_frac"])
