@@ -6,13 +6,12 @@ PHONY += pyclone
 run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone.tsv)
 
 define run-pyclone
-pyclone/%.taskcomplete : pyclone/%/config.yaml
-	$$(call RUN,-c -s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
-								PyClone run_analysis --config_file pyclone/$$*/config.yaml --seed 210783 && \
-								touch pyclone/$$*.taskcomplete")
+pyclone/%/trace/alpha.tsv.bz2 : pyclone/%/config.yaml
+	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
+								PyClone run_analysis --config_file pyclone/$$*/config.yaml --seed 210783")
 
-pyclone/%/pyclone.tsv : pyclone/%.taskcomplete
-	$$(call RUN,-c -s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
+pyclone/%/pyclone.tsv : pyclone/%/trace/alpha.tsv.bz2
+	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 								PyClone build_table --config_file pyclone/$$*/config.yaml --out_file pyclone/$$*/pyclone.tsv --max_cluster 3 --table_type old_style --burnin 1000")
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
