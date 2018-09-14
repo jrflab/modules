@@ -19,6 +19,7 @@ mutation_summary = mutation_summary[flag,,drop=FALSE]
 mutation_id = paste0(mutation_summary[,"Gene_Symbol"], "_", mutation_summary[,"HGVSp"])
 ref_counts = round((1-mutation_summary[,paste0("MAF_", opt$sample_name)])*mutation_summary[,paste0("DP_", opt$sample_name)])
 var_counts = round((mutation_summary[,paste0("MAF_", opt$sample_name)])*mutation_summary[,paste0("DP_", opt$sample_name)])
+var_counts[var_counts<5] = 0
 normal_cn = rep(2, length(mutation_id))
 minor_cn = mutation_summary[,paste0("qt_", opt$sample_name)] - mutation_summary[,paste0("q2_", opt$sample_name)]
 major_cn = mutation_summary[,paste0("q2_", opt$sample_name)]
