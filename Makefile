@@ -469,11 +469,11 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
-TARGETS += setup_pyclone
+TARGETS += setup_pyclone_ms
 setup_pyclone :
 	$(call RUN_MAKE,modules/clonality/setuppyclone.mk)
 
-TARGETS += run_pyclone
+TARGETS += run_pyclone_ms
 run_pyclone :
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
 
