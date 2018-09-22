@@ -81,10 +81,6 @@ TARGETS += hla_polysolver
 hla_polysolver :
 	$(call RUN_MAKE,modules/variant_callers/somatic/polysolver.mk)
 	
-TARGETS += hla_optitype
-hla_optitype :
-	$(call RUN_MAKE,modules/variant_callers/somatic/optitype.mk)
-
 TARGETS += msisensor
 msisensor :
 	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)
