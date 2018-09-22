@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/run_pyclone2.$(NOW)
 PHONY += pyclone
 
-run_pyclone2 : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/$(pair).yaml)
+run_pyclone2 : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/pyclone.tsv)
 
 define run-pyclone
 pyclone/$1_$2/trace/alpha.tsv.bz2 : pyclone/$1_$2/config.yaml
