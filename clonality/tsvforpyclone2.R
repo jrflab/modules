@@ -40,8 +40,6 @@ q_t = qt[index]
 q_2 = q2[index]
 q_t[is.na(q_t)] = 2
 q_2[is.na(q_2)] = 1
-q_t[q_t==0] = q_2[q_t==0]
-q_t[q_t==0] = 2
 
 mutation_id = paste0(mutation_summary[,"SYMBOL"], "_", mutation_summary[,"HGVSp_Short"])
 ref_counts = round((1-mutation_summary[,"TUMOR_MAF"])*mutation_summary[,"TUMOR_DP"])
@@ -52,4 +50,6 @@ major_cn = q_t
 
 mutation_summary = cbind(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 colnames(mutation_summary) = c("mutation_id", "ref_counts", "var_counts", "normal_cn", "minor_cn", "major_cn")
+index = mutation_summary[,"major_cn"]<=0
+mutation_summary = mutation_summary[!index,,drop=FALSE]
 write.table(mutation_summary, file=paste0("pyclone/", opt$tumor_name, "_", opt$normal_name, "/", opt$tumor_name, "_", opt$normal_name, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
