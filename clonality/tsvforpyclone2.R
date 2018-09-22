@@ -40,6 +40,8 @@ q_t = qt[index]
 q_2 = q2[index]
 q_t[is.na(q_t)] = 2
 q_2[is.na(q_2)] = 1
+q_t[q_t==0] = q_2[q_t==0]
+q_t[q_t==0] = 2
 
 mutation_id = paste0(mutation_summary[,"SYMBOL"], "_", mutation_summary[,"HGVSp_Short"])
 ref_counts = round((1-mutation_summary[,"TUMOR_MAF"])*mutation_summary[,"TUMOR_DP"])
