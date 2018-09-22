@@ -472,6 +472,14 @@ setup_pyclone_ms :
 TARGETS += run_pyclone_ms
 run_pyclone_ms :
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+	
+TARGETS += setup_pyclone_ss
+setup_pyclone_ss :
+	$(call RUN_MAKE,modules/clonality/setuppyclone2.mk)
+
+TARGETS += run_pyclone_ss
+run_pyclone_ss :
+	$(call RUN_MAKE,modules/clonality/runpyclone2.mk)
 
 
 #==================================================
