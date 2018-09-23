@@ -12,7 +12,7 @@ mutation_summary = read.csv(file="summary/tsv/mutation_summary.tsv", header=TRUE
 mutation_summary = subset(mutation_summary, TUMOR_SAMPLE==opt$tumor_name & NORMAL_SAMPLE==opt$normal_name)
 index = grepl("mutect", mutation_summary[,"variantCaller"]) | grepl("varscan", mutation_summary[,"variantCaller"])
 mutation_summary = mutation_summary[index,,drop=FALSE]
-index = mutation_summary[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation")
+index = mutation_summary[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Region", "Splice_Site")
 mutation_summary = mutation_summary[index,,drop=FALSE]
 index = mutation_summary[,"CHROM"] %in% c(1:23, "X")
 mutation_summary = mutation_summary[index,,drop=FALSE]
