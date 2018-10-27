@@ -126,7 +126,7 @@ if (opt$type=="log2") {
 	colnames(CN_and_BAF) = c("Chromosome", "Position", "Log2Ratio", "BAF")
 	index = CN_and_BAF[,"BAF"]>0.5
 	CN_and_BAF[index,"BAF"] = 1 - CN_and_BAF[index,"BAF"]
-	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=ifelse(is.na(opt$gamma), 70, opt$gamma), fast=FALSE, verbose=FALSE)
+	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=ifelse(is.na(opt$gamma), 70, as.numeric(opt$gamma)), fast=FALSE, verbose=FALSE)
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
