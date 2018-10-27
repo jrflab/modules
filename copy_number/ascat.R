@@ -315,7 +315,7 @@ if (opt$type=="log2") {
         	                copynumberprofile = NULL,
         	                nonroundedprofile = NULL, 
         	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = as.numeric(opt$rho), psi_manual = as.numeric(opt$psi), y_limit = 3, circos = NA))
+        	                gamma = 1, rho_manual = opt$rho, psi_manual = opt$psi, y_limit = 3, circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
