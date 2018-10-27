@@ -11,7 +11,10 @@ if (!interactive()) {
 
 args_list <- list(make_option("--type", default = NA, type = 'character', help = "type of analysis"),
 				  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
-				  make_option("--file_out", default = NA, type = 'character', help = "output file name"))
+				  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
+				  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
+				  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
+				  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
@@ -123,7 +126,7 @@ if (opt$type=="log2") {
 	colnames(CN_and_BAF) = c("Chromosome", "Position", "Log2Ratio", "BAF")
 	index = CN_and_BAF[,"BAF"]>0.5
 	CN_and_BAF[index,"BAF"] = 1 - CN_and_BAF[index,"BAF"]
-	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=70, fast=FALSE, verbose=FALSE)
+	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=ifelse(is.na(opt$gamma), 70, opt$gamma), fast=FALSE, verbose=FALSE)
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
@@ -297,22 +300,40 @@ if (opt$type=="log2") {
 			    chrnames=chrs,
 			    gender=gender,
 			    sexchromosomes=sexchromosomes)
-	
-	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
-                        baf=tmp2$Tumor_BAF,
-                        lrrsegmented=tmp2$Tumor_LogR_segmented,
-                        bafsegmented=tmp2$Tumor_BAF_segmented,
-                        gender=tmp2$gender,
-                        SNPpos=tmp2$SNPpos,
-                        chromosomes=tmp2$chromosomes,
-                        chrnames=tmp2$chrnames,
-                        sexchromosomes=tmp2$sexchromosomes,
-                        failedqualitycheck=FALSE,
-                        distance = opt$file_out,
-                        copynumberprofile = NULL,
-                        nonroundedprofile = NULL, 
-                        aberrationreliability = NULL,
-                        gamma = 1, rho_manual = NA, psi_manual = NA, y_limit = 3, circos = NA))
+			    
+	if (is.na(opt$rho) | is.na(opt$psi)) {
+		tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
+        	                baf=tmp2$Tumor_BAF,
+        	                lrrsegmented=tmp2$Tumor_LogR_segmented,
+        	                bafsegmented=tmp2$Tumor_BAF_segmented,
+        	                gender=tmp2$gender,
+        	                SNPpos=tmp2$SNPpos,
+        	                chromosomes=tmp2$chromosomes,
+        	                chrnames=tmp2$chrnames,
+        	                sexchromosomes=tmp2$sexchromosomes,
+        	                failedqualitycheck=FALSE,
+        	                distance = opt$file_out,
+        	                copynumberprofile = NULL,
+        	                nonroundedprofile = NULL, 
+        	                aberrationreliability = NULL,
+        	                gamma = 1, rho_manual = NA, psi_manual = NA, y_limit = 3, circos = NA))
+    } else {
+    	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
+        	                baf=tmp2$Tumor_BAF,
+        	                lrrsegmented=tmp2$Tumor_LogR_segmented,
+        	                bafsegmented=tmp2$Tumor_BAF_segmented,
+        	                gender=tmp2$gender,
+        	                SNPpos=tmp2$SNPpos,
+        	                chromosomes=tmp2$chromosomes,
+        	                chrnames=tmp2$chrnames,
+        	                sexchromosomes=tmp2$sexchromosomes,
+        	                failedqualitycheck=FALSE,
+        	                distance = opt$file_out,
+        	                copynumberprofile = NULL,
+        	                nonroundedprofile = NULL, 
+        	                aberrationreliability = NULL,
+        	                gamma = 1, rho_manual = opt$rho, psi_manual = opt$psi, y_limit = 3, circos = NA))
+    }
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho

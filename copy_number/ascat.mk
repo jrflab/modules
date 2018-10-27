@@ -31,7 +31,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 define ascat-aspcf
 ascat/mad/$1_$2.RData : facets/cncf/$1_$2.Rdata
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type aspcf --file_in $$< --file_out ascat/mad/$1_$2.RData")
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"if [ -z ${aspcf_gamma.$2+x} ]; then $(RSCRIPT) modules/copy_number/ascat.R --type aspcf --file_in $$< --file_out ascat/mad/$1_$2.RData --gamma aspcf_gamma.$2; else $(RSCRIPT) modules/copy_number/ascat.R --type aspcf --file_in $$< --file_out ascat/mad/$1_$2.RData; fi")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
