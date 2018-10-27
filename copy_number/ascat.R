@@ -300,9 +300,8 @@ if (opt$type=="log2") {
 			    chrnames=chrs,
 			    gender=gender,
 			    sexchromosomes=sexchromosomes)
-			    
-	if (is.na(opt$rho) | is.na(opt$psi)) {
-		tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
+	
+    tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
         	                baf=tmp2$Tumor_BAF,
         	                lrrsegmented=tmp2$Tumor_LogR_segmented,
         	                bafsegmented=tmp2$Tumor_BAF_segmented,
@@ -316,24 +315,7 @@ if (opt$type=="log2") {
         	                copynumberprofile = NULL,
         	                nonroundedprofile = NULL, 
         	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = NA, psi_manual = NA, y_limit = 3, circos = NA))
-    } else {
-    	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
-        	                baf=tmp2$Tumor_BAF,
-        	                lrrsegmented=tmp2$Tumor_LogR_segmented,
-        	                bafsegmented=tmp2$Tumor_BAF_segmented,
-        	                gender=tmp2$gender,
-        	                SNPpos=tmp2$SNPpos,
-        	                chromosomes=tmp2$chromosomes,
-        	                chrnames=tmp2$chrnames,
-        	                sexchromosomes=tmp2$sexchromosomes,
-        	                failedqualitycheck=FALSE,
-        	                distance = opt$file_out,
-        	                copynumberprofile = NULL,
-        	                nonroundedprofile = NULL, 
-        	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = opt$rho, psi_manual = opt$psi, y_limit = 3, circos = NA))
-    }
+        	                gamma = 1, rho_manual = as.numeric(opt$rho), psi_manual = as.numeric(opt$psi), y_limit = 3, circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
