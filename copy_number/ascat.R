@@ -318,9 +318,8 @@ if (opt$type=="log2") {
         	                gamma = 1, rho_manual = opt$rho, psi_manual = opt$psi, y_limit = 3, circos = NA))
         	                
     pdf(file=opt$file_out)
-    plot(0,0, xlim=c(1,6), ylim=c(0.1,1))
-    abline(h=opt$rho)
-    abline(v=opt$psi)
+    plot(0,0, xlim=c(0,10), ylim=c(0,10))
+    text(x=5, y=5, labels=opt$rho)
     dev.off()
                         
     if (!("try-error" %in% is(tmp3))) {
