@@ -317,10 +317,9 @@ if (opt$type=="log2") {
         	                aberrationreliability = NULL,
         	                gamma = 1, rho_manual = opt$rho, psi_manual = opt$psi, y_limit = 3, circos = NA))
         	                
-    pdf(file=opt$file_out)
-    plot(0,0, xlim=c(0,10), ylim=c(0,10))
-    text(x=5, y=5, labels=opt$rho)
-    dev.off()
+    cat(opt$rho, file="ascat/ascat/test.txt")
+    cat(opt$psi, file="ascat/ascat/test.txt", append=TRUE)
+     
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
