@@ -12,8 +12,12 @@ sufam/%.txt : summary/tsv/mutation_summary.tsv
 								$(RSCRIPT) modules/variant_callers/combineSamples.R --patient $$*")
 
 sufam/%.tsv : sufam/%.txt
-	$$(call RUN,-c -s 4G -m 6G --default_env /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/,"source /home/${USER}/share/usr/opt/miniconda/bin/activate /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/ && \
-								export R_LIBS=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib/R/library:/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/usr/R/library:$R_LIBS && \
+	$$(call RUN,-c -s 4G -m 6G,"source /home/${USER}/share/usr/opt/miniconda/bin/activate /home/brownd7/share/usr/anaconda-envs/jrflab-modules-0.1.5 && \
+                				export CPATH=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/include:$CPATH && \
+                				export LIBRARY_PATH=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$LIBRARY_PATH && \
+                				export LD_LIBRARY_PATH=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$LD_LIBRARY_PATH && \
+                				export R_LIBS=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/usr/R/library:$R_LIBS && \
+                				export R_LIBS=/home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib/R/library:$R_LIBS && \
 								$(RSCRIPT) modules/variant_callers/updateSamples.R --patient $$*")
 	
 endef
