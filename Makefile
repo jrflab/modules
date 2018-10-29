@@ -559,10 +559,10 @@ ann_vcf:
 
 TARGETS += copynumber_summary
 copynumber_summary:
-	$(MAKE) -f modules/copy_number/genomealtered.mk
-	$(MAKE) -f modules/copy_number/lstscore.mk
-	$(MAKE) -f modules/copy_number/ntaiscore.mk
-	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
+	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 	
 TARGETS += hotspot_summary
