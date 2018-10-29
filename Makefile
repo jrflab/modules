@@ -94,7 +94,7 @@ hotspot:
 	
 TARGETS += genotype_hotspot
 genotype_hotspot:
-	$(call RUN_MAKE,modules/etc/genotypehotspots.mk)
+	$(call RUN_MAKE,modules/variant_callers/genotypehotspots.mk)
 	
 TARGETS += haplotype_caller
 haplotype_caller : 
@@ -567,7 +567,7 @@ copynumber_summary:
 	
 TARGETS += hotspot_summary
 hotspot_summary:
-	$(MAKE) -f modules/etc/genotypehotspots.mk
+	$(MAKE) -f modules/variant_callers/genotypehotspots.mk
 	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
 	
 

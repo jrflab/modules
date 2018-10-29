@@ -1,0 +1,22 @@
+include modules/Makefile.inc
+
+SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
+SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
+
+LOGDIR ?= log/genotype_hotspots.$(NOW)
+PHONY += hotspot
+
+genotype_hotspots : $(foreach pair,$(SAMPLE_PAIRS),hotspot/$(pair).txt)
+
+define genotype-hotspots
+hotspot/$1_$2.txt : bam/$1.bam bam/$2.bam
+	$$(call RUN,-v $$(SUFAM_ENV) -c -s 2G -m 4G -w 2880,"sufam --sample_name $1 $$(SUFAM_OPTS) $$(REF_FASTA) modules/reference/hotspots/hotspot-dedup.vcf bam/$1.bam > hotspot/$1_$2.txt")
+	
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call genotype-hotspots,$(tumor.$(pair)),$(normal.$(pair)))))
+
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY)
+
