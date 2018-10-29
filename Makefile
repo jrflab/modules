@@ -562,7 +562,7 @@ copynumber_summary:
 	$(MAKE) -f modules/copy_number/genomealtered.mk
 	$(MAKE) -f modules/copy_number/lstscore.mk
 	$(MAKE) -f modules/copy_number/ntaiscore.mk
-	$(MAKE) -f modules/copy_number/myriadscore.mk
+	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
 	$(MAKE) -f modules/copy_number/genomesummary.mk
 
 TARGETS += tseq_workflow
