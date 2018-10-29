@@ -534,6 +534,7 @@ genome_summary :
 TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
+	
 
 #==================================================
 # annotations
@@ -550,6 +551,7 @@ ann_somatic_vcf:
 TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
+	
 
 #==================================================
 # workflows
@@ -567,6 +569,7 @@ TARGETS += hotspots_summary
 hotspot_summary:
 	$(MAKE) -f modules/etc/genotypehotspots.mk
 	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
+	
 
 #==================================================
 # clean up
