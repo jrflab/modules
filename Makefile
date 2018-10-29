@@ -559,10 +559,10 @@ ann_vcf:
 
 TARGETS += copynumber_summary
 copynumber_summary:
-	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
-	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
-	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
-	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
+	$(MAKE) -f modules/copy_number/genomealtered.mk
+	$(MAKE) -f modules/copy_number/lstscore.mk
+	$(MAKE) -f modules/copy_number/ntaiscore.mk
+	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 
 TARGETS += tseq_workflow
