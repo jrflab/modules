@@ -24,7 +24,6 @@ endef
 
 RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
 
-
 #==================================================
 # aligners
 #==================================================
@@ -93,11 +92,6 @@ TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 	
-TARGETS += genotype_hotspots
-genotype_hotspots:
-	$(call RUN_MAKE,modules/etc/genotypehotspots.mk)
-	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
-        
 TARGETS += haplotype_caller
 haplotype_caller : 
 	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
@@ -564,25 +558,11 @@ copynumber_summary:
 	$(MAKE) -f modules/copy_number/ntaiscore.mk
 	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
-
-TARGETS += tseq_workflow
-tseq_workflow: tseq_workflow_ann
-	$(MAKE) -f modules/summary/mutationSummary.mk
-	$(MAKE) -f modules/recurrent_mutations/report.mk
-	$(MAKE) -f modules/export/cbioportal.mk
-
-TARGETS += tseq_workflow_post_align
-tseq_workflow_post_align: $(ALIGNER)
-	$(MAKE) -f modules/qc/bamIntervalMetrics.mk
-	$(MAKE) -f modules/variant_callers/somatic/mutect2.mk
-	$(MAKE) -f modules/variant_callers/gatkVariantCaller.mk
-	$(MAKE) -f modules/copy_number/facets.mk
-
-TARGETS += tseq_workflow_ann
-tseq_workflow_ann: tseq_workflow_post_align
-	$(MAKE) -f modules/vcf_tools/annotateSomaticVcf.mk
-	$(MAKE) -f modules/vcf_tools/annotateVcf.mk
-
+	
+TARGETS += genotype_hotspots
+genotype_hotspots:
+	$(MAKE) -f modules/etc/genotypehotspots.mk
+	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
 
 #==================================================
 # clean up
