@@ -565,7 +565,7 @@ copynumber_summary:
 	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 	
-TARGETS += hotspots_summary
+TARGETS += hotspot_summary
 hotspot_summary:
 	$(MAKE) -f modules/etc/genotypehotspots.mk
 	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
