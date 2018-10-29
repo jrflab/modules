@@ -92,7 +92,12 @@ samtools_het :
 TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
-
+	
+TARGETS += genotype_hotspots
+genotype_hotspots:
+	$(MAKE) -f modules/etc/genotypehotspots.mk
+	$(MAKE) -f modules/summary/hotspotSummary.mk
+        
 TARGETS += haplotype_caller
 haplotype_caller : 
 	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
@@ -379,7 +384,7 @@ extract_unmapped :
 	
 TARGETS += extract_unmapped_pairs
 extract_unmapped_pairs :
-	$(call RUN_MAKE,modules/fastq_tools/extract_unmapped_pairs.mk)
+	$(call RUN_MAKE,modules/fastq_tools/extractunmappedpairs.mk)
 
 TARGETS += bam_to_fasta
 bam_to_fasta :
@@ -509,7 +514,7 @@ virus_detection_bowtie2 :
 	
 TARGETS += krona_classify
 krona_classify :
-	$(call RUN_MAKE,modules/fastq_tools/kronaClassify.mk)
+	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
 
 
 #==================================================
@@ -528,6 +533,9 @@ TARGETS += genome_summary
 genome_summary :
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 
+TARGETS += mutation_summary
+mutation_summary :
+	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 
 #==================================================
 # annotations
@@ -545,14 +553,17 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 
-TARGETS += mutation_summary
-mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
-
-
 #==================================================
 # workflows
 #==================================================
+
+TARGETS += copynumber_summary
+copynumber_summary:
+	$(MAKE) -f modules/copy_number/genomealtered.mk
+	$(MAKE) -f modules/copy_number/lstscore.mk
+	$(MAKE) -f modules/copy_number/ntaiscore.mk
+	$(MAKE) -f modules/copy_number/myriadscore.mk
+	$(MAKE) -f modules/copy_number/genomesummary.mk
 
 TARGETS += tseq_workflow
 tseq_workflow: tseq_workflow_ann
