@@ -12,10 +12,10 @@ genome_summary : genome_stats/lst_score.tsv genome_stats/genome_altered.tsv geno
 
 genome_stats/lst_score.tsv genome_stats/genome_altered.tsv genome_stats/ntai_score.tsv genome_stats/myriad_score.tsv genome_stats/genome_summary.tsv : 
 	$(call RUN,-n 1 -s 4G -m 4G,"cat $(LST_SCORE) > genome_stats/lst_score.tsv && \
-				     cat $(GENOME_ALTERED) > genome_stats/genome_altered.tsv && \
-				     cat $(NTAI_SCORE) > genome_stats/ntai_score.tsv && \
-				     cat $(MYRIAD_SCORE) > genome_stats/myriad_score.tsv && \
-				     $(RSCRIPT) modules/summary/genomesummary.R")
+				     			 cat $(GENOME_ALTERED) > genome_stats/genome_altered.tsv && \
+				     			 cat $(NTAI_SCORE) > genome_stats/ntai_score.tsv && \
+				     			 cat $(MYRIAD_SCORE) > genome_stats/myriad_score.tsv && \
+				     			 $(RSCRIPT) modules/summary/genomesummary.R")
 
 .DELETE_ON_ERROR:
 .SECONDARY:

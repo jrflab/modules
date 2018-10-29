@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-file_names = dir(path="genome_stats/", pattern=".tsv", full.names=FALSE)
+file_names = c("genome_altered.tsv", "lst_score.tsv", "myriad_score.tsv", "ntai_score.tsv")
 summary_scores = NULL
 for (i in 1:length(file_names)) {
   data = read.csv(file=paste0("genome_stats/", file_names[i]), header=FALSE, sep="\t", stringsAsFactors=FALSE)

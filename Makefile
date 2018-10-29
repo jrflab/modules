@@ -92,6 +92,10 @@ TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 	
+TARGETS += genotype_hotspot
+genotype_hotspot:
+	$(call RUN_MAKE,modules/etc/genotypehotspots.mk)
+	
 TARGETS += haplotype_caller
 haplotype_caller : 
 	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
@@ -559,8 +563,8 @@ copynumber_summary:
 	$(MAKE) -f modules/copy_number/myriadhrdscore.mk
 	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 	
-TARGETS += genotype_hotspots
-genotype_hotspots:
+TARGETS += hotspots_summary
+hotspot_summary:
 	$(MAKE) -f modules/etc/genotypehotspots.mk
 	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
 
