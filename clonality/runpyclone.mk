@@ -6,6 +6,9 @@ PHONY += pyclone
 run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone.tsv)
 
 define run-pyclone
+pyclone/%/config.yaml : pyclone/%/
+	$$(call RUN,-s 4G -m 6G,"$(RSCRIPT) modules/clonality/pycloneconfig.R --sample-name $$*")
+
 pyclone/%/trace/alpha.tsv.bz2 : pyclone/%/config.yaml
 	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 							 PyClone run_analysis --config_file pyclone/$$*/config.yaml --seed 0")
