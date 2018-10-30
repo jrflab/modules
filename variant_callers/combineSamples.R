@@ -85,9 +85,15 @@ colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
 vars = cbind(vars, VAF, DEPTH, LOH)
 
-index = grepl("mutect", vars[,"Variant_Caller"]) | grepl("varscan", vars[,"Variant_Caller"])
+mutect = grepl("mutect", vars[,"Variant_Caller"])
+main_indels = grepl("varscan", vars[,"Variant_Caller"]) & grepl("strelka", vars[,"Variant_Caller"])
+other_indels = ((grepl("platypus", vars[,"Variant_Caller"]) & grepl("scalpel", vars[,"Variant_Caller"])) |
+			   (grepl("platypus", vars[,"Variant_Caller"]) & grepl("lancet", vars[,"Variant_Caller"]))) &
+			   (nchar(vars[,"Ref"])>3 | nchar(vars[,"Alt"])>3) &
+			   !grepl("In_Frame", vars[,"Variant_Classification"])
+index = mutect | main_indels | other_indels
 vars = vars[index,,drop=FALSE]
-index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Region", "Splice_Site")
+index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Site")
 vars = vars[index,,drop=FALSE]
 
 write.table(vars, file=paste0("sufam/", opt$patient, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)

@@ -465,23 +465,15 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
-TARGETS += setup_pyclone_ms
+TARGETS += setup_pyclone
 setup_pyclone_ms :
 	$(call RUN_MAKE,modules/clonality/setuppyclone.mk)
 
-TARGETS += run_pyclone_ms
+TARGETS += run_pyclone
 run_pyclone_ms :
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+
 	
-TARGETS += setup_pyclone_ss
-setup_pyclone_ss :
-	$(call RUN_MAKE,modules/clonality/setuppyclone2.mk)
-
-TARGETS += run_pyclone_ss
-run_pyclone_ss :
-	$(call RUN_MAKE,modules/clonality/runpyclone2.mk)
-
-
 #==================================================
 # mutational signatures
 #==================================================
@@ -582,5 +574,12 @@ viral_detection:
 	$(MAKE) -f modules/fastq_tools/blastReads.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
 	
+TARGETS += multisample_pyclone
+multisample_pyclone:
+	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/variant_callers/sufammultiSample.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
 	
+
 .PHONY : $(TARGETS)

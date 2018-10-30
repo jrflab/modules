@@ -41,10 +41,10 @@ write.table(vcf, file=paste0("sufam/", opt$patient, ".vcf"), sep="\t", col.names
 # dp and maf
 #====================================
 for (i in 1:length(sample_names)) {
-	if (!file.exists(paste0("sufam/", sample_names[i], ".tmp"))) {
-		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".tmp"))
+	if (!file.exists(paste0("sufam/", sample_names[i], ".mat"))) {
+		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
 	}
-	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".tmp"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".mat"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	## fix depth
 	index = grep("DP", colnames(vars))
 	vars[,index[i]] = tmp[,"cov"]
@@ -124,14 +124,14 @@ for (i in 2:length(sample_names)) {
 	}
 	LL = unlist(lapply(alpha_hat, function(x) {sum(x[,"LL"])}))
 	
-	pdf(file=paste0("sufam/", sample_names[i], "_", sample_names, ".pdf"))
+	pdf(file=paste0("sufam/", sample_names[i], "_", sample_names[1], ".pdf"))
 	plot(alpha, LL, type="o", col="steelblue", axes=FALSE, frame.plot=FALSE, xlab="", ylab="")
 	axis(1, at = NULL, cex.axis = 1.5, padj = 0.25)
     axis(2, at = NULL, cex.axis = 1.5, las = 1)
     mtext(side = 1, text = expression(alpha), line = 4, cex = 1.5)
     mtext(side = 2, text = expression(Sigma~"LL"), line = 4, cex = 1.5)
     index = which.max(LL)
-    title(main = paste0("alpha_hat = ", signif(alpha[index], 3)), cex.main = 1.5)
+    title(main = paste0("alpha* = ", signif(alpha[index], 3)), cex.main = 1.5)
     box(lwd = 2)
 	dev.off()
 	
