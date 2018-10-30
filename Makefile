@@ -28,14 +28,14 @@ RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+
 # aligners
 #==================================================
 
+TARGETS += bwamem
+bwamem :
+	$(call RUN_MAKE,modules/aligners/bwamemAligner.mk)
+
 TARGETS += bwa
 bwa : NUM_ATTEMPTS = 50
 bwa :
 	$(call RUN_MAKE,modules/aligners/bwaAligner.mk)
-
-TARGETS += bwamem
-bwamem :
-	$(call RUN_MAKE,modules/aligners/bwamemAligner.mk)
 
 TARGETS += bowtie
 bowtie : NUM_ATTEMPTS = 50
@@ -50,10 +50,6 @@ tmap :
 TARGETS += hisat
 hisat : 
 	$(call RUN_MAKE,modules/aligners/hisatAligner.mk)
-
-TARGETS += cufflinks
-cufflinks : 
-	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
 
 TARGETS += tophat
 tophat : 
@@ -76,66 +72,14 @@ blast_reads :
 # variant callers
 #==================================================
 
-TARGETS += hla_polysolver
-hla_polysolver :
-	$(call RUN_MAKE,modules/variant_callers/somatic/polysolver.mk)
-	
-TARGETS += msisensor
-msisensor :
-	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)
-
-TARGETS += samtools_het
-samtools_het :
-	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
-
-TARGETS += hotspot
-hotspot: 
-	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
-	
-TARGETS += genotype_hotspot
-genotype_hotspot:
-	$(call RUN_MAKE,modules/variant_callers/genotypehotspots.mk)
-	
-TARGETS += haplotype_caller
-haplotype_caller : 
-	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
-
-TARGETS += gatk
-gatk : 
-	$(call RUN_MAKE,modules/variant_callers/gatk.mk)
-
-TARGETS += jsm
-jsm :
-	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
-
 TARGETS += mutect
 mutect :
 	$(call RUN_MAKE,modules/variant_callers/somatic/mutect.mk)
-
+	
 TARGETS += mutect2
 mutect2 :
 	$(call RUN_MAKE,modules/variant_callers/somatic/mutect2.mk)
-
-TARGETS += strelka
-strelka :
-	$(call RUN_MAKE,modules/variant_callers/somatic/strelka.mk)
-
-TARGETS += varscanTN
-varscanTN :
-	$(call RUN_MAKE,modules/variant_callers/somatic/varscanTN.mk)
-
-TARGETS += varscan
-varscan :
-	$(call RUN_MAKE,modules/variant_callers/varscan.mk)
-
-TARGETS += pyrohmm
-pyrohmm :
-	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
-
-TARGETS += museqTN
-museqTN :
-	$(call RUN_MAKE,modules/variant_callers/somatic/museqTN.mk)
-
+	
 TARGETS += somatic_sniper
 somatic_sniper :
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticSniper.mk)
@@ -143,14 +87,26 @@ somatic_sniper :
 TARGETS += snvmix
 snvmix :
 	$(call RUN_MAKE,modules/variant_callers/snvmix.mk)
+	
+TARGETS += tvcTN
+tvcTN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
 
-TARGETS += pindel
-pindel :
-	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
+TARGETS += tvc
+tvc:
+	$(call RUN_MAKE,modules/variant_callers/tvc.mk)
 
-TARGETS += pindelTN
-pindelTN :
-	$(call RUN_MAKE,modules/variant_callers/somatic/pindelTN.mk)
+TARGETS += varscanTN
+varscanTN :
+	$(call RUN_MAKE,modules/variant_callers/somatic/varscanTN.mk)
+	
+TARGETS += varscan
+varscan :
+	$(call RUN_MAKE,modules/variant_callers/varscan.mk)
+	
+TARGETS += strelka
+strelka :
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelka.mk)
 
 TARGETS += scalpel
 scalpel :
@@ -160,21 +116,57 @@ TARGETS += lancet
 lancet :
 	$(call RUN_MAKE,modules/variant_callers/somatic/lancet.mk)
 
-TARGETS += tvc
-tvc:
-	$(call RUN_MAKE,modules/variant_callers/tvc.mk)
+TARGETS += pindelTN
+pindelTN :
+	$(call RUN_MAKE,modules/variant_callers/somatic/pindelTN.mk)
+	
+TARGETS += pindel
+pindel :
+	$(call RUN_MAKE,modules/variant_callers/pindel.mk)
+	
+TARGETS += gatk
+gatk : 
+	$(call RUN_MAKE,modules/variant_callers/gatk.mk)
+	
+TARGETS += haplotype_caller
+haplotype_caller : 
+	$(call RUN_MAKE,modules/variant_callers/haplotypeCaller.mk)
+	
+TARGETS += samtools_het
+samtools_het :
+	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
-TARGETS += tvcTN
-tvcTN:
-	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
+TARGETS += platypus
+platypus:
+	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
+	
+TARGETS += msisensor
+msisensor :
+	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)	
 
-TARGETS += somatic_indels
-somatic_indels:
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
+TARGETS += hla_polysolver
+hla_polysolver :
+	$(call RUN_MAKE,modules/variant_callers/somatic/polysolver.mk)
+	
+TARGETS += pyrohmm
+pyrohmm :
+	$(call RUN_MAKE,modules/variant_callers/pyroHMMVar.mk)
 
-TARGETS += somatic_variants
-somatic_variants:
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
+TARGETS += museqTN
+museqTN :
+	$(call RUN_MAKE,modules/variant_callers/somatic/museqTN.mk)
+	
+TARGETS += hotspot
+hotspot: 
+	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
+	
+TARGETS += genotype_hotspot
+genotype_hotspot:
+	$(call RUN_MAKE,modules/variant_callers/genotypehotspots.mk)
+	
+TARGETS += jsm
+jsm :
+	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
 
 TARGETS += sufam
 sufam:
@@ -184,26 +176,22 @@ TARGETS += sufam_multisample
 sufam_multisample:
 	$(call RUN_MAKE,modules/variant_callers/sufammultiSample.mk)
 
-TARGETS += platypus
-platypus:
-	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
-	
-TARGETS += macs2TN
-macs2TN:
-	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
 
-	
 #==================================================
 # copy number
 #==================================================
 
-TARGETS += norm_copynum
-norm_copynum :
-	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)
-
 TARGETS += facets
 facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
+	
+TARGETS += ascat
+ascat :
+	$(call RUN_MAKE,modules/copy_number/ascat.mk)
+
+TARGETS += norm_copynum
+norm_copynum :
+	$(call RUN_MAKE,modules/copy_number/normalisedCopyNum.mk)
 
 TARGETS += titan
 titan :
@@ -260,10 +248,6 @@ ntai_score :
 TARGETS += myriad_score
 myriad_score :
 	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
-	
-TARGETS += ascat
-ascat :
-	$(call RUN_MAKE,modules/copy_number/ascat.mk)
 	
 TARGETS += snp6
 snp6 :
@@ -438,6 +422,10 @@ bam_stats :
 # rna sequencing
 #==================================================
 
+TARGETS += cufflinks
+cufflinks : 
+	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
+
 TARGETS += sum_reads
 sum_reads :
 	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
@@ -445,6 +433,15 @@ sum_reads :
 TARGETS += exon_counts
 exon_counts :
 	$(call RUN_MAKE,modules/rnaseq/dexseq.mk)
+	
+
+#==================================================
+# chip sequencing
+#==================================================
+	
+TARGETS += macs2TN
+macs2TN:
+	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
 
 
 #==================================================
@@ -557,6 +554,14 @@ ann_vcf:
 # workflows
 #==================================================
 
+TARGETS += somatic_indels
+somatic_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
+	
+TARGETS += somatic_variants
+somatic_variants:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
+
 TARGETS += copynumber_summary
 copynumber_summary:
 	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
@@ -570,16 +575,12 @@ hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
 	
-
-#==================================================
-# clean up
-#==================================================
-
-TARGETS += clean_variants
-clean_variants :
-	rm -rf mutect varscan strelka vcf tables alltables summary hotspot tsv
-
-clean_vcf :
-	rm -rf vcf vcf_ann
-
+TARGETS += viral_detection
+viral_detection:
+	$(MAKE) -f modules/fastq_tools/extractReads.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/fastq_tools/bamtoFasta.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/fastq_tools/blastReads.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
+	
+	
 .PHONY : $(TARGETS)
