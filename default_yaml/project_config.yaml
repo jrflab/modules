@@ -29,7 +29,7 @@ ann_mut_taste: false
 ann_provean: false
 ann_pathogen: true
 
-# targets_file: intervals.bed
+#targets_file: /data/reis-filho/reference/target_panels/panel.bed
 exome: true
 
 # gatk options
