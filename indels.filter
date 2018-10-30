@@ -1,5 +1,0 @@
---filterName "QD" --filterExpression "QD < 2.0"
---filterName "ReadPosRankSum" --filterExpression "ReadPosRankSum < -20.0"
---filterName "InbreedingCoeff" --filterExpression "InbreedingCoeff < -0.8"
---filterName "FS" --filterExpression "FS > 200.0"
---filterName "Depth" --filterExpression "DP < 5"
