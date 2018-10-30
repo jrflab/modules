@@ -7,7 +7,8 @@ if (!interactive()) {
 }
 
 args_list <- list(make_option("--in_file", default = NA, type = 'character', help = "input file name"),
-				  make_option("--out_file", default = NA, type = 'character', help = "output file name"))
+				  make_option("--out_file", default = NA, type = 'character', help = "output file name"),
+				  make_option("--hotspot_vcf", default = "modules/reference/hotspots/hotspot-dedup.vcf", type = 'character', help = "hotspot vcf file"))
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
@@ -28,5 +29,13 @@ AD = do.call(cbind, AD)
 colnames(AD) = paste0("AD_", sample_names)
 MAF = do.call(cbind, MAF)
 colnames(MAF) = paste0("MAF_", sample_names)
-res = cbind(DP, AD, MAF)
+vcf = read.table(file=opt$hotspot_vcf, header=FALSE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+chr = vcf[,1]
+pos = vcf[,2]
+ref = vcf[,4]
+alt = vcf[,5]
+gene_symbol = gsub("HOTSPOT_GENE=", "", x=unlist(lapply(strsplit(vcf[,8], ";", fixed=TRUE), function(x) { x[grep("HOTSPOT_GENE=", x)]})))
+hgvsp_short = gsub("HOTSPOT_HGVSp=", "", x=unlist(lapply(strsplit(vcf[,8], ";", fixed=TRUE), function(x) { x[grep("HOTSPOT_HGVSp=", x)]})))
+res = cbind(chr, pos, ref, alt, gene_symbol, hgvsp_short, DP, AD, MAF)
+colnames(res)[1:6] = c("Chromosome", "Position", "Reference_Allele", "Alternate_Allele", "Gene_Symbol", "HGVSp")
 write.table(res, file=out_file_name, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
