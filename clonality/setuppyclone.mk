@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/setup_pyclone.$(NOW)
 PHONY += pyclone
 
-setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml)
+setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/config.yaml)
 
 define make-input-pyclone
 pyclone/$2/$1.tsv : sufam/$2.tsv
@@ -21,3 +21,10 @@ pyclone/$2/$1.yaml : pyclone/$2/$1.tsv
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call build-mutations-file,$(tumor.$(pair)),$(normal.$(pair)))))
+
+define make-config-yaml
+pyclone/%/config.yaml : pyclone/%/
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
+endef
+$(foreach sample,$(NORMAL_SAMPLES),\
+		$(eval $(call run-pyclone,$(sample))))
