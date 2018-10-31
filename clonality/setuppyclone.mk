@@ -27,4 +27,4 @@ pyclone/%/config.yaml : pyclone/%/
 	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
-		$(eval $(call run-pyclone,$(sample))))
+		$(eval $(call make-config-yaml,$(sample))))
