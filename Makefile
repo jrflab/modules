@@ -260,6 +260,10 @@ cnvkit_coverage :
 TARGETS += cnvkit_reference
 cnvkit_reference :
 	$(call RUN_MAKE,modules/copy_number/cnvkitreference.mk)
+	
+TARGETS += cnvkit_fix
+cnvkit_fix :
+	$(call RUN_MAKE,modules/copy_number/cnvkitfix.mk)
 
 
 #==================================================
