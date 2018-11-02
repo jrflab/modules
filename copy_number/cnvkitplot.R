@@ -11,8 +11,8 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-outfile_on_target = gsub(".cnr", ".on_target.pdf", opt$in_file, fixed=TRUE)
-outfile_off_target = gsub(".cnr", ".off_target.pdf", opt$in_file, fixed=TRUE)
+outfile_on_target = gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE)
+outfile_off_target = gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE)
 
 data = read.table(file=opt$in_file, header=TRUE, sep="\t", comment.char="#")
 
