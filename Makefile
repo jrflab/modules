@@ -253,6 +253,9 @@ TARGETS += snp6
 snp6 :
 	$(call RUN_MAKE,modules/snp6/snp6.mk)
 
+TARGETS += cnvkit_coverage
+cnvkit_coverage :
+	$(call RUN_MAKE,modules/copy_number/cnvkitcoverage.mk)
 
 #==================================================
 # structural variant callers

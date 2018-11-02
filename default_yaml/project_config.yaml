@@ -29,8 +29,10 @@ ann_mut_taste: false
 ann_provean: false
 ann_pathogen: true
 
-#targets_file: /data/reis-filho/reference/target_panels/panel.bed
-exome: true
+# target panels
+targets_file: ~/share/reference/target_panels/
+antitargets_file: ~/share/reference/target_panels/
+# exome: true
 
 # gatk options
 gatk_hard_filter_snps: true
