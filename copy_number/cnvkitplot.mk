@@ -8,7 +8,7 @@ cnvkit : $(foreach sample,$(SAMPLES),cnvkit/$(sample).ontarget.pdf cnvkit/$(samp
 
 define cnvkit-plot
 cnvkit/%.ontarget.pdf cnvkit/%.offtarget.pdf : cnvkit/%.cnr
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/msk_access_workflow/cnvkitplot.R --in_file $$(<)")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/copy_number/cnvkitplot.R --in_file $$(<)")
 endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call cnvkit-plot,$(sample))))
