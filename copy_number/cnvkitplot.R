@@ -14,29 +14,66 @@ opt <- arguments$options
 outfile_on_target = gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE)
 outfile_off_target = gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE)
 
-data = read.table(file=opt$in_file, header=TRUE, sep="\t", comment.char="#")
+data = read.table(file=opt$in_file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+data = subset(data, data[,"depth"]!=0)
+data[data[,"chromosome"]=="X", "chromosome"] = 23
+data[data[,"chromosome"]=="Y", "chromosome"] = 24
+data[,"chromosome"] = as.numeric(data[,"chromosome"])
 
-on_target = subset(data, data$gene=="-")
+ontarget = subset(data, data$gene=="-")
+col = rep("#925375", nrow(ontarget))
+col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 pdf(file=outfile_on_target, width=14)
-par(mar=c(6.1, 6.5, 4.1, 1.1))
-plot(on_target$log2, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", ylim=c(-4,4))
-points(on_target$log2, pch=19, cex=.5, col=ifelse(on_target$depth!=0, "steelblue", "red"))
-abline(h=0, col="red", lty=1, lwd=1.5)
-axis(1, at=NULL, cex.axis=1.5, padj=0.25)
-axis(2, at=NULL, cex.axis=1.5, las=1)
-mtext(side=1, text="Position (index)", line=4, cex=1.5)
-mtext(side=2, text=expression(Log[2]~"Ratio"), line=4, cex=1.5)
+par(mar=c(5, 5, 4, 2)+.1)
+plot(ontarget[,"log2"], type="p", pch=".", cex=3.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+axis(2, at = NULL, cex.axis = 1.15, las = 1)
+mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+abline(v=1, col="goldenrod3")
+abline(h=0, col="red")
+for (j in 2:max(ontarget[,"chromosome"])) {
+	v = min(which(ontarget[,"chromosome"]==j))
+	abline(v=v, col="goldenrod3")
+}
+abline(v=max(nrow(ontarget)), col="goldenrod3")
+start = NULL
+end = NULL
+for (j in 1:max(ontarget[,"chromosome"])) {
+	start[j] = min(which(ontarget[,"chromosome"]==j))
+	end[j] = max(which(ontarget[,"chromosome"]==j))
+}
+labels = 1:max(ontarget[,"chromosome"])
+labels[labels==23] = "X"
+labels[labels==24] = "Y"
+axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 box(lwd=2.5)
 dev.off()
-
-off_target = subset(data, data$gene!="-")
+	
+offtarget = subset(data, data$gene!="-")
+col = rep("#925375", nrow(offtarget))
+col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
 pdf(file=outfile_off_target, width=14)
-par(mar=c(6.1, 6.5, 4.1, 1.1))
-plot(off_target$log2, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", ylim=c(-4,4))
-points(off_target$log2, pch=19, cex=.5, col=ifelse(off_target$depth!=0, "steelblue", "red"))
-axis(1, at=NULL, cex.axis=1.5, padj=0.25)
-axis(2, at=NULL, cex.axis=1.5, las=1)
-mtext(side=1, text="Position (index)", line=4, cex=1.5)
-mtext(side=2, text=expression(Log[2]~"Ratio"), line=4, cex=1.5)
+par(mar=c(5, 5, 4, 2)+.1)
+plot(offtarget[,"log2"], type="p", pch=".", cex=3.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+axis(2, at = NULL, cex.axis = 1.15, las = 1)
+mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+abline(v=1, col="goldenrod3")
+abline(h=0, col="red")
+for (j in 2:2:max(offtarget[,"chromosome"])) {
+	v = min(which(offtarget[,"chromosome"]==j))
+	abline(v=v, col="goldenrod3")
+}
+abline(v=max(nrow(offtarget)), col="goldenrod3")
+start = NULL
+end = NULL
+for (j in 1:max(offtarget[,"chromosome"])) {
+	start[j] = min(which(offtarget[,"chromosome"]==j))
+	end[j] = max(which(offtarget[,"chromosome"]==j))
+}
+labels = 1:max(offtarget[,"chromosome"])
+labels[labels==23] = "X"
+labels[labels==24] = "Y"
+axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 box(lwd=2.5)
 dev.off()
