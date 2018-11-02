@@ -600,5 +600,8 @@ multisample_pyclone:
 TARGETS += run_cnvkit
 run_cnvkit :
 	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
 
 .PHONY : $(TARGETS)
