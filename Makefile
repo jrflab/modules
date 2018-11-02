@@ -265,6 +265,10 @@ TARGETS += cnvkit_fix
 cnvkit_fix :
 	$(call RUN_MAKE,modules/copy_number/cnvkitfix.mk)
 
+TARGETS += cnvkit_plot
+cnvkit_plot :
+	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
+	
 
 #==================================================
 # structural variant callers

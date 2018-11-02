@@ -1,0 +1,16 @@
+include modules/Makefile.inc
+include modules/genome_inc/b37.inc
+
+LOGDIR ?= log/cnvkit_plot.$(NOW)
+PHONY += cnvkit
+
+cnvkit : $(foreach sample,$(SAMPLES),cnvkit/$(sample).ontarget.pdf cnvkit/$(sample).offtarget.pdf)
+
+define cnvkit-plot
+cnvkit/%.on_target.pdf cnvkit/%.off_target.pdf : cnvkit/%.cnr
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/msk_access_workflow/cnvkitplot.R --in_file $$(<)")
+endef
+ $(foreach sample,$(SAMPLES),\
+		$(eval $(call cnvkit-plot,$(sample))))
+				
+.PHONY: $(PHONY)
