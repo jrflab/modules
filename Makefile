@@ -14,7 +14,7 @@ MAKELOG = log/$(@).$(NOW).log
 
 USE_CLUSTER ?= true
 QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
-NUM_JOBS ?= 100
+NUM_JOBS ?= 250
 
 define RUN_QMAKE
 $(QMAKE) -e -f $1 -j $2 $(TARGET) && \
@@ -584,5 +584,8 @@ multisample_pyclone:
 	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
 	
+TARGETS += run_cnvkit
+run_cnvkit :
+	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
 
 .PHONY : $(TARGETS)

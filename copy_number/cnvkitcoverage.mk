@@ -8,10 +8,10 @@ cnvkit : $(foreach sample,$(SAMPLES),cnvkit/$(sample).targetcoverage.cnn cnvkit/
 
 define cnvkit-cnn
 cnvkit/%.targetcoverage.cnn : bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) modules/bed/MSK-ACCESS-v1_0-probe-AB_cnvkit_ontarget.bed -o cnvkit/$$(*).targetcoverage.cnn")
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(TARGETS_FILE) -o cnvkit/$$(*).targetcoverage.cnn")
 
 cnvkit/%.antitargetcoverage.cnn : bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) modules/bed/MSK-ACCESS-v1_0-probe-AB_cnvkit_offtarget.bed -o cnvkit/$$(*).antitargetcoverage.cnn")
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ANTITARGETS_FILE) -o cnvkit/$$(*).antitargetcoverage.cnn")
 endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call cnvkit-cnn,$(sample))))
