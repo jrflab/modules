@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/hotspot_summary.$(NOW)
 PHONY += hotspot summary summary/tsv
 
-HOTSPOT ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),hotspot/$(set).tsv))
+HOTSPOT ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),hotspot/$(set).txt))
 
 hotspot_summary : summary/tsv/hotspot_summary.tsv summary/hotspot_summary.xlsx
 
