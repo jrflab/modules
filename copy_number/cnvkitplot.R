@@ -24,6 +24,7 @@ if (nrow(data)==0) {
 	data[data[,"chromosome"]=="X", "chromosome"] = 23
 	data[data[,"chromosome"]=="Y", "chromosome"] = 24
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
+	data = subset(data, data[,"chromosome"]<=23)
 
 	ontarget = subset(data, data$gene=="-")
 	col = rep("#925375", nrow(ontarget))
@@ -49,7 +50,6 @@ if (nrow(data)==0) {
 	}
 	labels = 1:max(ontarget[,"chromosome"])
 	labels[labels==23] = "X"
-	labels[labels==24] = "Y"
 	axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
 	dev.off()
@@ -65,7 +65,7 @@ if (nrow(data)==0) {
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	abline(v=1, col="goldenrod3")
 	abline(h=0, col="red")
-	for (j in 2:2:max(offtarget[,"chromosome"])) {
+	for (j in 2:max(offtarget[,"chromosome"])) {
 		v = min(which(offtarget[,"chromosome"]==j))
 		abline(v=v, col="goldenrod3")
 	}
@@ -78,7 +78,6 @@ if (nrow(data)==0) {
 	}
 	labels = 1:max(offtarget[,"chromosome"])
 	labels[labels==23] = "X"
-	labels[labels==24] = "Y"
 	axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
 	dev.off()
