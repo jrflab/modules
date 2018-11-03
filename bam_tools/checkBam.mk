@@ -15,7 +15,7 @@ endef
 		$(eval $(call check-bam,$(sample))))
 		
 check_bam/summary.txt: $(wildcard check_bam/$(SAMPLES).txt)
-	$(call RUN,-n 1 -s 2G -m 4G,"cat $$(CHECK_BAM) > check_bam/summary.txt")
+	$(call RUN,-n 1 -s 2G -m 4G,"cat $(CHECK_BAM) > check_bam/summary.txt")
 
 .DELETE_ON_ERROR:
 .SECONDARY:
