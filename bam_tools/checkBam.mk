@@ -10,7 +10,7 @@ CHECK_BAM ?= $(wildcard $(foreach set,$(SAMPLES),check_bam/$(set).txt))
 define check-bam
 check_bam/%.txt : bam/%.bam
 	$$(call RUN,-c -n 1 -s 2G -m 4G,"printf $$(*) > check_bam/$$(*).txt && \
-									 if [ -f $$(<) ]; then printf '\t1' >> check_bam/$$(*).txt; else printf '\t0' >> check_bam/$$(*).txt; fi")
+									 if [ -f $$(<) ]; then printf '\t1\n' >> check_bam/$$(*).txt; else printf '\t0\n' >> check_bam/$$(*).txt; fi")
 endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call check-bam,$(sample))))
