@@ -9,7 +9,9 @@ CHECK_BAM ?= $(wildcard $(foreach set,$(SAMPLES),check_bam/$(set).txt))
 
 define check-bam
 check_bam/%.txt : bam/%.bam
-	$$(call RUN,-c -n 1 -s 2G -m 4G," if [ -f $$(<) ]; then echo 1 > check_bam/$$(*).txt; else echo 0 > check_bam/$$(*).txt; fi")
+	$$(call RUN,-c -n 1 -s 2G -m 4G,"echo $$(*) > check_bam/$$(*).txt && \
+									 echo ' ' >> check_bam/$$(*).txt && \
+									 if [ -f $$(<) ]; then echo '1' >> check_bam/$$(*).txt; else echo '0' >> check_bam/$$(*).txt; fi")
 endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call check-bam,$(sample))))
