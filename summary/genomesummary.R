@@ -8,6 +8,6 @@ for (i in 1:length(file_names)) {
 }
 summary_scores = cbind(data[,1], summary_scores)
 colnames(summary_scores) = c("sample_names", gsub(".tsv", "", file_names))
-write.table(summary_scores, file="genome_stats/genome_summary.tsv", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
+write.table(summary_scores, file="summary/tsv/genome_summary.tsv", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
 
 warnings()
