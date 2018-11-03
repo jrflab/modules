@@ -581,7 +581,7 @@ copynumber_summary:
 TARGETS += hotspot_summary
 hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/summary/hotspotSummary.mk)
+	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
 TARGETS += viral_detection
 viral_detection:
