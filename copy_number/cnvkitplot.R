@@ -11,8 +11,8 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-outfile_on_target = gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE)
-outfile_off_target = gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE)
+outfile_on_target = gsub("cnr", "plot", gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
+outfile_off_target = gsub("cnr", "plot", gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
 
 data = read.table(file=opt$in_file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 data = subset(data, data[,"depth"]!=0)
@@ -27,7 +27,7 @@ if (nrow(data)==0) {
 	data = subset(data, data[,"chromosome"]<=23)
 
 	ontarget = subset(data, data$gene=="-")
-	col = rep("#925375", nrow(ontarget))
+	col = rep("#D6BECB", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
@@ -55,7 +55,7 @@ if (nrow(data)==0) {
 	dev.off()
 	
 	offtarget = subset(data, data$gene!="-")
-	col = rep("#925375", nrow(offtarget))
+	col = rep("#D6BECB", nrow(offtarget))
 	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_off_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
