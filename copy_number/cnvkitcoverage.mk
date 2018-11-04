@@ -5,7 +5,7 @@ LOGDIR ?= log/cnvkit_coverage.$(NOW)
 PHONY += cnvkit cnvkit/cnn cnvkit/cnn/tumor cnvkit/cnn/normal
 
 cnvkit_tumor : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).targetcoverage.cnn cnvkit/cnn/tumor/$(sample).antitargetcoverage.cnn)
-cnvkit_normal : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/normal/$(sample).targetcoverage.cnn cnvkit/cnn/normal/$(sample).antitargetcoverage.cnn)
+cnvkit_normal : $(foreach sample,$(NORMAL_SAMPLES),cnvkit/cnn/normal/$(sample).targetcoverage.cnn cnvkit/cnn/normal/$(sample).antitargetcoverage.cnn)
 
 define cnvkit-tumor-cnn
 cnvkit/cnn/tumor/%.targetcoverage.cnn : bam/%.bam
@@ -24,7 +24,7 @@ cnvkit/cnn/normal/%.targetcoverage.cnn : bam/%.bam
 cnvkit/cnn/normal/%.antitargetcoverage.cnn : bam/%.bam
 	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvkit/cnn/normal/$$(*).antitargetcoverage.cnn")
 endef
- $(foreach sample,$(TUMOR_SAMPLES),\
+ $(foreach sample,$(NORMAL_SAMPLES),\
 		$(eval $(call cnvkit-normal-cnn,$(sample))))
 		
 .PHONY: $(PHONY)
