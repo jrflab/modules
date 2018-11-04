@@ -7,7 +7,7 @@ PHONY += cnvkit
 cnvkit : cnvkit/REFERENCE.cnr
 
 cnvkit/REFERENCE.cnr : $(wildcard cnvkit/$(NORMAL_SAMPLES).targetcoverage.cnn) $(wildcard cnvkit/$(NORMAL_SAMPLES).antitargetcoverage.cnn)
-	$(call RUN,-n 1 -s 12G -m 16G,"cnvkit.py reference cnvkit/*N-* -f $(REF_FASTA) --no-edge -o cnvkit/REFERENCE.cnr")
+	$(call RUN,-n 1 -s 12G -m 16G,"cnvkit.py reference cnvkit/-N* -f $(REF_FASTA) --no-edge -o cnvkit/REFERENCE.cnr")
 		
 .PHONY: $(PHONY)
 
