@@ -1,6 +1,9 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("copynumber"));
+suppressPackageStartupMessages(library("colorspace"));
+suppressPackageStartupMessages(library("ASCAT"));
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -25,9 +28,9 @@ if (nrow(data)==0) {
 	data[data[,"chromosome"]=="Y", "chromosome"] = 24
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
 	data = subset(data, data[,"chromosome"]<=23)
-
+	
 	ontarget = subset(data, data$gene=="-")
-	col = rep("#D6BECB", nrow(ontarget))
+	col = rep("#C19EB1", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
@@ -55,7 +58,11 @@ if (nrow(data)==0) {
 	dev.off()
 	
 	offtarget = subset(data, data$gene!="-")
-	col = rep("#D6BECB", nrow(offtarget))
+	tmp = offtarget[,c("chromosome", "start", "log2"),drop=FALSE]
+	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
+	tmp = winsorize(data=tmp, tau=2.5, k=15, verbose=FALSE)
+	offtarget[,"log2"] = tmp[,"Log2Ratio"]
+	col = rep("#C19EB1", nrow(offtarget))
 	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_off_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
