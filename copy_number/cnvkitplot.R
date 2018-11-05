@@ -66,7 +66,7 @@ if (nrow(data)==0) {
 	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_off_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(offtarget[,"log2"], type="p", pch=".", cex=3.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(offtarget[,"log2"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
