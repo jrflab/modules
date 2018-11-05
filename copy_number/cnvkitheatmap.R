@@ -25,5 +25,5 @@ for (i in 1:length(in_file)) {
 }
 depth = do.call(cbind, depth)
 pdf(file=out_file, width=14, height=14)
-heatmap(x=log(depth), scale="none", labRow=rep(" ", nrow(depth)), labCol=rep(" ", ncol(depth)), col=colorRampPalette(RColorBrewer::brewer.pal(10, "RdBu"))(256))
+heatmap(x=depth, scale="none", labRow=rep(" ", nrow(depth)), labCol=rep(" ", ncol(depth)), col=colorRampPalette(RColorBrewer::brewer.pal(10, "RdBu"))(256))
 dev.off()
