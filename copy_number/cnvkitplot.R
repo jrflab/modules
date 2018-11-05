@@ -30,7 +30,7 @@ if (nrow(data)==0) {
 	data = subset(data, data[,"chromosome"]<=23)
 	
 	ontarget = subset(data, data$gene=="-")
-	col = rep("#C19EB1", nrow(ontarget))
+	col = rep("#925375", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
@@ -62,7 +62,7 @@ if (nrow(data)==0) {
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
 	tmp = winsorize(data=tmp, tau=2.5, k=15, verbose=FALSE)
 	offtarget[,"log2"] = tmp[,"Log2Ratio"]
-	col = rep("#C19EB1", nrow(offtarget))
+	col = rep("#925375", nrow(offtarget))
 	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_off_target, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
