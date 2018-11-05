@@ -23,5 +23,5 @@ for (i in 1:length(in_file)) {
 }
 depth = do.call(cbind, depth)
 pdf(file=out_file, width=14, height=14)
-heatmap(x=depth, labRow=rep(" ", nrow(depth), labCol=rep(" ", ncol(depth)))
+heatmap(x=depth, labRow=rep(" ", nrow(depth)), labCol=rep(" ", ncol(depth)))
 dev.off()
