@@ -18,7 +18,7 @@ out_file = opt$out_file
 depth = list()
 for (i in 1:length(in_file)) {
 	data = read.csv(file=in_file[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
-	depth[[i]] = as.numeric(depth data[,"depth"])
+	depth[[i]] = as.numeric(data[,"depth"])
 }
 depth = do.call(cbind, depth)
 pdf(file=out_file, width=14, height=14)
