@@ -60,7 +60,7 @@ if (nrow(data)==0) {
 	offtarget = subset(data, data$gene!="-")
 	tmp = offtarget[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE)
+	tmp = winsorize(data=tmp, tau=2.5, k=25, verbose=FALSE)
 	offtarget[,"log2"] = tmp[,"Log2Ratio"]
 	col = rep("#9F6986", nrow(offtarget))
 	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
