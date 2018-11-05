@@ -269,6 +269,10 @@ TARGETS += cnvkit_plot
 cnvkit_plot :
 	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
 	
+TARGETS += cnvkit_heatmap
+cnvkit_heatmap :
+	$(call RUN_MAKE,modules/copy_number/cnvkitheatmap.mk)
+	
 
 #==================================================
 # structural variant callers
