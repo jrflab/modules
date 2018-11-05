@@ -2,7 +2,7 @@ include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/cnvkit_plot.$(NOW)
-PHONY += cnvkit cnvkit cnvkit/plot
+PHONY += cnvkit cnvkit/plot
 
 cnvkit : $(foreach sample,$(SAMPLES),cnvkit/plot/$(sample).ontarget.pdf cnvkit/plot/$(sample).offtarget.pdf)
 
