@@ -25,6 +25,53 @@ endef
 RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+$(MAKE) -f $1,$(call RUN_QMAKE,$1,$(NUM_JOBS)))
 
 #==================================================
+# workflows
+#==================================================
+
+TARGETS += somatic_indels
+somatic_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
+	
+TARGETS += somatic_variants
+somatic_variants:
+	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
+
+TARGETS += copynumber_summary
+copynumber_summary:
+	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/summary/genomesummary.mk)
+	
+TARGETS += hotspot_summary
+hotspot_summary:
+	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
+	
+TARGETS += viral_detection
+viral_detection:
+	$(MAKE) -f modules/fastq_tools/extractReads.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/fastq_tools/bamtoFasta.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/fastq_tools/blastReads.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
+	
+TARGETS += multisample_pyclone
+multisample_pyclone:
+	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/variant_callers/sufammultiSample.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+	
+TARGETS += run_cnvkit
+run_cnvkit :
+	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitplot.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/copy_number/cnvkitheatmap.mk)
+
+#==================================================
 # aligners
 #==================================================
 
@@ -565,51 +612,5 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
-
-#==================================================
-# workflows
-#==================================================
-
-TARGETS += somatic_indels
-somatic_indels:
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
-	
-TARGETS += somatic_variants
-somatic_variants:
-	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
-
-TARGETS += copynumber_summary
-copynumber_summary:
-	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/summary/genomesummary.mk)
-	
-TARGETS += hotspot_summary
-hotspot_summary:
-	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
-	
-TARGETS += viral_detection
-viral_detection:
-	$(MAKE) -f modules/fastq_tools/extractReads.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/fastq_tools/bamtoFasta.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/fastq_tools/blastReads.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
-	
-TARGETS += multisample_pyclone
-multisample_pyclone:
-	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/variant_callers/sufammultiSample.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
-	
-TARGETS += run_cnvkit
-run_cnvkit :
-	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
 
 .PHONY : $(TARGETS)
