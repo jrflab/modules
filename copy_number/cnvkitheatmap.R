@@ -21,7 +21,7 @@ depth = list()
 for (i in 1:length(in_file)) {
 	print(i)
 	data = read.csv(file=in_file[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
-	index = data[,"chromosome"] %in% as.character(1:22)
+	index = data[,"chromosome"] %in% c(as.character(1:22), "X")
 	depth[[i]] = as.numeric(data[index,"depth"])
 }
 depth = do.call(cbind, depth)
