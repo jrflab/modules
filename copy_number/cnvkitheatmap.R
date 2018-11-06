@@ -21,9 +21,14 @@ depth = list()
 for (i in 1:length(in_file)) {
 	print(i)
 	data = read.csv(file=in_file[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
-	depth[[i]] = as.numeric(data[,"depth"])
+	index = data[,"chromosome"] %in% as.character(1:22)
+	depth[[i]] = as.numeric(data[index,"depth"])
 }
 depth = do.call(cbind, depth)
 pdf(file=out_file, width=14, height=14)
+heatmap(x=depth, labRow=rep(" ", nrow(depth)), labCol=rep(" ", ncol(depth)), col=colorRampPalette(RColorBrewer::brewer.pal(10, "RdBu"))(256))
+dev.off()
+
+png(file=gsub(".pdf", ".png", out_file, fixed=TRUE), width=1440, height=1440)
 heatmap(x=depth, labRow=rep(" ", nrow(depth)), labCol=rep(" ", ncol(depth)), col=colorRampPalette(RColorBrewer::brewer.pal(10, "RdBu"))(256))
 dev.off()
