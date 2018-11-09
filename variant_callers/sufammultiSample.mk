@@ -1,7 +1,6 @@
 include modules/Makefile.inc
 
-DEFAULT_ENV = /home/$(USER)/share/usr/opt/miniconda/
-NEW_ENV = /home/$(USER)/share/usr/anaconda-envs/jrflab-modules-0.1.5/
+SUFAM_ENV = /home/$(USER)/share/usr/anaconda-envs/sufam_multisample
 
 LOGDIR ?= log/sufam_multisample.$(NOW)
 PHONY += sufam
@@ -13,7 +12,7 @@ sufam/%.txt : summary/tsv/mutation_summary.tsv
 	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combineSamples.R --patient $$*")
 
 sufam/%.tsv : sufam/%.txt
-	$$(call RUN,-c -s 4G -m 6G --default_env $$(DEFAULT_ENV) --env $$(NEW_ENV),"$(RSCRIPT) modules/variant_callers/updateSamples.R --patient $$*")
+	$$(call RUN,-c -s 4G -m 6G -v $$(SUFAM_ENV) --env $$(NEW_ENV),"$(RSCRIPT) modules/variant_callers/updateSamples.R --patient $$*")
 	
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
