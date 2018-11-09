@@ -175,8 +175,8 @@ if (opt$type=="log2") {
 		}
 		return(x)
 	}
-	tmp = prunesegments.cn(x=tmp, n=10)
-	tmp = prunesegments.baf(x=tmp, n=10)
+	tmp = prunesegments.cn(x=tmp, n=20)
+	tmp = prunesegments.baf(x=tmp, n=25)
 	
 	end = NULL
 	for (j in 1:23) {
