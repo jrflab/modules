@@ -193,7 +193,7 @@ if (opt$type=="log2") {
 	col = "grey80"
 	pdf(file=opt$file_out, height=2*7*10/7*2/3, width=7*20/7)
 	par(mar=c(5, 5, 4, 2)+.1, mfrow=c(2,1))
-	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=2.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-2,2))
+	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=2.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main=ifelse(is.na(opt$gamma), 70, as.numeric(opt$gamma)), ylim=c(-2,2))
 	for (j in 1:nrow(tmp)) {
 		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
 	}
