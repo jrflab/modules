@@ -272,8 +272,8 @@ if (opt$type=="log2") {
 		}
 		return(x)
 	}
-	tmp = prunesegments.cn(x=tmp, n=15)
-	tmp = prunesegments.baf(x=tmp, n=20)
+	tmp = prunesegments.cn(x=tmp, n=20)
+	tmp = prunesegments.baf(x=tmp, n=25)
 	
 	Tumor_LogR = as.numeric(CN_and_BAF[,"Log2Ratio"])
 	Tumor_BAF = as.numeric(CN_and_BAF[,"BAF"])
