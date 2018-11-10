@@ -41,18 +41,16 @@ write.table(vcf, file=paste0("sufam/", opt$patient, ".vcf"), sep="\t", col.names
 # dp and maf
 #====================================
 for (i in 1:length(sample_names)) {
-# 	if (!file.exists(paste0("sufam/", sample_names[i], ".mat"))) {
-# 		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
-# 	}
-# 	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".mat"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+ 	if (!file.exists(paste0("sufam/", sample_names[i], ".mat"))) {
+ 		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
+ 	}
+ 	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".mat"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
  	## fix depth
  	index = grep("DP", colnames(vars))
-# 	vars[,index[i]] = tmp[,"cov"]
-	vars[,index[i]] = 100
+ 	vars[,index[i]] = tmp[,"cov"]
  	## fix maf
  	index = grep("MAF", colnames(vars))
-# 	vars[,index[i]] = tmp[,"val_maf"]
-	vars[,index[i]] = .5
+ 	vars[,index[i]] = tmp[,"val_maf"]
 }
  
 #====================================
