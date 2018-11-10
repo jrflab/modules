@@ -1,9 +1,11 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/sufam_multisample.$(NOW)
-PHONY += sufam
+PHONY += sufam summary
 
-sufam_multisample : $(foreach sample,$(NORMAL_SAMPLES),sufam/$(sample).tsv)
+SUFAM_SUMMARY ?= $(wildcard $(foreach sample,$(NORMAL_SAMPLES),sufam/$(sample).tsv))
+
+sufam_multisample : $(foreach sample,$(NORMAL_SAMPLES),sufam/$(sample).tsv) summary/sufam_summary.xlsx
 
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
@@ -15,3 +17,10 @@ sufam/%.tsv : sufam/%.txt
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
 		$(eval $(call combine-samples,$(sample))))
+
+summary/sufam_summary.xlsx : $(wildcard sufam/$(NORMAL_SAMPLES).tsv)
+	$(call RUN,-c -s 12G -m 16G,"$(RSCRIPT) modules/summary/sufamsummary.R --in_file '$(SUFAM_SUMMARY)'")
+
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY)
