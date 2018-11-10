@@ -8,9 +8,8 @@ parser = OptionParser(usage = "%prog [options] mutation_file", option_list = opt
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-file_names = dir(paste0("pyclone/", opt$sample_name), pattern=".yaml", full.names=FALSE)
-file_names = file_names[file_names!="config.yaml"]
-file_names = gsub(pattern=".yaml", replacement="", x=file_names, fixed=TRUE)
+file_names = dir(paste0("ascat/ascat"), pattern=".RData", full.names=FALSE)
+file_names = gsub(paste0("_", opt$sample_name), "", x=gsub(".RData", "", x=file_names[grep(opt$sample_name, file_names)], fixed=TRUE), fixed=TRUE)
 
 cat("num_iters: 10000\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = FALSE)
 cat("\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
