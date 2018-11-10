@@ -7,8 +7,7 @@ setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor
 
 define make-input-pyclone
 pyclone/$2/$1.tsv : sufam/$2.tsv
-	$$(call RUN,-c -s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
-								if [ ! -d pyclone/$2 ]; then mkdir pyclone/$2; fi && \
+	$$(call RUN,-c -s 4G -m 6G,"if [ ! -d pyclone/$2 ]; then mkdir pyclone/$2; fi && \
 								$(RSCRIPT) modules/clonality/tsvforpyclone.R --file_name sufam/$2.tsv --sample_name $1")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
