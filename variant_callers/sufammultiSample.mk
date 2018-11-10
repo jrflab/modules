@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-SUFAM_MULTISAMPLE = /home/$(USER)/share/usr/anaconda-envs/sufam_multisample
+SUFAM_MULTISAMPLE = /home/$(USER)/share/usr/anaconda-envs/sufam-multisample
 
 LOGDIR ?= log/sufam_multisample.$(NOW)
 PHONY += sufam
