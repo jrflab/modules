@@ -59,7 +59,7 @@ viral_detection:
 TARGETS += multisample_pyclone
 multisample_pyclone:
 	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/variant_callers/sufammultiSample.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/variant_callers/sufammultisample.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
 	
@@ -221,7 +221,7 @@ sufam:
 	
 TARGETS += sufam_multisample
 sufam_multisample:
-	$(call RUN_MAKE,modules/variant_callers/sufammultiSample.mk)
+	$(call RUN_MAKE,modules/variant_callers/sufammultisample.mk)
 
 
 #==================================================
