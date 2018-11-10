@@ -37,21 +37,23 @@ vcf = cbind(chr, pos, id, ref, alt, qual, filter, info)
 colnames(vcf) = c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
 write.table(vcf, file=paste0("sufam/", opt$patient, ".vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
  
-# #====================================
-# # dp and maf
-# #====================================
-# for (i in 1:length(sample_names)) {
+#====================================
+# dp and maf
+#====================================
+for (i in 1:length(sample_names)) {
 # 	if (!file.exists(paste0("sufam/", sample_names[i], ".mat"))) {
 # 		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
 # 	}
 # 	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".mat"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
-# 	## fix depth
-# 	index = grep("DP", colnames(vars))
+ 	## fix depth
+ 	index = grep("DP", colnames(vars))
 # 	vars[,index[i]] = tmp[,"cov"]
-# 	## fix maf
-# 	index = grep("MAF", colnames(vars))
+	vars[,index[i]] = 100
+ 	## fix maf
+ 	index = grep("MAF", colnames(vars))
 # 	vars[,index[i]] = tmp[,"val_maf"]
-# }
+	vars[,index[i]] = .5
+}
  
 #====================================
 # qt and q2
@@ -86,8 +88,8 @@ colnames(q_2) = paste0("q2_", colnames(q_2))
 vars = cbind(vars, q_t, q_2)
  
 #====================================
-# # loh
-# #====================================
+# loh
+#====================================
 for (i in 2:length(sample_names)) {
 	loh = rep(0, nrow(vars))
 	for (j in 1:nrow(vars)) {
