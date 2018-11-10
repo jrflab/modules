@@ -12,7 +12,7 @@ sufam/%.txt : summary/tsv/mutation_summary.tsv
 	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combineSamples.R --patient $$*")
 
 sufam/%.tsv : sufam/%.txt
-	$$(call RUN,-c -s 4G -m 6G -v $$(SUFAM_MULTISAMPLE) --default_env -v $$(SUFAM_MULTISAMPLE),"$(RSCRIPT) modules/variant_callers/updateSamples.R --patient $$*")
+	$$(call RUN,-c -s 4G -m 6G -v $$(SUFAM_MULTISAMPLE) --default_env $$(SUFAM_MULTISAMPLE),"$(RSCRIPT) modules/variant_callers/updateSamples.R --patient $$*")
 	
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
