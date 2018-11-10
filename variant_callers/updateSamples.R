@@ -166,5 +166,5 @@ suppressPackageStartupMessages(library("readr"));
 
 #write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
 
-system(paste0("echo 1 > sufam/", opt$patient, ".tsv"))
+cat(1, file=paste0("sufam/", opt$patient, ".tsv"))
 
