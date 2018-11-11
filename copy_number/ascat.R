@@ -13,6 +13,8 @@ args_list <- list(make_option("--type", default = NA, type = 'character', help =
 				  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
 				  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
 				  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
+				  make_option("--nlog2", default = NA, type = 'numeric', help = "number of clusters in Log2 ratio"),
+				  make_option("--nbaf", default = NA, type = 'numeric', help = "number of clusters in BAF"),
 				  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
 				  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
 				  
@@ -119,6 +121,8 @@ if (opt$type=="log2") {
 	dev.off()
 
 } else if (opt$type=="aspcf") {
+
+	gamma = ifelse(is.na(as.numeric(opt$gamma)), 70, as.numeric(opt$gamma))
 	
 	CN_and_BAF = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT"),drop=FALSE]
 	index = out2$jointseg[,"het"]==1
@@ -126,11 +130,14 @@ if (opt$type=="log2") {
 	colnames(CN_and_BAF) = c("Chromosome", "Position", "Log2Ratio", "BAF")
 	index = CN_and_BAF[,"BAF"]>0.5
 	CN_and_BAF[index,"BAF"] = 1 - CN_and_BAF[index,"BAF"]
-	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=ifelse(is.na(opt$gamma), 70, as.numeric(opt$gamma)), fast=FALSE, verbose=FALSE)
+	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=gamma, fast=FALSE, verbose=FALSE)
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
 } else if (opt$type=="plot-aspcf") {
+
+	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
+	nbaf = ifelse(is.na(as.numeric(opt$nbaf)), 15, as.numeric(opt$nbaf))
 
 	'prunesegments.cn' <- function(x, n=10)
 	{
@@ -154,7 +161,7 @@ if (opt$type=="log2") {
 		return(x)
 	}
 
-	'prunesegments.baf' <- function(x, n=10)
+	'prunesegments.baf' <- function(x, n=15)
 	{
 		cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
 		for (j in 1:nrow(x)) {
@@ -175,11 +182,8 @@ if (opt$type=="log2") {
 		}
 		return(x)
 	}
-	#tmp = prunesegments.cn(x=tmp, n=10)
-	#tmp = prunesegments.baf(x=tmp, n=15)
-	
-	tmp = prunesegments.cn(x=tmp, n=5)
-	tmp = prunesegments.baf(x=tmp, n=10)
+	tmp = prunesegments.cn(x=tmp, n=nlog2)
+	tmp = prunesegments.baf(x=tmp, n=nbaf)
 	
 	end = NULL
 	for (j in 1:23) {
@@ -231,6 +235,15 @@ if (opt$type=="log2") {
 	dev.off()
 	
 } else if (opt$type=="run-ascat") {
+	
+	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
+	nbaf = ifelse(is.na(as.numeric(opt$nbaf)), 15, as.numeric(opt$nbaf))
+	rho = as.numeric(opt$rho)
+	psi = as.numeric(opt$psi)
+	if (is.na(rho) | is.na(psi)) {
+		rho = NA
+		psi = NA
+	}
 
 	'prunesegments.cn' <- function(x, n=10)
 	{
@@ -275,11 +288,8 @@ if (opt$type=="log2") {
 		}
 		return(x)
 	}
-	#tmp = prunesegments.cn(x=tmp, n=10)
-	#tmp = prunesegments.baf(x=tmp, n=15)
-	
-	tmp = prunesegments.cn(x=tmp, n=5)
-	tmp = prunesegments.baf(x=tmp, n=10)
+	tmp = prunesegments.cn(x=tmp, n=nlog2)
+	tmp = prunesegments.baf(x=tmp, n=nbaf)
 	
 	Tumor_LogR = as.numeric(CN_and_BAF[,"Log2Ratio"])
 	Tumor_BAF = as.numeric(CN_and_BAF[,"BAF"])
@@ -321,7 +331,7 @@ if (opt$type=="log2") {
         	                copynumberprofile = NULL,
         	                nonroundedprofile = NULL, 
         	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = as.numeric(opt$rho), psi_manual = as.numeric(opt$psi), y_limit = 3, circos = NA))
+        	                gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
