@@ -47,8 +47,8 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 define ascat-run-ascat
 ascat/ascat/$1_$2.pdf : ascat/mad/$1_$2.RData
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"if [[ $${ascat_rho.$1} ]]; then export rho=$${ascat_rho.$1}; else export rho=NA; fi; && \
-																   if [[ $${ascat_psi.$1} ]]; then export psi=$${ascat_psi.$1}; else export psi=NA; fi; && \
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"if [ -v ${ascat_rho.$1} ]; then export rho=$${ascat_rho.$1}; else export rho=NA; fi; && \
+																   if [ -v ${ascat_psi.$1} ]; then export psi=$${ascat_psi.$1}; else export psi=NA; fi; && \
 																   $(RSCRIPT) modules/copy_number/ascat.R --type run-ascat --file_in $$< --file_out ascat/ascat/$1_$2.pdf --rho ${rho} --psi ${psi}")
 	
 ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
