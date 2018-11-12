@@ -13,7 +13,7 @@ arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
 in_file_names = unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE))
-sample_names = gsub(".txt", "", x=gsub("hotspot/", "", in_file_names, fixed=TRUE), fixed=TRUE)
+sample_names = gsub(".txt", "", x=gsub("sufam/", "", in_file_names, fixed=TRUE), fixed=TRUE)
 out_file_name = opt$out_file
 DP = AD = MAF = list()
 for (i in 1:length(in_file_names)) {
