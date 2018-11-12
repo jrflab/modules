@@ -7,7 +7,7 @@ HOTSPOT ?= $(wildcard $(foreach sample,$(SAMPLES),hotspot/$(sample).txt))
 
 hotspot_summary : summary/tsv/hotspot_summary.tsv summary/hotspot_summary.xlsx
 
-summary/tsv/hotspot_summary.tsv : $(wildcard hotspot/$(SAMPLES).txt)
+summary/tsv/hotspot_summary.tsv : $HOTSPOT
 	$(call RUN,-n 1 -s 4G -m 4G,"$(RSCRIPT) modules/summary/hotspotsummary.R --in_file '$(HOTSPOT)' --out_file summary/tsv/hotspot_summary.tsv")
 		
 summary/hotspot_summary.xlsx : summary/tsv/hotspot_summary.tsv
