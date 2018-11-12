@@ -100,6 +100,7 @@ mm <- lapply(facetsFiles, function(f) {
     load(f)
     tab <- fit$cncf
 	tab$chrom[which(tab$chrom==23)] <- "X"
+	tab$chrom[which(tab$chrom==24)] <- "Y"
 
 	tabGR <- tab %$% GRanges(seqnames = chrom, ranges = IRanges(start, end))
 	mcols(tabGR) <- tab %>% select(cnlr.median:lcn.em)
