@@ -4,9 +4,11 @@ SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
 LOGDIR ?= log/genotype_pdx.$(NOW)
-PHONY += sufam
+PHONY += sufam summary
 
-genotype_pdx : sufam/PDX.vcf $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt)
+MOUSE_SAMPLES ?= $(wildcard $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt))
+
+genotype_pdx : sufam/PDX.vcf $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt) summary/tsv/mouse_summary.tsv summary/mouse_summary.xlsx
 
 sufam/PDX.vcf : summary/tsv/mutation_summary.tsv
 	$(call RUN, -c -s 8G -m 16G,"$(RSCRIPT) modules/variant_callers/genotypepdx.R")
@@ -18,6 +20,13 @@ sufam/%.txt : bam/%.bam sufam/PDX.vcf
 endef
  $(foreach sample,$(sample_category.mouse),\
 		$(eval $(call genotype-pdx,$(sample))))
+		
+summary/tsv/mouse_summary.tsv : $MOUSE_SAMPLES
+	$(call RUN,-n 1 -s 4G -m 4G,"$(RSCRIPT) modules/summary/hotspotsummary.R --in_file '$(MOUSE_SAMPLES)' --out_file summary/tsv/mouse_summary.tsv")
+		
+summary/mouse_summary.xlsx : summary/tsv/mouse_summary.tsv
+	$(call RUN,-n 1 -s 4G -m 4G,"python modules/summary/hotspot_summary_excel.py")
+
 
 .DELETE_ON_ERROR:
 .SECONDARY:
