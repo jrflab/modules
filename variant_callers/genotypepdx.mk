@@ -6,8 +6,7 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 LOGDIR ?= log/genotype_pdx.$(NOW)
 PHONY += sufam
 
-summary_to_vcf : sufam/PDX.vcf
-genotype_pdx : $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt)
+genotype_pdx : sufam/PDX.vcf $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt)
 
 sufam/PDX.vcf : summary/tsv/mutation_summary.tsv
 	$(call RUN, -c -s 8G -m 16G,"$(RSCRIPT) modules/variant_callers/genotypepdx.R")
