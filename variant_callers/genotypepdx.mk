@@ -22,10 +22,10 @@ endef
 		$(eval $(call genotype-pdx,$(sample))))
 		
 summary/tsv/mouse_summary.tsv : $MOUSE_SAMPLES
-	$(call RUN,-n 1 -s 4G -m 4G,"$(RSCRIPT) modules/summary/hotspotsummary.R --in_file '$(MOUSE_SAMPLES)' --out_file summary/tsv/mouse_summary.tsv")
+	$(call RUN,-n 1 -s 4G -m 4G,"$(RSCRIPT) modules/summary/mousesummary.R --in_file '$(MOUSE_SAMPLES)' --out_file summary/tsv/mouse_summary.tsv")
 		
 summary/mouse_summary.xlsx : summary/tsv/mouse_summary.tsv
-	$(call RUN,-n 1 -s 4G -m 4G,"python modules/summary/hotspot_summary_excel.py")
+	$(call RUN,-n 1 -s 4G -m 4G,"python modules/summary/mouse_summary_excel.py")
 
 
 .DELETE_ON_ERROR:
