@@ -121,9 +121,9 @@ for (i in 2:length(sample_names)) {
 	indx = f_hat>.2
 	if (sum(indx)==0) {
 		indx = f_hat>.1
-		if (sum(indx)<5) {
-			indx = f_hat>0
-		}
+	}
+	if (sum(indx)<5) {
+		indx = f_hat>0
 	}
 	for (j in 1:length(alpha)) {
 		alpha_hat[[j]] = cancercellFraction(f_hat[indx], n[indx], qt[indx], q2[indx], alpha[j], e=0.01)
@@ -142,7 +142,7 @@ for (i in 2:length(sample_names)) {
 	dev.off()
 	
 	index = which.max(LL)
-	alpha_hat = cancercellFraction(f_hat, n, qt, q2, alpha[index]-.25, e=0.01)
+	alpha_hat = cancercellFraction(f_hat, n, qt, q2, ifelse((alpha[index]-.25)<=0, alpha[index], alpha[index]-.25), e=0.01)
 	cancer_cell_fraction = cbind(cancer_cell_fraction, alpha_hat[,"cancer_cell_frac"])
 	ccf_95CI_low = cbind(ccf_95CI_low, alpha_hat[,"ccf_95CI_low"])
 	ccf_95CI_high = cbind(ccf_95CI_high, alpha_hat[,"ccf_95CI_high"])
