@@ -211,6 +211,10 @@ TARGETS += genotype_hotspot
 genotype_hotspot:
 	$(call RUN_MAKE,modules/variant_callers/genotypehotspots.mk)
 	
+TARGETS += genotype_pdx
+genotype_pdx:
+	$(call RUN_MAKE,modules/variant_callers/genotypepdx.mk)
+	
 TARGETS += jsm
 jsm :
 	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
