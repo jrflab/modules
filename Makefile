@@ -551,6 +551,10 @@ setup_pyclone :
 TARGETS += run_pyclone
 run_pyclone :
 	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+	
+TARGETS += plot_pyclone
+plot_pyclone :
+	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
 
 	
 #==================================================
