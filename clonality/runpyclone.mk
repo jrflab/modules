@@ -3,9 +3,10 @@ include modules/Makefile.inc
 LOGDIR ?= log/run_pyclone.$(NOW)
 PHONY += pyclone
 
-run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_matrix.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_vaf_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_scatter.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/parallel_cluster_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_scatter.pdf)
+run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_matrix.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_vaf_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_scatter.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/parallel_cluster_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_scatter.pdf)
 
 #$(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone.tsv)
+#$(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_density.pdf) 
 
 define run-pyclone
 #pyclone/%/trace/alpha.tsv.bz2 : pyclone/%/config.yaml
@@ -15,11 +16,11 @@ define run-pyclone
 #pyclone/%/pyclone.tsv : pyclone/%/trace/alpha.tsv.bz2
 #	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 #							 PyClone build_table --config_file pyclone/$$*/config.yaml --out_file pyclone/$$*/pyclone.tsv --max_cluster 5 --table_type old_style --burnin 1000")
-							 
-pyclone/%/pyclone_loci_density.pdf : pyclone/%/trace/alpha.tsv.bz2
-	$$(call RUN,-s 4G -m 6G,"export DISPLAY=:0 && \
-							 source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
-							 PyClone plot_loci --config_file pyclone/$$*/config.yaml --plot_file pyclone/$$*/pyclone_loci_density.pdf --plot_type density --burnin 1000 --min_cluster_size 2 --max_clusters 5")
+#							 
+#pyclone/%/pyclone_loci_density.pdf : pyclone/%/trace/alpha.tsv.bz2
+#	$$(call RUN,-s 4G -m 6G,"export DISPLAY=:0 && \
+#							 source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
+#							 PyClone plot_loci --config_file pyclone/$$*/config.yaml --plot_file pyclone/$$*/pyclone_loci_density.pdf --plot_type density --burnin 1000 --min_cluster_size 2 --max_clusters 5")
 
 pyclone/%/pyclone_loci_coordinates.pdf : pyclone/%/trace/alpha.tsv.bz2
 	$$(call RUN,-s 4G -m 6G,"export DISPLAY=:0 && \
