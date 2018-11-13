@@ -3,7 +3,9 @@ include modules/Makefile.inc
 LOGDIR ?= log/run_pyclone.$(NOW)
 PHONY += pyclone
 
-run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_matrix.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_vaf_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_scatter.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/parallel_cluster_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_scatter.pdf) #$(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone.tsv)
+run_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_matrix.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_vaf_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_scatter.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/parallel_cluster_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_scatter.pdf)
+
+#$(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone.tsv)
 
 define run-pyclone
 #pyclone/%/trace/alpha.tsv.bz2 : pyclone/%/config.yaml
