@@ -37,26 +37,29 @@ for (i in 1:length(file_names)) {
 pdf(file=paste0("pyclone/", opt$sample_name, "/plots/by_loci_density.pdf"), width=8)
 par(mar=c(6.1, 6.5, 4.1, 1.1))
 for (i in 1:length(feature_names)) {
-	tmp = list()
+	tmp = tmp2 = z = list()
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 		x = ccf[[j]][,i]
 		y = Mclust(x, G=2)
 		a = x[y$classification==1]
 		b = x[y$classification==2]
-		if (mean(a)>mean(b)) {
-			z = a
+		if (length(a)>length(b)) {
+			z[[j]] = a
 		} else {
-			z = b
+			z[[j]] = b
 		}
+		tmp2[[j]] = post_density(z[[j]])
 	}
 	}
 	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=sub("_", " ", feature_names[i], fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1), cex.main=2)
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
 		points(tmp[[j]]$x[!index], ((tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)))[!index], type="l", lwd=3, col=hex_cols(j))
-		points(rep(mean(ccf[[j]][,i]),2), c(-1,1), type="l", col=hex_cols(j), lty=2, lwd=1)
-		points(rep(mean(z),2), c(-1,1), type="l", col="red", lty=1, lwd=1)
+		points(rep(mean(ccf[[j]][,i]),2), c(-1,1), type="l", col=hex_cols(j), lty=1, lwd=1)
+		index = tmp2[[j]]$x>1 | tmp2[[j]]$x<0
+		points(tmp2[[j]]$x[!index], ((tmp2[[j]]$y-min(tmp2[[j]]$y))/(max(tmp2[[j]]$y)-min(tmp2[[j]]$y)))[!index], type="l", lwd=3, lty=2, col=hex_cols(j))
+		points(rep(mean(z[[j]]),2), c(-1,1), type="l", col=hex_cols(j), lty=1, lwd=2)
 	}
     axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
     axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
