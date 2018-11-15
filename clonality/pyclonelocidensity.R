@@ -33,7 +33,7 @@ for (i in 1:length(file_names)) {
 for (i in 1:length(file_names)) {
 	ccf[[i]] = ccf[[i]][-(1:opt$burnin),,drop=FALSE]
 }
-pdf(file=paste0("pyclone/", opt$sample_name, "/plots/pyclone_loci_density.pdf"))
+pdf(file=paste0("pyclone/", opt$sample_name, "/plots/by_loci_density.pdf"), width=8)
 par(mar=c(6.1, 6.5, 4.1, 1.1))
 for (i in 1:length(feature_names)) {
 	tmp = list()
@@ -44,6 +44,8 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
 		points(tmp[[j]]$x[!index], ((tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)))[!index], type="l", lwd=3, col=hex_cols(j))
+		abline(v=mean(ccf[[j]][,i]), col=hex_cols(j), lty=2, lwd=2)
+
 	}
     axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
     axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
@@ -51,5 +53,3 @@ for (i in 1:length(feature_names)) {
     mtext(side=2, text="Density", line=4, cex=1.5)
 }
 dev.off()
-
-
