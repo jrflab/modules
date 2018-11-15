@@ -42,9 +42,9 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 	}
-	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0, max(unlist(lapply(tmp, function(x) { x$y })))))
+	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0, max(unlist(lapply(tmp, function(x){x$y})))))
 	for (j in 1:length(tmp)) {
-		points(tmp[[j]]$x, tmp[[j]]$y, col="black")
+		points(tmp[[j]]$x, tmp[[j]]$y, type="l", col="black")
 	}
     axis(1, at=NULL, cex.axis=1.5, padj=0.25)
     axis(2, at=NULL, cex.axis=1.5, las=1)
