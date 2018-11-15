@@ -3,12 +3,12 @@ include modules/Makefile.inc
 LOGDIR ?= log/plot_pyclone.$(NOW)
 PHONY += pyclone
 
-plot_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_density.pdf)
+plot_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/plots/pyclone_loci_density.pdf)
 
 #$(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_matrix.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_vaf_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_loci_scatter.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_density.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/parallel_cluster_coordinates.pdf) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/pyclone_cluster_scatter.pdf)
 
 define plot-pyclone
-pyclone/%/pyclone_loci_density.pdf : pyclone/%/pyclone.tsv
+pyclone/%/plots/pyclone_loci_density.pdf : pyclone/%/pyclone.tsv
 	$$(call RUN,-s 4G -m 6G,"$(RSCRIPT) modules/clonality/pyclonelocidensity.R --sample_name $$* --burnin 5000")
 
 #pyclone/%/pyclone_loci_coordinates.pdf : pyclone/%/pyclone.tsv
