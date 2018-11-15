@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library("optparse"))
-suppressPackageStartupMessages(library("mclust"))
 
 optList = list(make_option("--sample_name", default = NULL, help = "sample name"),
 			   make_option("--burnin", default = NULL, help = "number of burnin iterations"))
