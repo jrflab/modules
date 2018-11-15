@@ -66,6 +66,7 @@ for (i in 1:(ncol(zz)-1)) {
 	    axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
 	    mtext(side=1, text="...", line=4, cex=1.5)
 	    mtext(side=2, text="...", line=4, cex=1.5)
+	}
 	    
 }
 dev.off()
