@@ -1,20 +1,14 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("mclust"))
+
 optList = list(make_option("--sample_name", default = NULL, help = "sample name"),
 			   make_option("--burnin", default = NULL, help = "number of burnin iterations"))
 
 parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
-
-'transparent_rgb' <- function (col = "black", alpha = 85)
-{
-	tmp = c(col2rgb(col), alpha, 255)
-	names(tmp) = c("red", "green", "blue", "alpha", "maxColorValue")
-    out = do.call("rgb", as.list(tmp))
-    return(invisible(out))
-}
 
 'post_density' <- function (x)
 {
