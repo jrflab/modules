@@ -19,9 +19,10 @@ opt = arguments$options
 'post_density' <- function (x)
 {
 	y = density(x=x)
-	index = which(y$x>1 | y$x<0)
-	y$x = y$x[-index]
-	y$y = y$y[-index]
+	index = which(y$x>1)
+	y$x[index] = 1
+	index = which(y$x<1)
+	y$x[index] = 0
 	return(invisible(y))
 }
 
