@@ -44,7 +44,7 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
 		points(tmp[[j]]$x[!index], ((tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)))[!index], type="l", lwd=3, col=hex_cols(j))
-		points(rep(mean(ccf[[j]][,i]),2), c(-1,1), col=hex_cols(j), lty=2, lwd=2)
+		points(rep(mean(ccf[[j]][,i]),2), c(-1,1), type="l", col=hex_cols(j), lty=2, lwd=1)
 	}
     axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
     axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
