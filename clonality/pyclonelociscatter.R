@@ -61,10 +61,10 @@ for (i in 1:(ncol(zz)-1)) {
 	for (j in (i+1):ncol(zz)) {
 		plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
 		ind = is.na(zz[,i]) | is.na(zz[,j])
-		x = jitter(zz[!ind,i], amount=.05)
+		x = jitter(zz[!ind,i], amount=.01)
 		x[x>1] = 1
 		x[x<0] = 0
-		y = jitter(zz[!ind,j], amount=.05)
+		y = jitter(zz[!ind,j], amount=.01)
 		y[y>1] = 1
 		y[y<0] = 0
 		contour(kde2d(x, y, n=50, lims = c(c(0,1),c(0,1))), drawlabels=FALSE, nlevels=20, add=TRUE, lwd=.75, col=hex_cols(1))
