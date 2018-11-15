@@ -61,7 +61,8 @@ multisample_pyclone:
 	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/variant_callers/sufammultisample.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
+	$(MAKE) -f modules/clonality/runpyclone.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
 	
 TARGETS += run_cnvkit
 run_cnvkit :
