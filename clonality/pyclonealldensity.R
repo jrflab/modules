@@ -44,7 +44,16 @@ for (i in 1:length(ccf)) {
 	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=gsub(pattern="trace/", replacement="", x=gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names[i], fixed=TRUE), fixed=TRUE), fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1), cex.main=2)
 	tmp = list()
 	for (j in 1:length(feature_names)) {
-		tmp[[j]] = post_density(ccf[[i]][,j])
+		x = ccf[[i]][,j]
+		y = Mclust(x, G=2)
+		a = x[y$classification==1]
+		b = x[y$classification==2]
+		if (mean(a)>mean(b)) {
+			z = a
+		} else {
+			z = b
+		}
+		tmp[[j]] = post_density(z)
 	}
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
