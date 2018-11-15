@@ -12,7 +12,7 @@ opt = arguments$options
 
 'post_density' <- function (x)
 {
-	y = density(x=x)
+	y = density(x=x, adjust=2)
 	return(invisible(y))
 }
 
