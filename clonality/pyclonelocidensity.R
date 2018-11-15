@@ -44,7 +44,7 @@ for (i in 1:length(file_names)) {
 for (i in 1:length(file_names)) {
 	ccf[[i]] = ccf[[i]][-(1:opt$burnin),,drop=FALSE]
 }
-pdf(file=paste0("pyclone/", opt$sample_name, "/pyclone_loci_density.pdf"))
+pdf(file=paste0("pyclone/", opt$sample_name, "/plots/pyclone_loci_density.pdf"))
 par(mar=c(6.1, 6.5, 4.1, 1.1))
 for (i in 1:length(feature_names)) {
 	tmp = list()
