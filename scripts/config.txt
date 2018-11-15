@@ -14,7 +14,7 @@ ucsc_genome_version                         = hg19
 source_directory                            = /opt/common/CentOS_7/defuse/defuse-0.8.0
 
 # Directory where you want your dataset
-dataset_directory                           = ${USER}/share/reference/defuse/homo_sapiens/Ensembl/Grch37.p13/Sequence/defuse_e75/
+dataset_directory                           = ${HOME}/share/reference/defuse/homo_sapiens/Ensembl/Grch37.p13/Sequence/defuse_e75/
 
 #******************************
 #Julia modification ends here *
