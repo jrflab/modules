@@ -48,7 +48,7 @@ for (i in 1:length(ccf)) {
 		y = Mclust(x, G=2)
 		a = x[y$classification==1]
 		b = x[y$classification==2]
-		if (mean(a)>mean(b)) {
+		if (length(a)>length(b)) {
 			z = a
 		} else {
 			z = b
