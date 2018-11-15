@@ -54,11 +54,6 @@ for (i in 1:length(ccf)) {
 		} else {
 			z[j] = mean(b)
 		}
-		y = post_density(x)
-		index = y$x>1 | y$x<0
-		y$x = y$x[!index]
-		y$y = y$y[!index]
-		z[j] = y$x[which.max(y$y)]
 	}
 	zz[,i] = z
 }
