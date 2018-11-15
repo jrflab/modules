@@ -12,13 +12,17 @@ opt = arguments$options
 
 'post_density' <- function (x)
 {
-	y = density(x=x)
+	y = density(x=x, adjust=2)
 	return(invisible(y))
 }
 
 'hex_cols' <- function(x)
 {
-	cols = c("#4865B1", "#FFA500", "#B22034", "#E9E0Ba", "#D5D5D5", "#000000", "#DC0073", "#00A1E4")
+	x = x%%8
+	if (x==0) {
+		x = 8
+	}
+	cols = c("#4865B1", "#FFA500", "#B22034", "#E9E0BA", "#D5D5D5", "#000000", "#DC0073", "#00A1E4")
 	return(cols[x])
 }
 
