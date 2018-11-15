@@ -9,8 +9,7 @@ plot_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/plots/pyclon
 
 define plot-pyclone
 pyclone/%/plots/pyclone_loci_density.pdf : pyclone/%/pyclone.tsv
-	$$(call RUN,-s 4G -m 6G,"export R_LIBS='/lila/data/reis-filho/usr/lib64/R/library:$R_LIBS' && \
-							 $(RSCRIPT) modules/clonality/pyclonelocidensity.R --sample_name $$* --burnin 5000")
+	$$(call RUN,-s 4G -m 6G,"$(RSCRIPT) modules/clonality/pyclonelocidensity.R --sample_name $$* --burnin 5000")
 
 #pyclone/%/pyclone_loci_coordinates.pdf : pyclone/%/pyclone.tsv
 #	$$(call RUN,-s 4G -m 6G,"export DISPLAY=localhost:10.0 && \
