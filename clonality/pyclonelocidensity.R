@@ -20,9 +20,11 @@ opt = arguments$options
 {
 	y = density(x=x)
 	index = which(y$x>1)
-	y$x[index] = 1
-	index = which(y$x<1)
-	y$x[index] = 0
+	y$x[index] = NA
+	y$y[index] = NA
+	index = which(y$x<0)
+	y$x[index] = NA
+	y$y[index] = NA
 	return(invisible(y))
 }
 
