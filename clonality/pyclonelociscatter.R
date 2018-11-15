@@ -60,7 +60,7 @@ for (i in 1:length(ccf)) {
 for (i in 1:(ncol(zz)-1)) {
 	for (j in (i+1):ncol(zz)) {
 		plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
-		contour(kde2d(zz[,i], zz[,j], n=50), drawlabels=FALSE, nlevels=10, add=TRUE, lwd=.5, col=hex_cols(5))
+		contour(kde2d(zz[,i], zz[,j], n=50), drawlabels=FALSE, nlevels=15, add=TRUE, lwd=.5, col=hex_cols(5))
 		points(zz[,i], zz[,j], type="p", pch="+", col=hex_cols(7))
 	    axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
 	    axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
