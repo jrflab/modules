@@ -49,7 +49,7 @@ for (i in 1:length(feature_names)) {
 	}
 	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
 	for (j in 1:length(tmp)) {
-		points(tmp[[j]]$x, (tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)), type="l", lwd=2, col=hex_cols[j])
+		points(tmp[[j]]$x, (tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)), type="l", lwd=2, col=hex_cols(j))
 	}
     axis(1, at=NULL, cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
     axis(2, at=NULL, cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
