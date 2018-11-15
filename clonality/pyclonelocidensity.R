@@ -19,12 +19,6 @@ opt = arguments$options
 'post_density' <- function (x)
 {
 	y = density(x=x)
-	index = which(y$x>1)
-	y$x[index] = NA
-	y$y[index] = NA
-	index = which(y$x<0)
-	y$x[index] = NA
-	y$y[index] = NA
 	return(invisible(y))
 }
 
@@ -53,7 +47,7 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 	}
-	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=feature_names[i], xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
+	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=sub("_", " "feature_names[i], fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
 	for (j in 1:length(tmp)) {
 		points(tmp[[j]]$x, (tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)), type="l", lwd=3, col=hex_cols(j))
 	}
