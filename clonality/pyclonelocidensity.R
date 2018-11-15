@@ -51,7 +51,6 @@ for (i in 1:length(feature_names)) {
 		}
 		tmp2[[j]] = post_density(z[[j]])
 	}
-	}
 	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=sub("_", " ", feature_names[i], fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1), cex.main=2)
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
