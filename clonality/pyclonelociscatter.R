@@ -1,0 +1,71 @@
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("mclust"))
+suppressPackageStartupMessages(library("MASS"))
+
+optList = list(make_option("--sample_name", default = NULL, help = "sample name"),
+			   make_option("--burnin", default = NULL, help = "number of burnin iterations"))
+
+parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
+arguments = parse_args(parser, positional_arguments = T)
+opt = arguments$options
+
+'post_density' <- function (x)
+{
+	y = density(x=x, adjust=2)
+	return(invisible(y))
+}
+
+'hex_cols' <- function(x)
+{
+	x = x%%8
+	if (x==0) {
+		x = 8
+	}
+	cols = c("#4865B1", "#FFA500", "#B22034", "#E9E0BA", "#D5D5D5", "#000000", "#DC0073", "#00A1E4")
+	return(cols[x])
+}
+
+file_names = dir(path=paste0("pyclone/", opt$sample_name, "/trace"), pattern="cellular_prevalence.tsv.bz2", full.names=TRUE)
+ccf = list()
+for (i in 1:length(file_names)) {
+	ccf[[i]] = read.csv(file=file_names[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
+}
+feature_names = colnames(ccf[[1]])
+for (i in 1:length(file_names)) {
+	ccf[[i]] = ccf[[i]][,feature_names,drop=FALSE]
+}
+for (i in 1:length(file_names)) {
+	ccf[[i]] = ccf[[i]][-(1:opt$burnin),,drop=FALSE]
+}
+pdf(file=paste0("pyclone/", opt$sample_name, "/plots/all_loci_scatter.pdf"))
+par(mar=c(6.1, 6.5, 4.1, 1.1))
+zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf))
+for (i in 1:length(ccf)) {
+	z = vector(mode="numeric", length=length(feature_names))
+	for (j in 1:length(feature_names)) {
+		x = ccf[[i]][,j]
+		y = Mclust(x, G=2)
+		a = x[y$classification==1]
+		b = x[y$classification==2]
+		if (length(a)>length(b)) {
+			z[j] = mean(a)
+		} else {
+			z[j] = mean(b)
+		}
+	}
+	zz[,i] = z
+}
+for (i in 1:(ncol(zz)-1)) {
+	for (j in (i+1):ncol(zz)) {
+		plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,1), ylim=c(0,1))
+		points(zz[,i], zz[,j], type="p", pch="+", col=hex_cols(7))
+		contour(kde2d(zz[,i], zz[,j], n=50), drawlabels=TRUE, nlevels=15, add=TRUE)
+	    axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
+	    axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
+	    mtext(side=1, text="...", line=4, cex=1.5)
+	    mtext(side=2, text="...", line=4, cex=1.5)
+	    
+}
+dev.off()
