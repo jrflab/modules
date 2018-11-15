@@ -9,7 +9,7 @@ plot_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/plots/by_loc
 
 define plot-pyclone
 pyclone/%/plots/by_loci_density.pdf : pyclone/%/pyclone.tsv
-	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
+	$$(call RUN,-s 4G -m 6G,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.6/bin/activate source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.6/ && \
 							 $(RSCRIPT) modules/clonality/pyclonelocidensity.R --sample_name $$* --burnin 5000")
 
 #pyclone/%/pyclone_loci_coordinates.pdf : pyclone/%/pyclone.tsv
