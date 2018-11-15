@@ -40,7 +40,7 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 	}
-	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=sub("_", " ", feature_names[i], fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1))
+	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=sub("_", " ", feature_names[i], fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1), cex.main=2)
 	for (j in 1:length(tmp)) {
 		index = tmp[[j]]$x>1 | tmp[[j]]$x<0
 		points(tmp[[j]]$x[!index], ((tmp[[j]]$y-min(tmp[[j]]$y))/(max(tmp[[j]]$y)-min(tmp[[j]]$y)))[!index], type="l", lwd=3, col=hex_cols(j))
