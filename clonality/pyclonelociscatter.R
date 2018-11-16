@@ -50,7 +50,11 @@ for (i in 1:length(ccf)) {
 		a = x[y$classification==1]
 		b = x[y$classification==2]
 		if (length(a)>length(b)) {
-			z[j] = mean(a)
+			if (mean(a)>mean(b) & mean(a)>.9) {
+				z[j] = mean(a)
+			} else {
+				z[j] = mean(b)
+			}
 		} else {
 			z[j] = mean(b)
 		}
