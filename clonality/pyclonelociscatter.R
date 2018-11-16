@@ -50,11 +50,7 @@ for (i in 1:length(ccf)) {
 		a = x[y$classification==1]
 		b = x[y$classification==2]
 		if (length(a)>length(b)) {
-			if (var(a)<var(b) & mean(a)>mean(b)) {
-				z[j] = mean(a)
-			} else {
-				z[j] = mean(b)
-			}
+			z[j] = mean(a)
 		} else {
 			z[j] = mean(b)
 		}
