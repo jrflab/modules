@@ -50,9 +50,13 @@ for (i in 1:length(ccf)) {
 		a = x[y$classification==1]
 		b = x[y$classification==2]
 		if (length(a)>length(b)) {
-			z[j] = mean(a)
+			pd = post_density(a)
+			idx = which.max(pd$y)
+			z[j] = pd$x[idx]
 		} else {
-			z[j] = mean(b)
+			pd = post_density(b)
+			idx = which.max(pd$y)
+			z[j] = pd$x[idx]
 		}
 	}
 	zz[,i] = z
