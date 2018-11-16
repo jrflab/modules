@@ -68,7 +68,7 @@ for (i in 1:(ncol(zz)-1)) {
 		y[y>1] = 1
 		y[y<0] = 0
 		image(kde2d(x, y, n=50, lims = c(c(0,1),c(0,1))), col=colorRampPalette(c("#F6F6F5", "#C6C1BB"))(125), add=TRUE, axes=FALSE, frame.plot=FALSE, xlab="", ylab="")
-		contour(kde2d(x, y, n=50, lims = c(c(0,1),c(0,1))), drawlabels=FALSE, nlevels=20, add=TRUE, lwd=.75, col=hex_cols(1))
+		contour(kde2d(x, y, n=50, lims = c(c(0,1),c(0,1))), drawlabels=FALSE, nlevels=15, add=TRUE, lwd=.75, col=hex_cols(1))
 		points(x, y, type="p", pch=1, col=hex_cols(1))
 	    axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
 	    axis(2, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, las=1, lwd = 1.25, lwd.ticks = 1.15)
