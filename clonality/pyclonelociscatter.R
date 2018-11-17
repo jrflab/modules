@@ -88,7 +88,7 @@ dev.off()
 mutation_summary = read.csv(file=paste0("sufam/", opt$sample_name, ".tsv"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 rownames(mutation_summary) = paste0(mutation_summary[,"Gene_Symbol"], "_", mutation_summary[,"HGVSp"])
 mutation_summary = mutation_summary[feature_names,,drop=FALSE]
-pyclone_summary = read.csv(file=paste0("pyclone/", opt$sample_name, ".tsv"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+pyclone_summary = read.csv(file=paste0("pyclone/", opt$sample_name, "/pyclone.tsv"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 rownames(pyclone_summary) = pyclone_summary[,"mutation_id"]
 index = grepl(pattern="_", x=colnames(pyclone_summary), fixed=TRUE)
 colnames(pyclone_summary)[!index] = paste0(colnames(pyclone_summary)[!index], "_pCF")
