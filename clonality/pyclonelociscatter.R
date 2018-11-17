@@ -41,7 +41,7 @@ for (i in 1:length(file_names)) {
 }
 pdf(file=paste0("pyclone/", opt$sample_name, "/plots/all_loci_scatter.pdf"))
 par(mar=c(6.1, 6.5, 4.1, 1.1))
-zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf))
+zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf), dimnames=list(feature_names, gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names, fixed=TRUE), fixed=TRUE), fixed=TRUE)))
 for (i in 1:length(ccf)) {
 	z = vector(mode="numeric", length=length(feature_names))
 	for (j in 1:length(feature_names)) {
@@ -81,7 +81,19 @@ for (i in 1:(ncol(zz)-1)) {
 	    points(c(-.1,1), c(.9,.9), type="l", col="orange", lty=3)
 	    mtext(side=1, text=gsub(pattern="trace/", replacement="", x=gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names[i], fixed=TRUE), fixed=TRUE), fixed=TRUE), line=4, cex=1.5)
 	    mtext(side=2, text=gsub(pattern="trace/", replacement="", x=gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names[j], fixed=TRUE), fixed=TRUE), fixed=TRUE), line=4, cex=1.5)
-	}
-	    
+	}	    
 }
 dev.off()
+
+mutation_summary = read.csv(file=paste0("sufam/", opt$sample_name, ".tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+rownames(mutation_summary) = paste0(mutation_summary[,"Gene_Symbol"], "_", mutation_summary[,"HGVSp"])
+mutation_summary = mutation_summary[feature_names,,drop=FALSE]
+pyclone_summary = read.csv(file=paste0("pyclone/", opt$sample_name, ".tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+rownames(pyclone_summary) = pyclone_summary[,"mutation_id"]
+index = grepl(pattern="_", x=colnames(pyclone_summary), fixed=TRUE)
+colnames(pyclone_summary)[!index] = paste0(colnames(pyclone_summary)[!index], "_pCF")
+pyclone_summary[feature_names,,drop=FALSE]
+colnames(zz) = paste0(colnames(zz), "_uCF")
+zz = zz[feature_names,,drop=FALSE]
+data = cbind(mutation_summary, pyclone_summary, zz)
+write.table(data, file=paste0("pyclone/", opt$sample_name, "/summary.tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
