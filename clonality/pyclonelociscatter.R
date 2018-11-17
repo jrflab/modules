@@ -41,7 +41,7 @@ for (i in 1:length(file_names)) {
 }
 pdf(file=paste0("pyclone/", opt$sample_name, "/plots/all_loci_scatter.pdf"))
 par(mar=c(6.1, 6.5, 4.1, 1.1))
-zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf), dimnames=list(feature_names, gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names, fixed=TRUE), fixed=TRUE), fixed=TRUE))
+zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf), dimnames=list(feature_names, gsub(".cellular_prevalence.tsv.bz2", "", x=dir(path=paste0("pyclone/", opt$sample_name, "/trace"), pattern="cellular_prevalence.tsv.bz2", full.names=FALSE), fixed=TRUE)))
 for (i in 1:length(ccf)) {
 	z = vector(mode="numeric", length=length(feature_names))
 	for (j in 1:length(feature_names)) {
