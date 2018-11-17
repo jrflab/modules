@@ -87,13 +87,15 @@ dev.off()
 
 mutation_summary = read.csv(file=paste0("sufam/", opt$sample_name, ".tsv"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 rownames(mutation_summary) = paste0(mutation_summary[,"Gene_Symbol"], "_", mutation_summary[,"HGVSp"])
-#mutation_summary = mutation_summary[feature_names,,drop=FALSE]
 pyclone_summary = read.csv(file=paste0("pyclone/", opt$sample_name, "/pyclone.tsv"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
-#rownames(pyclone_summary) = pyclone_summary[,"mutation_id"]
+rownames(pyclone_summary) = pyclone_summary[,"mutation_id"]
 index = grepl(pattern="_", x=colnames(pyclone_summary), fixed=TRUE)
 colnames(pyclone_summary)[!index] = paste0(colnames(pyclone_summary)[!index], "_pcf")
-#pyclone_summary[feature_names,,drop=FALSE]
 colnames(zz) = paste0(colnames(zz), "_ucf")
-#zz = zz[feature_names,,drop=FALSE]
+feature_names = gsub(pattern=".", replacement="*", x=rownames(zz), fixed=TRUE)
+feature_names = gsub(pattern="p*", replacement="p.", x=feature_names, fixed=TRUE)
+rownames(zz) = feature_names
+mutation_summary = mutation_summary[feature_names,,drop=FALSE]
+pyclone_summary = pyclone_summary[feature_names,,drop=FALSE]
 data = cbind(mutation_summary, pyclone_summary, zz)
 write.table(data, file=paste0("pyclone/", opt$sample_name, "/summary.tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
