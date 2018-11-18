@@ -120,6 +120,16 @@ for (i in 1:(length(sample_names)-1)) {
 		cf_x = CF[,i]
 		cf_y = CF[,j]
 		
+		ind = is.na(dp_x) | is.na(dp_y) | is.na(ad_x) | is.na(ad_y) | is.na(maf_x) | is.na(maf_y) | is.na(cf_x) | is.na(cf_y)
+		dp_x = dp_x[!ind]
+		dp_y = dp_y[!ind]
+		ad_x = ad_x[!ind]
+		ad_y = ad_y[!ind]
+		maf_x = maf_x[!ind]
+		maf_y = maf_y[!ind]
+		cf_x = cf_x[!ind]
+		cf_y = cf_y[!ind]
+		
 		ind = dp_x>=50 & dp_y>=50
 		dp_x = dp_x[ind]
 		dp_y = dp_y[ind]
@@ -135,13 +145,13 @@ for (i in 1:(length(sample_names)-1)) {
 		ind = ad_y<5 & maf_y<.03
 		cf_y[ind] = 0
 		
-		
 		x = jitter(cf_x, amount=.01)
 		x[x>1] = 1
 		x[x<0] = 0
 		y = jitter(cf_y, amount=.01)
 		y[y>1] = 1
 		y[y<0] = 0
+		
 		contour(kde2d(x, y, n=100, lims = c(c(-.01,1.01),c(-.01,1.01))), drawlabels=FALSE, nlevels=15, add=TRUE, lwd=.5, col=hex_cols(3))
 		points(x, y, type="p", pch=1, col=hex_cols(3))
 	    axis(1, at=seq(from=0, to=1, by=.2), labels=seq(from=0, to=1, by=.2), cex.axis=1.5, padj=0.25, lwd = 1.25, lwd.ticks = 1.15)
