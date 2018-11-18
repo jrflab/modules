@@ -104,7 +104,7 @@ sample_names = gsub("_ucf", "", x=colnames(data)[grep("_ucf", colnames(data), fi
 DP = data[,paste0("DP_", sample_names),drop=FALSE]
 AD = round(data[,paste0("MAF_", sample_names),drop=FALSE] * DP)
 MAF = data[,paste0("MAF_", sample_names),drop=FALSE]
-CF = data[,paste0(sample_names, "ucf"),drop=FALSE]
+CF = data[,paste0(sample_names, "_ucf"),drop=FALSE]
 
 pdf(file=paste0("pyclone/", opt$sample_name, "/plots/all_loci_scatter[2].pdf"))
 par(mar=c(6.1, 6.5, 4.1, 1.1))
