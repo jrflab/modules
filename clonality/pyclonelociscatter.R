@@ -100,7 +100,7 @@ pyclone_summary = pyclone_summary[feature_names,,drop=FALSE]
 data = cbind(mutation_summary, pyclone_summary, zz)
 write.table(data, file=paste0("pyclone/", opt$sample_name, "/summary.tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
-sample_names = gsub("_ucf", "", x=grep("_ucf", colnames(data), fixed=TRUE), fixed=TRUE)
+sample_names = gsub("_ucf", "", x=colnames(data)[grep("_ucf", colnames(data), fixed=TRUE)], fixed=TRUE)
 DP = data[,paste0("DP_", sample_names),drop=FALSE]
 AD = round(data[,paste0("MAF_", sample_names),drop=FALSE] * DP)
 MAF = data[,paste0("MAF_", sample_names),drop=FALSE]
