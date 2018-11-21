@@ -21,7 +21,7 @@ mutect_split_chr: true
 mutect_use_contest: false
 indel_types: varscan_indels strelka_indels scalpel_indels lancet_indels platypus_indels pindel #mutect_indels to use mutect2
 
-vcf_post_ann_filter_expression: ExAC_AF > 0.05
+vcf_post_ann_filter_expression: ExAC_AF > 0.01
 
 # vcf annotations
 ann_facets: true
