@@ -29,7 +29,7 @@ for (i in 1:length(in_file)) {
 	depth[[i]] = as.numeric(data[index,"depth"])
 }
 depth = do.call(cbind, depth)
-pca = prcomp(t(depth), center=FALSE, scale.=FALSE)
+pca = prcomp(t(depth), center=TRUE, scale.=TRUE)
 pdf(file=out_file, width=9, height=9)
 par(mar = c(6.1, 6.5, 4.1, 1.1))
 plot(x=pca$x[,1], y=pca$x[,2], col = col, pch = pch, cex = cex, axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "")
