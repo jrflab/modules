@@ -44,12 +44,30 @@ y = c(pca_n$x[,2], pca_t[,2])
 bg = c(rep("grey90", nrow(pca_n$x)), rep("salmon", nrow(pca_t)))
 col = c(rep("grey50", nrow(pca_n$x)), rep("black", nrow(pca_t)))
 pch = 21
+index = c(rep(TRUE, nrow(pca_n$x)), rep(FALSE, nrow(pca_t)))
 
 pdf(file=out_file, width=9, height=9)
 par(mar = c(6.1, 6.5, 4.1, 1.1))
+
+plot(x=x, y=y, type="n", axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "")
+points(x=x[index], y=y[index], col = col[index], bg = bg[index], pch = pch, cex = 1, lwd = .1)
+axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
+axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
+mtext(side = 1, text = "PC 1", line = 4, cex = 1.5)
+mtext(side = 2, text = "PC 2", line = 4, cex = 1.5)
+
+plot(x=x, y=y, type="n", axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "")
+points(x=x[!index], y=y[!index], col = col[!index], bg = bg[!index], pch = pch, cex = 1, lwd = .1)
+axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
+axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
+mtext(side = 1, text = "PC 1", line = 4, cex = 1.5)
+mtext(side = 2, text = "PC 2", line = 4, cex = 1.5)
+
 plot(x=x, y=y, col = col, bg = bg, pch = pch, cex = 1, lwd = .1, axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "")
 axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
 axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
 mtext(side = 1, text = "PC 1", line = 4, cex = 1.5)
 mtext(side = 2, text = "PC 2", line = 4, cex = 1.5)
+
+
 dev.off()
