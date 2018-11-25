@@ -81,8 +81,8 @@ write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quot
 
 # MAPD
 file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_MAPD.pdf")
-x = as.numeric(data[data$SAMPLE_TYPE=="T", "MAPD"])
-y = as.numeric(data[data$SAMPLE_TYPE=="N", "MAPD"])
+x = as.numeric(data[data[,"SAMPLE_TYPE"]=="T", "MAPD"])
+y = as.numeric(data[data[,"SAMPLE_TYPE"]=="N", "MAPD"])
 dx = density(x, from=min(x, y), to=max(x,y))
 dx$y = scale.(dx$y)
 dy = density(y, from=min(x, y), to=max(x,y))
