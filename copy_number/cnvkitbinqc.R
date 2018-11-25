@@ -36,8 +36,8 @@ for (i in 1:length(in_file_tumor)) {
 depth_t = do.call(cbind, depth_t)
 
 bin_size = as.numeric(data[index,"end"]) - as.numeric(data[index,"start"])
-var_bin_n = apply(depth_n, 1, var, na.rm=TRUE)
-var_bin_t = apply(depth_t, 1, var, na.rm=TRUE)
+var_bin_n = apply(depth_n, 1, sd, na.rm=TRUE)
+var_bin_t = apply(depth_t, 1, sd, na.rm=TRUE)
 data = data.frame(bin_size, var_bin_n, var_bin_t)
 write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
