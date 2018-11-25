@@ -48,7 +48,7 @@ points(x=bin_size, y=var_bin_n, col = "grey50", bg = "grey90", pch = 21, cex = 1
 axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
 axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
 mtext(side = 1, text = "Bin size (bp)", line = 4, cex = 1.5)
-mtext(side = 2, text = "Variance", line = 4, cex = 1.5)
+mtext(side = 2, text = "SD", line = 5, cex = 1.5)
 plot(bin_size, var_bin_t, type="n", axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "", log="y")
 points(x=bin_size, y=var_bin_n, col = "black", bg = "salmon", pch = 21, cex = 1, lwd = .1)
 axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
