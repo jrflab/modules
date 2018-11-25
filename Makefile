@@ -334,7 +334,7 @@ cnvkit_pca :
 	$(call RUN_MAKE,modules/copy_number/cnvkitprcomp.mk)
 	
 TARGETS += cnvkit_qc
-cnvkit_sc :
+cnvkit_qc :
 	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
 
 
