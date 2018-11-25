@@ -79,7 +79,7 @@ colnames(data) = c("MAD", "MAPD", "IQR")
 data = cbind("SAMPLE_NAME"=c(normal_samples, tumor_samples), "SAMPLE_TYPE"=c(rep("N", length(normal_samples)), rep("T", length(tumor_samples))), data)
 write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
-# tumor/normal histogram of MAPD
+# MAPD
 file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_MAPD.pdf")
 x = as.numeric(data[data$SAMPLE_TYPE=="T", "MAPD"])
 y = as.numeric(data[data$SAMPLE_TYPE=="N", "MAPD"])
