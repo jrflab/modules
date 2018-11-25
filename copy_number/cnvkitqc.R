@@ -42,24 +42,24 @@ out_file = opt$out_file
 	return(invisible(iq))
 }
 
-data = matrix(NA, nrow=length(c(normal_samples, tumor_samples)), ncol=3, dimnames=list(c(normal_samples, tumor_samples), c("MAD", "MAPD", "IQR")))
+qc = matrix(NA, nrow=length(c(normal_samples, tumor_samples)), ncol=3, dimnames=list(c(normal_samples, tumor_samples), c("MAD", "MAPD", "IQR")))
 for (i in 1:length(normal_files)) {
 	print(i)
 	data = read.csv(file=normal_files[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	index = data[,"chromosome"] %in% 1:22 & data[,"gene"] == ifelse(opt$option==1, "-", "Antitarget")
-	data[normal_samples[i],1] = MAD(data[index,"log2"])
-	data[normal_samples[i],2] = MAPD(data[index,"log2"])
-	data[normal_samples[i],3] = MIQR(data[index,"log2"])
+	qc[normal_samples[i],1] = MAD(data[index,"log2"])
+	qc[normal_samples[i],2] = MAPD(data[index,"log2"])
+	qc[normal_samples[i],3] = MIQR(data[index,"log2"])
 }
 for (i in 1:length(tumor_files)) {
 	print(i)
 	data = read.csv(file=tumor_files[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	index = data[,"chromosome"] %in% 1:22 & data[,"gene"] == ifelse(opt$option==1, "-", "Antitarget")
-	data[tumor_samples[i],1] = MAD(data[index,"log2"])
-	data[tumor_samples[i],2] = MAPD(data[index,"log2"])
-	data[tumor_samples[i],3] = MIQR(data[index,"log2"])
+	qc[tumor_samples[i],1] = MAD(data[index,"log2"])
+	qc[tumor_samples[i],2] = MAPD(data[index,"log2"])
+	qc[tumor_samples[i],3] = MIQR(data[index,"log2"])
 }
-
+data = qc
 colnames(data) = c("MAD", "MAPD", "IQR")
-#data = cbind("SAMPLE_NAME"=c(normal_samples, tumor_samples), "SAMPLE_TYPE"=c(rep("N", length(normal_samples)), rep("T", length(tumor_samples))), data)
+data = cbind("SAMPLE_NAME"=c(normal_samples, tumor_samples), "SAMPLE_TYPE"=c(rep("N", length(normal_samples)), rep("T", length(tumor_samples))), data)
 write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
