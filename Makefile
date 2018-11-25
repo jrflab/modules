@@ -329,8 +329,8 @@ TARGETS += cnvkit_heatmap
 cnvkit_heatmap :
 	$(call RUN_MAKE,modules/copy_number/cnvkitheatmap.mk)
 	
-TARGETS += cnvkit_prcomp
-cnvkit_prcomp :
+TARGETS += cnvkit_pca
+cnvkit_pca :
 	$(call RUN_MAKE,modules/copy_number/cnvkitprcomp.mk)
 	
 
