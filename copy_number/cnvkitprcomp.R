@@ -17,7 +17,9 @@ arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
 in_file_normal = unlist(strsplit(x=opt$normal_files, split=" ", fixed=TRUE))
+normal_samples = gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/normal/", replacement="", x=in_file_normal, fixed=TRUE), fixed=TRUE)
 in_file_tumor = unlist(strsplit(x=opt$tumor_files, split=" ", fixed=TRUE))
+tumor_samples = gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/tumor/", replacement="", x=in_file_tumor, fixed=TRUE), fixed=TRUE)
 out_file_normal = opt$out_file_normal
 out_file_tumor = opt$out_file_tumor
 
@@ -76,3 +78,9 @@ axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
 mtext(side = 1, text = "PC 1", line = 4, cex = 1.5)
 mtext(side = 2, text = "PC 2", line = 4, cex = 1.5)
 dev.off()
+
+data = rbind(pca_n$x, pca_t)
+rownames(data) = c(normal_samples, tumor_samples)
+colnames(data) = paste("PC", 1:ncol(data))
+file_name = paste0("cnvkit/pca/pc_", ifelse(grepl("offtarget", out_file_tumor, fixed=TRUE), "offtarget", "ontarget"), ".txt")
+write.table(data, file=file_name, sep="\t", col.names=TRUE, row.names=TRUE, quote=FALSE)
