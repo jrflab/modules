@@ -17,9 +17,9 @@ arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
 in_file_normal = unlist(strsplit(x=opt$normal_files, split=" ", fixed=TRUE))
-normal_samples = gsub(".antitargetcoverage", "", gsub(".targetcoverage", "", x=gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/normal/", replacement="", x=in_file_normal, fixed=TRUE), fixed=TRUE)))
+normal_samples = gsub(".antitargetcoverage", "", gsub(".targetcoverage", "", x=gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/normal/", replacement="", x=in_file_normal, fixed=TRUE), fixed=TRUE), fixed=TRUE), fixed=TRUE)
 in_file_tumor = unlist(strsplit(x=opt$tumor_files, split=" ", fixed=TRUE))
-tumor_samples = gsub(".antitargetcoverage", "", gsub(".targetcoverage", "", x=gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/tumor/", replacement="", x=in_file_tumor, fixed=TRUE), fixed=TRUE)))
+tumor_samples = gsub(".antitargetcoverage", "", gsub(".targetcoverage", "", x=gsub(pattern=".cnn", replacement="", x=gsub(pattern="cnvkit/cnn/tumor/", replacement="", x=in_file_tumor, fixed=TRUE), fixed=TRUE), fixed=TRUE), fixed=TRUE)
 out_file_normal = opt$out_file_normal
 out_file_tumor = opt$out_file_tumor
 
