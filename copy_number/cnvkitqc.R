@@ -42,6 +42,21 @@ out_file = opt$out_file
 	return(invisible(iq))
 }
 
+'scale.' <- function(x)
+{
+	y = (x-min(x))/(max(x)-min(x))
+	return(invisible(y))
+}
+
+'transparentRgb' <- function (col = "black", alpha = 85) 
+{
+    tmp = c(col2rgb(col), alpha, 255)
+    names(tmp) = c("red", "green", "blue", "alpha", "maxColorValue")
+    out = do.call("rgb", as.list(tmp))
+    return(invisible(out))
+}
+
+
 qc = matrix(NA, nrow=length(c(normal_samples, tumor_samples)), ncol=3, dimnames=list(c(normal_samples, tumor_samples), c("MAD", "MAPD", "IQR")))
 for (i in 1:length(normal_files)) {
 	print(i)
@@ -63,3 +78,22 @@ data = qc
 colnames(data) = c("MAD", "MAPD", "IQR")
 data = cbind("SAMPLE_NAME"=c(normal_samples, tumor_samples), "SAMPLE_TYPE"=c(rep("N", length(normal_samples)), rep("T", length(tumor_samples))), data)
 write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
+
+# tumor/normal histogram of MAPD
+file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_MAPD.pdf")
+x = as.numeric(data[data$SAMPLE_TYPE=="T", "MAPD"])
+y = as.numeric(data[data$SAMPLE_TYPE=="N", "MAPD"])
+dx = density(x, from=min(x, y), to=max(x,y))
+dx$y = scale.(dx$y)
+dy = density(y, from=min(x, y), to=max(x,y))
+dy$y = scale.(dy$y)
+pdf(file=file_name, width=9, height=7)
+par(mar = c(6.1, 6.5, 4.1, 1.1))
+plot(0, 0, type="n", axes = FALSE, frame.plot = FALSE, main = "", xlab = "", ylab = "", xlim=c(0, max(x, y)), ylim=c(0,1))
+polygon(x=c(dx$x, rev(dx$x)), y=c(dx$y, rep(0, length(dx$y))), border="salmon", col=transparentRgb("salmon", 155))
+polygon(x=c(dy$x, rev(dy$x)), y=c(dy$y, rep(0, length(dy$y))), border="steelblue", col=transparentRgb("steelblue", 155))
+axis(1, at = NULL, cex.axis = 1.5, padj = 0.25, lwd=1.25, lwd.ticks=1.15)
+axis(2, at = NULL, cex.axis = 1.5, las = 1, lwd=1.25, lwd.ticks=1.15)
+mtext(side = 1, text = "MAPD", line = 4, cex = 1.5)
+mtext(side = 2, text = "Density", line = 4, cex = 1.5)
+dev.off()
