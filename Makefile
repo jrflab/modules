@@ -333,6 +333,10 @@ TARGETS += cnvkit_pca
 cnvkit_pca :
 	$(call RUN_MAKE,modules/copy_number/cnvkitprcomp.mk)
 	
+TARGETS += cnvkit_qc
+cnvkit_sc :
+	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
+
 
 #==================================================
 # structural variant callers
