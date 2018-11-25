@@ -80,7 +80,7 @@ data = cbind("SAMPLE_NAME"=c(normal_samples, tumor_samples), "SAMPLE_TYPE"=c(rep
 write.table(data, file=out_file, sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
 
 # MAPD
-file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_MAPD.pdf")
+file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_mapd.pdf")
 x = as.numeric(data[data[,"SAMPLE_TYPE"]=="T", "MAPD"])
 y = as.numeric(data[data[,"SAMPLE_TYPE"]=="N", "MAPD"])
 dx = density(x, from=min(x, y), to=max(x,y))
@@ -100,7 +100,7 @@ mtext(side = 2, text = "Density", line = 4, cex = 1.5)
 dev.off()
 
 # MAD
-file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_MAD.pdf")
+file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_mad.pdf")
 x = as.numeric(data[data[,"SAMPLE_TYPE"]=="T", "MAD"])
 y = as.numeric(data[data[,"SAMPLE_TYPE"]=="N", "MAD"])
 dx = density(x, from=min(x, y), to=max(x,y))
@@ -120,7 +120,7 @@ mtext(side = 2, text = "Density", line = 4, cex = 1.5)
 dev.off()
 
 # IQR
-file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_IQR.pdf")
+file_name = paste0("cnvkit/qc/", ifelse(opt$option==1, "on", "off"), "target_iqr.pdf")
 x = as.numeric(data[data[,"SAMPLE_TYPE"]=="T", "IQR"])
 y = as.numeric(data[data[,"SAMPLE_TYPE"]=="N", "IQR"])
 dx = density(x, from=min(x, y), to=max(x,y))
