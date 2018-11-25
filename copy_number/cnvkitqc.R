@@ -45,7 +45,7 @@ out_file = opt$out_file
 data = matrix(NA, nrow=length(c(normal_samples, tumor_samples)), ncol=3, dimnames=list(c(normal_samples, tumor_samples), c("MAD", "MAPD", "IQR")))
 for (i in 1:length(normal_files)) {
 	print(i)
-	data = read.csv(file=file[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	data = read.csv(file=normal_files[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	index = data[,"chromosome"] %in% 1:22 & data[,"gene"] == ifelse(opt$option==1, "-", "Antitarget")
 	data[normal_samples[i],1] = MAD(data[index,"log2"])
 	data[normal_samples[i],2] = MAPD(data[index,"log2"])
@@ -53,7 +53,7 @@ for (i in 1:length(normal_files)) {
 }
 for (i in 1:length(tumor_files)) {
 	print(i)
-	data = read.csv(file=file[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	data = read.csv(file=tumor_files[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	index = data[,"chromosome"] %in% 1:22 & data[,"gene"] == ifelse(opt$option==1, "-", "Antitarget")
 	data[tumor_samples[i],1] = MAD(data[index,"log2"])
 	data[tumor_samples[i],2] = MAPD(data[index,"log2"])
