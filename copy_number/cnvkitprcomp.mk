@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/cnvkit_prcomp.$(NOW)
+LOGDIR ?= log/cnvkit_pca.$(NOW)
 PHONY += cnvkit cnvkit/pca
 
 CNVKIT_NORMAL_ON_TARGET ?= $(wildcard $(foreach sample,$(NORMAL_SAMPLES),cnvkit/cnn/normal/$(sample).targetcoverage.cnn))
