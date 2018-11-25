@@ -45,7 +45,7 @@ pca_n = prcomp(t(depth_n), center=TRUE, scale.=TRUE)
 pca_t = predict(object=pca_n, newdata=t(depth_t))
 x = c(pca_n$x[,1], pca_t[,1])
 y = c(pca_n$x[,2], pca_t[,2])
-bg = c(rep("grey90", nrow(pca_n$x)), rep("salmon", nrow(pca_t)))
+bg = c(rep("grey90", nrow(pca_n$x)), rep("steelblue", nrow(pca_t)))
 col = c(rep("grey50", nrow(pca_n$x)), rep("black", nrow(pca_t)))
 pch = 21
 index = c(rep(TRUE, nrow(pca_n$x)), rep(FALSE, nrow(pca_t)))
