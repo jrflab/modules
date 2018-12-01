@@ -67,9 +67,9 @@ for (i in 1:(length(sample_names)-1)) {
 		cf_x = cf_x[ind]
 		cf_y = cf_y[ind]
 		
-		ind = ad_x<5 & maf_x<.03
+		ind = ad_x<5 | maf_x<.03
 		cf_x[ind] = 0
-		ind = ad_y<5 & maf_y<.03
+		ind = ad_y<5 | maf_y<.03
 		cf_y[ind] = 0
 		
 		x = jitter(cf_x, amount=.01)
