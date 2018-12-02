@@ -48,7 +48,7 @@ for (i in 1:length(ccf)) {
 	for (j in 1:length(feature_names)) {
 		x = ccf[[i]][,j]
 		y = try(Mclust(x, G=2), silent=TRUE)
-		if ("try-error" %in% is(y)) {
+		if (is.null(y)) {
 			a = x
 			b = NULL
 		} else {
