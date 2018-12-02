@@ -42,6 +42,7 @@ pdf(file=paste0("pyclone/", opt$sample_name, "/plots/by_loci_density.pdf"), widt
 par(mar=c(6.1, 6.5, 4.1, 1.1), mfcol=c(1,2))
 for (i in 1:length(feature_names)) {
 	tmp = tmp2 = z = list()
+	y = NULL
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 		x = ccf[[j]][,i]

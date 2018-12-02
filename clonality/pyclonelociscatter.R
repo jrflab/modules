@@ -44,6 +44,7 @@ par(mar=c(6.1, 6.5, 4.1, 1.1))
 zz = matrix(NA, nrow=length(feature_names), ncol=length(ccf), dimnames=list(feature_names, gsub(".cellular_prevalence.tsv.bz2", "", x=dir(path=paste0("pyclone/", opt$sample_name, "/trace"), pattern="cellular_prevalence.tsv.bz2", full.names=FALSE), fixed=TRUE)))
 for (i in 1:length(ccf)) {
 	z = vector(mode="numeric", length=length(feature_names))
+	y = NULL
 	for (j in 1:length(feature_names)) {
 		x = ccf[[i]][,j]
 		y = try(Mclust(x, G=2), silent=TRUE)

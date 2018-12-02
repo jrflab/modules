@@ -43,6 +43,7 @@ par(mar=c(6.1, 6.5, 4.1, 1.1))
 for (i in 1:length(ccf)) {
 	plot(0, 0, type="n", axes=FALSE, frame.plot=FALSE, main=gsub(pattern="trace/", replacement="", x=gsub(pattern=paste0("pyclone/", opt$sample_name, "/"), replacement="", x=gsub(pattern=".cellular_prevalence.tsv.bz2", replacement="", x=file_names[i], fixed=TRUE), fixed=TRUE), fixed=TRUE), xlab="", ylab="", xlim=c(0,1), ylim=c(0,1.1), cex.main=2)
 	tmp = list()
+	y = NULL
 	for (j in 1:length(feature_names)) {
 		x = ccf[[i]][,j]
 		y = try(Mclust(x, G=2), silent=TRUE)
