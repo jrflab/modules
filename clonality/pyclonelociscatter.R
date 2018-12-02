@@ -46,9 +46,14 @@ for (i in 1:length(ccf)) {
 	z = vector(mode="numeric", length=length(feature_names))
 	for (j in 1:length(feature_names)) {
 		x = ccf[[i]][,j]
-		y = Mclust(x, G=2)
-		a = x[y$classification==1]
-		b = x[y$classification==2]
+		y = try(Mclust(x, G=2), silent=TRUE)
+		if ("try-error" %in% is(y)) {
+			a = x
+			b = NULL
+		} else {
+			a = x[y$classification==1]
+			b = x[y$classification==2]
+		}
 		if (length(a)>length(b)) {
 			pd = post_density(a)
 			idx = which.max(pd$y)
