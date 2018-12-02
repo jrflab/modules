@@ -96,15 +96,10 @@ dev.off()
 
 for (i in 1:length(sample_names)) {
 
-	DP = data[,paste0("DP_", sample_names),drop=FALSE]
-	AD = round(data[,paste0("MAF_", sample_names),drop=FALSE] * DP)
-	MAF = data[,paste0("MAF_", sample_names),drop=FALSE]
-	CF = data[,paste0(sample_names, "_ucf"),drop=FALSE]
-	
-	dp_x = DP[,i]
-	ad_x = AD[,i]
-	maf_x = MAF[,i]
-	cf_x = CF[,i]
+	dp_x = data[,paste0("DP_", sample_names[i]),]
+	ad_x = round(data[,paste0("MAF_", sample_names[i]),] * dp_x)
+	maf_x = data[,paste0("MAF_", sample_names[i]),]
+	cf_x = data[,paste0(sample_names[i], "_ucf"),]
 		
 	ind = is.na(dp_x) | is.na(ad_x) | is.na(maf_x) | is.na(cf_x)
 	dp_x = dp_x[!ind]
@@ -121,12 +116,18 @@ for (i in 1:length(sample_names)) {
 	data = data[ind,,drop=FALSE]
 			
 	ind = ad_x<5 | maf_x<.03
-	dp_x = dp_x[!ind]
-	ad_x = ad_x[!ind]
-	maf_x = maf_x[!ind]
-	cf_x = cf_x[!ind]
-	data = data[!ind,,drop=FALSE]
+	maf_x[ind] = 0
+	cf_x[ind] = 0
+	
+	data[,paste0("MAF_", sample_names[i])] = maf_x
+	data[,paste0(sample_names[i], "_ucf")] = cf_x
 
 }
 
-write.table(data, file=paste0("pyclone/", opt$sample_name, "/summary_filetered.tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
+MAF = data[,paste0("MAF_", sample_names),drop=FALSE]
+CF = data[,paste0(sample_names, "_ucf"),drop=FALSE]
+
+index = apply(MAF, 1, function(x) {sum(x==0)==length(x)}) | apply(CF, 1, function(x) {sum(x==0)==length(x)})
+data = data[!index,,drop=FALSE]
+
+write.table(data, file=paste0("pyclone/", opt$sample_name, "/summary_filtered.tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
