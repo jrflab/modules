@@ -45,9 +45,14 @@ for (i in 1:length(feature_names)) {
 	for (j in 1:length(ccf)) {
 		tmp[[j]] = post_density(ccf[[j]][,i])
 		x = ccf[[j]][,i]
-		y = Mclust(x, G=2)
-		a = x[y$classification==1]
-		b = x[y$classification==2]
+		y = try(Mclust(x, G=2), silent=TRUE)
+		if ("try-error" %in% is(y)) {
+			a = x
+			b = NULL
+		} else {
+			a = x[y$classification==1]
+			b = x[y$classification==2]
+		}
 		if (length(a)>length(b)) {
 			z[[j]] = a
 		} else {
