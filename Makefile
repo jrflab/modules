@@ -70,9 +70,7 @@ run_cnvkit :
 	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/copy_number/cnvkitplot.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitqc.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitprcomp.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/copy_number/cnvkitheatmap.mk)
+	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
 
 #==================================================
 # aligners
