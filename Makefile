@@ -637,9 +637,5 @@ ann_vcf:
 # tests
 #==================================================
 
-TARGETS += mask_regions
-mask_regions :
-	$(call RUN_MAKE,modules/test/bam_tools/mask_regions.mk)
-	
 
 .PHONY : $(TARGETS)
