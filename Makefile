@@ -633,5 +633,13 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
+#==================================================
+# tests
+#==================================================
+
+TARGETS += mask_regions
+mask_regions :
+	$(call RUN_MAKE,modules/test/bam_tools/mask_regions.mk)
+	
 
 .PHONY : $(TARGETS)
