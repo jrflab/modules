@@ -9,7 +9,6 @@ if (!interactive()) {
 }
 
 args_list <- list(make_option("--patient", default = NA, type = 'character', help = "patient id"))
-				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
@@ -58,7 +57,7 @@ for (i in 1:length(sample_names)) {
 #====================================
 q_t = rep(NA, nrow(vars))
 q_2 = rep(NA, nrow(vars))
-# for (i in 2:length(sample_names)) {
+for (i in 2:length(sample_names)) {
 # 	load(paste0("ascat/ascat/", sample_names[i], "_", sample_names[1], ".RData"))
 # 	Chromosomes = tmp2$SNPpos[tmp3$seg[,"start"],1]
 # 	Chromosomes[Chromosomes==23] = "X"
@@ -75,9 +74,9 @@ q_2 = rep(NA, nrow(vars))
 # 			index[j] = NA
 # 		}
 # 	}
-# 	q_t = cbind(q_t, qt[index])
-# 	q_2 = cbind(q_2, q2[index])
-# }
+ 	q_t = cbind(q_t, rep(NA, nrow(vars))) #q_t = cbind(q_t, qt[index])
+ 	q_2 = cbind(q_2, rep(NA, nrow(vars))) #q_2 = cbind(q_2, q2[index])
+}
 # q_t[is.na(q_t)] = 2
 # q_2[is.na(q_2)] = 1
 colnames(q_t) = colnames(q_2) = c("N", sample_names[2:length(sample_names)])
@@ -162,12 +161,13 @@ colnames(ll) = paste0("LL_", colnames(ll))
 colnames(sq) = paste0("sq_", colnames(sq))
 colnames(clonal_status) = paste0("Clonal_Status_", colnames(clonal_status))
 
-vars = cbind(vars, cancer_cell_fraction,
-				   ccf_95CI_low,
-				   ccf_95CI_high,
-				   pr_somatic_clonal,
-				   ll,
-				   sq,
-				   clonal_status)
+vars = cbind(vars,
+			 cancer_cell_fraction,
+			 ccf_95CI_low,
+			 ccf_95CI_high,
+			 pr_somatic_clonal,
+			 ll,
+			 sq,
+			 clonal_status)
 
 write.table(vars, file=paste0("sufam/", opt$patient, ".tsv"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
