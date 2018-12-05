@@ -637,5 +637,9 @@ ann_vcf:
 # tests
 #==================================================
 
+TARGETS += sufam_multisample_test
+sufam_multisample_test:
+	$(call RUN_MAKE,modules/test/variant_callers/sufammultisample.mk)
+
 
 .PHONY : $(TARGETS)
