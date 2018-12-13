@@ -1,6 +1,0 @@
-test1T:
-- [fastq/test1T.1.fastq.gz,
-   fastq/test1T.2.fastq.gz]
-test1N:
-- [fastq/test1N.1.fastq.gz,
-   fastq/test1N.2.fastq.gz]

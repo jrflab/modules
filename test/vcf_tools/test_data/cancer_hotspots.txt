@@ -1,7 +1,0 @@
-Hugo Symbol	Codon	Variant Amino Acid	Q-value	Sample Count	Tumor Type Composition
-TP53	A187_splice		1.70E-07	25	ov:6|brca:3|coadread:3|hnsc:3|stad:2|blca:1|cll:1|kich:1|lgg:1|luad:1|lusc:1|paad:1|skcm:1
-TP53	C176	F:26|Y:21|S:3|*:2|G:2|C:1|R:1|W:1	8.54E-38	57	ov:10|brca:6|coadread:6|hnsc:6|esca:5|stad:5|lgg:4|luad:4|paad:4|lusc:2|blca:1|kich:1|laml:1|lihc:1|prad:1
-TP53	C238	Y:15|F:12|R:3|S:3|G:1	2.81E-17	34	brca:4|gbm:4|ov:4|coadread:3|hnsc:3|esca:2|paad:2|ucec:2|ucs:2|blca:1|cesc:1|cll:1|lgg:1|lihc:1|luad:1|mmyl:1|stad:1
-PIK3CA	R38	H:7|C:4|G:1|L:1|S:1	0.0044	14	ucec:6|coadread:2|gbm:2|stad:2|cesc:1|lusc:1
-PIK3CA	R88	Q:40	5.17E-17	40	coadread:16|ucec:11|stad:4|brca:2|gbm:2|blca:1|hgg:1|hnsc:1|prad:1|ucs:1
-TP53	T125_splice	SS:23	3.85E-05	23	hnsc:4|lgg:3|stad:3|brca:2|luad:2|lusc:2|ov:2|acc:1|cscc:1|esca:1|paad:1|skcm:1

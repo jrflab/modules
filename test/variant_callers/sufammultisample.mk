@@ -9,10 +9,10 @@ sufam_multisample : $(foreach sample,$(NORMAL_SAMPLES),sufam/$(sample).tsv) summ
 
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/test/variant_callers/combineSamples.R --patient $$*")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/test/variant_callers/combinesamples.R --patient $$*")
 
 sufam/%.tsv : sufam/%.txt
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/test/variant_callers/updateSamples.R --patient $$*")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/test/variant_callers/updatesamples.R --patient $$*")
 	
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\

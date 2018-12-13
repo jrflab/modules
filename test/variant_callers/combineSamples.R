@@ -1,18 +1,20 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--patient", default = NA, type = 'character', help = "type of analysis"))
+args_list = list(make_option("--patient", default = NA, type = 'character', help = "patient name"),
+				 make_option("--samples", default = NA, type = 'character', help = "sample names"))
 				  
-parser <- OptionParser(usage = "%prog", option_list = args_list)
-arguments <- parse_args(parser, positional_arguments = T)
-opt <- arguments$options
+parser = OptionParser(usage = "%prog", option_list = args_list)
+arguments = parse_args(parser, positional_arguments = T)
+opt = arguments$options
 
-all_vars = read.csv(file="summary/tsv/mutation_summary.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+sample_names = unlist(strsplit(opt$samples, " ", fixed=TRUE))
+all_vars = read.csv(file="summary/tsv/all.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
 tmp_vars = all_vars[all_vars$NORMAL_SAMPLE==opt$patient,,drop=FALSE]
 keys = paste0(tmp_vars$CHROM, ":", tmp_vars$POS, ":", tmp_vars$REF, ":", tmp_vars$ALT)
 ukeys = unique(keys)
@@ -72,7 +74,8 @@ for (i in 1:length(ukeys)) {
 					     "HOTSPOT_INTERNAL"=HOTSPOT_INTERNAL,
 					     "HOTSPOT_CMO"=CMO_HOTSPOT))
 }
-VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(unique(tmp_vars$TUMOR_SAMPLE))+1, dimnames=list(ukeys, c("N", unique(tmp_vars$TUMOR_SAMPLE))))
+
+VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(sample_names)+1, dimnames=list(ukeys, c("N", sample_names)))
 for (j in 1:nrow(tmp_vars)) {
 	sample_name = tmp_vars[j,"TUMOR_SAMPLE"]
 	ukey = paste0(tmp_vars$CHROM[j], ":", tmp_vars$POS[j], ":", tmp_vars$REF[j], ":", tmp_vars$ALT[j])
@@ -91,7 +94,12 @@ other_indels = ((grepl("platypus", vars[,"Variant_Caller"]) & grepl("scalpel", v
 			   (grepl("platypus", vars[,"Variant_Caller"]) & grepl("lancet", vars[,"Variant_Caller"]))) &
 			   (nchar(vars[,"Ref"])>3 | nchar(vars[,"Alt"])>3) &
 			   !grepl("In_Frame", vars[,"Variant_Classification"])
-index = mutect | main_indels | other_indels
+extra_indels = (vars[,"Gene_Symbol"] == "ARID1A" & vars[,"Position"] == 27092782) |
+			   (vars[,"Gene_Symbol"] == "GATA3" & vars[,"Position"] == 8115874) |
+			   (vars[,"Gene_Symbol"] == "FAT1" & vars[,"Position"] == 187630739) |
+			   (vars[,"Gene_Symbol"] == "TP53" & vars[,"Position"] == 7574002) |
+			   (vars[,"Gene_Symbol"] == "ARID1A" & vars[,"Position"] == 27101251)
+index = mutect | main_indels | other_indels | extra_indels
 vars = vars[index,,drop=FALSE]
 index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Site")
 vars = vars[index,,drop=FALSE]
