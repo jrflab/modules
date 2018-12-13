@@ -4,14 +4,14 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvkit_fix.$(NOW)
 PHONY += cnvkit cnvkit/cnr
 
-cnvkit : $(foreach tumor_sample,$(TUMOR_SAMPLES),foreach normal_sample,$(NORMAL_SAMPLES),cnvkit/cnr/$(tumor_sample)_$(normal_sample).cnr)
+cnvkit : $(foreach pair,$(SAMPLE_PAIRS),cnvkit/cnr/$(pair).cnr)
 
 define cnvkit-cnr
-cnvkit/cnr/%.cnr : cnvkit/cnn/tumor/%.targetcoverage.cnn cnvkit/cnn/tumor/%.antitargetcoverage.cnn cnvkit/reference/%.cnr
-	$$(call RUN,-c -s 6G -m 8G,"cnvkit.py fix $$(<) $$(<<) cnvkit/reference/$$(<<<).cnr -o cnvkit/cnr/$$(*)_$$(**).cnr")
+cnvkit/cnr/$1_$2.cnr : cnvkit/cnn/tumor/$1.targetcoverage.cnn cnvkit/cnn/tumor/$1.antitargetcoverage.cnn cnvkit/reference/$2.cnr
+	$$(call RUN,-c -s 6G -m 8G,"cnvkit.py fix $$(<) $$(<<) cnvkit/reference/$2.cnr -o cnvkit/cnr/$$(*).cnr")
 	
 endef
- $(foreach tumor_sample,$(TUMOR_SAMPLES),foreach normal_sample,$(NORMAL_SAMPLES),\
-		$(eval $(call cnvkit-cnr,$(tumor_sample),$(normal_sample))))
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call cnvkit-cnr,$(tumor.$(pair)),$(normal.$(pair)))))
 				
 .PHONY: $(PHONY)
