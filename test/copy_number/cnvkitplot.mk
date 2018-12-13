@@ -8,7 +8,7 @@ cnvkit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plot/$(sample).ontarget.pdf cn
 
 define cnvkit-plot
 cnvkit/plot/%.ontarget.pdf cnvkit/plot/%.offtarget.pdf : cnvkit/cnr/%.timestamp
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 4G -m 6G,"$(RSCRIPT) modules/test/copy_number/cnvkitplot.R --tumor $$(*) --normals $$(NORMAL_SAMPLES)")
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 10G -m 12G,"$(RSCRIPT) modules/test/copy_number/cnvkitplot.R --tumor $$(*) --normals '$$(NORMAL_SAMPLES)'")
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call cnvkit-plot,$(sample))))
