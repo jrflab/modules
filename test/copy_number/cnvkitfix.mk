@@ -8,9 +8,7 @@ cnvkit : $(foreach tumor_sample,$(TUMOR_SAMPLES),foreach normal_sample,$(NORMAL_
 
 define cnvkit-cnr
 cnvkit/cnr/%.cnr : cnvkit/cnn/tumor/%.targetcoverage.cnn cnvkit/cnn/tumor/%.antitargetcoverage.cnn cnvkit/reference/%.cnr
-	$$(call RUN,-c -s 6G -m 8G,"for i in $$(NORMAL_SAMPLES); do \
-									cnvkit.py fix $$(<) $$(<<) 'cnvkit/reference/$$i.cnr' -o 'cnvkit/cnr/$$(*)_$$i.cnr'; \
-								done && touch cnvkit/cnr/$$(*).timestamp")
+	$$(call RUN,-c -s 6G -m 8G,"cnvkit.py fix $$(<) $$(<<) cnvkit/reference/$$(<<<).cnr -o cnvkit/cnr/$$(*)_$$(**).cnr")
 	
 endef
  $(foreach tumor_sample,$(TUMOR_SAMPLES),foreach normal_sample,$(NORMAL_SAMPLES),\
