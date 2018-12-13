@@ -640,6 +640,22 @@ ann_vcf:
 TARGETS += sufam_multisample_test
 sufam_multisample_test:
 	$(call RUN_MAKE,modules/test/variant_callers/sufammultisample.mk)
+	
+TARGETS += qdna_seq_test
+qdna_seq_test:
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseq.mk)
+	
+TARGETS += cnvkit_reference_test
+cnvkit_reference_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitreference.mk)
+	
+TARGETS += cnvkit_fix_test
+cnvkit_fix_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitfix.mk)
 
+TARGETS += cnvkit_plot_test
+cnvkit_plot_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
+	
 
 .PHONY : $(TARGETS)
