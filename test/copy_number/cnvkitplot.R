@@ -26,16 +26,17 @@ for (i in 1:length(normal_samples)) {
 	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".cnr")
 	data[[i]] = read.table(file=file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 }
-index = data[[i]][,"gene"] == "-"
 mad0 = mad1 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
+	index = data[[i]][,"gene"] == "-"
 	mad0[i] = mad(data[[i]][index,"log2"])
 	mad1[i] = mad(data[[i]][!index,"log2"])
 }
-tmp = data[[1]]
-tmp[index,"log2"] = data[[which.min(mad0)]][index,"log2"]
-tmp[!index,"log2"] = data[[which.min(mad1)]][!index,"log2"]
-data = tmp
+index = data[[which.min(mad0)]][,"gene"]=="-"
+data0 = data[[which.min(mad0)]][index,,drop=FALSE]
+index = data[[which.min(mad1)]][,"gene"]=="-"
+data1 = data[[which.min(mad1)]][!index,,drop=FALSE]
+data = rbind(data0, data1)
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target))
 	system(paste0("touch ", outfile_off_target))
