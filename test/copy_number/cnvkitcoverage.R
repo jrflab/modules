@@ -6,7 +6,7 @@ suppressPackageStartupMessages(library("mclust"))
 'fix' <- function(x)
 {
 	y = log2(x)
-	m = Mclust(x, G=1:2)
+	m = Mclust(y, G=1:2)
 	for (i in 1:m$G) {
 		index = m$classification==i
 		z = y[index]
