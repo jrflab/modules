@@ -26,10 +26,16 @@ for (i in 1:length(normal_samples)) {
 	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".cnr")
 	data[[i]] = read.table(file=file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 }
-index = which.min(unlist(lapply(data, function(x) {mad(x[,"log2"])})))
-data = data[[index]]
-data = subset(data, data[,"depth"]!=0)
-
+index = data[[i]][,"gene"] == "-"
+mad0 = mad1 = vector(mode="numeric", length(normal_samples))
+for (i in 1:length(normal_samples)) {
+	mad0[i] = mad(data[[i]][index,"log2"])
+	mad1[i] = mad(data[[i]][!index,"log2"])
+}
+tmp = data[[1]]
+tmp[index,"log2"] = data[[which.min(mad0)]][index,"log2"]
+tmp[!index,"log2"] = data[[which.min(mad1)]][!index,"log2"]
+data = tmp
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target))
 	system(paste0("touch ", outfile_off_target))
