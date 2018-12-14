@@ -32,7 +32,7 @@ fileout = gsub(pattern=".tmp", replacement=".cnn", x=filein, fixed=TRUE)
 
 data = read.csv(file=filein, header=TRUE, sep="\t", stringsAsFactors=FALSE)
 index = data[,1]=="X" | data[,1]=="Y"
-x = fun(data[!index,"depth"])
+x = fix(data[!index,"depth"])
 y = log2(x)
 inx = x<0 | is.infinite(y) | is.na(x) | is.na(y)
 x[inx] = 0
