@@ -115,6 +115,7 @@ if (nrow(data)==0) {
 	box(lwd=2.5)
 	dev.off()
 }
+
 data = list()
 for (i in 1:length(normal_samples)) {
 	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".A.cnr")
