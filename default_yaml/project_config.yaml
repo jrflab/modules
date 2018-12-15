@@ -39,7 +39,6 @@ offtarget_file: ~/share/reference/target_panels/
 # cnvkit access target panels
 ontarget_file_A: ~/share/reference/target_panels/
 ontarget_file_B: ~/share/reference/target_panels/
-offtarget_file: ~/share/reference/target_panels/
 
 # whole exome sequencing
 exome: false
