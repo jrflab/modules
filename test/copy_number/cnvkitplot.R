@@ -48,10 +48,6 @@ if (nrow(data)==0) {
 	data = subset(data, data[,"chromosome"]<=23)
 	
 	ontarget = subset(data, data$gene=="-" & data$depth<1.5)
-	tmp = ontarget[,c("chromosome", "start", "log2"),drop=FALSE]
-	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=tmp, tau=3.5, k=5, verbose=FALSE, return.outliers=TRUE)
-	ontarget[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	col = rep("#9F6986", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
