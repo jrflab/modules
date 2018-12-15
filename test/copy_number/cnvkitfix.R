@@ -22,7 +22,7 @@ for (i in 1:length(normal_samples)) {
 }
 file.remove(paste0("cnvkit/cnn/tumor/", tumor_sample, ".A.antitargetcoverage.cnn"))
 
-file.copy(from=paste0("cnvkit/cnn/tumor/", tumor_sample, ".antitargetcoverage.cnn"), to=paste0("cnvkit/cnn/tumor/", tumor_sample, ".A.antitargetcoverage.cnn"))
+file.copy(from=paste0("cnvkit/cnn/tumor/", tumor_sample, ".antitargetcoverage.cnn"), to=paste0("cnvkit/cnn/tumor/", tumor_sample, ".B.antitargetcoverage.cnn"))
 for (i in 1:length(normal_samples)) {
 	system(paste0("cnvkit.py fix cnvkit/cnn/tumor/", tumor_sample, ".B.targetcoverage.cnn  cnvkit/cnn/tumor/", tumor_sample, ".B.antitargetcoverage.cnn cnvkit/reference/", normal_samples[i], ".B.cnr -o cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".B.cnr"))
 }
