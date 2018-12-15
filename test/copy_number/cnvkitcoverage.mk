@@ -14,7 +14,10 @@ cnvkit/cnn/tumor/%.targetcoverage.cnn : bam/%.bam
 									 rm -rf cnvkit/cnn/tumor/$$(*).targetcoverage.tmp")
 
 cnvkit/cnn/tumor/%.antitargetcoverage.cnn : bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvkit/cnn/tumor/$$(*).antitargetcoverage.cnn")
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvkit/cnn/tumor/$$(*).antitargetcoverage.tmp && \
+									 source $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6/bin/activate $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6 && \
+									 $(RSCRIPT) modules/test/copy_number/cnvkitcoverage.R --file cnvkit/cnn/normal/$$(*).antitargetcoverage.tmp && \
+									 rm -rf cnvkit/cnn/normal/$$(*).antitargetcoverage.tmp")
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call cnvkit-tumor-cnn,$(sample))))
