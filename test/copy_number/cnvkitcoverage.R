@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library("mclust"))
 	for (i in 1:m$G) {
 		index = m$classification==i
 		z = y[index]
-		z = (z - mean(z, na.rm=TRUE))/sd(z, na.rm=TRUE)
+		z = z - mean(z, na.rm=TRUE)
 		y[index] = z
 	}
 	y = 2^y
