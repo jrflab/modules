@@ -18,90 +18,145 @@ opt = arguments$options
 
 tumor_sample = opt$tumor
 normal_samples = unlist(strsplit(x=opt$normals, " ", fixed=TRUE))
-outfile_on_target = paste0("cnvkit/plot/", tumor_sample, ".ontarget.pdf")
+outfile_on_target_A = paste0("cnvkit/plot/", tumor_sample, ".A.ontarget.pdf")
+outfile_on_target_B = paste0("cnvkit/plot/", tumor_sample, ".B.ontarget.pdf")
 outfile_off_target = paste0("cnvkit/plot/", tumor_sample, ".offtarget.pdf")
 
 data = list()
 for (i in 1:length(normal_samples)) {
-	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".cnr")
+	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".A.cnr")
 	data[[i]] = read.table(file=file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 }
-mad0 = mad1 = vector(mode="numeric", length(normal_samples))
+m0 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
-	index = data[[i]][,"gene"] == "-" & data[[i]][,"depth"]<1.5
-	mad0[i] = mad(data[[i]][index,"log2"])
-	index = data[[i]][,"gene"] != "-"
-	mad1[i] = mad(data[[i]][index,"log2"])
+	index = data[[i]][,"gene"] == "-"
+	m0[i] = mad(data[[i]][index,"log2"])
 }
-index = data[[which.min(mad0)]][,"gene"]=="-"
-data0 = data[[which.min(mad0)]][index,,drop=FALSE]
-index = data[[which.min(mad1)]][,"gene"]!="-"
-data1 = data[[which.min(mad1)]][index,,drop=FALSE]
-data = rbind(data0, data1)
+index = data[[which.min(m0)]][,"gene"]=="-"
+data = data[[which.min(m0)]][index,,drop=FALSE]
 if (nrow(data)==0) {
-	system(paste0("touch ", outfile_on_target))
-	system(paste0("touch ", outfile_off_target))
+	system(paste0("touch ", outfile_on_target_A))
 } else {
 	data[data[,"chromosome"]=="X", "chromosome"] = 23
 	data[data[,"chromosome"]=="Y", "chromosome"] = 24
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
 	data = subset(data, data[,"chromosome"]<23)
-	
-	ontarget = subset(data, data$gene=="-" & data$depth<1.5)
-	col = rep("#9F6986", nrow(ontarget))
-	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
-	pdf(file=outfile_on_target, width=14, height=5)
+	col = rep("#9F6986", nrow(data))
+	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
+	pdf(file=outfile_on_target_A, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(ontarget[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	abline(v=1, col="goldenrod3")
 	abline(h=0, col="red")
-	for (j in 2:max(ontarget[,"chromosome"])) {
-		v = min(which(ontarget[,"chromosome"]==j))
+	for (j in 2:max(data[,"chromosome"])) {
+		v = min(which(data[,"chromosome"]==j))
 		abline(v=v, col="goldenrod3")
 	}
-	abline(v=max(nrow(ontarget)), col="goldenrod3")
+	abline(v=max(nrow(data)), col="goldenrod3")
 	start = NULL
 	end = NULL
-	for (j in 1:max(ontarget[,"chromosome"])) {
-		start[j] = min(which(ontarget[,"chromosome"]==j))
-		end[j] = max(which(ontarget[,"chromosome"]==j))
+	for (j in 1:max(data[,"chromosome"])) {
+		start[j] = min(which(data[,"chromosome"]==j))
+		end[j] = max(which(data[,"chromosome"]==j))
 	}
-	labels = 1:max(ontarget[,"chromosome"])
+	labels = 1:max(data[,"chromosome"])
 	labels[labels==23] = "X"
 	axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
 	dev.off()
-	
-	offtarget = subset(data, data$gene!="-" & depth<1.5)
-	tmp = offtarget[,c("chromosome", "start", "log2"),drop=FALSE]
-	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE, return.outliers=TRUE)
-	offtarget[tmp$wins.outliers[,3]!=0,"log2"] = NA
-	col = rep("#9F6986", nrow(offtarget))
-	col[(offtarget[,"chromosome"]%%2)==1] = "#CECAC5"
-	pdf(file=outfile_off_target, width=14, height=5)
+}
+
+data = list()
+for (i in 1:length(normal_samples)) {
+	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".B.cnr")
+	data[[i]] = read.table(file=file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+}
+m0 = vector(mode="numeric", length(normal_samples))
+for (i in 1:length(normal_samples)) {
+	index = data[[i]][,"gene"] == "-"
+	m0[i] = mad(data[[i]][index,"log2"])
+}
+index = data[[which.min(m0)]][,"gene"]=="-"
+data = data[[which.min(m0)]][index,,drop=FALSE]
+if (nrow(data)==0) {
+	system(paste0("touch ", outfile_on_target_B))
+} else {
+	data[data[,"chromosome"]=="X", "chromosome"] = 23
+	data[data[,"chromosome"]=="Y", "chromosome"] = 24
+	data[,"chromosome"] = as.numeric(data[,"chromosome"])
+	data = subset(data, data[,"chromosome"]<23)
+	col = rep("#9F6986", nrow(data))
+	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
+	pdf(file=outfile_on_target_B, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(offtarget[,"log2"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	abline(v=1, col="goldenrod3")
 	abline(h=0, col="red")
-	for (j in 2:max(offtarget[,"chromosome"])) {
-		v = min(which(offtarget[,"chromosome"]==j))
+	for (j in 2:max(data[,"chromosome"])) {
+		v = min(which(data[,"chromosome"]==j))
 		abline(v=v, col="goldenrod3")
 	}
-	abline(v=max(nrow(offtarget)), col="goldenrod3")
+	abline(v=max(nrow(data)), col="goldenrod3")
 	start = NULL
 	end = NULL
-	for (j in 1:max(offtarget[,"chromosome"])) {
-		start[j] = min(which(offtarget[,"chromosome"]==j))
-		end[j] = max(which(offtarget[,"chromosome"]==j))
+	for (j in 1:max(data[,"chromosome"])) {
+		start[j] = min(which(data[,"chromosome"]==j))
+		end[j] = max(which(data[,"chromosome"]==j))
 	}
-	labels = 1:max(offtarget[,"chromosome"])
+	labels = 1:max(data[,"chromosome"])
+	labels[labels==23] = "X"
+	axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
+	box(lwd=2.5)
+	dev.off()
+}
+data = list()
+for (i in 1:length(normal_samples)) {
+	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".A.cnr")
+	data[[i]] = read.table(file=file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+}
+m0 = vector(mode="numeric", length(normal_samples))
+for (i in 1:length(normal_samples)) {
+	index = data[[i]][,"gene"] != "-"
+	m0[i] = mad(data[[i]][index,"log2"])
+}
+index = data[[which.min(m0)]][,"gene"]!="-"
+data = data[[which.min(m0)]][index,,drop=FALSE]
+if (nrow(data)==0) {
+	system(paste0("touch ", outfile_off_target))
+} else {	
+	data = subset(data, data$gene!="-")
+	tmp = data[,c("chromosome", "start", "log2"),drop=FALSE]
+	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
+	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	data[tmp$wins.outliers[,3]!=0,"log2"] = NA
+	col = rep("#9F6986", nrow(data))
+	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
+	pdf(file=outfile_off_target, width=14, height=5)
+	par(mar=c(5, 5, 4, 2)+.1)
+	plot(data[,"log2"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	axis(2, at = NULL, cex.axis = 1.15, las = 1)
+	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+	abline(v=1, col="goldenrod3")
+	abline(h=0, col="red")
+	for (j in 2:max(data[,"chromosome"])) {
+		v = min(which(data[,"chromosome"]==j))
+		abline(v=v, col="goldenrod3")
+	}
+	abline(v=max(nrow(data)), col="goldenrod3")
+	start = NULL
+	end = NULL
+	for (j in 1:max(data[,"chromosome"])) {
+		start[j] = min(which(data[,"chromosome"]==j))
+		end[j] = max(which(data[,"chromosome"]==j))
+	}
+	labels = 1:max(data[,"chromosome"])
 	labels[labels==23] = "X"
 	axis(1, at = .5*(start+end), labels=labels, cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
