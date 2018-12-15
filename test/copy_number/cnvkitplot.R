@@ -28,14 +28,15 @@ for (i in 1:length(normal_samples)) {
 }
 mad0 = mad1 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
-	index = data[[i]][,"gene"] == "-"
+	index = data[[i]][,"gene"] == "-" & data[[i]][,"depth"]<1.5
 	mad0[i] = mad(data[[i]][index,"log2"])
-	mad1[i] = mad(data[[i]][!index,"log2"])
+	index = data[[i]][,"gene"] != "-" & data[[i]][,"depth"]<1.5
+	mad1[i] = mad(data[[i]][index,"log2"])
 }
 index = data[[which.min(mad0)]][,"gene"]=="-"
 data0 = data[[which.min(mad0)]][index,,drop=FALSE]
-index = data[[which.min(mad1)]][,"gene"]=="-"
-data1 = data[[which.min(mad1)]][!index,,drop=FALSE]
+index = data[[which.min(mad1)]][,"gene"]!="-"
+data1 = data[[which.min(mad1)]][index,,drop=FALSE]
 data = rbind(data0, data1)
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target))
