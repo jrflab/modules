@@ -30,7 +30,7 @@ mad0 = mad1 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
 	index = data[[i]][,"gene"] == "-" & data[[i]][,"depth"]<1.5
 	mad0[i] = mad(data[[i]][index,"log2"])
-	index = data[[i]][,"gene"] != "-" & data[[i]][,"depth"]<1.5
+	index = data[[i]][,"gene"] != "-"
 	mad1[i] = mad(data[[i]][index,"log2"])
 }
 index = data[[which.min(mad0)]][,"gene"]=="-"
@@ -47,7 +47,7 @@ if (nrow(data)==0) {
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
 	data = subset(data, data[,"chromosome"]<=23)
 	
-	ontarget = subset(data, data$gene=="-")
+	ontarget = subset(data, data$gene=="-" & data$depth<1.5)
 	col = rep("#9F6986", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
