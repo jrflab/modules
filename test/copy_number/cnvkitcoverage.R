@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library("mclust"))
 {
 	y = log2(x)
 	y[(is.infinite(y) | is.na(y))] = mean(y[!(is.infinite(y) | is.na(y))])
-	m = Mclust(y, G=1:2)
+	m = Mclust(y, G=1:3)
 	for (i in 1:m$G) {
 		index = m$classification==i
 		z = y[index]

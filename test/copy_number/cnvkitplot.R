@@ -45,7 +45,7 @@ if (nrow(data)==0) {
 	data[data[,"chromosome"]=="X", "chromosome"] = 23
 	data[data[,"chromosome"]=="Y", "chromosome"] = 24
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
-	data = subset(data, data[,"chromosome"]<=23)
+	data = subset(data, data[,"chromosome"]<23)
 	
 	ontarget = subset(data, data$gene=="-" & data$depth<1.5)
 	col = rep("#9F6986", nrow(ontarget))
