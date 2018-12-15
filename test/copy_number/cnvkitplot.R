@@ -132,6 +132,10 @@ if (nrow(data)==0) {
 	system(paste0("touch ", outfile_off_target))
 } else {	
 	data = subset(data, data$gene!="-")
+	data[data[,"chromosome"]=="X", "chromosome"] = 23
+	data[data[,"chromosome"]=="Y", "chromosome"] = 24
+	data[,"chromosome"] = as.numeric(data[,"chromosome"])
+	data = subset(data, data[,"chromosome"]<23)
 	tmp = data[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
 	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE, return.outliers=TRUE)
