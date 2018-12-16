@@ -10,7 +10,7 @@ suppressPackageStartupMessages(library("ASCAT"))
 	ii = length(x)-1
 	j = 2
 	jj = length(x)
-	y = x[i:ii] - x[j:jj]
+	y = median(abs(x[i:ii] - x[j:jj]))
 	return(invisible(y))
 }
 
