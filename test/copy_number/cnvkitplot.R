@@ -5,6 +5,15 @@ suppressPackageStartupMessages(library("copynumber"))
 suppressPackageStartupMessages(library("colorspace"))
 suppressPackageStartupMessages(library("ASCAT"))
 
+'MAPD' <- function(x) {
+	i = 1
+	ii = length(x)-1
+	j = 2
+	jj = length(x)
+	y = x[i:ii] - x[j:jj]
+	return(invisible(y))
+}
+
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
@@ -23,7 +32,8 @@ outfile_on_target_B = paste0("cnvkit/plot/", tumor_sample, ".B.ontarget.pdf")
 outfile_on_target_AB = paste0("cnvkit/plot/", tumor_sample, ".AB.ontarget.pdf")
 outfile_off_target = paste0("cnvkit/plot/", tumor_sample, ".offtarget.pdf")
 
-.data = list()
+save = list()
+
 data = list()
 for (i in 1:length(normal_samples)) {
 	file = paste0("cnvkit/cnr/", tumor_sample, "_", normal_samples[i], ".A.cnr")
@@ -32,11 +42,11 @@ for (i in 1:length(normal_samples)) {
 m0 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
 	index = data[[i]][,"gene"] == "-"
-	m0[i] = mad(data[[i]][index,"log2"])
+	m0[i] = MAPD(data[[i]][index,"log2"])
 }
 index = data[[which.min(m0)]][,"gene"]=="-"
 data = data[[which.min(m0)]][index,,drop=FALSE]
-.data[[1]] = data
+save[[1]] = data
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target_A))
 } else {
@@ -48,7 +58,7 @@ if (nrow(data)==0) {
 	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target_A, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.25, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
@@ -80,11 +90,11 @@ for (i in 1:length(normal_samples)) {
 m0 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
 	index = data[[i]][,"gene"] == "-"
-	m0[i] = mad(data[[i]][index,"log2"])
+	m0[i] = MAPD(data[[i]][index,"log2"])
 }
 index = data[[which.min(m0)]][,"gene"]=="-"
 data = data[[which.min(m0)]][index,,drop=FALSE]
-.data[[2]] = data
+save[[2]] = data
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target_B))
 } else {
@@ -96,7 +106,7 @@ if (nrow(data)==0) {
 	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target_B, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.25, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
@@ -128,11 +138,11 @@ for (i in 1:length(normal_samples)) {
 m0 = vector(mode="numeric", length(normal_samples))
 for (i in 1:length(normal_samples)) {
 	index = data[[i]][,"gene"] != "-"
-	m0[i] = mad(data[[i]][index,"log2"])
+	m0[i] = MAPD(data[[i]][index,"log2"])
 }
 index = data[[which.min(m0)]][,"gene"]!="-"
 data = data[[which.min(m0)]][index,,drop=FALSE]
-.data[[3]] = data
+save[[3]] = data
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_off_target))
 } else {	
@@ -173,7 +183,7 @@ if (nrow(data)==0) {
 	dev.off()
 }
 
-data = rbind(.data[[1]], .data[[2]])
+data = rbind(save[[1]], save[[2]])
 if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target_AB))
 } else {
@@ -186,11 +196,7 @@ if (nrow(data)==0) {
 	index = order(data[,"chromosome"])
 	data = data[index,,drop=FALSE]
 	data[data[,"log2"]<(-2),"log2"] = 0
-	tmp = data[,c("chromosome", "start", "log2"),drop=FALSE]
-	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=tmp, method="mad", tau=2.5, k=25, verbose=FALSE, return.outliers=TRUE)
-	data[tmp$wins.outliers[,3]!=0,"log2"] = tmp$wins.data[tmp$wins.outliers[,3]!=0,"Log2Ratio"]
-	tmp = .data[[3]][,c("chromosome", "start", "end", "log2"),drop=FALSE]
+	tmp = save[[3]][,c("chromosome", "start", "end", "log2"),drop=FALSE]
 	tmp[tmp[,"chromosome"]=="X", "chromosome"] = 23
 	tmp[tmp[,"chromosome"]=="Y", "chromosome"] = 24
 	tmp[,"chromosome"] = as.numeric(tmp[,"chromosome"])
@@ -212,7 +218,7 @@ if (nrow(data)==0) {
 	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target_AB, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.25, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
