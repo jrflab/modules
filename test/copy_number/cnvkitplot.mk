@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvkit_plot_test.$(NOW)
 PHONY += cnvkit cnvkit/plot
 
-cnvkit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plot/$(sample).A.ontarget.pdf cnvkit/plot/$(sample).B.ontarget.pdf cnvkit/plot/%.AB.ontarget.pdf cnvkit/plot/$(sample).offtarget.pdf)
+cnvkit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plot/$(sample).A.ontarget.pdf cnvkit/plot/$(sample).B.ontarget.pdf cnvkit/plot/$(sample).AB.ontarget.pdf cnvkit/plot/$(sample).offtarget.pdf)
 
 define cnvkit-plot
 cnvkit/plot/%.A.ontarget.pdf cnvkit/plot/%.B.ontarget.pdf cnvkit/plot/%.AB.ontarget.pdf cnvkit/plot/%.offtarget.pdf : cnvkit/cnr/%.timestamp
