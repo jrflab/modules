@@ -198,7 +198,7 @@ if (nrow(data)==0) {
 	for (j in 1:22) {
 		index = which(tmp[,"chromosome"]==j)
 		indx = order(sample(x=index, size=sum(data[,"chromosome"]==j), replace = FALSE, prob = NULL))
-		tmp[indx,"log2"] = data[data[,"chromosome"]==j,"log2"]
+		tmp[index[indx],"log2"] = data[data[,"chromosome"]==j,"log2"]
 	}
 	data = tmp
 	col = rep("#9F6986", nrow(data))
