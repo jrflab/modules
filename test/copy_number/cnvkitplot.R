@@ -185,27 +185,29 @@ if (nrow(data)==0) {
 	data = data[index,,drop=FALSE]
 	index = order(data[,"chromosome"])
 	data = data[index,,drop=FALSE]
-	tmp = data[,c("chromosome", "start", "log2"),drop=FALSE]
-	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE, return.outliers=TRUE)
-	data[tmp$wins.outliers[,3]!=0,"log2"] = NA
+	
 	tmp = .data[[3]][,c("chromosome", "start", "end", "log2"),drop=FALSE]
 	tmp[tmp[,"chromosome"]=="X", "chromosome"] = 23
 	tmp[tmp[,"chromosome"]=="Y", "chromosome"] = 24
 	tmp[,"chromosome"] = as.numeric(tmp[,"chromosome"])
 	tmp = subset(tmp, tmp[,"chromosome"]<23)
+	index = order(tmp[,"start"])
+	tmp = tmp[index,,drop=FALSE]
+	index = order(tmp[,"chromosome"])
+	tmp = tmp[index,,drop=FALSE]
 	tmp[,"log2"] = NA
 	for (j in 1:22) {
-		index = which(tmp[,"chromosome"]==j)
-		indx = order(sample(x=index, size=sum(data[,"chromosome"]==j), replace = FALSE, prob = NULL))
-		tmp[index[indx],"log2"] = data[data[,"chromosome"]==j,"log2"]
+		ind0 = which(tmp[,"chromosome"]==j)
+		ind1 = which(data[,"chromosome"]==j)
+		indx = sort(sample(x=ind0, size=length(ind1)))
+		tmp[indx,"log2"] = data[ind1,"log2"]
 	}
 	data = tmp
 	col = rep("#9F6986", nrow(data))
 	col[(data[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target_AB, width=14, height=5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(data[,"log2"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(data[,"log2"], type="p", pch=19, cex=.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
 	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
