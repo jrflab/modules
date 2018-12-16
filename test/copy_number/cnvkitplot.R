@@ -185,11 +185,11 @@ if (nrow(data)==0) {
 	data = data[index,,drop=FALSE]
 	index = order(data[,"chromosome"])
 	data = data[index,,drop=FALSE]
+	data[data[,"log2"]<(-2),"log2"] = 0
 	tmp = data[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
 	tmp = winsorize(data=tmp, method="mad", tau=2.5, k=5, verbose=FALSE, return.outliers=TRUE)
 	data[tmp$wins.outliers[,3]!=0,"log2"] = tmp$wins.data[tmp$wins.outliers[,3]!=0,"Log2Ratio"]
-	
 	tmp = .data[[3]][,c("chromosome", "start", "end", "log2"),drop=FALSE]
 	tmp[tmp[,"chromosome"]=="X", "chromosome"] = 23
 	tmp[tmp[,"chromosome"]=="Y", "chromosome"] = 24
@@ -203,6 +203,7 @@ if (nrow(data)==0) {
 	for (j in 1:22) {
 		ind0 = which(tmp[,"chromosome"]==j)
 		ind1 = which(data[,"chromosome"]==j)
+		set.seed(0)
 		indx = sort(sample(x=ind0, size=length(ind1)))
 		tmp[indx,"log2"] = data[ind1,"log2"]
 	}
