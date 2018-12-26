@@ -11,7 +11,7 @@ qdnaseq/readcounts/%.pdf qdnaseq/isobars/%.pdf qdnaseq/variance/%.pdf qdnaseq/lo
 										  	  export CPATH=$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/include:$(CPATH) && \
 										  	  export LIBRARY_PATH=$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$(LIBRARY_PATH) && \
 										  	  export LD_LIBRARY_PATH=$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$(LD_LIBRARY_PATH) && \
-										  	  export R_LIBS=$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/usr/R/library:$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib/R/library:$(R_LIBS) && \
+										  	  export R_LIBS=$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/usr/R/library:$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib/R/library && \
 										  	  $(RSCRIPT) modules/test/copy_number/qdnaseq.R --sample $$(*) --binsize $(QDNASEQ_BINSIZE)")
 										  
 endef
