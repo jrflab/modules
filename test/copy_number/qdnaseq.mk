@@ -9,7 +9,7 @@ QDNASEQ_ENV = $(HOME)/share/usr/opt/miniconda
 
 define qdnaseq-log2ratio
 qdnaseq/readcounts/%.pdf qdnaseq/isobars/%.pdf qdnaseq/variance/%.pdf qdnaseq/log2ratio/%.pdf qdnaseq/bed/%.bed : bam/%.bam
-	$$(call RUN,-c -n 16 -s 2G -m 3G -w 7200 -v $$(QDNASEQ_ENV),"source $$(HOME)/share/usr/opt/miniconda/bin/activate $$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5 && \
+	$$(call RUN,-c -n 16 -s 1G -m 3G -w 7200 --default_env $$(QDNASEQ_ENV) -v $$(QDNASEQ_ENV),"source $$(HOME)/share/usr/opt/miniconda/bin/activate $$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5 && \
 										  	  export CPATH=$$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/include:$$(CPATH) && \
 										  	  export LIBRARY_PATH=$$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$$(LIBRARY_PATH) && \
 										  	  export LD_LIBRARY_PATH=$$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib:$$(LD_LIBRARY_PATH) && \
