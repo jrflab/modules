@@ -641,8 +641,8 @@ TARGETS += sufam_multisample_test
 sufam_multisample_test:
 	$(call RUN_MAKE,modules/test/variant_callers/sufammultisample.mk)
 	
-TARGETS += qdna_seq_test
-qdna_seq_test:
+TARGETS += qdnaseq_test
+qdnaseq_test:
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseq.mk)
 	
 TARGETS += cnvkit_coverage_test
