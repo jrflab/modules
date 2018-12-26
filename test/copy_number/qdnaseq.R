@@ -2,6 +2,11 @@
 
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("QDNAseq"))
+suppressPackageStartupMessages(library("future"))
+
+future::plan("multiprocess")
+options(mc.cores=16L)
+
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -17,7 +22,9 @@ bins = getBinAnnotations(binSize=15, genome="hg19")
 readCounts = binReadCounts(bins=bins, bamfiles=paste0("bam/", opt$sample, ".bam"),
 						   isPaired=TRUE,
        					   isProperPair=TRUE,
-        				   minMapq=30, pairedEnds=TRUE)
+        				   minMapq=30,
+        				   pairedEnds=TRUE,
+        				   chunkSize=TRUE)
        
        
 # read counts versus genomic coordinates
