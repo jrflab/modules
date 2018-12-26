@@ -12,13 +12,20 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list = list(make_option("--sample", default = NA, type = 'character', help = "sample name"))
+args_list = list(make_option("--sample", default = NA, type = 'character', help = "sample name"),
+				 make_option("--binsize", default = NA, type = 'character', help = "bin size"))
 				  
 parser = OptionParser(usage = "%prog", option_list = args_list)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-bins = getBinAnnotations(binSize=15, genome="hg19")
+if (is.na(as.numeric(opt$binsize))) {
+	opt$binsize = 15
+} else {
+	opt$binsize = as.numeric(opt$binsize)
+
+
+bins = getBinAnnotations(binSize=opt$binsize, genome="hg19")
 readCounts = binReadCounts(bins=bins, bamfiles=paste0("bam/", opt$sample, ".bam"),
 						   isPaired=TRUE,
        					   isProperPair=TRUE,
@@ -26,11 +33,10 @@ readCounts = binReadCounts(bins=bins, bamfiles=paste0("bam/", opt$sample, ".bam"
         				   pairedEnds=TRUE,
         				   chunkSize=TRUE)
        
-       
 # read counts versus genomic coordinates
 pdf(file=paste0("qdnaseq/readcounts/", opt$sample,".pdf"), width=14, height=9)
-plot(readCounts, logTransform=FALSE, ylim=c(-50, 200))
-highlightFilters(readCounts, logTransform=FALSE, residual=TRUE, blacklist=TRUE)
+plot(readCounts, logTransform=TRUE, ylim=c(0, 20))
+highlightFilters(readCounts, logTransform=TRUE, residual=TRUE, blacklist=TRUE)
 dev.off()
 
 readCountsFiltered = applyFilters(readCounts, residual=TRUE, blacklist=TRUE)
@@ -48,11 +54,12 @@ noisePlot(readCountsFiltered)
 dev.off()
 
 copyNumbers = correctBins(readCountsFiltered)
+copyNumbersNormalized = normalizeBins(copyNumbers)
 copyNumbersSmooth = smoothOutlierBins(copyNumbersNormalized)
 
 # log2 ratio versus genomic coordinates
 pdf(file=paste0("qdnaseq/log2ratio/", opt$sample, ".pdf"), width=14, height=9)
-plot(copyNumbersSmooth)
+plot(copyNumbersSmooth, ylim=c(-4,4))
 dev.off()
 
 # write log2 ratio to file
