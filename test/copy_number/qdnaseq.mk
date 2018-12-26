@@ -14,6 +14,10 @@ qdnaseq/readcounts/%.pdf qdnaseq/isobars/%.pdf qdnaseq/variance/%.pdf qdnaseq/lo
 										  export R_LIBS='$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/usr/R/library:$(R_LIBS)' && \
 										  export R_LIBS='$(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5/lib/R/library:$(R_LIBS)' && \
 										  $(RSCRIPT) modules/test/copy_number/qdnaseq.R --sample $$(*)")
+										  
+endef
+ $(foreach sample,$(SAMPLES),\
+		$(eval $(call qdnaseq-log2ratio,$(sample))))
 	
 .DELETE_ON_ERROR:
 .SECONDARY:
