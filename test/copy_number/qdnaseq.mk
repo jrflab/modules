@@ -10,9 +10,7 @@ QDNASEQ_ENV = $(HOME)/share/usr/anaconda-envs/qdnaseq
 
 define qdnaseq-log2ratio
 qdnaseq/readcounts/%.pdf qdnaseq/isobars/%.pdf qdnaseq/variance/%.pdf qdnaseq/log2ratio/%.pdf qdnaseq/bed/%.bed : bam/%.bam
-	$$(call RUN,-c -n 16 -s 1G -m 3G -w 7200 --default_env $$(DEFAULT_ENV) -v $$(DEFAULT_ENV),"$(DEFAULT_ENV)/bin/activate $(QDNASEQ_ENV) && \
-																							   export RLIBS=/lila/data/reis-filho/usr/anaconda-envs/qdnaseq/lib/R/library && \
-																							   $(RSCRIPT) modules/test/copy_number/qdnaseq.R --sample $$(*) --binsize $(QDNASEQ_BINSIZE)")
+	$$(call RUN,-c -n 16 -s 1G -m 3G -w 7200 --default_env $$(QDNASEQ_ENV) -v $$(DEFAULT_ENV),"$(RSCRIPT) modules/test/copy_number/qdnaseq.R --sample $$(*) --binsize $(QDNASEQ_BINSIZE)")
 
 endef
  $(foreach sample,$(SAMPLES),\
