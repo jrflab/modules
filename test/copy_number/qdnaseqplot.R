@@ -141,7 +141,7 @@ if (opt$type=="raw") {
 			points(c(tmp[i,"End"], tmp[i+1,"Start"]), c(tmp[i,"Log2Ratio"],tmp[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
 		}
 		abline(h=0, lwd=1)
-		axis(2, at = c(-1,-.5,0,.5,1), labels=rep("",5), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
+		axis(2, at = c(-2,-1.5,-1,-.5,0,.5,1,1.5,2), labels=c("-2","-1.5","-1","-.5","0",".5","1","1.5","2"), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
 		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
 		box(lwd=2)
 		screen(zz[2])
