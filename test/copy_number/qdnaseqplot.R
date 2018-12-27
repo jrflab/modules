@@ -115,31 +115,30 @@ if (opt$type=="raw") {
 } else if (opt$type=="bychromosome") {
 
 	infile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
-	if (!dir.exists("qdnaseq/copynumber/bychromosome/")) {
-		dir.create("qdnaseq/copynumber/bychromosome/")
+	if (!dir.exists("qdnaseq/copynumber/bychr/")) {
+		dir.create("qdnaseq/copynumber/bychr/")
 	}
-	if (!dir.exists(paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/"))) {
-		dir.create(paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/"))
+	if (!dir.exists(paste0("qdnaseq/copynumber/bychr/", opt$sample, "/"))) {
+		dir.create(paste0("qdnaseq/copynumber/bychr/", opt$sample, "/"))
 	}
 	load(infile)
 	segmented = prunesegments.cn(x=segmented, n=7)
 	for (ii in 1:22) {
-		pdf(file=paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/", ii, ".pdf"))
+		pdf(file=paste0("qdnaseq/copynumber/bychr/", opt$sample, "/", ii, ".pdf"))
 		zz = split.screen(figs=matrix(c(0,1,.15,1, 0.065,.975,0.1,.4), nrow=2, ncol=4, byrow=TRUE))
 		screen(zz[1])
 		par(mar = c(6.1, 6, 4.1, 3))
 		start = 1
 		end = max(CytoBand[CytoBand[,"Chromosome"]==ii,"End"])
 		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-2,2), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
-		tmp = winsorize(data[,c("Chromosome","Start","Log2Ratio"),drop=FALSE], method="mad", tau=1.5, k=10)
-		index = tmp[,"Chromosome"]==ii
-		points(tmp[index,"Start"], tmp[index,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey80")
-		tmp2 = subset(segmented, segmented[,"Chromosome"]==ii)
-		for (i in 1:nrow(tmp2)) {
-			points(c(tmp2[i,"Start"], tmp2[i,"End"]), rep(tmp2[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
+		index = data[,"Chromosome"]==ii
+		points(data[index,"Start"], data[index,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey80")
+		tmp = subset(segmented, segmented[,"Chromosome"]==ii)
+		for (i in 1:nrow(tmp)) {
+			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
 		}
-		for (i in 1:(nrow(tmp2)-1)) {
-			points(c(tmp2[i,"End"], tmp2[i+1,"Start"]), c(tmp2[i,"Log2Ratio"],tmp2[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
+		for (i in 1:(nrow(tmp)-1)) {
+			points(c(tmp[i,"End"], tmp[i+1,"Start"]), c(tmp[i,"Log2Ratio"],tmp[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
 		}
 		abline(h=0, lwd=1)
 		axis(2, at = c(-1,-.5,0,.5,1), labels=rep("",5), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
