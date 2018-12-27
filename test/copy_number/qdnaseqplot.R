@@ -79,48 +79,6 @@ if (opt$type=="raw") {
 	load(infile)
 	
 	segmented = prunesegments.cn(x=segmented, n=7)
-	log2ratio = winsorize(data=data[,c("Chromosome","Start","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
-	end = NULL
-	for (j in 1:22) {
-		end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
-	}
-	end = cumsum(end)
-	start = rep(0, 22)
-	start[2:22] = end[1:21]+1
-	for (j in 1:22) {
-		segmented[segmented[,"Chromosome"]==j,"Start"] = segmented[segmented[,"Chromosome"]==j,"Start"] + start[j]
-		segmented[segmented[,"Chromosome"]==j,"End"] = segmented[segmented[,"Chromosome"]==j,"End"] + start[j]
-		data[data[,"Chromosome"]==j,"Start"] = data[data[,"Chromosome"]==j,"Start"] + start[j]
-	}
-	col = "grey80"
-	pdf(file=outfile, width=18, height=7)
-	par(mar=c(5, 5, 4, 2)+.1)
-	plot(data[,"Start"], log2ratio[,"Log2Ratio"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-2,2))
- 	for (j in 1:nrow(segmented)) {
- 		lines(x=c(segmented[j,"Start"], segmented[j,"End"]), y=rep(segmented[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
- 	}
- 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
-	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
-	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
-	abline(v=1, col="goldenrod3")
-	abline(h=0, col="red")
-	for (j in 2:22) {
-		v = start[j]
-		abline(v=v, col="goldenrod3")
-	}
-	abline(v=max(data[,"Start"]), col="goldenrod3")
-	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
-	box(lwd=2.5)
-	dev.off()
-
-} else if (opt$type=="bychromosome") {
-
-	infile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
-	outfile = paste0("qdnaseq/copynumber/pcf/", opt$sample, ".pdf")
-	load(infile)
-	
-	segmented = prunesegments.cn(x=segmented, n=7)
-	log2ratio = winsorize(data=data[,c("Chromosome","Start","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
 	end = NULL
 	for (j in 1:22) {
 		end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
@@ -153,5 +111,46 @@ if (opt$type=="raw") {
 	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
 	dev.off()
-	
+
+} else if (opt$type=="bychromosome") {
+
+	infile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
+	if (!dir.exists("qdnaseq/copynumber/bychromosome/")) {
+		dir.create("qdnaseq/copynumber/bychromosome/")
+	}
+	if (!dir.exists(paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/"))) {
+		dir.create(paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/"))
+	}
+	load(infile)
+	segmented = prunesegments.cn(x=segmented, n=7)
+	for (ii in 1:22) {
+		pdf(file=paste0("qdnaseq/copynumber/bychromosome/", opt$sample, "/", ii, ".pdf"))
+		zz = split.screen(figs=matrix(c(0,1,.15,1, 0.065,.975,0.1,.4), nrow=2, ncol=4, byrow=TRUE))
+		screen(zz[1])
+		par(mar = c(6.1, 6, 4.1, 3))
+		start = 1
+		end = max(CytoBand[CytoBand[,"Chromosome"]==ii,"End"])
+		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-2,2), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
+		tmp = winsorize(data[,c("Chromosome","Start","Log2Ratio"),drop=FALSE], method="mad", tau=1.5, k=10)
+		index = tmp[,"Chromosome"]==ii
+		points(tmp[index,"Start"], tmp[index,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey80")
+		tmp2 = subset(segmented, segmented[,"Chromosome"]==ii)
+		for (i in 1:nrow(tmp2)) {
+			points(c(tmp2[i,"Start"], tmp2[i,"End"]), rep(tmp2[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
+		}
+		for (i in 1:(nrow(tmp2)-1)) {
+			points(c(tmp2[i,"End"], tmp2[i+1,"Start"]), c(tmp2[i,"Log2Ratio"],tmp2[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
+		}
+		abline(h=0, lwd=1)
+		axis(2, at = c(-1,-.5,0,.5,1), labels=rep("",5), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
+		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
+		box(lwd=2)
+		screen(zz[2])
+		arg = copynumber:::getPlotParameters(type = "sample", nSeg = 10, cr = 3 * 3, sampleID = "dummy", plot.ideo = TRUE, xaxis = TRUE, assembly = "hg19")
+		copynumber:::plotIdeogram(chrom=ii, TRUE, cyto.data = arg$assembly, cex = .75, unit = "bp")
+		close.screen(all.screens=TRUE)
+		dev.off()
+	}
+
+
 }

@@ -18,7 +18,8 @@ qdnaseq/copynumber/segmented/%.RData : qdnaseq/bed/%.bed
 	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 10G -m 12G,"$(RSCRIPT) modules/test/copy_number/qdnaseqsegment.R --sample $$(*)")
 	
 qdnaseq/copynumber/pcf/%.pdf : qdnaseq/copynumber/segmented/%.RData
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 10G -m 12G,"$(RSCRIPT) modules/test/copy_number/qdnaseqplot.R --sample $$(*) --type 'segmented'")
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 10G -m 12G,"$(RSCRIPT) modules/test/copy_number/qdnaseqplot.R --sample $$(*) --type 'segmented' && \
+																	 $(RSCRIPT) modules/test/copy_number/qdnaseqplot.R --sample $$(*) --type 'bychromosome'")
 
 endef
  $(foreach sample,$(SAMPLES),\
