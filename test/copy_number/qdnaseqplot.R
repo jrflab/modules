@@ -108,7 +108,7 @@ if (opt$type=="raw") {
 		abline(v=v, col="goldenrod3")
 	}
 	abline(v=max(data[,"Start"]), col="goldenrod3")
-	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
+	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 1.15, las = 1)
 	box(lwd=2.5)
 	dev.off()
 
