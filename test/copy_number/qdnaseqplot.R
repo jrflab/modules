@@ -47,4 +47,7 @@ if (opt$type=="raw") {
 	axis(1, at = .5*(start+end), labels=labels, cex.axis = 1.15, las = 1)
 	box(lwd=2.5)
 	dev.off()
+} else if (opt$type=="segmented") {
+	
+
 }
