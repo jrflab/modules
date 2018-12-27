@@ -14,7 +14,7 @@ endef
 		$(eval $(call qdnaseq-plot-log2ratio,$(sample))))
 		
 define qdnaseq-segment-log2ratio
-qdnaseq/copynumber/segmented/%.RData qdnaseq/copynumber/pcf/%.pdf : qdnaseq/bed/%.bed
+qdnaseq/copynumber/segmented/%.RData : qdnaseq/bed/%.bed
 	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 10G -m 12G,"$(RSCRIPT) modules/test/copy_number/qdnaseqsegment.R --sample $$(*)")
 	
 qdnaseq/copynumber/pcf/%.pdf : qdnaseq/copynumber/segmented/%.RData
