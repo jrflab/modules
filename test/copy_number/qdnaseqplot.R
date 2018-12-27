@@ -79,7 +79,48 @@ if (opt$type=="raw") {
 	load(infile)
 	
 	segmented = prunesegments.cn(x=segmented, n=7)
-	lo2ratio = winsorize(data=data[,c("Chromosome","Start","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
+	log2ratio = winsorize(data=data[,c("Chromosome","Start","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
+	end = NULL
+	for (j in 1:22) {
+		end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
+	}
+	end = cumsum(end)
+	start = rep(0, 22)
+	start[2:22] = end[1:21]+1
+	for (j in 1:22) {
+		segmented[segmented[,"Chromosome"]==j,"Start"] = segmented[segmented[,"Chromosome"]==j,"Start"] + start[j]
+		segmented[segmented[,"Chromosome"]==j,"End"] = segmented[segmented[,"Chromosome"]==j,"End"] + start[j]
+		data[data[,"Chromosome"]==j,"Start"] = data[data[,"Chromosome"]==j,"Start"] + start[j]
+	}
+	col = "grey80"
+	pdf(file=outfile, width=18, height=7)
+	par(mar=c(5, 5, 4, 2)+.1)
+	plot(data[,"Start"], log2ratio[,"Log2Ratio"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-2,2))
+ 	for (j in 1:nrow(segmented)) {
+ 		lines(x=c(segmented[j,"Start"], segmented[j,"End"]), y=rep(segmented[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
+ 	}
+ 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
+	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+	abline(v=1, col="goldenrod3")
+	abline(h=0, col="red")
+	for (j in 2:22) {
+		v = start[j]
+		abline(v=v, col="goldenrod3")
+	}
+	abline(v=max(data[,"Start"]), col="goldenrod3")
+	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
+	box(lwd=2.5)
+	dev.off()
+
+} else if (opt$type=="bychromosome") {
+
+	infile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
+	outfile = paste0("qdnaseq/copynumber/pcf/", opt$sample, ".pdf")
+	load(infile)
+	
+	segmented = prunesegments.cn(x=segmented, n=7)
+	log2ratio = winsorize(data=data[,c("Chromosome","Start","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
 	end = NULL
 	for (j in 1:22) {
 		end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
@@ -112,5 +153,5 @@ if (opt$type=="raw") {
 	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
 	box(lwd=2.5)
 	dev.off()
-
+	
 }
