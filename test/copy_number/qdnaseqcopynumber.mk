@@ -2,7 +2,7 @@ include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/qdnaseq_copynumber.$(NOW)
-PHONY += qdnaseq qdnaseq/copynumber qdnaseq/copynumber/log2ratio
+PHONY += qdnaseq qdnaseq/copynumber qdnaseq/copynumber/log2ratio qdnaseq/copynumber/segmented
 
 plot : $(foreach sample,$(SAMPLES),qdnaseq/copynumber/log2ratio/$(sample).pdf)
 segment: $(foreach sample,$(SAMPLES),qdnaseq/copynumber/segmented/$(sample).RData)
