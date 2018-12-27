@@ -12,6 +12,26 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
+if (!dir.exists("qdnaseq/readcounts")) {
+	dir.create("qdnaseq/readcounts")
+}
+
+if (!dir.exists("qdnaseq/isobars")) {
+	dir.create("qdnaseq/isobars")
+}
+
+if (!dir.exists("qdnaseq/variance")) {
+	dir.create("qdnaseq/variance")
+}
+
+if (!dir.exists("qdnaseq/log2ratio")) {
+	dir.create("qdnaseq/log2ratio")
+}
+
+if (!dir.exists("qdnaseq/bed")) {
+	dir.create("qdnaseq/bed")
+}
+
 args_list = list(make_option("--sample", default = NA, type = 'character', help = "sample name"),
 				 make_option("--binsize", default = NA, type = 'character', help = "bin size"))
 				  
@@ -34,7 +54,7 @@ readCounts = binReadCounts(bins=bins, bamfiles=paste0("bam/", opt$sample, ".bam"
         				   chunkSize=TRUE)
        
 # read counts versus genomic coordinates
-pdf(file=paste0("qdnaseq/readcounts/", opt$sample,".pdf"), width=14, height=9)
+pdf(file=paste0("qdnaseq/readcounts/", opt$sample, ".pdf"), width=14, height=9)
 plot(readCounts, logTransform=TRUE, ylim=c(0, 20))
 highlightFilters(readCounts, logTransform=TRUE, residual=TRUE, blacklist=TRUE)
 dev.off()
