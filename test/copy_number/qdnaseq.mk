@@ -17,6 +17,4 @@ endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call qdnaseq-log2ratio,$(sample))))
 	
-.DELETE_ON_ERROR:
-.SECONDARY:
 .PHONY: $(PHONY)
