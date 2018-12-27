@@ -71,6 +71,11 @@ run_cnvkit :
 	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/copy_number/cnvkitplot.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
+	
+TARGETS += run_qdnaseq
+run_qdnaseq :
+	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 
 #==================================================
 # aligners
@@ -615,7 +620,6 @@ genome_summary :
 TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
-	
 
 #==================================================
 # annotations
@@ -641,9 +645,9 @@ TARGETS += sufam_multisample_test
 sufam_multisample_test:
 	$(call RUN_MAKE,modules/test/variant_callers/sufammultisample.mk)
 	
-TARGETS += qdnaseq_test
-qdnaseq_test:
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseq.mk)
+TARGETS += qdnaseq_extract_test
+qdnaseq_extract_test:
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqextract.mk)
 	
 TARGETS += qdnaseq_copynumber_test
 qdnaseq_copynumber_test:
