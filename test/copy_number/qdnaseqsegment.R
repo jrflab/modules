@@ -15,7 +15,6 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-load("modules/copy_number/CytoBand.RData")
 infile = paste0("qdnaseq/bed/", opt$sample, ".bed")
 outfile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
 data = read.table(file=infile, header=FALSE, sep="\t", skip=1, stringsAsFactors=FALSE)[,c(1,2,3,5),drop=FALSE]
