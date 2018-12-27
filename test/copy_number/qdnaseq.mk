@@ -1,4 +1,5 @@
 include modules/Makefile.inc
+include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/qdnaseq.$(NOW)
 PHONY += qdnaseq qdnaseq/readcounts qdnaseq/isobars qdnaseq/variance qdnaseq/log2ratio qdnaseq/bed

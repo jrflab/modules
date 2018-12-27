@@ -61,14 +61,14 @@ dev.off()
 
 readCountsFiltered = applyFilters(readCounts, residual=TRUE, blacklist=TRUE)
 
-# GC content versus mappability
+# %GC content versus mappability
 pdf(file=paste0("qdnaseq/isobars/", opt$sample, ".pdf"), width=7, height=7)
 isobarPlot(readCountsFiltered)
 dev.off()
 
 readCountsFiltered = estimateCorrection(readCountsFiltered)
 
-# variance versus bin coverage
+# noise (variance) versus bin coverage
 pdf(file=paste0("qdnaseq/variance/", opt$sample, ".pdf"), width=7, height=7)
 noisePlot(readCountsFiltered)
 dev.off()

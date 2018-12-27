@@ -645,6 +645,10 @@ TARGETS += qdnaseq_test
 qdnaseq_test:
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseq.mk)
 	
+TARGETS += qdnaseq_copynumber_test
+qdnaseq_copynumber_test:
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
+	
 TARGETS += cnvkit_coverage_test
 cnvkit_coverage_test :
 	$(call RUN_MAKE,modules/test/copy_number/cnvkitcoverage.mk)
