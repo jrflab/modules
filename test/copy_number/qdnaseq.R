@@ -20,10 +20,10 @@ arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
 if (is.na(as.numeric(opt$binsize))) {
-	opt$binsize = 15
+	opt$binsize = 30
 } else {
 	opt$binsize = as.numeric(opt$binsize)
-
+}
 
 bins = getBinAnnotations(binSize=opt$binsize, genome="hg19")
 readCounts = binReadCounts(bins=bins, bamfiles=paste0("bam/", opt$sample, ".bam"),
