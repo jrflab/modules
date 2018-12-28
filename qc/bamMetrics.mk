@@ -24,7 +24,7 @@ PHONY += gc
 gc : $(foreach sample,$(SAMPLES),metrics/$(sample).gc_bias_metrics)
 
 metrics/%.alignment_summary_metrics : bam/%.bam
-	$(call RUN,-s 18G -m 24G -w 7200,"$(COLLECT_METRICS) I=$< O=metrics/$* REFERENCE_SEQUENCE=$(REF_FASTA)")
+	$(call RUN,-s 18G -m 24G -w 7200,"$(COLLECT_METRICS) I=$< O=metrics/$(*).alignment_summary_metrics REFERENCE_SEQUENCE=$(REF_FASTA)")
 
 metrics/wgs_metrics_summary.tsv : $(foreach sample,$(SAMPLES),metrics/$(sample).wgs_metrics)
 	$(INIT) (grep GENOME_TERRITORY $< | sed 's/^/SAMPLE\t/'; for x in $(SAMPLES); do grep -A1 GENOME_TERRITORY metrics/$$x.wgs_metrics | sed 1d | sed "s/^/$$x\t/" ; done) > $@
