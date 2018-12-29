@@ -31,16 +31,12 @@ if (length(arguments$args) != length(posArgs)) {
     outFile <- opt$outFile
 }
 
-#For debugging
-if (FALSE){
+if (FALSE) {
 	opt <- list('addChr' = TRUE, 'geneListFile' = NULL)
 	txdbFile <- '~/ensg69.biomart.13012013.sqlite'
 	bamFile <- '~/share/data/DLBCL/WTSS/bam/HS0653.bam'
 	outFile <- 'tmp.txt'
 }
-#txdb <- makeTranscriptDbFromBiomart( biomart = 'ensembl', dataset = 'hsapiens_gene_ensembl' )
-#saveFeatures(txdb, '~/share/reference/ensg69.biomart.2014-02-21.sqlite')
-#txdb <- makeTranscriptDbFromUCSC(genome = 'hg19', tablename = 'ensGene')
 
 print("Loading txdb ")
 if (opt$genome == "b37" || opt$genome == "hg19" || opt$genome == "GRCh37") {
@@ -61,15 +57,13 @@ names(newSeqNames) <- seqlevels(allExons)
 allExons <- renameSeqlevels( allExons, newSeqNames )
 
 cat("Reading", bamFile, " ... ")
-si <- seqinfo(BamFile(bamFile));
-gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100));
-scf <- scanBamFlag( isDuplicate = FALSE ) # remove duplicate reads
-reads <- readGappedReads( bamFile, param = ScanBamParam( which = gr, flag = scf ) ); # grab reads in specific region cat("Finished\n")
-#reads <- GRanges(seqnames = rname(reads), ranges = IRanges(start = start(reads), end = end(reads)), strand = rep('*', length(reads)));
+si <- seqinfo(BamFile(bamFile))
+gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100))
+scf <- scanBamFlag( isDuplicate = FALSE )
+reads <- readGappedReads( bamFile, param = ScanBamParam( which = gr, flag = scf ) )
 cat('Finished\n')
 
 print('Count raw exon read counts ...')
-#countsForExons <- countOverlaps(allExons, reads);
 summarizedExpt <- summarizeOverlaps(allExons, reads)
 countsForExons <- as.numeric( assays(summarizedExpt)$counts )
 names(countsForExons) <- rownames(summarizedExpt)
@@ -87,7 +81,20 @@ print('Retrieving annotation data ...')
 annotDf <- values(allExons)
 print('...Done')
 
-exonsReadDf <- data.frame( geneID = sapply(annotDf[, 'gene_id'], '[[', 1), exonID = annotDf[, 'exon_id'], exonName = annotDf[, 'exon_name'], exonCount = countsForExons, exonRPM = rpm, exonRPKM = rpkm, stringsAsFactors = FALSE )
+index = unlist(lapply(as.vector(annotDf[, 'gene_id']), length)==0)
+annotDf[index,"gene_id"] = NA
+index = unlist(lapply(as.vector(annotDf[, 'exon_id']), length)==0)
+annotDf[index,"exon_id"] = NA
+index = unlist(lapply(as.vector(annotDf[, 'exon_name']), length)==0)
+annotDf[index,"exon_name"] = NA
+exonsReadDf <- data.frame(
+	geneID = unlist(lapply(as.vector(annotDf[, 'gene_id']), function(x) {paste0(x, collapse=":")})),
+	exonID = unlist(as.vector(annotDf[, 'exon_id'])),
+	exonName = unlist(as.vector(annotDf[, 'exon_name'])),
+	exonCount = countsForExons,
+	exonRPM = rpm,
+	exonRPKM = rpkm,
+	stringsAsFactors = FALSE)
 
 print(paste('Writing data to', outFile))
 write.table(exonsReadDf, file = outFile, sep = '\t', quote = F, row.names=F)

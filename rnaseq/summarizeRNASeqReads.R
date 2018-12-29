@@ -35,39 +35,23 @@ if (length(arguments$args) != length(posArgs)) {
 }
 
 
-#For debugging
-if (FALSE){
-#	opt <- list( 'addChr' = TRUE, 'intronListFile' = '~/dlbcl_snp6/paper.analysis.code/references/introns/introns.non.overlapping.with.exons.txt', 'intronWindow' = 50 )
+if (FALSE) {
 	opt <- list( 'addChr' = TRUE, 'countMethod' = 'summarizeOverlaps', 'intronListFile' = NULL, 'intronWindow' = NULL )
 	txdbFile <- '~/ensg69.biomart.13012013.sqlite'
-#	txdbFile <- '~/hg19_ensGene.06022012.sqlite'
 	bamFile <- '~/share/data/DLBCL/WTSS/tophat/bam/HS0751.bam'
 	outFile <- 'tmp.txt'
 }
 
-#txdb <- makeTranscriptDbFromBiomart( biomart = 'ensembl', dataset = 'mmusculus_gene_ensembl' )
-#saveDb(txdb, '~/GRCm38.08032013.sqlite')
-#txdb <- makeTranscriptDbFromUCSC(genome = 'hg19', tablename = 'ensGene')
-
-# Description: This function is used to get the raw reads over genomic features
-# Inputs: 
-#	1) features : A GRanges object
-#	2) reads: A GappedAlignments object generated from readBamGappedAlignments
-#	3) countMethod: Two alternative counting methods can be specified. i) countOverlaps allows for reads to be counted by than once, ii) summarizeOverlaps counts reads only once 
-# Outputs:
-getCounts <- function( features, reads ){
+getCounts <- function( features, reads )
+{
 	summarizedExpt <- summarizeOverlaps( features, reads )
 	counts <- as.numeric( assays(summarizedExpt)$counts )
 	names(counts) <- rownames(summarizedExpt)
 	return(counts)
 }
 
-# Description: This function is used to get RPKM values over genomic features
-# Inputs: 
-#	1) features : A GRanges object
-#	2) featureCounts: A numeric vector containing the number of raw counts aligning to the feature
-# Outputs:
-getExprs <- function( features, featureCounts, feature = 'gene' ){
+getExprs <- function( features, featureCounts, feature = 'gene' )
+{
 	numBases <- sum(width(features))
 	numKBases <- numBases / 1000
 	millionsMapped <- sum(featureCounts) / 10^6
@@ -121,11 +105,11 @@ if ( !is.null(opt$intronWindow) ){
 
 if ( !is.null(opt$intronListFile) ){
 	print('Filtering the intron list ...')
-	intronIDs <- paste(seqnames(introns), ':', start(introns), '-', end(introns), sep = '') # intronID should be the whole intron genomic coordinate 
+	intronIDs <- paste(seqnames(introns), ':', start(introns), '-', end(introns), sep = '')
 	intronList <- scan( opt$intronListFile, what = 'character' )
 	intronFlag <- intronIDs %in% intronList
 	introns <- introns[ intronFlag ]
-	intronIDs <- paste(seqnames(introns), ':', start(introns), '-', end(introns), sep = '') # intronID should be the whole intron genomic coordinate 
+	intronIDs <- paste(seqnames(introns), ':', start(introns), '-', end(introns), sep = '')
 	print('... Done')
 }
 
@@ -140,10 +124,10 @@ genes <- unique( genes )
 print('... Done')
 
 cat("Reading", bamFile, " ... ")
-si <- seqinfo(BamFile(bamFile));
-gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100));
-scf <- scanBamFlag( isDuplicate = FALSE ) # remove duplicate reads
-reads <- readGappedReads( bamFile, param = ScanBamParam( which = gr, flag = scf )); # grab reads in specific region
+si <- seqinfo(BamFile(bamFile))
+gr <- GRanges(seqnames(si), IRanges(100, seqlengths(si)-100))
+scf <- scanBamFlag( isDuplicate = FALSE )
+reads <- readGappedReads( bamFile, param = ScanBamParam( which = gr, flag = scf ))
 cat('Finished\n')
 
 print('Summarizing raw reads over the exon and introns ...')
