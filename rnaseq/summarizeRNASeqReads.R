@@ -79,8 +79,6 @@ getExprs <- function( features, featureCounts, feature = 'gene' ){
 print("Loading txdb ")
 if (opt$genome == "b37" || opt$genome == "hg19" || opt$genome == "GRCh37") {
     txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-} else if (opt$genome == "mm10" || opt$genome == "GRCm38") {
-    txdb <- TxDb.Mmusculus.UCSC.mm10.knownGene
 } else {
     cat("Unsupported genome\n")
     print_help(parser);

@@ -8,7 +8,7 @@ suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
 suppressPackageStartupMessages(library("org.Hs.eg.db"))
 
 optionList <- list(
-	make_option(c('-d', '--txdb'), action='store', default = NULL, help = 'ensembl transcript database'),
+	make_option('--genome', action='store', default = 'b37', help = 'genome to use [%default]'),
 	make_option(c('-o', '--outFile'), action='store', default = NULL, help = 'output file'))
 posArgs <- c('bamFile')
 parser <- OptionParser(usage = paste('%prog [options]', paste(posArgs, collapse=' ')),  option_list=optionList)
@@ -41,8 +41,18 @@ if (FALSE){
 #txdb <- makeTranscriptDbFromBiomart( biomart = 'ensembl', dataset = 'hsapiens_gene_ensembl' )
 #saveFeatures(txdb, '~/share/reference/ensg69.biomart.2014-02-21.sqlite')
 #txdb <- makeTranscriptDbFromUCSC(genome = 'hg19', tablename = 'ensGene')
-#
-txdb <- loadDb(opt$txdb)
+
+print("Loading txdb ")
+if (opt$genome == "b37" || opt$genome == "hg19" || opt$genome == "GRCh37") {
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+} else {
+    cat("Unsupported genome\n")
+    print_help(parser);
+    stop();
+}
+
+print('... Done')
+
 allExons <- exons(txdb, columns = c('gene_id', 'exon_id', 'exon_name'))
 
 print('Removing chr from chromosome names')
