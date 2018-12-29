@@ -20,7 +20,6 @@ ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
 # SUFAM python environment
 SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev
 
-SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.2
 MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
 
 JARDIR ?= $(HOME)/share/usr/lib/java

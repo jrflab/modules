@@ -5,9 +5,8 @@ suppressPackageStartupMessages(library("GenomicFeatures"))
 suppressPackageStartupMessages(library("Rsamtools"))
 suppressPackageStartupMessages(library("GenomicAlignments"))
 suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
-suppressPackageStartupMessages(library("TxDb.Mmusculus.UCSC.mm10.knownGene"))
 suppressPackageStartupMessages(library("org.Hs.eg.db"))
-suppressPackageStartupMessages(library("org.Mm.eg.db"))
+
 
 optionList <- list(
 	make_option(c('-i', '--intronListFile'), action='store', default = NULL, help = 'Set a file containing intronIDs to include in the summarization [%default]'),

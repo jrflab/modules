@@ -20,10 +20,10 @@ SUM_TYPE = byGene byExon
 all : $(foreach type,$(SUM_TYPE),$(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.$(type).txt)) sumreads/rpkm_by_gene.txt sumreads/rpkm_by_exon.txt sumreads/counts_by_gene.txt sumreads/counts_by_exon.txt
 
 sumreads/%.sumreads.byGene.txt : bam/%.bam bam/%.bam.bai
-	$(call RUN,-v $(SUM_READS_ENV) -s 24G -m 48G,"$(SUM_READS_RSCRIPT) --genome $(REF) --outFile $@ $(SUM_READS_OPTS) $<")
+	$(call RUN,-v $(DEFAULT_ENV) -s 24G -m 48G,"$(SUM_READS_RSCRIPT) --genome $(REF) --outFile $@ $(SUM_READS_OPTS) $<")
 
 sumreads/%.sumreads.byExon.txt : bam/%.bam bam/%.bam.bai
-	$(call RUN,-v $(SUM_READS_ENV) -s 24G -m 48G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
+	$(call RUN,-v $(DEFAULT_ENV) -s 24G -m 48G,"$(SUM_EXONS_RSCRIPT) --txdb $(ENSEMBL_TXDB) --outFile $@ $(SUM_READS_OPTS) $<")
 
 sumreads/rpkm_by_gene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byGene.txt)
 	cut -f 2 $< > $@; \
