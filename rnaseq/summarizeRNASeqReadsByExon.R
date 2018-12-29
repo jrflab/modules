@@ -2,9 +2,10 @@
 
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("GenomicFeatures"))
-suppressPackageStartupMessages(library("GenomicAlignments"))
 suppressPackageStartupMessages(library("Rsamtools"))
+suppressPackageStartupMessages(library("GenomicAlignments"))
 suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
 
 optionList <- list(
 	make_option(c('-d', '--txdb'), action='store', default = NULL, help = 'ensembl transcript database'),
