@@ -2,7 +2,7 @@
 # Description: This script is used to generate intronic counts. You can pass in an optional parameter, intronWindow, that restrict the intronic window to a certain number of bases. Also, can pass in an optional intron list file which will restrict the summarization to just these introns
 # Authors: Fong Chun Chan <fongchunchan@gmail.com>
 library("GenomicFeatures")
-library("GenomicAlignments");
+library("GenomicAlignments")
 library("Rsamtools")
 library('optparse')
 

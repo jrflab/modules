@@ -1,14 +1,13 @@
 #!/usr/bin/env Rscript
 # Description: This script is used to generate exon raw counts and expression values 
 # Authors: Fong Chun Chan <fongchunchan@gmail.com>
-suppressPackageStartupMessages(library(optparse));
-suppressPackageStartupMessages(library(GenomicFeatures));
-suppressPackageStartupMessages(library(GenomicAlignments));
-suppressPackageStartupMessages(library(Rsamtools));
-suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
+suppressPackageStartupMessages(library(optparse))
+suppressPackageStartupMessages(library(GenomicFeatures))
+suppressPackageStartupMessages(library(GenomicAlignments))
+suppressPackageStartupMessages(library(Rsamtools))
+suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene))
 
 optionList <- list(
-	#make_option(c('-a', '--addChr'), action='store_true', default = FALSE, help = 'Set the flag to add chr as a prefix to each seqlevel [%default]'),
 	make_option(c('-d', '--txdb'), action='store', default = NULL, help = 'ensembl transcript database'),
 	make_option(c('-o', '--outFile'), action='store', default = NULL, help = 'output file'))
 posArgs <- c('bamFile')
