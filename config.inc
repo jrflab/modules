@@ -10,18 +10,17 @@ SAMPLE_SPLIT_FILE ?= samples.split.txt # generate using scripts/prepareFastq.sh 
 ANACONDA_PYTHON ?= python
 PYTHON ?= python
 PERL ?= perl
-#RSCRIPT ?= /usr/bin/Rscript
 R ?= R
 MY_RSCRIPT ?= Rscript
 RSCRIPT ?= Rscript
-#RSCRIPT ?= $(HOME)/usr/bin/Rscript
 
 # General python 2.7 environment
 ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+
 # SUFAM python environment
 SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev
 
-SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.1
+SUM_READS_ENV ?= $(HOME)/share/usr/anaconda-envs/sum-reads-0.0.2
 MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
 
 JARDIR ?= $(HOME)/share/usr/lib/java

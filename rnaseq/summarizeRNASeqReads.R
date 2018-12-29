@@ -1,15 +1,13 @@
 #!/usr/bin/env Rscript
-# Description: This script is used to generate sum reads over 1) the entire gene, 2) only the exons on a gene, 3) only the introns of a gene. It will also calculate a gene RPM/RPKM based on the exon and introns.
-# Description: This script is used to generate sum reads over a gene returning the raw read count across the whole gene and also across only the exons in the gene. Also RPKM values are generated.
-# Authors: Raymond Lim and Fong Chun Chan <fongchunchan@gmail.com>
-suppressPackageStartupMessages(library(optparse))
-suppressPackageStartupMessages(library(GenomicFeatures))
-suppressPackageStartupMessages(library(Rsamtools))
-suppressPackageStartupMessages(library(GenomicAlignments))
-suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene))
-suppressPackageStartupMessages(library(TxDb.Mmusculus.UCSC.mm10.knownGene))
-suppressPackageStartupMessages(library(org.Hs.eg.db))
-suppressPackageStartupMessages(library(org.Mm.eg.db))
+
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("GenomicFeatures"))
+suppressPackageStartupMessages(library("Rsamtools"))
+suppressPackageStartupMessages(library("GenomicAlignments"))
+suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
+suppressPackageStartupMessages(library("TxDb.Mmusculus.UCSC.mm10.knownGene"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
+suppressPackageStartupMessages(library("org.Mm.eg.db"))
 
 optionList <- list(
 	make_option(c('-i', '--intronListFile'), action='store', default = NULL, help = 'Set a file containing intronIDs to include in the summarization [%default]'),
