@@ -22,7 +22,7 @@ opt = arguments$options
 
 opt$rho = ifelse(is.na(as.numeric(opt$rho)), 1, as.numeric(opt$rho))
 opt$psi = ifelse(is.na(as.numeric(opt$psi)), 2, as.numeric(opt$psi))
-opt$gamma = ifelse(is.na(as.numeric(opt$gamma)), 2, as.numeric(opt$gamma))
+opt$gamma = ifelse(is.na(as.numeric(opt$gamma)), 1, as.numeric(opt$gamma))
 
 'prunesegments.cn' <- function(x, n=10)
 {
