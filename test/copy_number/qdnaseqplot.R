@@ -20,6 +20,10 @@ parser = OptionParser(usage = "%prog", option_list = args_list)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
+opt$rho = ifelse(is.na(as.numeric(opt$rho)), 1, as.numeric(opt$rho))
+opt$psi = ifelse(is.na(as.numeric(opt$psi)), 2, as.numeric(opt$psi))
+opt$gamma = ifelse(is.na(as.numeric(opt$gamma)), 2, as.numeric(opt$gamma))
+
 'prunesegments.cn' <- function(x, n=10)
 {
 	cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
@@ -112,6 +116,10 @@ if (opt$type=="raw") {
 	}
 	abline(v=max(data[,"Start"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 1.15, las = 1)
+	for (k in 1:8) {
+		abline(h=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="darkorange", lty=3)
+		mtext(text=k, side=4, line=.5, at=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="darkorange")
+	}
 	box(lwd=2.5)
 	dev.off()
 
@@ -146,6 +154,10 @@ if (opt$type=="raw") {
 		abline(h=0, lwd=1)
 		axis(2, at = c(-2,-1.5,-1,-.5,0,.5,1,1.5,2), labels=c("-2","-1.5","-1","-.5","0",".5","1","1.5","2"), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
 		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
+		for (k in 1:8) {
+			abline(h=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="darkorange", lty=3)
+			mtext(text=k, side=4, line=.5, at=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="darkorange")
+		}
 		box(lwd=2)
 		screen(zz[2])
 		arg = copynumber:::getPlotParameters(type = "sample", nSeg = 10, cr = 3 * 3, sampleID = "dummy", plot.ideo = TRUE, xaxis = TRUE, assembly = "hg19")
