@@ -30,7 +30,7 @@ sumreads/rpkm_by_gene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumre
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 7 $$x | sed "s/exonRPKM/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 sumreads/rpkm_by_exon.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byExon.txt)
-	cut -f 2 $< > $@; \
+	cut -f 1-2 $< > $@; \
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 6 $$x | sed "s/exonRPKM/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 sumreads/counts_by_gene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byGene.txt)
@@ -38,7 +38,7 @@ sumreads/counts_by_gene.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sum
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 3 $$x | sed "s/countsByGene/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 sumreads/counts_by_exon.txt : $(foreach sample,$(SAMPLES),sumreads/$(sample).sumreads.byExon.txt)
-	cut -f 2 $< > $@; \
+	cut -f 1-2 $< > $@; \
 	for x in $^; do sample=`echo $$x | sed 's/.*\///; s/\..*//'`; cut -f 4 $$x | sed "s/exonCount/$$sample/" | paste $@ - > $@.tmp; mv $@.tmp $@; done
 
 include modules/bam_tools/processBam.mk
