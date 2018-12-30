@@ -11,7 +11,10 @@ if (!interactive()) {
 }
 
 args_list = list(make_option("--sample", default = NA, type = 'character', help = "tumor sample"),
-				 make_option("--type", default = NA, type = 'character', help = "type of plot"))
+				 make_option("--type", default = NA, type = 'character', help = "type of plot"),
+				 make_option("--rho", default = NA, type = 'numeric', help = "tumor purity"),
+				 make_option("--psi", default = NA, type = 'numeric', help = "tumor ploidy"),
+				 make_option("--gamma", default = NA, type = 'numeric', help = "log2 ratio compression"))
 				  
 parser = OptionParser(usage = "%prog", option_list = args_list)
 arguments = parse_args(parser, positional_arguments = T)
