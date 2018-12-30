@@ -88,13 +88,15 @@ annotDf[index,"exon_id"] = NA
 index = unlist(lapply(as.vector(annotDf[, 'exon_name']), length)==0)
 annotDf[index,"exon_name"] = NA
 exonsReadDf <- data.frame(
-	geneID = unlist(lapply(as.vector(annotDf[, 'gene_id']), function(x) {paste0(x, collapse=":")})),
+	geneID = unlist(lapply(as.vector(annotDf[, 'gene_id']), function(x) {x[1]})),
 	exonID = unlist(as.vector(annotDf[, 'exon_id'])),
 	exonName = unlist(as.vector(annotDf[, 'exon_name'])),
 	exonCount = countsForExons,
 	exonRPM = rpm,
 	exonRPKM = rpkm,
 	stringsAsFactors = FALSE)
+exonsReadDf <- subset(exonsReadDf, !is.na(exonsReadDf[,"geneID"]))
+exonsReadDf[,"geneID"] <- as.vector(sapply(mget(exonsReadDf[,"geneID"], org.Hs.egSYMBOL, ifnotfound = NA), function (x) x[1]))
 
 print(paste('Writing data to', outFile))
 write.table(exonsReadDf, file = outFile, sep = '\t', quote = F, row.names=F)
