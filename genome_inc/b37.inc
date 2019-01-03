@@ -100,7 +100,7 @@ ANNOVAR_DB = $(HOME)/share/usr/annovar/humandb
 HISAT_REF = $(HOME)/share/reference/hisat/grch37_snp_tran/genome_snp_tran
 
 HOTSPOT_VCF_DIR = modules/reference/hotspots
-HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v2.vcf.gz
+HOTSPOT_VCF.ext = $(HOTSPOT_VCF_DIR)/hotspot-v3.vcf.gz
 HOTSPOT_VCF.int = $(HOTSPOT_VCF_DIR)/hotspot-v1.vcf.gz
 
 HAPLOTYPE_INSUF_BED ?= modules/reference/gene_lists/haplo_insuff_genes.bed
