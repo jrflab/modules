@@ -671,5 +671,9 @@ TARGETS += cnvkit_plot_test
 cnvkit_plot_test :
 	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
+TARGETS += cravat_test
+cravat_test :
+	$(call RUN_MAKE,modules/test/annotation/cravat_annotation.mk)
+	
 
 .PHONY : $(TARGETS)
