@@ -29,6 +29,6 @@ index = order(chr, decreasing=FALSE)
 vcf = vcf[index,,drop=FALSE]
 vcf = vcf[,1:7,drop=FALSE]
 colnames(vcf) = c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER")
-vcf = cbind(vcf, "INFO"=rep(".", nrow(vcf))
+vcf = cbind(vcf, "INFO"=rep(".", nrow(vcf)))
 cat("##fileformat=VCFv4.1\n", file=paste0("cravat/", opt$sample_name, ".vcf"), append=FALSE)
 write.table(vcf, file=paste0("cravat/", opt$sample_name, ".vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=TRUE)
