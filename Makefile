@@ -665,9 +665,17 @@ TARGETS += cnvkit_plot_test
 cnvkit_plot_test :
 	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
-TARGETS += cravat_test
-cravat_test :
+TARGETS += cravat_annotation
+cravat_annotation :
 	$(call RUN_MAKE,modules/test/annotations/cravat_annotation.mk)
+
+TARGETS += cravat_summary
+cravat_summary :
+	$(call RUN_MAKE,modules/test/annotations/cravat_summary.mk)
+	
+#==================================================
+# alpha testing
+#==================================================
 	
 TARGETS += run_qdnaseq
 run_qdnaseq :
