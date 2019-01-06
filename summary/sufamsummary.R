@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("openxlsx"));
-suppressPackageStartupMessages(library("readr"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("openxlsx"))
+suppressPackageStartupMessages(library("readr"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
