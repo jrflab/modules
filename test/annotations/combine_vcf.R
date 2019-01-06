@@ -12,8 +12,8 @@ parser = OptionParser(usage = "%prog", option_list = args_list)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-vcf_snp = read.csv(file=paste0("vcf_ann/", opt$sample_name, ".gatk_snps.vcf", header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
-vcf_indel = read.csv(file=paste0("vcf_ann/", opt$sample_name, ".gatk_indels.vcf", header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+vcf_snp = read.csv(file=paste0("vcf_ann/", opt$sample_name, ".gatk_snps.vcf"), header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+vcf_indel = read.csv(file=paste0("vcf_ann/", opt$sample_name, ".gatk_indels.vcf"), header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 vcf = rbind(vcf_snp, vcf_indel)
 pos = as.numeric(vcf[,2])
 index = order(pos, decreasing=FALSE)
