@@ -19,4 +19,4 @@ vcf = vcf[index,,drop=FALSE]
 vcf[,1] = paste0("chr", vcf[,1])
 colnames(vcf) = c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
 cat("##fileformat=VCFv4.1\n", file=paste0("cravat/", opt$sample_name, "cravat.vcf"), append=FALSE)
-write.table(vcf, file=paste0("cravat/", opt$sample_name, "cravat.vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=TRUE)
+write.table(vcf, file=paste0("cravat/", opt$sample_name, ".cravat.vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=TRUE)
