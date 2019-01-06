@@ -669,10 +669,10 @@ TARGETS += cravat_test
 cravat_test :
 	$(call RUN_MAKE,modules/test/annotations/cravat_annotation.mk)
 	
-	TARGETS += run_qdnaseq
-	run_qdnaseq :
-		$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
-		$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
+TARGETS += run_qdnaseq
+run_qdnaseq :
+	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 
 
 
