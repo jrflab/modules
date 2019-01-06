@@ -69,14 +69,8 @@ run_cnvkit :
 	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitplot.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
+	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
 	
-TARGETS += run_qdnaseq
-run_qdnaseq :
-	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-
 #==================================================
 # aligners
 #==================================================
@@ -640,7 +634,7 @@ ann_vcf:
 
 	
 #==================================================
-# tests
+# beta testing
 #==================================================
 
 TARGETS += sufam_multisample_test
@@ -675,5 +669,11 @@ TARGETS += cravat_test
 cravat_test :
 	$(call RUN_MAKE,modules/test/annotations/cravat_annotation.mk)
 	
+	TARGETS += run_qdnaseq
+	run_qdnaseq :
+		$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
+		$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
+
+
 
 .PHONY : $(TARGETS)
