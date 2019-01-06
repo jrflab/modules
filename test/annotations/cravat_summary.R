@@ -15,7 +15,7 @@ opt = arguments$options
 sample_names = unlist(strsplit(x=opt$sample_names, split=" ", fixed=TRUE))
 tsv = list()
 for (i in 1:length(sample_names)) {
-	tsv[[i]] = read.csv(file=paste0("cravat/", opt$sample_name, ".txt"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	tsv[[i]] = read.csv(file=paste0("cravat/", sample_names[i], ".txt"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 }
 tsv = do.call(rbind, tsv)
 write.table(tsv, file="summary/tsv/cravat_summary.tsv", sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
