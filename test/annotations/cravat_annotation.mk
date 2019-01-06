@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/cravat.$(NOW)
 PHONY += cravat
 
-cravat : $(foreach sample,$(SAMPLES),cravat/$(sample).vcf cravat/$(sample).maf cravat/$(sample).cravat.vcf cravat/$(sample).tsv)
+cravat : $(foreach sample,$(SAMPLES),cravat/$(sample).vcf cravat/$(sample).maf cravat/$(sample).cravat.vcf cravat/$(sample).tsv cravat/$(sample).txt)
 
 DEFAULT_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
 CRAVAT_ENV = $(HOME)/share/usr/anaconda-envs/open-cravat
@@ -20,7 +20,13 @@ cravat/%.cravat.vcf : cravat/%.vcf cravat/%.maf
 
 cravat/%.tsv: cravat/%.cravat.vcf
 	$$(call RUN,-c -s 9G -m 12G -v $$(DEFAULT_ENV),"source activate $$(CRAVAT_ENV) && \
-												   cravat cravat/$$(*).cravat.vcf -n $$(*) -d cravat -a clinvar cosmic dbsnp gnomad hgvs -v -l hg19 -t text")
+												    cravat cravat/$$(*).cravat.vcf -n $$(*) -d cravat -a clinvar cosmic dbsnp gnomad hgvs -v -l hg19 -t text && \
+												    rm $$(*).log && \
+												    rm $$(*).status.json")
+												    
+cravat/%.txt : cravat/%.tsv
+	$$(call RUN,-c -s 9G -m 12G -v $$(DEFAULT_ENV),"$(RSCRIPT) modules/test/annotations/summary_vcf.R --sample_name $$(*)")
+	
 endef
  $(foreach sample,$(SAMPLES),\
 		$(eval $(call cravat-annotation,$(sample))))
