@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/cravat.$(NOW)
 PHONY += cravat
 
-cravat : $(foreach sample,$(SAMPLES),cravat/$(sample).maf)
+cravat : $(foreach sample,$(SAMPLES),cravat/$(sample).vcf cravat/$(sample).maf)
 
 DEFAULT_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
 CRAVAT_ENV = $(HOME)/share/usr/anaconda-envs/open-cravat
