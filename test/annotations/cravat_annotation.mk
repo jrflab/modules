@@ -20,7 +20,7 @@ cravat/%.cravat.vcf : cravat/%.vcf cravat/%.maf
 
 cravat/%.tsv: cravat/%.cravat.vcf
 	$$(call RUN,-c -s 9G -m 12G -v $$(DEFAULT_ENV) -w 7200,"source activate $$(CRAVAT_ENV) && \
-												    cravat cravat/$$(*).cravat.vcf -n $$(*) -d cravat -a clinvar cosmic dbsnp gnomad hgvs -v -l hg19 -t text")
+												    		cravat cravat/$$(*).cravat.vcf -n $$(*) -d cravat -a clinvar cosmic dbsnp gnomad hgvs -v -l hg19 -t text")
 												    
 cravat/%.txt : cravat/%.tsv
 	$$(call RUN,-c -s 9G -m 12G -v $$(DEFAULT_ENV) -w 7200,"$(RSCRIPT) modules/test/annotations/summary_vcf.R --sample_name $$(*)")
