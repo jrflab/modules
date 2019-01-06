@@ -673,7 +673,7 @@ cnvkit_plot_test :
 	
 TARGETS += cravat_test
 cravat_test :
-	$(call RUN_MAKE,modules/test/annotation/cravat_annotation.mk)
+	$(call RUN_MAKE,modules/test/annotations/cravat_annotation.mk)
 	
 
 .PHONY : $(TARGETS)
