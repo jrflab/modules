@@ -1,9 +1,9 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("copynumber"));
-suppressPackageStartupMessages(library("colorspace"));
-suppressPackageStartupMessages(library("ASCAT"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("copynumber"))
+suppressPackageStartupMessages(library("colorspace"))
+suppressPackageStartupMessages(library("ASCAT"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
