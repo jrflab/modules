@@ -592,7 +592,7 @@ virus_detection_bowtie2 :
 	
 TARGETS += krona_classify
 krona_classify :
-	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
+	$(call RUN_MAKE,modules/virus/krona_classify.mk)
 
 
 #==================================================
