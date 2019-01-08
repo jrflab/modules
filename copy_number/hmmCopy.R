@@ -1,9 +1,8 @@
 #!/usr/bin/env Rscript
-# runs HMM copy on tumor normal wig files
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("HMMcopy"));
-suppressPackageStartupMessages(library("hwriter"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("HMMcopy"))
+suppressPackageStartupMessages(library("hwriter"))
 
 optionList <- list(make_option(c("-g", "--gcWig"), default = NULL, help = "GC content wig file"),
                    make_option(c("-m", "--mapWig"), default = NULL, help = "Mappability wig file"),

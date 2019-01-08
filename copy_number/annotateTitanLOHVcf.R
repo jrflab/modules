@@ -1,14 +1,11 @@
 #!/usr/bin/env Rscript
-# annotate vcf file with titan seg file
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("rtracklayer"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("rtracklayer"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
 suppressPackageStartupMessages(library("org.Hs.eg.db"))
-suppressPackageStartupMessages(library("GenomicRanges"));
-
-#options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+suppressPackageStartupMessages(library("GenomicRanges"))
 
 optList <- list(
         make_option("--titanSeg", default = NULL, type = "character", action = "store", help ="targeted titan segment file"),

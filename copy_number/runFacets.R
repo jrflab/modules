@@ -1,16 +1,15 @@
 #!/usr/bin/env Rscript
-# run the facets library
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("facets"));
-suppressPackageStartupMessages(library("pctGCdata"));
-suppressPackageStartupMessages(library("foreach"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("facets"))
+suppressPackageStartupMessages(library("pctGCdata"))
+suppressPackageStartupMessages(library("foreach"))
 
 
 if (!interactive()) {

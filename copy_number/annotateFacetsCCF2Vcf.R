@@ -1,15 +1,13 @@
 #!/usr/bin/env Rscript
-# annotate facets ccf to vcf
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-#suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("foreach"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("foreach"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

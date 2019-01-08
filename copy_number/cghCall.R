@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# segment copy number data and generate plot
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("CGHcall"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("CGHcall"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

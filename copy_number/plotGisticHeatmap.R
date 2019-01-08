@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# plots control freec 
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("RColorBrewer"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

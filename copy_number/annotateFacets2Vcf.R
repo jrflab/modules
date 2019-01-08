@@ -1,11 +1,10 @@
 #!/usr/bin/env Rscript
-# annotate vcf file with titan seg file
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("rtracklayer"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("rtracklayer"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
 suppressPackageStartupMessages(library("org.Hs.eg.db"))
-suppressPackageStartupMessages(library("GenomicRanges"));
+suppressPackageStartupMessages(library("GenomicRanges"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

@@ -1,15 +1,14 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("TitanCNA"));
-suppressPackageStartupMessages(library("rtracklayer"));
-suppressPackageStartupMessages(library("doMC"));
-suppressPackageStartupMessages(library("hwriter"));
-
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("stringr"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("TitanCNA"))
+suppressPackageStartupMessages(library("rtracklayer"))
+suppressPackageStartupMessages(library("doMC"))
+suppressPackageStartupMessages(library("hwriter"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("stringr"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

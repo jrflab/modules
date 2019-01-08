@@ -1,11 +1,8 @@
 #!/usr/bin/env Rscript
-# run absCNseq
-suppressPackageStartupMessages(library(optparse));
-suppressPackageStartupMessages(library(absCNseq));
-suppressPackageStartupMessages(library(VariantAnnotation));
 
-
-#options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
+suppressPackageStartupMessages(library(optparse))
+suppressPackageStartupMessages(library(absCNseq))
+suppressPackageStartupMessages(library(VariantAnnotation))
 
 optionList <- list(
 	make_option(c('-t', '--seqType'), action='store', default = "WES", help = 'sequence type (WES or WGS) [Default %default]'),

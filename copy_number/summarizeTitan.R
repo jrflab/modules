@@ -1,10 +1,9 @@
 #!/usr/bin/env Rscript
-# summarizes titan info and copies 
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("TitanCNA"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("inflection"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("TitanCNA"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("inflection"))
 
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

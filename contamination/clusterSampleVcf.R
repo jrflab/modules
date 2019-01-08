@@ -1,9 +1,8 @@
 #!/usr/bin/env Rscript
-# cluster vcf and output dendrogram
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("gplots"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("gplots"))
 
 options(error = quote(dump.frames("testdump", TRUE)))
 

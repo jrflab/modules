@@ -1,11 +1,10 @@
 #!/usr/bin/env Rscript
-# generates amplicon coverage report (hg19)
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("doMC"));
-suppressPackageStartupMessages(library("doMPI"));
-suppressPackageStartupMessages(library("multicore"));
-suppressPackageStartupMessages(library("ExomeCNV"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("doMC"))
+suppressPackageStartupMessages(library("doMPI"))
+suppressPackageStartupMessages(library("multicore"))
+suppressPackageStartupMessages(library("ExomeCNV"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

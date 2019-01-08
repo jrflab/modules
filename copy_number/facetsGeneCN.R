@@ -1,8 +1,4 @@
 #!/usr/bin/env Rscript
-#### turn segmented copy number data to gene-based copy number with findOverlaps
-## define HomDel as TCN=0, loss as TCN<ploidy, gain as TCN>ploidy, amp as TCN>=ploidy+4
-## where ploidy= mode of TCN
-### some variant of the below, also need one for the breast panel, IMPACT310 and exome
 
 #---------------
 # initialization

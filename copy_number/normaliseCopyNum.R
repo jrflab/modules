@@ -1,16 +1,15 @@
 #!/usr/bin/env Rscript
-# MSK-IMPACT copy number procedure
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("limma"));
-suppressPackageStartupMessages(library("DNAcopy"));
-suppressPackageStartupMessages(library("foreach"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("limma"))
+suppressPackageStartupMessages(library("DNAcopy"))
+suppressPackageStartupMessages(library("foreach"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))

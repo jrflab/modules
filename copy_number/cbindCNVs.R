@@ -1,10 +1,9 @@
 #!/usr/bin/env Rscript
-# rbinds together tab-delimited tables and outputs to STDOUT
 
-suppressPackageStartupMessages(library("GenomicRanges"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("org.Hs.eg.db"));
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("GenomicRanges"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
+suppressPackageStartupMessages(library("optparse"))
 
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 

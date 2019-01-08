@@ -1,16 +1,16 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("GenomicRanges"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("facets"));
-suppressPackageStartupMessages(library("foreach"));
-suppressPackageStartupMessages(library("Cairo"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("GenomicRanges"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("facets"))
+suppressPackageStartupMessages(library("foreach"))
+suppressPackageStartupMessages(library("Cairo"))
 suppressPackageStartupMessages(library("RMySQL"))
 suppressPackageStartupMessages(library("rtracklayer"))
 suppressPackageStartupMessages(library("CGHbase"))

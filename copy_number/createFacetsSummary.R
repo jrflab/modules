@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-# create tsv of facets summary
 
 #---------------
 # initialization

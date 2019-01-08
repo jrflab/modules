@@ -1,10 +1,9 @@
 #!/usr/bin/env Rscript
-# plots control freec 
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("GenomicRanges"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("org.Hs.eg.db"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("GenomicRanges"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

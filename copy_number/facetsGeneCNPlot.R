@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-## plots facets geneCN file, comparing copy number amp/del between samples
 
 #---------------
 # initialization
