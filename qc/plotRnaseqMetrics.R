@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("hwriter"));
-suppressPackageStartupMessages(library("RColorBrewer"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("hwriter"))
+suppressPackageStartupMessages(library("RColorBrewer"))
 
 
 if (!interactive()) {

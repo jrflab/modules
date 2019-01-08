@@ -1,16 +1,15 @@
 #!/usr/bin/env Rscript
-# generates interval-bam coverage report (hg19)
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("beeswarm"));
-suppressPackageStartupMessages(library("gplots"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("TEQC"));
-suppressPackageStartupMessages(library("hwriter"));
-suppressPackageStartupMessages(library("GenomicFeatures"));
-suppressPackageStartupMessages(library("GenomeGraphs"));
-suppressPackageStartupMessages(library("BSgenome"));
-suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("beeswarm"))
+suppressPackageStartupMessages(library("gplots"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("TEQC"))
+suppressPackageStartupMessages(library("hwriter"))
+suppressPackageStartupMessages(library("GenomicFeatures"))
+suppressPackageStartupMessages(library("GenomeGraphs"))
+suppressPackageStartupMessages(library("BSgenome"))
+suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

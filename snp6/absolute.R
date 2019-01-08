@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Run absolute
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library(ABSOLUTE));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("ABSOLUTE"))
 
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 

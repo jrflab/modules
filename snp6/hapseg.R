@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Run absolute
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library(HAPSEG));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("HAPSEG"))
 
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 

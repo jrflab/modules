@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 
 optList <- list(
                 make_option(c("-a", "--all"), action = "store_true", default = F, help = "shorthand for all.x and all.y"),

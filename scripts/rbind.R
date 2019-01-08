@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
-# rbinds together tab-delimited tables and outputs to STDOUT
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

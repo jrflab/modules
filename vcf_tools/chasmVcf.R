@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Read a variant table and extract uniprot accession ids
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))

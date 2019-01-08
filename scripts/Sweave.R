@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
-# runs sweave a file, passes on arguments
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 
 allArguments <- commandArgs(trailingOnly = T)
 

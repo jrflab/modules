@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
-library(knitr)
-library(markdown)
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(markdown))
 
 
 args <- commandArgs(T)

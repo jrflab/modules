@@ -1,16 +1,16 @@
 #!/usr/bin/env Rscript
 
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("ggplot2"))
+
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
-
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("magrittr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("ggplot2"));
 
 optList <- list(
                 make_option("--outPrefix", default = 'summary', type = "character", action = "store", help ="Output file prefix (default %default)"),

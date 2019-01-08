@@ -1,11 +1,10 @@
 #!/usr/bin/env Rscript
-# plots emu signature
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("RColorBrewer"));
-suppressPackageStartupMessages(library("hwriter"));
-suppressPackageStartupMessages(library("org.Hs.eg.db"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("hwriter"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

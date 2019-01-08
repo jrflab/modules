@@ -1,10 +1,9 @@
 #!/usr/bin/env Rscript
-# add gene list annotation column to vcf file
-# usage: Rscript addGeneListAnnotationToVcf.R --geneBed [gene lists] --name [gene list names] [vcf file]
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("GenomicRanges"));
-suppressPackageStartupMessages(library("rtracklayer"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
+
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("GenomicRanges"))
+suppressPackageStartupMessages(library("rtracklayer"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))

@@ -1,13 +1,12 @@
 #!/usr/bin/env Rscript
-# add transfic result to a vcf file
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("biomaRt"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("data.table"));
-suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
-suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
-suppressPackageStartupMessages(library(org.Hs.eg.db))
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("biomaRt"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("data.table"))
+suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
+suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
 
 options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))
 

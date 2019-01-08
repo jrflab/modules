@@ -1,10 +1,8 @@
 #!/usr/bin/env Rscript
-# annotate vcf files with mutation assessor 
-# only for hg19 at the moment
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("data.table"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("data.table"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 

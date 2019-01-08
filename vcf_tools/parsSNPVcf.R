@@ -1,9 +1,8 @@
 #!/usr/bin/env Rscript
-# Read a vcf file and append fathmm results
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("nnet"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("nnet"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))

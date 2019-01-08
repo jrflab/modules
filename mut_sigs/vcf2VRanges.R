@@ -1,16 +1,16 @@
 #!/usr/bin/env Rscript
-# convert a vcf file to a VRanges Rdata object
-library("optparse");
-library("VariantAnnotation");
-library("reshape")
-library("boot")
-library("plyr")
-library("dplyr")
-library("ggplot2")
-library("RColorBrewer")
-library("reshape2")
-library("SomaticSignatures")
-library("foreach")
+
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("reshape"))
+suppressPackageStartupMessages(library("boot"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("ggplot2"))
+suppressPackageStartupMessages(library("RColorBrewer"))
+suppressPackageStartupMessages(library("reshape2"))
+suppressPackageStartupMessages(library("SomaticSignatures"))
+suppressPackageStartupMessages(library("foreach"))
 
 optList <- list(
                 make_option("--genome", default = 'b37', help = "reference genome"),

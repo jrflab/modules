@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# read bam file to create R workspace data file
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("TEQC"));
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("TEQC"))
 
 optList <- list(
                 make_option("--ref", default = "hg19", help ="Reference genome [default %default]"),

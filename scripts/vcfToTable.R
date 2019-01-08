@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
-# converts a vcf file to a tab-delimited table that can be more easily parsed
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 
 optList <- list(
                 make_option("--outFile", default = NULL, help = "Output file [default STDOUT]"),

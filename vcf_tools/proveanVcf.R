@@ -1,20 +1,18 @@
 #!/usr/bin/env Rscript
-# Read a vcf file and run provean on elegible variants
-# PROVEAN uses ANN annotation from snpEff
 
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("biomaRt"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("data.table"));
-suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
-suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
-suppressPackageStartupMessages(library(org.Hs.eg.db))
-suppressPackageStartupMessages(library(RMySQL))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(rlist))
-suppressPackageStartupMessages(library(pipeR))
-suppressPackageStartupMessages(library(foreach))
-suppressPackageStartupMessages(library(doMC))
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("biomaRt"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("data.table"))
+suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
+suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
+suppressPackageStartupMessages(library("RMySQL"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("rlist"))
+suppressPackageStartupMessages(library("pipeR"))
+suppressPackageStartupMessages(library("foreach"))
+suppressPackageStartupMessages(library("doMC"))
 
 
 if (!interactive()) {

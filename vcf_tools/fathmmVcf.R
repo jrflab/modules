@@ -1,15 +1,13 @@
 #!/usr/bin/env Rscript
-# Read a vcf file and append fathmm results
 
-suppressPackageStartupMessages(library("optparse"));
-#suppressPackageStartupMessages(library("biomaRt"));
-suppressPackageStartupMessages(library("VariantAnnotation"));
-suppressPackageStartupMessages(library("data.table"));
-suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene));
-suppressPackageStartupMessages(library(BSgenome.Hsapiens.UCSC.hg19))
-suppressPackageStartupMessages(library(org.Hs.eg.db))
-suppressPackageStartupMessages(library(RMySQL))
-suppressPackageStartupMessages(library(foreach))
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("VariantAnnotation"))
+suppressPackageStartupMessages(library("data.table"))
+suppressPackageStartupMessages(library("TxDb.Hsapiens.UCSC.hg19.knownGene"))
+suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"))
+suppressPackageStartupMessages(library("org.Hs.eg.db"))
+suppressPackageStartupMessages(library("RMySQL"))
+suppressPackageStartupMessages(library("foreach"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(2); q('no', status = 1) }))

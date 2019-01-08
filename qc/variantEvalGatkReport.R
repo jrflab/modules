@@ -1,10 +1,11 @@
 #!/usr/bin/env Rscript
-suppressPackageStartupMessages(library("gsalib"));
-suppressPackageStartupMessages(library("optparse"));
-suppressPackageStartupMessages(library("lattice"));
-suppressPackageStartupMessages(library("hwriter"));
-suppressPackageStartupMessages(library("maptools"));
-suppressPackageStartupMessages(library("corrgram"));
+
+suppressPackageStartupMessages(library("gsalib"))
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("lattice"))
+suppressPackageStartupMessages(library("hwriter"))
+suppressPackageStartupMessages(library("maptools"))
+suppressPackageStartupMessages(library("corrgram"))
 
 options(warn = -1, error = quote({ traceback(); q('no', status = 1) }));
 
