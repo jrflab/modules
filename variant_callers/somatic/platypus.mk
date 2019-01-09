@@ -13,7 +13,7 @@ platypus_indels: $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).platypus_indels.vcf)
 define platypus-tumor-normal-chr
 platypus/chr_vcf/$1_$2.$3.platypus.vcf : bam/$1.bam bam/$2.bam
 	$$(call RUN,-v $$(PLATYPUS_ENV) -n 4 -s 2G -m 3G,"platypus callVariants --regions=$3 \
-		--bamFiles=$$(<)$$(,)$$(<<) --nCPU 4 --refFile=$$(REF_FASTA) --output=$$@ --logFileName platypus/$$@.log")
+		--bamFiles=$$(<)$$(,)$$(<<) --nCPU 4 --refFile=$$(REF_FASTA) --output=$$@ --logFileName platypus/$1_$2.$3.log")
 endef
 $(foreach chr,$(CHROMOSOMES),\
 	$(foreach pair,$(SAMPLE_PAIRS),\
