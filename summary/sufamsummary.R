@@ -20,7 +20,7 @@ for (i in 1:length(file_names)) {
 	sample_vars = read_tsv(file=file_names[i])
 	col_names = colnames(sample_vars)
 	sample_vars = as.data.frame(sample_vars)
-	sample_vars[sample_vars=="" | sample_vars==" "] = NA
+	sample_vars[sample_vars=="" | sample_vars==" " | is.na(sample_vars)] = "NA"
 	colnames(sample_vars) = col_names
 	list_of_dfs[[i]] = sample_vars
 }
