@@ -17,7 +17,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call make-input-pyclone,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define make-config-yaml
-pyclone/%/config.yaml : pyclone/%/
+pyclone/%/config.yaml : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 	$$(call RUN,-c -s 4G -m 6G,"if [ ! -d pyclone/$$(*) ]; then mkdir pyclone/$$(*); fi && \
 								$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
 endef
