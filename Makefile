@@ -221,7 +221,7 @@ jsm :
 
 TARGETS += sufam
 sufam:
-	$(call RUN_MAKE,modules/variant_callers/sufamSampleSet.mk)
+	$(call RUN_MAKE,modules/variant_callers/sufamsampleset.mk)
 	
 TARGETS += sufam_summary
 sufam_summary:
