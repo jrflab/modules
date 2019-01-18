@@ -8,7 +8,7 @@ setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor
 define make-input-pyclone
 pyclone/$2/$1.tsv : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 	$$(call RUN,-c -s 4G -m 6G -w 7200,"if [ ! -d pyclone/$2 ]; then mkdir pyclone/$2; fi && \
-										$(RSCRIPT) modules/clonality/tsvforpyclone.R --file_name $$(<<) --sample_name $1")
+										$(RSCRIPT) modules/clonality/tsvforpyclone.R --file_name $$(*) --sample_name $1")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call make-input-pyclone,$(tumor.$(pair)),$(normal.$(pair)))))
