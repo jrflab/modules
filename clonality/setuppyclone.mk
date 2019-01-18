@@ -23,3 +23,7 @@ pyclone/%/config.yaml : pyclone/%/
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
 		$(eval $(call make-config-yaml,$(sample))))
+		
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: $(PHONY)
