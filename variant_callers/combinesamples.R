@@ -75,7 +75,7 @@ for (i in 1:length(ukeys)) {
 					     "HOTSPOT_CMO"=CMO_HOTSPOT))
 }
 
-normal_name = tmp[1,"NORMAL_SAMPLE"]
+normal_name = tmp_vars[1,"NORMAL_SAMPLE"]
 
 VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(sample_names), dimnames=list(ukeys, sample_names))
 for (j in 1:nrow(tmp_vars)) {
