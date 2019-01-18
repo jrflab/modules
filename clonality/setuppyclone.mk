@@ -20,8 +20,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define make-config-yaml
 pyclone/%/config.yaml : pyclone/%/
-	$$(call RUN,-c -s 4G -m 6G,"if [ ! -d pyclone/$2 ]; then mkdir pyclone/$2; fi && \
-										$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
 endef
 $(foreach sample,$(NORMAL_SAMPLES),\
 		$(eval $(call make-config-yaml,$(sample))))
