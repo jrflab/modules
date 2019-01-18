@@ -1,5 +1,3 @@
-# Run multiple indel callers and then merge them
-#
 include modules/Makefile.inc
 LOGDIR = log/somatic_variants.$(NOW)
 
