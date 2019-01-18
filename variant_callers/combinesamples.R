@@ -77,7 +77,7 @@ for (i in 1:length(ukeys)) {
 
 normal_name = tmp_vars[1,"NORMAL_SAMPLE"]
 
-VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(sample_names), dimnames=list(ukeys, sample_names))
+VAF = DEPTH = LOH = CALL = matrix(NA, nrow=length(ukeys), ncol=length(sample_names), dimnames=list(ukeys, sample_names))
 for (j in 1:nrow(tmp_vars)) {
 	sample_name = tmp_vars[j,"TUMOR_SAMPLE"]
 	ukey = paste0(tmp_vars$CHROM[j], ":", tmp_vars$POS[j], ":", tmp_vars$REF[j], ":", tmp_vars$ALT[j])
@@ -86,12 +86,14 @@ for (j in 1:nrow(tmp_vars)) {
 	DEPTH[ukey,sample_name] = tmp_vars[j,"TUMOR_DP"]
 	DEPTH[ukey,normal_name] = tmp_vars[j,"NORMAL_DP"]
 	LOH[ukey,sample_name] = tmp_vars[j,"facetsLOHCall"]
+	CALL[ukey,sample_name] = 1
 }
 colnames(VAF) = paste0("MAF_", colnames(VAF))
 colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
-vars = cbind(vars, VAF, DEPTH, LOH)
-
+colnames(CALL) = paste0("CALL_", colnames(CALL))
+CALL[is.na(CALL)] = 0
+vars = cbind(vars, VAF, DEPTH, LOH, CALL)
 mutect = grepl("mutect", vars[,"Variant_Caller"])
 main_indels = grepl("varscan", vars[,"Variant_Caller"]) & grepl("strelka", vars[,"Variant_Caller"])
 other_indels = ((grepl("platypus", vars[,"Variant_Caller"]) & grepl("scalpel", vars[,"Variant_Caller"])) |
