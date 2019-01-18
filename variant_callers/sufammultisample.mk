@@ -5,8 +5,7 @@ PHONY += sufam summary
 
 SUFAM_SUMMARY ?= $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 
-# sufam_multisample : $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv) summary/sufam_summary.xlsx
-sufam_multisample : $(foreach set,$(SAMPLE_SETS),sufam/$(set).txt)
+sufam_multisample : $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv) summary/sufam_summary.xlsx
 
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
