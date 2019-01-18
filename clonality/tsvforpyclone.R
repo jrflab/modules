@@ -30,6 +30,5 @@ normal_cn = rep(2, length(mutation_id))
 minor_cn = rep(0, length(mutation_id))
 major_cn = mutation_summary[,paste0("qt_", opt$sample_name)]
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
-index = grep(opt$sample_name, file_names, fixed=TRUE)
 write.table(sample_summary, paste0("pyclone/", opt$normal_name, "/", opt$sample_name, ".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 
