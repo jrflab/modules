@@ -3,7 +3,8 @@ include modules/Makefile.inc
 LOGDIR ?= log/setup_pyclone.$(NOW)
 PHONY += pyclone
 
-setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml) $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/config.yaml)
+setup_pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(normal.$(pair))/$(tumor.$(pair)).yaml)
+configure_pyclone : $(foreach sample,$(NORMAL_SAMPLES),pyclone/$(sample)/config.yaml)
 
 define make-input-pyclone
 pyclone/$2/$1.tsv pyclone/$2/$1.yaml : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
