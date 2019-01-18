@@ -3,7 +3,8 @@
 suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("readr"))
 
-optList = list(make_option("--sample_name", default = NULL, help = "sample name"))
+optList = list(make_option("--sample_name", default = NULL, help = "sample name"),
+			   make_option("--normal_name", default = NULL, help = "normal name"))
 
 parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
@@ -30,5 +31,5 @@ minor_cn = rep(0, length(mutation_id))
 major_cn = mutation_summary[,paste0("qt_", opt$sample_name)]
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 index = grep(opt$sample_name, file_names, fixed=TRUE)
-write.table(sample_summary, paste0(gsub(".tsv", "/", gsub("sufam/", "pyclone/", file_names[index])), opt$sample_name, ".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
+write.table(sample_summary, paste0("pyclone/", opt$normal_name, "/", opt$sample_name, ".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 
