@@ -8,7 +8,7 @@ optList = list(make_option("--sample_name", default = NULL, help = "sample name"
 parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
-file_names = dir(paste="sufam", pattern=".tsv", full.names=TRUE)
+file_names = dir(path="sufam", pattern=".tsv", full.names=TRUE)
 index = grep(opt$sample_name, file_names, fixed=TRUE)
 mutation_summary = read_tsv(file=file_names[index])
 col_names = colnames(mutation_summary)
