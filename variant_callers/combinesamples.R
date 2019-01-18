@@ -74,12 +74,17 @@ for (i in 1:length(ukeys)) {
 					     "HOTSPOT_INTERNAL"=HOTSPOT_INTERNAL,
 					     "HOTSPOT_CMO"=CMO_HOTSPOT))
 }
+
+normal_name = tmp[1,"NORMAL_SAMPLE"]
+
 VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(sample_names), dimnames=list(ukeys, sample_names))
 for (j in 1:nrow(tmp_vars)) {
 	sample_name = tmp_vars[j,"TUMOR_SAMPLE"]
 	ukey = paste0(tmp_vars$CHROM[j], ":", tmp_vars$POS[j], ":", tmp_vars$REF[j], ":", tmp_vars$ALT[j])
-	VAF[ukey,sample_name] = tmp_vars[j,"TUMOR_MAF"]; VAF[ukey,"N"] = tmp_vars[j,"NORMAL_MAF"]
-	DEPTH[ukey,sample_name] = tmp_vars[j,"TUMOR_DP"]; DEPTH[ukey,"N"] = tmp_vars[j,"NORMAL_DP"]
+	VAF[ukey,sample_name] = tmp_vars[j,"TUMOR_MAF"]
+	VAF[ukey,normal_name] = tmp_vars[j,"NORMAL_MAF"]
+	DEPTH[ukey,sample_name] = tmp_vars[j,"TUMOR_DP"]
+	DEPTH[ukey,normal_name] = tmp_vars[j,"NORMAL_DP"]
 	LOH[ukey,sample_name] = tmp_vars[j,"facetsLOHCall"]
 }
 colnames(VAF) = paste0("MAF_", colnames(VAF))
