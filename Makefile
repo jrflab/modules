@@ -223,8 +223,8 @@ TARGETS += sufam
 sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamSampleSet.mk)
 	
-TARGETS += sufam_multisample
-sufam_multisample:
+TARGETS += sufam_summary
+sufam_summary:
 	$(call RUN_MAKE,modules/variant_callers/sufammultisample.mk)
 
 
@@ -613,7 +613,7 @@ genome_summary :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
 
 
 #==================================================
@@ -637,10 +637,6 @@ ann_vcf:
 # beta testing
 #==================================================
 
-TARGETS += sufam_multisample_test
-sufam_multisample_test:
-	$(call RUN_MAKE,modules/test/variant_callers/sufammultisample.mk)
-	
 TARGETS += qdnaseq_extract_test
 qdnaseq_extract_test:
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqextract.mk)
