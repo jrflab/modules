@@ -8,19 +8,18 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--patient", default = NA, type = 'character', help = "patient id"))
+args_list <- list(make_option("--sample_set", default = NA, type = 'character', help = "sample names set"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-vars = read_tsv(file=paste0("sufam/", opt$patient, ".txt"))
+sample_names = unlist(strsplit(opt$sample_set, split="_", fixed=TRUE))
+
+vars = read_tsv(file=paste0("sufam/", opt$sample_set, ".txt"))
 col_names = colnames(vars)
 vars = as.data.frame(vars)
 colnames(vars) = col_names
-index = grep("MAF", colnames(vars))
-sample_names = unlist(lapply(strsplit(colnames(vars)[index], "_"), function(x) {return(x[2])}))
-sample_names[1] = opt$patient
 
 #====================================
 # sufam
@@ -35,14 +34,14 @@ filter = rep("PASS", nrow(vars))
 info = rep(".", nrow(vars))
 vcf = cbind(chr, pos, id, ref, alt, qual, filter, info)
 colnames(vcf) = c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO")
-write.table(vcf, file=paste0("sufam/", opt$patient, ".vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
+write.table(vcf, file=paste0("sufam/", opt$sample_set, ".vcf"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE)
  
 #====================================
 # dp and maf
 #====================================
 for (i in 1:length(sample_names)) {
  	if (!file.exists(paste0("sufam/", sample_names[i], ".mat"))) {
- 		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$patient, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
+ 		system(paste0("source ~/share/usr/anaconda/bin/activate ~/share/usr/anaconda-envs/sufam-dev && sufam ~/share/reference/GATK_bundle/2.3/human_g1k_v37.fa sufam/", opt$sample_set, ".vcf bam/", sample_names[i], ".bam > sufam/", sample_names[i], ".mat"))
  	}
  	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".mat"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
  	## fix depth

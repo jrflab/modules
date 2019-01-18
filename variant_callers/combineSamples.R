@@ -6,14 +6,16 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--patient", default = NA, type = 'character', help = "type of analysis"))
+args_list <- list(make_option("--sample_set", default = NA, type = 'character', help = "sample names set"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
+sample_names = unlist(strsplit(opt$sample_set, split="_", fixed=TRUE))
+
 all_vars = read.csv(file="summary/tsv/mutation_summary.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
-tmp_vars = all_vars[all_vars$NORMAL_SAMPLE==opt$patient,,drop=FALSE]
+tmp_vars = all_vars[all_vars$TUMOR_SAMPLE %in% sample_names,,drop=FALSE]
 keys = paste0(tmp_vars$CHROM, ":", tmp_vars$POS, ":", tmp_vars$REF, ":", tmp_vars$ALT)
 ukeys = unique(keys)
 vars = NULL
@@ -72,7 +74,7 @@ for (i in 1:length(ukeys)) {
 					     "HOTSPOT_INTERNAL"=HOTSPOT_INTERNAL,
 					     "HOTSPOT_CMO"=CMO_HOTSPOT))
 }
-VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(unique(tmp_vars$TUMOR_SAMPLE))+1, dimnames=list(ukeys, c("N", unique(tmp_vars$TUMOR_SAMPLE))))
+VAF = DEPTH = LOH = matrix(NA, nrow=length(ukeys), ncol=length(sample_names), dimnames=list(ukeys, sample_names))
 for (j in 1:nrow(tmp_vars)) {
 	sample_name = tmp_vars[j,"TUMOR_SAMPLE"]
 	ukey = paste0(tmp_vars$CHROM[j], ":", tmp_vars$POS[j], ":", tmp_vars$REF[j], ":", tmp_vars$ALT[j])
@@ -96,4 +98,4 @@ vars = vars[index,,drop=FALSE]
 index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Site")
 vars = vars[index,,drop=FALSE]
 
-write.table(vars, file=paste0("sufam/", opt$patient, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
+write.table(vars, file=paste0("sufam/", opt$sample_set, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
