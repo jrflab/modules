@@ -16,8 +16,8 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 define build-mutations-file
 pyclone/$2/$1.yaml : pyclone/$2/$1.tsv
 	$$(call RUN,-c -s 4G -m 6G -w 7200,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
-								while [ ! -f pyclone/$2/$1.tsv ]; do sleep 120; done && \
-								PyClone build_mutations_file --in_file pyclone/$2/$1.tsv --out_file pyclone/$2/$1.yaml --prior total_copy_number")
+										while [ ! -f pyclone/$2/$1.tsv ]; do sleep 120; done && \
+										PyClone build_mutations_file --in_file pyclone/$2/$1.tsv --out_file pyclone/$2/$1.yaml --prior total_copy_number")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(eval $(call build-mutations-file,$(tumor.$(pair)),$(normal.$(pair)))))
