@@ -16,6 +16,8 @@ DBSNP := $(REF_DIR)/mgp.v5.merged.snps_all.dbSNP142.vcf.gz
 MGP_SNP_DBSNP := $(DBSNP)
 MGP_INDEL_DBSNP := $(REF_DIR)/mgp.v5.merged.indels.dbSNP142.normed.vcf.gz
 
+CENTROMERE_TABLE = $(REF_DIR)/centromere_mm10.txt
+
 EXOME_BED = $(REF_DIR)/mus_musculus_known_genes_exons_GRCm38.bed
 EXOME_BED_NOHEADER = $(REF_DIR)/mus_musculus_known_genes_exons_GRCm38_noheader.bed
 
