@@ -613,7 +613,7 @@ genome_summary :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
 
 
 #==================================================
