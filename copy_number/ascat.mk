@@ -39,7 +39,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define ascat-plot-aspcf
 ascat/log2nbaf/$1_$2.pdf : ascat/mad/$1_$2.RData
-	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type plot-aspcf --file_in $$< --file_out ascat/log2nbaf/$1_$2.pdf --nlog2 '$${aspacf_nlog2.$1}' --nbaf '$${aspacf_nbaf.$1}'")
+	$$(call RUN,-c -v ~/share/usr/anaconda-envs/ascat -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type plot-aspcf --file_in $$< --file_out ascat/log2nbaf/$1_$2.pdf --nlog2 '$${aspcf_nlog2.$1}' --nbaf '$${aspcf_nbaf.$1}'")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
