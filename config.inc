@@ -153,6 +153,7 @@ MEDICC_VAR = $(MEDICC_ENV)/PROFILE
 MEDICC_BIN = $(MEDICC_ENV)/opt/medicc/medicc.py
 
 CNTILP_ENV = $(HOME)/share/usr/anaconda-envs/cnt-ilp
+CNTILP_VAR = $(CNTILP_ENV)/PROFILE
 CNTILP_BIN = $(CNTILP_ENV)/opt/CNT-ILP/build
 
 CNTMD_ENV = $(HOME)/share/usr/anaconda-envs/cnt-md
