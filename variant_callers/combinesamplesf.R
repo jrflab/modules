@@ -91,7 +91,7 @@ for (j in 1:nrow(tmp_vars)) {
 colnames(VAF) = paste0("MAF_", colnames(VAF))
 colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
-colnames(CALL) = paste0("CALL_", colnames(CALL))
+colnames(CALLS) = paste0("CALL_", colnames(CALLS))
 CALLS[is.na(CALLS)] = 0
 vars = cbind(vars, VAF, DEPTH, LOH, CALLS)
 mutect = grepl("mutect", vars[,"Variant_Caller"])
@@ -104,5 +104,17 @@ index = mutect | main_indels | other_indels
 vars = vars[index,,drop=FALSE]
 index = vars[,"Variant_Classification"] %in% c("Frame_Shift_Del", "Frame_Shift_Ins", "In_Frame_Del", "In_Frame_Ins", "Missense_Mutation", "Nonsense_Mutation", "Nonstop_Mutation", "Splice_Site")
 vars = vars[index,,drop=FALSE]
+
+blacklist = read.csv(file="summary/tsv/mouse_summary.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
+indx = grep("AD", colnames(blacklist))
+index = NULL
+for (i in 1:length(indx)) {
+	index = c(index, which(blacklist[,indx[i]]!=0))
+}
+index = order(unique(index))
+all_id = paste0(vars[,"Chromosome"], ":", vars[,"Position"], "_", vars[,"Ref"], ">", vars[,"Alt"])
+blacklist_id = paste0(blacklist[index,"Chromosome"], ":", blacklist[index,"Position"], "_", blacklist[,"Reference_Allele"], ">", blacklist[,"Alternate_Allele"])
+keep_id = which(!(all_id %in% blacklist_id))
+vars = vars[keep_id,,drop=FALSE]
 
 write.table(vars, file=paste0("sufam/", opt$sample_set, ".txt"), col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
