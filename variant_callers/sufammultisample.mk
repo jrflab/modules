@@ -9,7 +9,7 @@ ifeq ($(PDX),true)
 
 define combine-samples-pdx
 sufam/%.txt : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinesamples.R --sample_set $$*")
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinefilteredsamples.R --sample_set $$*")
 
 sufam/%.tsv : sufam/%.txt
 	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/updatesamples.R --sample_set $$*")
