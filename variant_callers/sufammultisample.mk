@@ -7,7 +7,20 @@ SUFAM_SUMMARY ?= $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 
 sufam_multisample : $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv) summary/sufam_summary.xlsx
 
-ifeq ($(GATK_SPLIT_CHR),true
+ifeq ($(PDX),true)
+
+define combine-samples-pdx
+sufam/%.txt : summary/tsv/mutation_summary.tsv
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinesamples.R --sample_set $$*")
+
+sufam/%.tsv : sufam/%.txt
+	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/updatesamples.R --sample_set $$*")
+	
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call combine-samples-pdx,$(set))))
+		
+else 
 
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
@@ -19,6 +32,8 @@ sufam/%.tsv : sufam/%.txt
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call combine-samples,$(set))))
+		
+endif
 
 summary/sufam_summary.xlsx : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 	$(call RUN,-c -s 12G -m 16G,"export R_LIBS='/lila/data/reis-filho/usr/anaconda-envs/jrflab-modules-0.1.4/lib/R/library:/lila/data/reis-filho/usr/lib64/R/library' &&\
