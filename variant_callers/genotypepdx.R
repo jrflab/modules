@@ -10,5 +10,5 @@ QUAL = FILTER = rep(".", nrow(all_vars))
 INFO = paste0(all_vars[,"SYMBOL"], all_vars[,"HGVSp_Short"])
 vcf = data.frame(CHROM, POS, ID, REF, ALT, QUAL, INFO)
 
-cat("#", file="sufam/PDX.vcf", append=FALSE)
-write.table(vcf, file="sufam/PDX.vcf", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE, append=TRUE)
+cat("#", file="sufam/pdx.vcf", append=FALSE)
+write.table(vcf, file="sufam/pdx.vcf", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE, append=TRUE)
