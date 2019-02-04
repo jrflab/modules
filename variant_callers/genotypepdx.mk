@@ -8,7 +8,7 @@ PHONY += sufam summary
 
 MOUSE_SAMPLES ?= $(wildcard $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt))
 
-genotype_pdx : summary/mouse_summary.xlsx summary/tsv/mouse_summary.tsv $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt) sufam/PDX.vcf 
+genotype_pdx : $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt) sufam/PDX.vcf summary/mouse_summary.xlsx summary/tsv/mouse_summary.tsv
 
 sufam/PDX.vcf : summary/tsv/mutation_summary.tsv
 	$(call RUN, -c -s 8G -m 16G,"$(RSCRIPT) modules/variant_callers/genotypepdx.R")
