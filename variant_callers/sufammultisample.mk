@@ -7,6 +7,8 @@ SUFAM_SUMMARY ?= $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 
 sufam_multisample : $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv) summary/sufam_summary.xlsx
 
+ifeq ($(GATK_SPLIT_CHR),true
+
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
 	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinesamples.R --sample_set $$*")

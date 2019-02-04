@@ -6,18 +6,17 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--in_file", default = NA, type = 'character', help = "input file name"),
+args_list <- list(make_option("--sample_names", default = NA, type = 'character', help = "input file name"),
 				  make_option("--out_file", default = NA, type = 'character', help = "output file name"))
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-in_file_names = paste0("sufam/", unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE)), ".txt")
-sample_names = gsub(".txt", "", x=gsub("sufam/", "", in_file_names, fixed=TRUE), fixed=TRUE)
+sample_names = unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE))
 out_file_name = opt$out_file
 DP = AD = MAF = list()
-for (i in 1:length(in_file_names)) {
-	tmp = read.csv(file=in_file_names[i], header=TRUE, sep="\t", stringsAsFactors=FALSE)
+for (i in 1:length(sample_names)) {
+	tmp = read.csv(file=paste0("sufam/", sample_names[i], ".txt"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	DP[[i]] = tmp[,"cov"]
 	AD[[i]] = tmp[,"val_al_count"]
 	MAF[[i]] = tmp[,"val_maf"]
