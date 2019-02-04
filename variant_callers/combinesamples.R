@@ -91,7 +91,7 @@ for (j in 1:nrow(tmp_vars)) {
 colnames(VAF) = paste0("MAF_", colnames(VAF))
 colnames(DEPTH) = paste0("DP_", colnames(DEPTH))
 colnames(LOH) = paste0("LOH_", colnames(LOH))
-colnames(CALL) = paste0("CALL_", colnames(CALL))
+colnames(CALLS) = paste0("CALL_", colnames(CALLS))
 CALLS[is.na(CALLS)] = 0
 vars = cbind(vars, VAF, DEPTH, LOH, CALLS)
 mutect = grepl("mutect", vars[,"Variant_Caller"])
