@@ -12,7 +12,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-sample_names = unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE))
+sample_names = unlist(strsplit(x=opt$sample_names, split=" ", fixed=TRUE))
 out_file_name = opt$out_file
 DP = AD = MAF = list()
 for (i in 1:length(sample_names)) {
