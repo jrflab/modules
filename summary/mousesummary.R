@@ -27,7 +27,7 @@ AD = do.call(cbind, AD)
 colnames(AD) = paste0("AD_", sample_names)
 MAF = do.call(cbind, MAF)
 colnames(MAF) = paste0("MAF_", sample_names)
-vcf = read.table(file="sufam/PDX.vcf", header=FALSE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
+vcf = read.table(file="sufam/pdx.vcf", header=FALSE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 chr = vcf[,1]
 pos = vcf[,2]
 ref = vcf[,4]
