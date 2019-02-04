@@ -12,7 +12,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-in_file_names = unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE))
+in_file_names = paste0("sufam/", unlist(strsplit(x=opt$in_file, split=" ", fixed=TRUE)), ".txt")
 sample_names = gsub(".txt", "", x=gsub("sufam/", "", in_file_names, fixed=TRUE), fixed=TRUE)
 out_file_name = opt$out_file
 DP = AD = MAF = list()
