@@ -21,7 +21,7 @@ endef
  $(foreach sample,$(sample_category.mouse),\
 		$(eval $(call genotype-pdx,$(sample))))
 		
-summary/tsv/mouse_summary.tsv summary/mouse_summary.xlsx : $(wildcard $(foreach sample,sufam/$(sample_category.mouse).txt))
+summary/tsv/mouse_summary.tsv summary/mouse_summary.xlsx : $(wildcard $(foreach sample,$(sample_category.mouse),sufam/$(sample).txt))
 	$(call RUN,-n 1 -s 4G -m 4G,"$(RSCRIPT) modules/summary/mousesummary.R --in_file '$(MOUSE_SAMPLES)' --out_file summary/tsv/mouse_summary.tsv && \
 								 python modules/summary/mouse_summary_excel.py")
 
