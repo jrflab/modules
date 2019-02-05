@@ -91,7 +91,7 @@ vars = cbind(vars, q_t, q_2)
 #====================================
 # loh
 #====================================
-for (i in 2:length(sample_names)) {
+for (i in 1:length(sample_names)) {
 	loh = rep(0, nrow(vars))
 	for (j in 1:nrow(vars)) {
 		if (q_t[j,i]==q_2[j,i]) {
