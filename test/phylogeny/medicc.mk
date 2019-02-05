@@ -21,7 +21,7 @@ $(foreach set,$(SAMPLE_SETS),\
 #$(foreach set,$(SAMPLE_SETS),\
 #		$(eval $(call combine-samples-pdx,$(set))))
 #
-define
+#define
 # predict total and parental copy number aberrations
 # 
 #endef
