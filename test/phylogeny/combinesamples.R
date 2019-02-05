@@ -42,4 +42,13 @@ for (i in 1:length(CN)) {
 	rownames(CN[[i]]) = paste0(CN[[i]][,1], ":", CN[[i]][,2])
 	CN[[i]] = CN[[i]][featureNames,,drop=FALSE]
 }
-save(CN, file=paste0("medicc/ascat/", opt$sample_set, ".RData"))
+Log2Ratio = do.call(cbind, lapply(CN, function(x) { return(x[,"Log2Ratio"]) } ))
+BAF = do.call(cbind, lapply(CN, function(x) { return(x[,"BAF"]) } ))
+Genotype = do.call(cbind, lapply(CN, function(x) { return(x[,"GT"]) } ))
+index = apply(Genotype, 1, sum)==ncol(Genotype)
+Log2Ratio = Log2Ratio[index,,drop=FALSE]
+BAF = BAF[index,,drop=FALSE]
+annotation = data.frame(Chromosome=chr[index],
+						Position=pos[index])
+colnames(Log2Ratio) = colnames(BAF) = tumor_samples
+save(Log2Ratio, BAF, annotation, file=paste0("medicc/mad/", opt$sample_set, ".RData"))
