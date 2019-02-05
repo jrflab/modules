@@ -7,7 +7,7 @@ if (!interactive()) {
 }
 
 args_list <- list(make_option("--sample_set", default = NA, type = 'character', help = "sample names set"),
-				  make_option("--normal_samples", default = NA, type = 'character', help = "sample names set"))
+				  make_option("--normal_samples", default = NA, type = 'character', help = "normal samples"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
@@ -21,7 +21,8 @@ tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 CN = list()
 for (i in 1:length(tumor_samples)) {
 	load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
-	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
-	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio")
+	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT", "het"),drop=FALSE]
+	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio", "BAF", "GT")
 }
+
 save(CN, file=paste0("medicc/ascat/", opt$sample_set, ".RData"))
