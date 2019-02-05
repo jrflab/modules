@@ -7,8 +7,7 @@ medicc : $(foreach set,$(SAMPLE_SETS),medicc/ascat/$(set).RData)
 
 define combine-samples
 medicc/ascat/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
-	$$(call RUN,-c -s 4G -m 6G,"if [ ! -d 'medicc/ascat' ]; then mkdir medicc/ascat; fi && \
-								$(RSCRIPT) modules/test/phylogeny/combinesamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
+	$$(call RUN,-c -s 8G -m 12G,"$(RSCRIPT) modules/test/phylogeny/combinesamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
