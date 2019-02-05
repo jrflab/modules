@@ -671,6 +671,10 @@ cnvkit_plot_test :
 #==================================================
 # alpha testing
 #==================================================
+
+TARGETS += medicc
+medicc :
+	$(call RUN_MAKE,modules/test/phylogeny/medicc.mk)
 	
 TARGETS += run_qdnaseq
 run_qdnaseq :
