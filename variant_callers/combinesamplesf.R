@@ -107,11 +107,11 @@ vars = vars[index,,drop=FALSE]
 
 blacklist = read.csv(file="summary/tsv/mouse_summary.tsv", header=TRUE, sep="\t", stringsAsFactors=FALSE)
 indx = grep("AD", colnames(blacklist))
-index = NULL
+index = matrix(0, nrow=nrow(blacklist), ncol=length(indx))
 for (i in 1:length(indx)) {
-	index = c(index, which(blacklist[,indx[i]]!=0))
+	index[blacklist[,indx[i]]!=0,i] = 1
 }
-index = order(unique(index))
+index = apply(index, 1, sum)>0
 all_id = paste0(vars[,"Chromosome"], ":", vars[,"Position"], "_", vars[,"Ref"], ">", vars[,"Alt"])
 blacklist_id = paste0(blacklist[index,"Chromosome"], ":", blacklist[index,"Position"], "_", blacklist[,"Reference_Allele"], ">", blacklist[,"Alternate_Allele"])
 keep_id = which(!(all_id %in% blacklist_id))
