@@ -20,7 +20,7 @@ tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
 CN = list()
 for (i in 1:length(tumor_samples)) {
-	load(paste0("facets/cncf/", tumor_samples[i], "_", normal_sample, ".Rdata"))
+	load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
 	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio")
 }
