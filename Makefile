@@ -614,7 +614,10 @@ genome_summary :
 TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
-
+	
+TARGETS += cravat_summary
+cravat_summary :
+	$(call RUN_MAKE,modules/summary/cravat_summary.mk)
 
 #==================================================
 # annotations
@@ -631,8 +634,11 @@ ann_somatic_vcf:
 TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
-
 	
+TARGETS += cravat_annotation
+cravat_annotation :
+	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
+
 #==================================================
 # beta testing
 #==================================================
@@ -661,13 +667,6 @@ TARGETS += cnvkit_plot_test
 cnvkit_plot_test :
 	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
-TARGETS += cravat_annotation
-cravat_annotation :
-	$(call RUN_MAKE,modules/test/annotations/cravat_annotation.mk)
-
-TARGETS += cravat_summary
-cravat_summary :
-	$(call RUN_MAKE,modules/test/annotations/cravat_summary.mk)
 	
 #==================================================
 # alpha testing
