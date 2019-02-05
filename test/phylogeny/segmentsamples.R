@@ -1,6 +1,10 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("copynumber"))
+suppressPackageStartupMessages(library("colorspace"))
+suppressPackageStartupMessages(library("ASCAT"))
+
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -19,4 +23,10 @@ normal_samples = normal_samples[normal_samples %in% all_samples]
 tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
 load(paste0("medicc/mad/", opt$sample_set, ".RData"))
-save(list=ls(all=TRUE), file=paste0("medicc/mad/", opt$sample_set, ".RData"))
+# 
+# 		multipcf(data, pos.unit = "bp", arms = NULL, Y = NULL, gamma = 40, 
+#                normalize=TRUE, w=1, fast = TRUE, assembly = "hg19", digits = 4,
+#                return.est = FALSE, save.res = FALSE, file.names = NULL, verbose 
+#                = TRUE)
+
+save(list=ls(all=TRUE), file=paste0("medicc/mpcf/", opt$sample_set, ".RData"))

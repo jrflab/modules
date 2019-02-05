@@ -15,7 +15,7 @@ $(foreach set,$(SAMPLE_SETS),\
 
 define ascat-mpcf
 medicc/mpcf/%.RData : medicc/mad/%.RData
-	$$(call RUN,-c -s 8G -m 12G,"$(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
+	$$(call RUN,-c -s 8G -m 12G -v ~/share/usr/anaconda-envs/ascat,"$(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
