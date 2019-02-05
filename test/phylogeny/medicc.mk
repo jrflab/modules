@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/mad
+PHONY += medicc medicc/mad medicc/mpcf
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -13,13 +13,14 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call combine-samples,$(set))))
 
-#define
-# segment all Log2 ratio and BAF for a give patient
-# 
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call combine-samples-pdx,$(set))))
-#
+define ascat-mpcf
+medicc/mpcf/%.RData : medicc/mad/%.RData
+	$$(call RUN,-c -s 8G -m 12G,"$(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call ascat-mpcf,$(set))))
+
 #define
 # predict total and parental copy number aberrations
 # 
