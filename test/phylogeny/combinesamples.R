@@ -24,5 +24,22 @@ for (i in 1:length(tumor_samples)) {
 	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT", "het"),drop=FALSE]
 	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio", "BAF", "GT")
 }
-
+index = lapply(CN, function(x) {paste0(x[,1], ":", x[,2])})
+featureNames = unique(unlist(index))
+for (i in 1:length(index)) {
+	featureNames = intersect(featureNames, index[[i]])
+}
+chr = as.numeric(unlist(lapply(strsplit(featureNames, ":", fixed=TRUE), function(x) { x[1] })))
+pos = as.numeric(unlist(lapply(strsplit(featureNames, ":", fixed=TRUE), function(x) { x[2] })))
+index = order(pos, decreasing=FALSE)
+chr = chr[index]
+pos = pos[index]
+index = order(chr, decreasing=FALSE)
+chr = chr[index]
+pos = pos[index]
+featureNames = paste0(chr, ":", pos)
+for (i in 1:length(CN)) {
+	rownames(CN[[i]]) = paste0(CN[[i]][,1], ":", CN[[i]][,2])
+	CN[[i]] = CN[[i]][featureNames,,drop=FALSE]
+}
 save(CN, file=paste0("medicc/ascat/", opt$sample_set, ".RData"))
