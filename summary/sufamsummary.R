@@ -13,7 +13,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-sample_names = unlist(strsplit(x=opt$sample_sets, split=" ", fixed=TRUE))
+sample_names = na.omit(unlist(strsplit(x=opt$sample_sets, split=" ", fixed=TRUE)))
 list_of_dfs = list()
 for (i in 1:length(sample_names)) {
 	sample_vars = read_tsv(file=paste0("sufam/", sample_names[i], ".tsv"))
