@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/medicc.$(NOW)
 PHONY += medicc medicc/mad medicc/mpcf medicc/medicc
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -21,20 +21,22 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call ascat-mpcf,$(set))))
 
-define medicc-init
+define init-medicc
 medicc/medicc/%/desc.txt : medicc/mpcf/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call medicc-init,$(set))))
+		$(eval $(call init-medicc,$(set))))
 
-#define
-# initial run of MEDICC
-# 
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call combine-samples-pdx,$(set))))
+define run-medicc
+medicc/medicc/%/tree_final.new : medicc/medicc/%/desc.txt
+	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
+												  $(MEDICC_BIN)/medicc.py medicc/medicc/$$* medicc/medicc/$$* -v")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call run-medicc,$(set))))
 
 #define
 # bootstrapped runs of MEDICC

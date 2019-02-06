@@ -152,7 +152,7 @@ ASCAT_ENV = $(HOME)/share/usr/anaconda-envs/ascat
 
 MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 MEDICC_VAR = $(MEDICC_ENV)/PROFILE
-MEDICC_BIN = $(MEDICC_ENV)/opt/medicc/medicc.py
+MEDICC_BIN = $(MEDICC_ENV)/opt/medicc
 
 CNTILP_ENV = $(HOME)/share/usr/anaconda-envs/cnt-ilp
 CNTILP_CONF = $(CNTILP_ENV)/PROFILE
