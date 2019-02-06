@@ -38,12 +38,12 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
-#define
-# bootstrapped runs of MEDICC
+### Bootstrapped runs of MEDICC
+# define boot-medicc
 # 
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call combine-samples-pdx,$(set))))
+# endef
+# $(foreach set,$(SAMPLE_SETS),\
+#		$(eval $(call boot-medicc,$(set))))
 		
 		
 .DELETE_ON_ERROR:
