@@ -32,7 +32,7 @@ $(foreach set,$(SAMPLE_SETS),\
 define run-medicc
 medicc/medicc/%/tree_final.new : medicc/medicc/%/desc.txt
 	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
-												  $(MEDICC_BIN)/medicc.py medicc/medicc/$$* medicc/medicc/$$* -v")
+												  $(MEDICC_BIN)/medicc.py medicc/medicc/$$*/desc.txt medicc/medicc/$$* -v")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
