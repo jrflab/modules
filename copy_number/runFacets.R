@@ -83,7 +83,7 @@ for(fi in c("Package","LibPath","Version","Built")){
 version=buildData["Version"]
 cat("\n")
 
-
+set.seed(1)
 snpmat <- readSnpMatrix(snpPileupFile)
 preOut <- snpmat %>% preProcSample(snp.nbhd = opt$snp_nbhd, het.thresh = opt$het_threshold, cval = opt$pre_cval, gbuild = facetsGenome, ndepthmax = opt$ndepth_max)
 if (!is.null(opt$diplogr)) {
