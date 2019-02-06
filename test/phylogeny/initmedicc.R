@@ -12,7 +12,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-load(paste0("medicc/mpcf", opt$sample_set, ".RData"))
+load(paste0("medicc/mpcf/", opt$sample_set, ".RData"))
 q1 = qt-q2
 index = !apply(q2, 1, function(x) { any(is.na(x)) }) & !apply(q1, 1, function(x) { any(is.na(x)) })
 q2 = q2[index,,drop=FALSE]
