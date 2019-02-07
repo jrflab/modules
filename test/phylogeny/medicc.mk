@@ -1,9 +1,12 @@
 include modules/Makefile.inc
 
+INDEX = $(seq -f "%03g" 1 100)
+
 LOGDIR ?= log/medicc.$(NOW)
 PHONY += medicc medicc/mad medicc/mpcf medicc/medicc medicc/boot
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/$(foreach index,$(seq -f "%03g" 1 100),$index)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/$(foreach index,$(seq -f '%03g' 1 100),$index)/tree_final.new)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/$(foreach index,INDEX,$index)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/$(foreach index,INDEX/$index)/tree_final.new)
+
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -58,4 +61,4 @@ $(foreach set,$(SAMPLE_SETS),\
 
 
 
-
+  
