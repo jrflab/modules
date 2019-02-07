@@ -44,7 +44,7 @@ medicc/boot/% medicc/boot/%/init.timestamp : medicc/mpcf/%.RData
 												 touch medicc/boot/$$*/init.timestamp")
 
 medicc/boot/%/bootstrap.timestamp : medicc/boot/%/init.timestamp
-	$$(call RUN,-c -s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 7200,"source $(MEDICC_VAR) && \
+	$$(call RUN,-c -s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/desc.txt; fi' && \
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/*.fasta; fi' && \
