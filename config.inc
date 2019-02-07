@@ -162,5 +162,10 @@ CNTMD_ENV = $(HOME)/share/usr/anaconda-envs/cnt-md
 CNTMD_CONF = $(CNTMD_ENV)/PROFILE
 CNTMD_BIN = $(CNTMD_ENV)/opt/CNT-MD/build
 
+MACHINA_ENV = $(HOME)/share/usr/anaconda-envs/machina
+MACHINA_VAR = $(MACHINA_ENV)/PROFILE
+MACHINA_BIN = $(MACHINA_ENV)/opt/machina/build
+
+
 endif
 CONFIG_INC = true
