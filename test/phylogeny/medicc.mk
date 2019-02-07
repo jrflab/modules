@@ -39,7 +39,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
 define boot-medicc
-medicc/boot/%/init.timestamp : medicc/mpcf/%.RData
+medicc/boot/% medicc/boot/%/init.timestamp : medicc/mpcf/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
 												 touch medicc/boot/$$*/init.timestamp")
 
