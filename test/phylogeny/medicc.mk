@@ -44,7 +44,7 @@ medicc/boot/%/100 : medicc/mpcf/%.RData
 
 medicc/boot/%/100/tree_final.new : medicc/boot/%/100
 	$$(call RUN,-c -s 2G -m 4G -n 12 -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
-												  	  seq -f "%03g" 1 100 | parallel -j 12 '$(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v")
+												  	  seq -f '%03g' 1 100 | parallel -j 12 '$(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v")
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call boot-medicc,$(set))))
