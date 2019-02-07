@@ -42,10 +42,10 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
 define boot-medicc
-medicc/boot/%/$INDEX : medicc/mpcf/%.RData
+$(wildcard medicc/boot/%/$(INDEX)) : medicc/mpcf/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$*")
 
-medicc/boot/%/$INDEX/tree_final.new : medicc/boot/%/100
+$(wildcard medicc/boot/%/$(INDEX)/tree_final.new) : $(wildcard medicc/boot/%/$(INDEX))
 	$$(call RUN,-c -s 2G -m 4G -n 12 -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
 												  	   seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi'")
 endef
