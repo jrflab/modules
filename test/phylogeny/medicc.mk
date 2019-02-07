@@ -45,7 +45,7 @@ medicc/boot/%/timestamp : medicc/mpcf/%.RData
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call run-medicc,$(set))))
+		$(eval $(call boot-medicc,$(set))))
 		
 		
 .DELETE_ON_ERROR:
