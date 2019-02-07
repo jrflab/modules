@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/medicc.$(NOW)
 PHONY += medicc medicc/mad medicc/mpcf medicc/medicc medicc/boot
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/timestamp)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/100)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -39,9 +39,8 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
 define boot-medicc
-medicc/boot/%/timestamp : medicc/mpcf/%.RData
-	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
-												 touch medicc/boot/$$*/timestamp")
+medicc/boot/%/100 : medicc/mpcf/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$*")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
