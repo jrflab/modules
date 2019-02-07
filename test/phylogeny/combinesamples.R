@@ -23,7 +23,7 @@ for (i in 1:length(tumor_samples)) {
 	load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
 	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT", "het"),drop=FALSE]
 	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio", "BAF", "GT")
-	CN[[i]] = subset(CN[[i]], CN[[i]][,"BAF"]<.95 & CN[[i]][,"BAF"]>.05)
+	CN[[i]] = subset(CN[[i]], CN[[i]][,"GT"]==1)
 }
 index = lapply(CN, function(x) {paste0(x[,1], ":", x[,2])})
 featureNames = unique(unlist(index))
