@@ -38,12 +38,14 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
-### Bootstrapped runs of MEDICC
-# define boot-medicc
-# 
-# endef
-# $(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call boot-medicc,$(set))))
+define boot-medicc
+medicc/boot/%/timestamp : medicc/mpcf/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
+												 touch medicc/boot/$$*/timestamp")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call run-medicc,$(set))))
 		
 		
 .DELETE_ON_ERROR:
