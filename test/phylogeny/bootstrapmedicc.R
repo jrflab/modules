@@ -46,15 +46,15 @@ for (i in 1:100) {
 	for (i in unique(tmp[,"Chromosome"])) {
 		cat(">diploid\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=FALSE)
 		cat(paste0(rep(1, sum(tmp[,"Chromosome"]==i)), collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=TRUE)
-		for (j in 1:ncol(q2)) {
-			cat(paste0(">", gsub("-", "_", colnames(q2)[j]), "\n"), file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=TRUE)
-			cat(paste0(q2[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=TRUE)
+		for (j in 1:ncol(q2_b)) {
+			cat(paste0(">", gsub("-", "_", colnames(q2_b)[j]), "\n"), file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=TRUE)
+			cat(paste0(q2_b[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/major_chr", i, ".fasta"), append=TRUE)
 		}
 		cat(">diploid\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=FALSE)
 		cat(paste0(rep(1, sum(tmp[,"Chromosome"]==i)), collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
-		for (j in 1:ncol(q1)) {
-			cat(paste0(">", gsub("-", "_", colnames(q1)[j]), "\n"), file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
-			cat(paste0(q1[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
+		for (j in 1:ncol(q1_b)) {
+			cat(paste0(">", gsub("-", "_", colnames(q1_b)[j]), "\n"), file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
+			cat(paste0(q1_b[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
 		}
 	}
 }
