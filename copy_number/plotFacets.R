@@ -22,34 +22,54 @@ optList <- list(
                 make_option("--centromereFile", default = NULL, type = "character", action = "store", help ="centromere file"),
                 make_option("--pqLine", default = F, action = "store_true", help = "draw pq centromere line"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
-
-parser <- OptionParser(usage = "%prog [options] [facets Rdata file]", option_list = optList);
-
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+parser <- OptionParser(usage = "%prog [options] [facets Rdata file]", option_list = optList)
+arguments <- parse_args(parser, positional_arguments = T)
+opt <- arguments$options
 
 if (length(arguments$args) < 1) {
     cat("Need facets Rdata file\n")
-    print_help(parser);
-    stop();
+    print_help(parser)
+    stop()
 } else if (is.null(opt$outPrefix)) {
     cat("Need output prefix\n")
     print_help(parser);
-    stop();
+    stop()
 } else {
-    facetsFile <- arguments$args[1];
+    facetsFile <- arguments$args[1]
 }
 
 load(facetsFile)
 
-tumorName <- facetsFile %>% sub('.*/', '', .) %>% sub('_.*', '', .)
-normalName <- facetsFile %>% sub('.*/', '', .) %>% sub('^.*_', '', .) %>% sub('\\..*', '', .)
+if (!dir.exists("facets/plots")) {
+	dir.create("facets/plots")
+}
 
-pdf(file = str_c(opt$outPrefix, ".lrr.pdf"), height = 3, width = 9)
+if (!dir.exists("facets/plots/log2")) {
+	dir.create("facets/plots/log2")
+}
+
+if (!dir.exists("facets/plots/cncf")) {
+	dir.create("facets/plots/cncf")
+}
+
+if (!dir.exists("facets/plots/bychr")) {
+	dir.create("facets/plots/bychr")
+}
+
+
+tumorName <- facetsFile %>%
+			 sub('.*/', '', .) %>%
+			 sub('_.*', '', .)
+normalName <- facetsFile %>%
+			  sub('.*/', '', .) %>%
+			  sub('^.*_', '', .) %>%
+			  sub('\\..*', '', .)
+
+pdf(file = str_c(opt$outPrefix, ".pdf"), height = 3, width = 9)
 plotSampleLRR(out2, fit)
 dev.off()
 
-pdf(file = str_c(opt$outPrefix, ".cncf.pdf"), height = 9, width = 9)
+pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), height = 9, width = 9)
 plotSample(out2, fit)
 dev.off()
 
@@ -67,7 +87,7 @@ colours[df$tcn == 0] <- "red"
 
 ylim <- c(min(df$cnlr), max(df$cnlr) + 0.5)
 ylim[2] <- ylim[2]+0.5
-pdf(paste(opt$outPrefix,".cnlr_plot.pdf", sep=""), height=5, width=18)
+pdf(paste(opt$outPrefix,".(2).pdf", sep=""), height=5, width=18)
 plot(df$cnlr, pch=20, xlab='Index', ylab = "Copy number log-ratio", col = colours, ylim = ylim)
 abline(v=cumsum(rle(df$chrom)$lengths), col = "red", lty = 3)
 text(cumsum(rle(df$chrom)$lengths)-((rle(df$chrom)$lengths)/2), ylim[2]-0.25, labels = unique(df$chrom))
@@ -96,7 +116,7 @@ for (chr in unique(df$chrom)) {
 
     if (nrow(chdf) > 0) {
         ylim <- c(min(chdf$cnlr), max(chdf$cnlr) + 0.5)
-        pdf(paste(opt$outPrefix,".cnlr_plot.", chr, '.pdf', sep=""), height = 5, width = 6)
+        pdf(paste(gsub("log2", "bychr", x=opt$outPrefix, fixed=TRUE), chr, '.pdf', sep=""), height = 5, width = 6)
         plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", ylim=ylim, col = colours, main = paste('Chromosome', chr))
         points(chdf$cnlr.median.clust, pch = 20, col = 'blue')
 
@@ -113,4 +133,3 @@ for (chr in unique(df$chrom)) {
         dev.off()
     }
 }
-

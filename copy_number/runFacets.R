@@ -30,11 +30,9 @@ optList <- list(
                 make_option("--gene_loc_file", default = '~/share/reference/IMPACT410_genes_for_copynumber.txt', type = 'character', help = "file containing gene locations"),
                 make_option("--genome", default = 'b37', type = 'character', help = "genome of counts file"),
                 make_option("--out_prefix", default = NULL, help = "output prefix"))
-
-parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList);
-
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList)
+arguments <- parse_args(parser, positional_arguments = T)
+opt <- arguments$options
 
 if (length(arguments$args) < 1) {
     cat("Need base counts file\n")
@@ -159,9 +157,8 @@ cat("# dipt =", fit$dipt, "\n", file = ff, append = T)
 cat("# loglik =", fit$loglik, "\n", file = ff, append = T)
 
 tab <- cbind(select(out2$IGV, ID:num.mark), select(fit$cncf, -start, -end, -chrom, -num.mark))
-write.table(tab, str_c(opt$out_prefix, ".cncf.txt"), row.names = F, quote = F, sep = '\t')
+write.table(tab, str_c(opt$out_prefix, ".txt"), row.names = F, quote = F, sep = '\t')
 
-write.table(out2$IGV, str_c(opt$out_prefix, '.facets.seg'), row.names = F, quote = F, sep = '\t')
+write.table(out2$IGV, str_c(opt$out_prefix, '.seg'), row.names = F, quote = F, sep = '\t')
 
 warnings()
-

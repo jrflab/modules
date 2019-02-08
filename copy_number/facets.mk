@@ -1,7 +1,7 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/facets.$(NOW)
-PHONY += facets facets/vcf facets/pileup facets/cncf facets/plots facets/plots/log2ratio facets/plots/allelic
+PHONY += facets facets/vcf facets/pileup facets/cncf facets/plots facets/plots/log2 facets/plots/cncf facets/plots/bychr facets/summary
 
 FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
 
@@ -49,9 +49,9 @@ FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
-facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).txt facets/plots/log2ratio/$(pair).pdf) facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
+facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).txt facets/plots/log2/$(pair).pdf) facets/summary/bygene.txt facets/summary/bygene.pdf facets/summary/summary.tsv
 
-facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
+facets/summary/summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 	$(call RUN,-c -s 8G -m 12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
 
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
@@ -79,15 +79,14 @@ endif
 facets/cncf/%.txt facets/cncf/%.Rdata : facets/pileup/%.gz
 	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
-facets/plots/log2ratio/%.pdf : facets/cncf/%.Rdata
+facets/plots/log2/%.pdf : facets/cncf/%.Rdata
 	$(call RUN,-v $(FACETS_ENV) -s 4G -m 6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
 
-facets/geneCN.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
+facets/summary/bygene.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 	$(call RUN,-c -s 8G -m 30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
-facets/geneCN.pdf : facets/geneCN.txt
+facets/summary/bygene.pdf : facets/summary/bygene.txt
 	$(call RUN,-s 8G -m 10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
-
 
 include modules/variant_callers/gatk.mk
 include modules/bam_tools/processBam.mk

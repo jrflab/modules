@@ -1,33 +1,22 @@
 #!/usr/bin/env Rscript
 
-#---------------
-# initialization
-#---------------
-
-# load base libraries
 for (lib in c("optparse", "dplyr")) {
     suppressPackageStartupMessages(library(lib, character.only=TRUE))
 }
 
-#--------------
-# parse options
-#--------------
-
-optList <- list(
-				make_option("--outFile", default = NULL, help = "output file"))
-parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList);
-
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+optList <- list(make_option("--outFile", default = NULL, help = "output file"))
+parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList)
+arguments <- parse_args(parser, positional_arguments = T)
+opt <- arguments$options
 
 if (length(arguments$args) < 1) {
 	cat("Need facets output files\n")
-	print_help(parser);
-	stop();
+	print_help(parser)
+	stop()
 } else if (is.null(opt$outFile)) {
 	cat("Need output file\n")
-	print_help(parser);
-	stop();
+	print_help(parser)
+	stop()
 } else {
 	facetsFiles <- arguments$args
 }
