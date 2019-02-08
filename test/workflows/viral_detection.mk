@@ -14,7 +14,7 @@ viral_detection_workflow : $(VIRUS_WORKFLOW)
 include modules/fastq_tools/extractReads.mk
 include modules/fastq_tools/bamtoFasta.mk
 include modules/fastq_tools/blastReads.mk
-include modules/virus/kronaClassify.mk
+include modules/virus/krona_classify.mk
 
 .DELETE_ON_ERROR:
 .SECONDARY:
