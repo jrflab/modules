@@ -36,13 +36,16 @@ TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 
+#TARGETS += copynumber_summary
+#copynumber_summary:
+#	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
+#	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
+#	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
+#	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
+#	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 TARGETS += copynumber_summary
 copynumber_summary:
-	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/summary/genomesummary.mk)
+	$(call RUN_MAKE,modules/test/workflows/copynumber_summary.mk)
 	
 TARGETS += hotspot_summary
 hotspot_summary:
