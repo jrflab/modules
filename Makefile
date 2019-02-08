@@ -8,7 +8,7 @@ include modules/config.inc
 
 export
 
-NUM_ATTEMPTS ?= 20
+NUM_ATTEMPTS ?= 10
 NOW := $(shell date +"%F")
 MAKELOG = log/$(@).$(NOW).log
 
@@ -43,6 +43,11 @@ copynumber_summary:
 TARGETS += viral_detection
 viral_detection:
 	$(call RUN_MAKE,modules/test/workflows/viral_detection.mk)
+	
+TARGETS += cravat_annotation
+cravat_annotation :
+	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
+
 	
 #==================================================
 # aligners
@@ -604,8 +609,8 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
-TARGETS += cravat_annotation
-cravat_annotation :
+TARGETS += cravat_annotate
+cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
 
 #==================================================

@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/cravat_annotation.$(NOW)
+LOGDIR ?= log/cravat_annotate.$(NOW)
 PHONY += cravat
 
 cravat : $(foreach sample,$(SAMPLES),cravat/$(sample).vcf cravat/$(sample).maf cravat/$(sample).cravat.vcf cravat/$(sample).tsv cravat/$(sample).txt)

@@ -15,7 +15,7 @@ MY_RSCRIPT ?= Rscript
 RSCRIPT ?= Rscript
 
 # General python 2.7 environment
-ANACONDA_27_ENV ?= /home/debruiji/share/usr/anaconda-envs/anaconda-2.7
+ANACONDA_27_ENV ?= $(HOME)/share/usr/anaconda-envs/anaconda-2.7
 
 # SUFAM python environment
 SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev

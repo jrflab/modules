@@ -33,18 +33,18 @@ ann_pathogen: true
 targets_file: ~/share/reference/target_panels/
 
 # cnvkit default target panels
-ontarget_file: ~/share/reference/target_panels/
-offtarget_file: ~/share/reference/target_panels/
+# ontarget_file: ~/share/reference/target_panels/
+# offtarget_file: ~/share/reference/target_panels/
 
 # cnvkit access target panels
-ontarget_file_A: ~/share/reference/target_panels/
-ontarget_file_B: ~/share/reference/target_panels/
+# ontarget_file_A: ~/share/reference/target_panels/
+# ontarget_file_B: ~/share/reference/target_panels/
 
 # qdnaseq bin sizes in kbp
-qdnaseq_binsize: 1 # 5 10 15 30 50 100 500 1000
+# qdnaseq_binsize: 1 # 5 10 15 30 50 100 500 1000
 
 # whole exome sequencing
-exome: false
+# exome: false
 
 # gatk options
 gatk_hard_filter_snps: true

@@ -15,13 +15,12 @@ my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
     limr => "raylim",
-    burkek => "burkek",
-    schizasm => "schizasm",
-    ngk1 => "charlottekyng",
     debruiji => "debruiji",
-    defilipm => "maria",
-    bermans => "hxrts",
-    gularter => "rjgularte"
+    brownd7 => "brownd7",
+    selenicp => "selenicp",
+    lees19 => "lees19",
+    ferrandl => "ferrandl",
+    dacruzpa => "dacruzpa"
 );
 
 
