@@ -463,10 +463,6 @@ TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
 
-TARGETS += check_bam
-check_bam :
-	$(call RUN_MAKE,modules/bam_tools/checkBam.mk)
-	
 
 #==================================================
 # quality control
