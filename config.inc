@@ -166,6 +166,10 @@ MACHINA_ENV = $(HOME)/share/usr/anaconda-envs/machina
 MACHINA_VAR = $(MACHINA_ENV)/PROFILE
 MACHINA_BIN = $(MACHINA_ENV)/opt/machina/build
 
+HATCHET_ENV = $(HOME)/share/usr/anaconda-envs/hatchet
+HATCHET_VAR = $(HATCHET_ENV)/PROFILE
+HATCHET_BIN = $(HATCHET_ENV)/opt/machina/build
+
 
 endif
 CONFIG_INC = true
