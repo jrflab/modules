@@ -48,6 +48,7 @@ endif
 
 REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
 NOCHR_REF_FASTA ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.fasta
+DMP_FASTA ?= $(REF_DIR)/b37_dmp/b37.fasta
 CHR_REF_FASTA ?= $(REF_DIR)/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta
 REF_2BIT ?= $(REF_DIR)/GATK_bundle/2.3/human_g1k_v37.2bit
 DBSNP ?= $(REF_DIR)/dbsnp_138.b37.gmaf.vcf.gz
