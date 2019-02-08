@@ -45,11 +45,11 @@ medicc/boot/% medicc/boot/%/init.timestamp : medicc/mpcf/%.RData
 
 medicc/boot/%/bootstrap.timestamp : medicc/boot/%/init.timestamp
 	$$(call RUN,-s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \
-											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
-											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/desc.txt; fi' && \
-											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/*.fasta; fi' && \
-											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/chrom*; fi' && \
-											  	   	   		   touch medicc/boot/$$*/bootstrap.timestamp")
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/desc.txt; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/*.fasta; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/chrom*; fi' && \
+											  	   	   		touch medicc/boot/$$*/bootstrap.timestamp")
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call boot-medicc,$(set))))
@@ -58,4 +58,3 @@ $(foreach set,$(SAMPLE_SETS),\
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: $(PHONY)
-  
