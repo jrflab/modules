@@ -12,6 +12,7 @@ endef
 $(foreach sample,$(SAMPLES),\
 		$(eval $(call extract-unmapped-reads,$(sample))))
 
+
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: $(PHONY)
