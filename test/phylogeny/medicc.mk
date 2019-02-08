@@ -48,7 +48,7 @@ medicc/boot/%/bootstrap.timestamp : medicc/boot/%/init.timestamp
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/desc.txt; fi' && \
 											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/*.fasta; fi' && \
-											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then for i in $(ls -d medicc/boot/$$*/{}/*/); do rm -rf $i; done; fi'")
+											  	   	   		   seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/chrom*; fi'")
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call boot-medicc,$(set))))
@@ -57,9 +57,4 @@ $(foreach set,$(SAMPLE_SETS),\
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: $(PHONY)
-
-
-
-
-
   
