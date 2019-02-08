@@ -36,43 +36,13 @@ TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 
-#TARGETS += copynumber_summary
-#copynumber_summary:
-#	$(MAKE) -f modules/copy_number/genomealtered.mk -j $(NUM_JOBS)
-#	$(MAKE) -f modules/copy_number/lstscore.mk -j $(NUM_JOBS)
-#	$(MAKE) -f modules/copy_number/ntaiscore.mk -j $(NUM_JOBS)
-#	$(MAKE) -f modules/copy_number/myriadhrdscore.mk -j $(NUM_JOBS)
-#	$(call RUN_MAKE,modules/summary/genomesummary.mk)
 TARGETS += copynumber_summary
 copynumber_summary:
 	$(call RUN_MAKE,modules/test/workflows/copynumber_summary.mk)
 	
-TARGETS += hotspot_summary
-hotspot_summary:
-	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
-	
 TARGETS += viral_detection
 viral_detection:
-	$(MAKE) -f modules/fastq_tools/extractReads.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/fastq_tools/bamtoFasta.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/fastq_tools/blastReads.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/virus/kronaClassify.mk)
-	
-TARGETS += multisample_pyclone
-multisample_pyclone:
-	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/variant_callers/sufammultisample.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/clonality/runpyclone.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
-	
-TARGETS += run_cnvkit
-run_cnvkit :
-	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
+	$(call RUN_MAKE,modules/test/workflows/viral_detection.mk)
 	
 #==================================================
 # aligners
@@ -666,6 +636,26 @@ TARGETS += cnvkit_plot_test
 cnvkit_plot_test :
 	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
+TARGETS += hotspot_summary
+hotspot_summary:
+	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
+	
+TARGETS += multisample_pyclone
+multisample_pyclone:
+	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/variant_callers/sufammultisample.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/clonality/runpyclone.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
+	
+TARGETS += run_cnvkit
+run_cnvkit :
+	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
+	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
+	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
+	
 	
 #==================================================
 # alpha testing
@@ -679,7 +669,6 @@ TARGETS += run_qdnaseq
 run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-
 
 
 .PHONY : $(TARGETS)
