@@ -1,13 +1,17 @@
-# MSKCC facets R program
-#
 include modules/Makefile.inc
 
 LOGDIR ?= log/facets.$(NOW)
+PHONY += facets
 
 FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
+
 RUN_FACETS = $(RSCRIPT) modules/copy_number/runFacets.R
 PLOT_FACETS = $(RSCRIPT) modules/copy_number/plotFacets.R
 CREATE_FACETS_SUMMARY = $(RSCRIPT) modules/copy_number/createFacetsSummary.R
+MERGE_TN = python modules/copy_number/facets_merge_tn.py
+FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
+FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
+
 FACETS_PRE_CVAL ?= 50
 FACETS_CVAL1 ?= 150
 FACETS_CVAL2 ?= 50
@@ -27,17 +31,10 @@ FACETS_OPTS = --genome $(REF) \
 			  --use_emcncf2 \
 			  $(if $(facets_diplogr.$1),--diplogr $(facets_diplogr.$1)) \
 			  $(if $(facets_purity.$1),--purity $(facets_purity.$1))
-
 SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=15000
-
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
-
-# convert old facets basecount files to snp-pileup
 CONVERT_BASECOUNT ?= false
-
-
-# augment dbsnp with calls from heterozygous calls from gatk
 FACETS_UNION_GATK_DBSNP ?= false
 ifeq ($(FACETS_UNION_GATK_DBSNP),true)
 FACETS_SNP_VCF = facets/vcf/dbsnp_het_gatk.snps.vcf
@@ -45,18 +42,13 @@ else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
 
-MERGE_TN = python modules/copy_number/facets_merge_tn.py
-
-FACETS_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCN.R
 FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
 					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
 					  --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
 					  --mysqlDb $(EMBL_MYSQLDB_DB)
-FACETS_PLOT_GENE_CN = $(RSCRIPT) modules/copy_number/facetsGeneCNPlot.R
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
-PHONY += facets
 facets : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).cncf.txt facets/plots/$(pair).cnlr_plot.pdf) \
 	facets/geneCN.txt facets/geneCN.pdf facets/copynum_summary.tsv
 
@@ -66,29 +58,26 @@ facets/copynum_summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).
 facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
 	$(call RUN,-c -s 4G -m 6G,"$(call GATK_MEM,3G) $(if $(TARGETS_FILE),-L $(TARGETS_FILE)) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
 
-# flag homozygous calls
 %.het.vcf : %.vcf
 	$(call RUN,-c -s 9G -m 12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
 
-# no flag target definitions
 facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 
 ifeq ($(CONVERT_BASECOUNT),true)
 CONVERT_BC_TO_SNP_PILEUP = python modules/copy_number/convert_basecount_to_snp_pileup.py
-facets/snp_pileup/%.snp_pileup.gz : facets/base_count/%.bc.gz
+facets/snp_pileup/%.gz : facets/base_count/%.bc.gz
 	$(call RUN,-s 12G -m 14G,"$(CONVERT_BC_TO_SNP_PILEUP) $< | gzip -c > $@")
 else
-# normal is first, tumor is second
 define snp-pileup-tumor-normal
-facets/snp_pileup/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
+facets/snp_pileup/$1_$2.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
 	$$(call RUN,-c -s 8G -m 20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
 
-facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.snp_pileup.gz
+facets/cncf/%.cncf.txt facets/cncf/%.Rdata : facets/snp_pileup/%.gz
 	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
 facets/plots/%.cnlr_plot.pdf : facets/cncf/%.Rdata
@@ -101,11 +90,9 @@ facets/geneCN.pdf : facets/geneCN.txt
 	$(call RUN,-s 8G -m 10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
 
 
-
 include modules/variant_callers/gatk.mk
 include modules/bam_tools/processBam.mk
 
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY : $(PHONY)
-
