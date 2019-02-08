@@ -116,7 +116,7 @@ for (chr in unique(df$chrom)) {
 
     if (nrow(chdf) > 0) {
         ylim <- c(min(chdf$cnlr), max(chdf$cnlr) + 0.5)
-        pdf(paste(gsub("log2", "bychr", x=opt$outPrefix, fixed=TRUE), chr, '.pdf', sep=""), height = 5, width = 6)
+        pdf(paste(gsub("log2", "bychr", x=opt$outPrefix, fixed=TRUE), "_", chr, '.pdf', sep=""), height = 5, width = 6)
         plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", ylim=ylim, col = colours, main = paste('Chromosome', chr))
         points(chdf$cnlr.median.clust, pch = 20, col = 'blue')
 
