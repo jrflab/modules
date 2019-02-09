@@ -40,7 +40,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 
 define integrate-usv
 integrate_rnaseq/usv/%.integrate_rnaseq.tsv : integrate_rnaseq/breakpoints/%.breakpoints.tsv integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv
-	$(call RUN,,"$(INTEGRATE_TO_USV) $(INTEGRATE_ONCOFUSE_OPTS) --breakpoints_file $$(<) --sum_file $$(<<) --exons_file $$(<<<) > $$(@)")
+	$(call RUN,,"$(INTEGRATE_TO_USV) --breakpoints_file $$(<) --sum_file $$(<<) --exons_file $$(<<<) > $$(@)")
 	
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
