@@ -56,7 +56,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		
 define plot-medicc
 medicc/plots/%.pdf : medicc/medicc/%/tree_final.new medicc/boot/%/init.timestamp
-	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$*)
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$(*)")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
