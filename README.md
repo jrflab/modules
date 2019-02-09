@@ -52,7 +52,7 @@ git clone https://github.com/jrflab/modules.git
 	If the match is below a certain threshold, break the pipeline for patient
 
 ## Detailed usage
-[wiki](https://github.com/jrflab/modules/wiki).
+[wiki](https://github.com/jrflab/modules/wiki)
 
 ## Known issues
 
