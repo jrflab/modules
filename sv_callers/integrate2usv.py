@@ -23,7 +23,7 @@ if __name__ == '__main__':
     df_exon = pd.read_table(args.exons_file)
     df_bp_sum = pd.concat([df_bp, df_sum], axis=1)
     #df_bp_sum = df_bp_sum.drop(['5_Prime', '3_Prime'])
-    df_exon = df_exon.drop(['5P', '3P'])
+    #df_exon = df_exon.drop(['5P', '3P'])
     df = pd.merge(df_bp_sum, df_exon, how='left', left_on='Fusion_Candidate', right_on='#Id')
 
     df = df.rename(columns={'#5P': 'GeneSymbol1', '3P': 'GeneSymbol2',
