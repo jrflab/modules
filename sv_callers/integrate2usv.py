@@ -34,7 +34,7 @@ if __name__ == '__main__':
                             'homology': 'Homology',
                             'fusiontype': 'FusionType'})
     #info_fields = ['Homology', 'FusionType', 'JunctionSequence', 'GeneExpr1', 'GeneExpr2', 'GeneExpr_Fused', 'ES', 'GJS', 'US', 'EricScore']
-    info_fields = ['JunctionSequence', 'GeneExpr1', 'GeneExpr2', 'GeneExpr_Fused', 'ES', 'GJS', 'US', 'EricScore']
+    info_fields = ['GeneExpr1', 'GeneExpr2', 'GeneExpr_Fused', 'ES', 'GJS', 'US', 'EricScore']
     df['Info'] = ''
     for i, row in df.iterrows():
         fields = []
