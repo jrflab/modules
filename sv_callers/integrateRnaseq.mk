@@ -36,7 +36,7 @@ integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integr
 		
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call init-integrate,$(sample))))
+		$(eval $(call init-oncofuse,$(sample))))
 
 define integrate-usv
 integrate_rnaseq/usv/%.integrate_rnaseq.tsv : integrate_rnaseq/breakpoints/%.breakpoints.tsv integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv
