@@ -34,19 +34,18 @@ if __name__ == '__main__':
                             'homology': 'Homology',
                             'fusiontype': 'FusionType'})
     #info_fields = ['Homology', 'FusionType', 'JunctionSequence', 'GeneExpr1', 'GeneExpr2', 'GeneExpr_Fused', 'ES', 'GJS', 'US', 'EricScore']
-    info_fields = ['GeneExpr1', 'GeneExpr2', 'GeneExpr_Fused', 'ES', 'GJS', 'US', 'EricScore']
-    df['Info'] = ''
-    for i, row in df.iterrows():
-        fields = []
-        for field in info_fields:
-            if row[field] != '' and pd.notnull(row[field]):
-                x = "{}=".format(field)
-                if ' ' in str(row[field]):
-                    x += '"{}"'.format(row[field])
-                else:
-                    x += '{}'.format(row[field])
-                fields.append(x)
-        df.ix[i, 'Info'] = ";".join(fields)
+    #df['Info'] = ''
+    #for i, row in df.iterrows():
+    #    fields = []
+    #    for field in info_fields:
+    #        if row[field] != '' and pd.notnull(row[field]):
+    #            x = "{}=".format(field)
+    #           if ' ' in str(row[field]):
+    #                x += '"{}"'.format(row[field])
+    #           else:
+    #                x += '{}'.format(row[field])
+    #            fields.append(x)
+    #    df.ix[i, 'Info'] = ";".join(fields)
     usv_cols = ['Chr1', 'Breakpoint1', 'Strand1', 'Chr2', 'Breakpoint2', 'Strand2',
                 'NumSplitReads', 'NumSpanningReads',
                 'GeneSymbol1', 'GeneSymbol2',
