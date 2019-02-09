@@ -1,6 +1,5 @@
-# Title
+# jrflab modules
 [![Build Status](https://travis-ci.org/cBioPortal/cbioportal.svg?branch=master)](https://travis-ci.org/jrflab/modules)
-
 
 ## Introduction
 This is the implementation of the jrflab pipeline.
@@ -19,7 +18,7 @@ LSF or SGE for resource management
 ### Following R Packages
 - [xxx](https://)
 
-## Command line execution
+## Best practices
 	
 ### Conventions
 - Sample names cannot have "/" or "." in them
@@ -43,7 +42,7 @@ LSF or SGE for resource management
 	* [xxx](http://)
 	* [xxx](http://)  
 
-### RNASeq:
+### RNA transcriptome sequencing
 - QC
 - Tophat, STAR
 - Broad Standard Practices on STAR bam
