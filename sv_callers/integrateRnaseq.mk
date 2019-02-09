@@ -15,7 +15,7 @@ ONCOFUSE_TISSUE_TYPE ?= EPI
 INTEGRATE_TO_USV = python modules/sv_callers/integrate2usv.py
 
 
-integrate_rnaseq: integrate_rnaseq/all.integrate.oncofuse.txt $(foreach sample,$(SAMPLES),integrate_rnaseq/usv/$(sample).integrate_rnaseq.txt)
+integrate_rnaseq: integrate_rnaseq/all.integrate.oncofuse.txt $(foreach sample,$(TUMOR_SAMPLES),integrate_rnaseq/usv/$(sample).integrate_rnaseq.tsv)
 
 define init-integrate
 integrate_rnaseq/reads/%.reads.txt integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv : bam/%.bam bam/%.bam.bai
