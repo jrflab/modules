@@ -27,12 +27,12 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 
 define init-oncofuse
 integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv
-	$(call RUN,-s 7G -m 10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
-		--ref $(REF) \
-		--sumFile $< \
-		--exonsFile $(<<) \
-		--breakpointsFile $(<<<) \
-		--outPrefix $(@D)/$*")
+	$(call RUN,-s 7G -m 10G,"$$(INTEGRATE_ONCOFUSE) $$(INTEGRATE_ONCOFUSE_OPTS) \
+		--ref $$(REF) \
+		--sumFile $$(<) \
+		--exonsFile $$(<<) \
+		--breakpointsFile $$(<<<) \
+		--outPrefix $$(@D)/$$(*)")
 		
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
