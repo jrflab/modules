@@ -17,10 +17,15 @@ INTEGRATE_TO_USV = python modules/sv_callers/integrate2usv.py
 
 integrate_rnaseq: integrate_rnaseq/all.integrate.oncofuse.txt $(foreach sample,$(SAMPLES),integrate_rnaseq/usv/$(sample).integrate_rnaseq.txt)
 
-
+define init-integrate
 integrate_rnaseq/reads/%.reads.txt integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv : bam/%.bam bam/%.bam.bai
 	$(call RUN,-s 8G -m 40G,"mkdir -p integrate_rnaseq/reads integrate_rnaseq/sum integrate_rnaseq/exons integrate_rnaseq/breakpoints; $(INTEGRATE) fusion $(INTEGRATE_OPTS) -reads integrate_rnaseq/reads/$*.reads.txt -sum integrate_rnaseq/sum/$*.sum.tsv -ex integrate_rnaseq/exons/$*.exons.tsv -bk integrate_rnaseq/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $(<) $(<)")
-	
+
+endef
+$(foreach sample,$(TUMOR_SAMPLES),\
+		$(eval $(call init-integrate,$(sample))))
+
+define init-oncofuse
 integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv
 	$(call RUN,-s 7G -m 10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
 		--ref $(REF) \
@@ -28,12 +33,23 @@ integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integr
 		--exonsFile $(<<) \
 		--breakpointsFile $(<<<) \
 		--outPrefix $(@D)/$*")
+		
+endef
+$(foreach sample,$(TUMOR_SAMPLES),\
+		$(eval $(call init-integrate,$(sample))))
 
-integrate_rnaseq/all.integrate.oncofuse.txt : $(foreach sample,$(SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt)
-	$(INIT) (head -1 $< | sed 's/^/sample\t/'; for x in $^; do sed "1d;s/^/$$(basename $${x%%.oncofuse.txt})\t/" $$x; done) > $@
-
+define integrate-usv
 integrate/usv/%.integrate_rnaseq.tsv : integrate_rnaseq/breakpoints/%.breakpoints.tsv integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv
 	$(call RUN,,"$(INTEGRATE_TO_USV) --breakpoints_file $< --sum_file $(<<) --exons_file $(<<<) > $@")
+	
+endef
+$(foreach sample,$(TUMOR_SAMPLES),\
+		$(eval $(call integrate-usv,$(sample))))
+
+
+integrate_rnaseq/all.integrate.oncofuse.txt : $(foreach sample,$(TUMOR_SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt)
+	$(INIT) (head -1 $< | sed 's/^/sample\t/'; for x in $^; do sed "1d;s/^/$$(basename $${x%%.oncofuse.txt})\t/" $$x; done) > $@
+
 
 .DELETE_ON_ERROR:
 .SECONDARY:
