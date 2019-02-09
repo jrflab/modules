@@ -59,4 +59,4 @@ git clone https://github.com/jrflab/modules.git
 
 ### Known bugs
 
-### Under development
+### Currently under development
