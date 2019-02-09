@@ -50,7 +50,7 @@ VCF_SORT ?= $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
 
 SNP_EFF_JAR ?= $(JARDIR)/snpEff-4.3.jar
 SNP_SIFT_JAR ?= $(JARDIR)/SnpSift-4.3.jar
-SNP_EFF_CONFIG ?= modules/snpEff.config
+SNP_EFF_CONFIG ?= modules/config/snpEff.conf
 #DB_NSFP ?= $(HOME)/share/reference/snpEff/dbNSFP2.4.txt.gz
 DB_NSFP ?= $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
 NSFP_FIELDS ?= Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain

@@ -1,9 +1,10 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/defuse.$(NOW)
+.PHONY: defuse
 
 DEFUSE_SCRIPTS = /opt/common/CentOS_7/defuse/defuse-0.8.0/scripts
-CONFIG = modules/scripts/config.txt
+CONFIG = modules/config/defuse.conf
 RELEASE = Grch37.p13
 G38 = ${HOME}/share/reference/defuse/homo_sapiens/Ensembl/Grch38.p5
 HSA = ${HOME}/share/reference/defuse/homo_sapiens/Ensembl/${RELEASE}
@@ -39,10 +40,6 @@ SANGERINDEL = ${HSA}/Annotation/Variation/
 SV_ALL = ${HSA}/Annotation/Variation/
 SV_NE = ${HSA}/Annotation/Variation/
 PERL = /usr/bin/perl
-
-.DELETE_ON_ERROR:
-.SECONDARY:
-.PHONY: defuse
 
 VPATH = fastq defuse defuse/tables
 
