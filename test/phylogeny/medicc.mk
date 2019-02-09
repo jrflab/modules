@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/mad medicc/mpcf medicc/medicc medicc/boot
+PHONY += medicc medicc/mad medicc/mpcf medicc/medicc medicc/boot medicc/plots
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/bootstrap.timestamp)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set).pdf)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -54,7 +54,15 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call boot-medicc,$(set))))
 		
-		
+define plot-medicc
+medicc/plots/%.pdf : medicc/medicc/%/tree_final.pdf medicc/boot/%/init.timestamp
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$*)
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call plot-medicc,$(set))))
+
+
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: $(PHONY)

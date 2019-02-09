@@ -154,6 +154,8 @@ MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 MEDICC_VAR = $(MEDICC_ENV)/PROFILE
 MEDICC_BIN = $(MEDICC_ENV)/opt/medicc
 
+PHYLO_ENV = $(HOME)/share/usr/anaconda-envs/phylotools
+
 CNTILP_ENV = $(HOME)/share/usr/anaconda-envs/cnt-ilp
 CNTILP_CONF = $(CNTILP_ENV)/PROFILE
 CNTILP_BIN = $(CNTILP_ENV)/opt/CNT-ILP/build
