@@ -2,35 +2,33 @@
 [![Build Status](https://travis-ci.org/cBioPortal/cbioportal.svg?branch=master)](https://travis-ci.org/jrflab/modules)
 
 
-## Introduction
-This is the implementation of the jrflab pipeline.
+	## Introduction
+	This is the implementation of the jrflab pipeline.
 
-## Installation
+	## Installation
+	The easiest way to download this pipeline is to clone the repository.
 
-The easiest way to download this pipeline is to clone the repository.
+	```
+	git clone https://github.com/jrflab/modules.git
+	```
 
-```
-git clone https://github.com/jrflab/modules.git
-```
+	## Dependencies
+	An instance of [anaconda](https://www.anaconda.com) or [miniconda](https://conda.io/en/latest/miniconda.html)
+	LSG or PBS for resource management  
 
-## Requirements
-An instance of [anaconda](https://www.anaconda.com) or [miniconda](https://conda.io/en/latest/miniconda.html)
+		### Following R Packages
+		- [xxx](https://)
 
-LSG or PBS for resource management  
+	## Command line execution
+	
+		### Conventions
+		- Sample names cannot have "/" or "." in them
+		- Fastq files end in ".fastq.gz"
+		- Fastq files are stored in DATA_DIR (Set as Environment Variable) 
 
-### Following R Packages
-- [xxx](https://)
-
-
-## Conventions
-
-- Sample names cannot have "/" or "." in them
-- Fastq files end in ".fastq.gz"
-- Fastq files are stored in DATA_DIR (Set as Environment Variable) 
-
-### DNASeq:
-- QC
-- BWA
+		### Whole genome, whole exome and targeted sequencing
+		- QC
+		- BWA
 - Broad Standard Practices on bwa bam  
 - Haplotype Caller, Platupys, Bam2MPG, MuTect, Strelka  
 - snpEff, Annovar, SIFT, pph2, Custom Annotation  
@@ -64,7 +62,7 @@ LSG or PBS for resource management
 - Still to develop:
 	If the match is below a certain threshold, break the pipeline for patient.
 
-### Detailed usage
+## Detailed usage
 [wiki](https://github.com/jrflab/modules/wiki).
 
-# Known issues
+## Known issues
