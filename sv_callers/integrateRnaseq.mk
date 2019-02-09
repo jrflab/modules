@@ -47,7 +47,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call integrate-usv,$(sample))))
 
 
-integrate_rnaseq/all.integrate.oncofuse.txt : $(wildcard $(foreach sample,$(TUMOR_SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt))
+integrate_rnaseq/all.integrate.oncofuse.txt : $(foreach sample,$(TUMOR_SAMPLES),integrate_rnaseq/oncofuse/$(sample).oncofuse.txt)
 	$(INIT) (head -1 $< | sed 's/^/sample\t/'; for x in $^; do sed "1d;s/^/$$(basename $${x%%.oncofuse.txt})\t/" $$x; done) > $@
 
 
