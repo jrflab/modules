@@ -35,7 +35,6 @@ git clone https://github.com/jrflab/modules.git
 - Contamination using 
 - HLA Typing
 	* [xxx](http://)
-	* [xxx](http://)  
 
 ### RNA transcriptome sequencing
 - QC
