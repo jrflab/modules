@@ -12,8 +12,8 @@ git clone https://github.com/jrflab/modules.git
 ```
 
 ## Dependencies
-An instance of [anaconda](https://www.anaconda.com) or [miniconda](https://conda.io/en/latest/miniconda.html)
-LSF or SGE for resource management
+- An instance of [anaconda](https://www.anaconda.com) or [miniconda](https://conda.io/en/latest/miniconda.html)
+- IMB's Platform Load Sharing Facility (LSF) or Oracle's Sun Grid Engine (SGE) for resource management
 
 ### Following R Packages
 - [xxx](https://)
@@ -29,14 +29,9 @@ LSF or SGE for resource management
 - QC
 - BWA
 - Broad Standard Practices on bwa bam  
-- Haplotype Caller, Platupys, Bam2MPG, MuTect, Strelka  
-- snpEff, Annovar, SIFT, pph2, Custom Annotation  
-- Coverage Plot, Circos Plot, Hotspot Coverage Box Plot  
-- Create input format for oncogenomics database (Patient Level)  
-- Make Actionable Classification for Germline and Somatic Mutations   
-- Copy number based on the simple T/N LogRatio (N cov >=30), Corrected for Total # Reads  
-- Copy number, tumor purity using sequenza   
-- LRR adjusted to center  
+- Haplotype Caller, Platypus, MuTect, Strelka
+- snpEff, Annovar, SIFT, pph2, vcf2maf, VEP, OncoKB, ClinVar
+- Copy number, tumor purity using Facets
 - Contamination using 
 - HLA Typing
 	* [xxx](http://)
@@ -45,14 +40,10 @@ LSF or SGE for resource management
 ### RNA transcriptome sequencing
 - QC
 - Tophat, STAR
-- Broad Standard Practices on STAR bam
-- fusion-catcher, tophat-fusion, deFuse
 - Cufflinks (ENS and UCSC)
-- Rsubread TPM (ENS, UCSC), Gene, Transcript and Exon Level
 - In-house Exon Expression (ENS and UCSC)
-- Haplotype Caller
-- snpEff, Annovar, SIFT, pph2, Custom Annotation
-- Actionable Fusion classification
+- fusion-catcher, tophat-fusion, deFuse
+- OncoFuse actionable fusion classification
 
 ### Patient:
 - Genotyping On Patient. 
@@ -66,3 +57,6 @@ LSF or SGE for resource management
 
 ## Known issues
 
+### Known bugs
+
+### Under development
