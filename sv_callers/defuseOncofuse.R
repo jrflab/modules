@@ -1,14 +1,13 @@
 #!/usr/bin/env Rscript
-# run oncofuse on defuse output
 
-suppressPackageStartupMessages(library("optparse"));
+suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("RMySQL"))
-suppressPackageStartupMessages(library("biomaRt"));
-suppressPackageStartupMessages(library("plyr"));
-suppressPackageStartupMessages(library("dplyr"));
-suppressPackageStartupMessages(library("tidyr"));
-suppressPackageStartupMessages(library("stringr"));
-suppressPackageStartupMessages(library("magrittr"));
+suppressPackageStartupMessages(library("biomaRt"))
+suppressPackageStartupMessages(library("plyr"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("tidyr"))
+suppressPackageStartupMessages(library("stringr"))
+suppressPackageStartupMessages(library("magrittr"))
 
 
 if (!interactive()) {
@@ -16,26 +15,23 @@ if (!interactive()) {
 }
 options(useFancyQuotes = F)
 
-optList <- list(
-                make_option("--java", default = 'java', help = "java binary"),
+optList <- list(make_option("--java", default = 'java', help = "java binary"),
                 make_option("--oncofuseJar", default = '~/share/usr/oncofuse-v1.0.6/Oncofuse.jar', help = "oncofuse jar"),
                 make_option("--oncofuseTissueType", default = 'EPI', help = "oncofuse tissue type"),
-                make_option("--outPrefix", default = NULL, help = "Output file"));
-
-parser <- OptionParser(usage = "%prog [options] [defuse file]", option_list = optList);
-
-arguments <- parse_args(parser, positional_arguments = T);
-opt <- arguments$options;
+                make_option("--outPrefix", default = NULL, help = "Output file"))
+parser <- OptionParser(usage = "%prog [options] [defuse file]", option_list = optList)
+arguments <- parse_args(parser, positional_arguments = T)
+opt <- arguments$options
 
 
 if (is.null(opt$outPrefix)) {
-    cat("Need output prefix\n");
-    print_help(parser);
+    cat("Need output prefix\n")
+    print_help(parser)
     stop();
 } else if (length(arguments$args) < 1) {
-    cat("Need input file\n");
-    print_help(parser);
-    stop();
+    cat("Need input file\n")
+    print_help(parser)
+    stop()
 }
 
 
@@ -68,5 +64,4 @@ results <- select(results, -SAMPLE_ID)
 
 fn <- str_c(opt$outPrefix, ".oncofuse.txt")
 write.table(results, file=fn, sep="\t", row.names=F, quote=F, na="")
-
 
