@@ -19,7 +19,8 @@ integrate_rnaseq: integrate_rnaseq/all.integrate.oncofuse.txt $(foreach sample,$
 
 define init-integrate
 integrate_rnaseq/reads/%.reads.txt integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv : bam/%.bam bam/%.bam.bai
-	$(call RUN,-s 8G -m 40G,"mkdir -p integrate_rnaseq/reads integrate_rnaseq/sum integrate_rnaseq/exons integrate_rnaseq/breakpoints; $(INTEGRATE) fusion $(INTEGRATE_OPTS) -reads integrate_rnaseq/reads/$*.reads.txt -sum integrate_rnaseq/sum/$*.sum.tsv -ex integrate_rnaseq/exons/$*.exons.tsv -bk integrate_rnaseq/breakpoints/$*.breakpoints.tsv $(REF_FASTA) $(INTEGRATE_ANN) $(INTEGRATE_BWTS) $(<) $(<)")
+	$$(call RUN,-s 8G -m 40G,"mkdir -p integrate_rnaseq/reads integrate_rnaseq/sum integrate_rnaseq/exons integrate_rnaseq/breakpoints && \
+							  $$(INTEGRATE) fusion $$(INTEGRATE_OPTS) -reads integrate_rnaseq/reads/$$(*).reads.txt -sum integrate_rnaseq/sum/$$(*).sum.tsv -ex integrate_rnaseq/exons/$$(*).exons.tsv -bk integrate_rnaseq/breakpoints/$$(*).breakpoints.tsv $$(REF_FASTA) $$(INTEGRATE_ANN) $$(INTEGRATE_BWTS) $$(<) $$(<)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
@@ -27,12 +28,12 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 
 define init-oncofuse
 integrate_rnaseq/oncofuse/%.oncofuse.txt : integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv integrate_rnaseq/breakpoints/%.breakpoints.tsv
-	$(call RUN,-s 7G -m 10G,"$(INTEGRATE_ONCOFUSE) $(INTEGRATE_ONCOFUSE_OPTS) \
-		--ref $$(REF) \
-		--sumFile $$(<) \
-		--exonsFile $$(<<) \
-		--breakpointsFile $$(<<<) \
-		--outPrefix $$(@D)/$$(*)")
+	$$(call RUN,-s 7G -m 10G,"$$(INTEGRATE_ONCOFUSE) $$(INTEGRATE_ONCOFUSE_OPTS) \
+							  --ref $$(REF) \
+					  		  --sumFile $$(<) \
+							  --exonsFile $$(<<) \
+							  --breakpointsFile $$(<<<) \
+							  --outPrefix $$(@D)/$$(*)")
 		
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
@@ -40,7 +41,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 
 define integrate-usv
 integrate_rnaseq/usv/%.integrate_rnaseq.tsv : integrate_rnaseq/breakpoints/%.breakpoints.tsv integrate_rnaseq/sum/%.sum.tsv integrate_rnaseq/exons/%.exons.tsv
-	$(call RUN,,"$(INTEGRATE_TO_USV) --breakpoints_file $$(<) --sum_file $$(<<) --exons_file $$(<<<) > $$(@)")
+	$$(call RUN, -s 8G -m 24G,"$$(INTEGRATE_TO_USV) --breakpoints_file $$(<) --sum_file $$(<<) --exons_file $$(<<<) > $$(@)")
 	
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
