@@ -45,7 +45,7 @@ endef
 $(foreach i,$(MUTECT2_CHUNKS),$(eval $(call interval-chunk,$i)))
 
 # run mutect on each chromosome
-#$(call mutect-tumor-normal-chr,tumor,normal,chr)
+# $(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect2-tumor-normal-chunk
 mutect2/chunk_vcf/$1_$2.chunk$3.mutect_snps_indels.vcf.gz : mutect2/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	$$(call RUN,-c -s 12G -m 12G,"$$(MUTECT2) --intervals $$< -I:tumor $$(<<) -I:normal $$(<<<) | bgzip -c > $$@ ")
