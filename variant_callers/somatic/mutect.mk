@@ -1,7 +1,3 @@
-# Run mutect on tumour-normal matched pairs
-# Detect point mutations
-##### DEFAULTS ######
-
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 
@@ -54,7 +50,7 @@ endef
 $(foreach i,$(MUTECT_CHUNKS),$(eval $(call interval-chunk,$i)))
 
 # run mutect on each chunk
-#$(call mutect-tumor-normal-chunk,tumor,normal,chunk)
+# $(call mutect-tumor-normal-chunk,tumor,normal,chunk)
 define mutect-tumor-normal-chunk
 mutect/chunk_vcf/$1_$2.chunk$3.mutect.vcf : mutect/interval_chunk/chunk$3.bed bam/$1.bam bam/$2.bam \
 	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
@@ -70,7 +66,7 @@ $(foreach chunk,$(MUTECT_CHUNKS), \
 			$(eval $(call mutect-tumor-normal-chunk,$(tumor.$(pair)),$(normal.$(pair)),$(chunk)))))
 
 # run mutect on each chromosome
-#$(call mutect-tumor-normal-chr,tumor,normal,chr)
+# $(call mutect-tumor-normal-chr,tumor,normal,chr)
 define mutect-tumor-normal-chr
 mutect/chr_vcf/$1_$2.$3.mutect.vcf : bam/$1.bam bam/$2.bam \
 	$$(if $$(findstring true,$$(MUTECT_USE_CONTEST)),contest/$1_$2.contest.txt) bam/$1.bam.bai bam/$2.bam.bai
@@ -83,7 +79,6 @@ endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
 			$(eval $(call mutect-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
-
 
 # merge variant tables 
 ifeq ($(MUTECT_SPLIT_CHR),true)
