@@ -41,6 +41,6 @@ plotTree(tree=init_tree, color="#8CC63F", lwd=3, offset=1)
 nodelabels(node=1:init_tree$Nnode+Ntip(init_tree),
 		   pie = cbind(as.numeric(init_tree$node.label),100-as.numeric(init_tree$node.label)),
 		   piecol = c("goldenrod3","grey85"),
-		   cex = log10(node_labels)/2)
+		   cex = 1.5)
 edgelabels(text=paste0(init_tree$edge.length, " "), cex=.75)
 dev.off()
