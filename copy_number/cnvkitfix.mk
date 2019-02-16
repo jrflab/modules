@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvkit_fix.$(NOW)
 PHONY += cnvkit cnvkit/cnr
 
-cnvkit : $(foreach sample,$(SAMPLES),cnvkit/cnr/$(sample).cnr)
+cnvkit_fix : $(foreach sample,$(SAMPLES),cnvkit/cnr/$(sample).cnr)
 
 define cnvkit-cnr
 cnvkit/cnr/%.cnr : cnvkit/cnn/tumor/%.targetcoverage.cnn cnvkit/cnn/tumor/%.antitargetcoverage.cnn cnvkit/reference/combined_reference.cnr
