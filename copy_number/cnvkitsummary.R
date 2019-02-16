@@ -30,53 +30,28 @@ genes = genes %>%
 		filter(!duplicated(hgnc)) %>%
 		arrange(as.integer(chrom), start, end)
 
-genesGR <- genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
-			
-mm <- lapply(facetsFiles, function(f) {
-    load(f)
-    tab <- fit$cncf
-	tab$chrom[which(tab$chrom==23)] <- "X"
-	tab$chrom[which(tab$chrom==24)] <- "Y"
-
-	tabGR <- tab %$% GRanges(seqnames = chrom, ranges = IRanges(start, end))
-	mcols(tabGR) <- tab %>% select(cnlr.median:lcn.em)
-
-	fo <- findOverlaps(tabGR, genesGR)
-
-	df <- as.data.frame(cbind(mcols(genesGR)[subjectHits(fo),], mcols(tabGR)[queryHits(fo),]))
-	df %<>% group_by(hgnc) %>% top_n(1, abs(cnlr.median))
-
-	ploidy <- table(df$tcn.em)
-	ploidy <- as.numeric(names(ploidy)[which.max(ploidy)])
-
-	df$GL <- 0
-	df$GL[df$tcn.em < ploidy] <- -1
-	df$GL[df$tcn.em == 0] <- -2
-	df$GL[df$tcn.em > ploidy] <- 1
-	df$GL[df$tcn.em >= ploidy + 4] <- 2
-
-	load(f)
-	noise <- median(abs(out2$jointseg$cnlr-  unlist(apply(out2$out[,c("cnlr.median", "num.mark")], 1, function(x) {rep(x[1], each=x[2])}))))
-
-	lrr <- sort(out2$jointseg$cnlr)
-	if (noise <= 0.2) { lrr <- lrr[round(0.25*length(lrr)):round(0.75*length(lrr))]
-	} else if ( noise <= 0.3 ) { lrr <- lrr[round(0.275*length(lrr)):round(0.725*length(lrr))]
-	} else { lrr <- lrr[round(0.3*length(lrr)):round(0.7*length(lrr))]}
-
-	df$GL2 <- 0
-	df$GL2[df$cnlr.median < median(lrr)-(2.5*sd(lrr))] <- -1
-	df$GL2[df$cnlr.median < median(lrr)-(7*sd(lrr))] <- -2
-	df$GL2[df$cnlr.median > median(lrr)+(2*sd(lrr))] <- 1
-	df$GL2[df$cnlr.median > median(lrr)+(6*sd(lrr))] <- 2
-
-	df %>% select(hgnc, GL, GL2) %>% ungroup
+genes_granges = genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
+mm = lapply(sample_names, function(f) {
+    load(paste0("cnvkit/called/", f, ".RData"))
+	tmp[tmp[,"Chromosome"]==23,"Chromosome"] = "X"
+	tmp[tmp[,"Chromosome"]==24,"Chromosome"] = "Y"
+	tmp_granges = tmp %$% GRanges(seqnames = Chromosome, ranges = IRanges(Start, End))
+	mcols(tmp_granges) = tmp %>% select(Cat5)
+	fo = findOverlaps(tmp_granges, genes_granges)
+	x = mcols(genes_granges)[subjectHits(fo),]
+	y = mcols(tmp_granges)[queryHits(fo),]
+	df = data.frame(x, "Cat5"=y)
+	df = df %>%
+		 group_by(hgnc) %>%
+		 top_n(1, Cat5)
 })
-names(mm) <- facetsFiles
-for (f in facetsFiles) {
-	n <- sub('\\..*', '', sub('.*/', '', f))
-	colnames(mm[[f]])[2:3] <- paste(n, c("EM", "LRR_threshold"), sep="_")
+names(mm) <- sample_names
+for (f in sample_names) {
+	colnames(mm[[f]])[3] = f
 }
 
-mm <- left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>% arrange(as.integer(chrom), start, end)
-write.table(mm, file=opt$outFile, sep="\t", row.names=F, na="", quote=F)
+bygene = left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>%
+	 	 arrange(as.integer(chrom), start, end)
 
+save(bygene, file="cnvkit/summary/bygene.RData")
+write.table(bygene, file="cnvkit/summary/bygene.txt", sep="\t", col.names=TRUE, row.names=FALSE, na="", quote=FALSE)
