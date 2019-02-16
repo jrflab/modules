@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvkit.$(NOW)
 PHONY += cnvkit cnvkit/cnn cnvkit/cnn/tumor cnvkit/cnn/normal cnvkit/reference cnvkit/cnr cnvkit/plot
 
-#CNV_KIT_WORKFLOW += cnvkit_coverage
+CNV_KIT_WORKFLOW += cnvkit_coverage
 CNV_KIT_WORKFLOW += cnvkit_reference
 CNV_KIT_WORKFLOW += cnvkit_fix
 CNV_KIT_WORKFLOW += cnvkit_plot

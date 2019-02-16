@@ -570,6 +570,10 @@ virus_detection_bowtie2 :
 TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
+	
+TARGETS += medicc
+medicc :
+	$(call RUN_MAKE,modules/test/phylogeny/medicc.mk)
 
 
 #==================================================
@@ -596,6 +600,7 @@ TARGETS += cravat_summary
 cravat_summary :
 	$(call RUN_MAKE,modules/summary/cravat_summary.mk)
 
+
 #==================================================
 # annotations
 #==================================================
@@ -615,6 +620,7 @@ ann_vcf:
 TARGETS += cravat_annotate
 cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
+
 
 #==================================================
 # beta testing
@@ -661,10 +667,6 @@ multisample_pyclone:
 # alpha testing
 #==================================================
 
-TARGETS += medicc
-medicc :
-	$(call RUN_MAKE,modules/test/phylogeny/medicc.mk)
-	
 TARGETS += run_qdnaseq
 run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
