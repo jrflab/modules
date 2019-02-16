@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvkit_segment.$(NOW)
 PHONY += cnvkit cnvkit/segmented cnvkit/totalcopy cnvkit/called
 
-cnvkit_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).RData) $(foreach sample,$(TUMOR_SAMPLES),cnvkit/segmented/$(sample).pdf) $(foreach sample,$(TUMOR_SAMPLES),cnvkit/calls/$(sample).RData)
+cnvkit_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).RData) $(foreach sample,$(TUMOR_SAMPLES),cnvkit/segmented/$(sample).pdf) $(foreach sample,$(TUMOR_SAMPLES),cnvkit/called/$(sample).RData)
 
 define cnvkit-totalcopy
 cnvkit/segmented/%.pdf cnvkit/totalcopy/%.RData : cnvkit/cnr/%.cnr
