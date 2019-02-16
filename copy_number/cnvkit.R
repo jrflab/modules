@@ -66,10 +66,10 @@ if (opt$type=="total-copy") {
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 		CN[CN[,"chrom"]==j,"pos"] = CN[CN[,"chrom"]==j,"pos"] + start[j]
 	}
-	col = "grey80"
+	col = "grey70"
 	pdf(file=paste0("cnvkit/segmented/", opt$sample_name, ".pdf"), height=7*10/7*2/3, width=7*20/7)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
  	for (j in 1:nrow(tmp)) {
  		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
  	}
@@ -87,7 +87,8 @@ if (opt$type=="total-copy") {
 	dev.off()
 	
 
-} else if (opt$type=="plot") {
+} else if (opt$type=="call-cna") {
+	
 
 
 }
