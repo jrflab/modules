@@ -48,6 +48,7 @@ if (opt$type=="total-copy") {
 	CN[CN[,"Chromosome"]=="Y","Chromosome"] = 24
 	CN[,"Chromosome"] = as.numeric(CN[,"Chromosome"])
 	CN[CN[,"Log2Ratio"]<(-4) | CN[,"Log2Ratio"]>(4),"Log2Ratio"] = 0
+	CN = subset(CN, CN[,"Chromosome"]<=23)
 	tmp = pcf(data=winsorize(data=CN, method="mad", tau=2.5, k=25, verbose=FALSE), kmin = 50, gamma=70, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio")
 	save(CN, tmp, file=paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
