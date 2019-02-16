@@ -119,7 +119,7 @@ if (opt$type=="total-copy") {
 	cat5[tmp[,"Log2Ratio"] > cat5t[3]] = 1
 	cat5[tmp[,"Log2Ratio"] > cat5t[4]] = 2
 	tmp = cbind(tmp, "Cat5"=cat5)
-	save(CN, tmp, file=paste0("cnvkit/calls/", opt$sample_name, ".RData"))
+	save(CN, tmp, file=paste0("cnvkit/called/", opt$sample_name, ".RData"))
 	
 }
 
