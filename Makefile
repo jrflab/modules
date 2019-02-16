@@ -47,8 +47,11 @@ viral_detection:
 TARGETS += cravat_annotation
 cravat_annotation :
 	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
-
 	
+TARGETS += cnvkit
+cnvkit :
+	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
+
 #==================================================
 # aligners
 #==================================================
@@ -653,14 +656,6 @@ multisample_pyclone:
 	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
 	$(MAKE) -f modules/clonality/runpyclone.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
-	
-TARGETS += run_cnvkit
-run_cnvkit :
-	$(MAKE) -f modules/copy_number/cnvkitcoverage.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitreference.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/copy_number/cnvkitfix.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
-	
 	
 #==================================================
 # alpha testing
