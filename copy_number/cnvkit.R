@@ -89,8 +89,38 @@ if (opt$type=="total-copy") {
 
 } else if (opt$type=="call-cna") {
 	
-
-
+	'prunesegments.cn' <- function(x, n=10)
+	{
+		cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
+		for (j in 1:nrow(x)) {
+			cnm[,j] = abs(2^x[j,"Log2Ratio"] - 2^x[,"Log2Ratio"])
+		}
+		cnt = hclust(as.dist(cnm), "average")
+		cnc = cutree(tree=cnt, k=n)
+		for (j in unique(cnc)) {
+			indx = which(cnc==j)
+			if (length(indx)>2) {
+				mcl = mean(x[indx,"Log2Ratio"])
+				scl = sd(x[indx,"Log2Ratio"])
+				ind = which(x[indx,"Log2Ratio"]<(mcl+1.96*scl) & x[indx,"Log2Ratio"]>(mcl-1.96*scl))
+				x[indx[ind],"Log2Ratio"] = mean(x[indx[ind],"Log2Ratio"])
+			} else {
+				x[indx,"Log2Ratio"] = mean(x[indx,"Log2Ratio"])
+			}
+		}
+		return(x)
+	}
+	load(paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
+	tmp = prunesegments.cn(x=tmp, n=10)
+	cat5t = c(-0.4, -0.19, 0.15, 0.58)
+	cat5 = rep(0, nrow(tmp))
+	cat5[tmp[,"Log2Ratio"] < cat5t[2]] = -1
+	cat5[tmp[,"Log2Ratio"] < cat5t[1]] = -2
+	cat5[tmp[,"Log2Ratio"] > cat5t[3]] = 1
+	cat5[tmp[,"Log2Ratio"] > cat5t[4]] = 2
+	tmp = cbind(tmp, "Cat5"=cat5)
+	save(CN, tmp, file=paste0("cnvkit/calls/", opt$sample_name, ".RData"))
+	
 }
 
 warnings()
