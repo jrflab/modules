@@ -2,7 +2,7 @@ include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/cnvkit.$(NOW)
-PHONY += cnvkit cnvkit/cnn cnvkit/reference cnvkit/cnr cnvkit/plot
+PHONY += cnvkit cnvkit/cnn cnvkit/cnn/tumor cnvkit/cnn/normal cnvkit/reference cnvkit/cnr cnvkit/plot
 
 CNV_KIT_WORKFLOW += cnvkit_coverage
 CNV_KIT_WORKFLOW += cnvkit_reference
