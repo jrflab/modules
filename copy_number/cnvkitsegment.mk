@@ -13,7 +13,7 @@ cnvkit/segmented/%.pdf cnvkit/totalcopy/%.RData : cnvkit/cnr/%.cnr
 												 $(RSCRIPT) modules/copy_number/cnvkit.R --type total-copy --sample_name $$(*)")
 												 
 cnvkit/called/%.RData : cnvkit/totalcopy/%.RData
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p cnvkit/calls && \
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p cnvkit/called && \
 												 $(RSCRIPT) modules/copy_number/cnvkit.R --type call-cna --sample_name $$(*)")
 
 endef
