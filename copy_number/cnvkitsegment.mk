@@ -8,8 +8,8 @@ cnvkit_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).RD
 
 define cnvkit-totalcopy
 cnvkit/segmented/%.pdf cnvkit/totalcopy/%.RData : cnvkit/cnr/%.cnr
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir cnvkit/segmented && \
-												 mkdir cnvkit/totalcopy && \
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p cnvkit/segmented && \
+												 mkdir -p cnvkit/totalcopy && \
 												 $(RSCRIPT) modules/copy_number/cnvkit.R --type total-copy --sample_name $$(*)")
 	
 endef
