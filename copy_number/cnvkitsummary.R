@@ -12,7 +12,6 @@ suppressPackageStartupMessages(library("foreach"))
 suppressPackageStartupMessages(library("rtracklayer"))
 suppressPackageStartupMessages(library("grid"))
 suppressPackageStartupMessages(library("rlist"))
-suppressPackageStartupMessages(library("RMySQL"))
 
 optList <- list(
 				make_option("--sample_names", default = NULL, help = "list of sample names")
@@ -29,7 +28,8 @@ genes = read.csv(file="~/share/reference/annotation_gene_lists/annotation_impact
 		filter(!duplicated(Gene_Symbol)) %>%
 		arrange(as.integer(Chromosome), Start, End)
 
-genes_granges = genes %$% GRanges(seqnames = Chromosome, ranges = IRanges(Start, End), Gene_Symbol = Gene_Symbol)
+genes_granges = genes %$%
+				GRanges(seqnames = Chromosome, ranges = IRanges(Start, End), Gene_Symbol = Gene_Symbol)
 mm = lapply(sample_names, function(f) {
     load(paste0("cnvkit/called/", f, ".RData"))
 	tmp[tmp[,"Chromosome"]==23,"Chromosome"] = "X"
@@ -39,14 +39,17 @@ mm = lapply(sample_names, function(f) {
 	fo = findOverlaps(tmp_granges, genes_granges)
 	x = mcols(genes_granges)[subjectHits(fo),]
 	y = mcols(tmp_granges)[queryHits(fo),]
-	df = data.frame(x, "Cat5"=y)
+	df = data.frame("Gene_Symbol"=x, "Cat5"=y)
 	df = df %>%
 		 group_by(Gene_Symbol) %>%
 		 top_n(1, Cat5)
+	df = data.frame("Gene_Symbol"=as.character(df$Gene_Symbol),
+					"Cat5"=df$Cat5,
+					stringsAsFactors=FALSE)
 })
 names(mm) <- sample_names
 for (f in sample_names) {
-	colnames(mm[[f]])[3] = f
+	colnames(mm[[f]])[2] = f
 }
 
 bygene = left_join(genes, join_all(mm, type = 'full', by="Gene_Symbol")) %>%
