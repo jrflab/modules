@@ -66,10 +66,10 @@ if (opt$type=="total-copy") {
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 		CN[CN[,"chrom"]==j,"pos"] = CN[CN[,"chrom"]==j,"pos"] + start[j]
 	}
-	col = "grey70"
+	col = "grey80"
 	pdf(file=paste0("cnvkit/segmented/", opt$sample_name, ".pdf"), height=7*10/7*2/3, width=7*20/7)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=2, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.75, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
  	for (j in 1:nrow(tmp)) {
  		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
  	}
@@ -84,9 +84,9 @@ if (opt$type=="total-copy") {
 	}
 	abline(v=max(CN[,"pos"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	cat5 = c(-0.4, -0.19, 0.15, 0.58)
+	cat5t = c(-0.7, -0.19, 0.15, 0.58)
 	for (j in 1:length(cat5)) {
-		abline(h=cat5[j], lty=3, lwd=.5, col="black")
+		abline(h=cat5[j], lty=3, lwd=.5, col="steelblue")
 	}
 	dev.off()
 	
@@ -116,7 +116,7 @@ if (opt$type=="total-copy") {
 	}
 	load(paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
 	tmp = prunesegments.cn(x=tmp, n=10)
-	cat5t = c(-0.4, -0.19, 0.15, 0.58)
+	cat5t = c(-0.7, -0.19, 0.15, 0.58)
 	cat5 = rep(0, nrow(tmp))
 	cat5[tmp[,"Log2Ratio"] < cat5t[2]] = -1
 	cat5[tmp[,"Log2Ratio"] < cat5t[1]] = -2
