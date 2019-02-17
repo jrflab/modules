@@ -84,7 +84,10 @@ if (opt$type=="total-copy") {
 	}
 	abline(v=max(CN[,"pos"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	cat5 = c(-0.7, -0.19, 0.15, 0.58)
+	cat5 = c(-0.85,
+			 -0.19,
+			 0.19,
+			 0.78)
 	for (j in 1:length(cat5)) {
 		abline(h=cat5[j], lty=3, lwd=.5, col="steelblue")
 	}
@@ -116,7 +119,10 @@ if (opt$type=="total-copy") {
 	}
 	load(paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
 	tmp = prunesegments.cn(x=tmp, n=10)
-	cat5t = c(-0.7, -0.19, 0.15, 0.58)
+	cat5t = c(-0.85,
+			  -0.19,
+			  0.19,
+			  0.78)
 	cat5 = rep(0, nrow(tmp))
 	cat5[tmp[,"Log2Ratio"] < cat5t[2]] = -1
 	cat5[tmp[,"Log2Ratio"] < cat5t[1]] = -2

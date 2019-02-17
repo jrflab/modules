@@ -30,8 +30,9 @@ genes = read.csv(file="~/share/reference/annotation_gene_lists/annotation_impact
 
 genes_granges = genes %$%
 				GRanges(seqnames = Chromosome, ranges = IRanges(Start, End), Gene_Symbol = Gene_Symbol)
-mm = lapply(sample_names, function(f) {
-    load(paste0("cnvkit/called/", f, ".RData"))
+mm = lapply(1:length(sample_names), function(i, sample_names, genes, genes_granges) {
+	cat(i, "of", length(sample_names), "\n")
+    load(paste0("cnvkit/called/", sample_names[i], ".RData"))
 	tmp[tmp[,"Chromosome"]==23,"Chromosome"] = "X"
 	tmp[tmp[,"Chromosome"]==24,"Chromosome"] = "Y"
 	tmp_granges = tmp %$% GRanges(seqnames = Chromosome, ranges = IRanges(Start, End))
@@ -43,16 +44,17 @@ mm = lapply(sample_names, function(f) {
 	df = df %>%
 		 group_by(Gene_Symbol) %>%
 		 top_n(1, Cat5)
-	df = data.frame("Gene_Symbol"=as.character(df$Gene_Symbol),
-					"Cat5"=df$Cat5,
-					stringsAsFactors=FALSE)
-})
-names(mm) <- sample_names
-for (f in sample_names) {
-	colnames(mm[[f]])[2] = f
-}
-
-bygene = left_join(genes, join_all(mm, type = 'full', by="Gene_Symbol")) %>%
+	z = as.numeric(df$Cat5)
+	names(z) = as.character(df$Gene_Symbol)
+	z = z[names(z) %in% genes[,1]]
+	res = rep(NA, nrow(genes))
+	names(res) = genes[,1]
+	res[names(z)] = z
+	return(res)
+}, sample_names, genes, genes_granges)
+bygene = do.call(cbind, mm)
+colnames(bygene) = sample_names
+bygene = cbind(genes, bygene) %>%
 	 	 arrange(as.integer(Chromosome), Start, End)
 
 save(bygene, file="cnvkit/summary/bygene.RData")
