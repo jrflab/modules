@@ -24,13 +24,12 @@ opt <- arguments$options
 
 
 sample_names = unlist(strsplit(opt$sample_names, split=" ", fixed=TRUE))
-genes = read.csv(file="~/share/reference/annotation_gene_lists/geneCN.txt", header=TRUE, sep="\t", stringsAsFactors=FALSE)
-genes = genes %>%
-		filter(chrom %in% as.character(c(1:22, "X", "Y"))) %>%
-		filter(!duplicated(hgnc)) %>%
-		arrange(as.integer(chrom), start, end)
+genes = read.csv(file="~/share/reference/annotation_gene_lists/annotation_impact_468.txt", header=TRUE, sep="\t", stringsAsFactors=FALSE) %>%
+		filter(Chromosome %in% as.character(c(1:22, "X", "Y"))) %>%
+		filter(!duplicated(Gene_Symbol)) %>%
+		arrange(as.integer(Chromosome), Start, End)
 
-genes_granges = genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
+genes_granges = genes %$% GRanges(seqnames = Chromosome, ranges = IRanges(Start, End), Gene_Symbol = Gene_Symbol)
 mm = lapply(sample_names, function(f) {
     load(paste0("cnvkit/called/", f, ".RData"))
 	tmp[tmp[,"Chromosome"]==23,"Chromosome"] = "X"
@@ -42,7 +41,7 @@ mm = lapply(sample_names, function(f) {
 	y = mcols(tmp_granges)[queryHits(fo),]
 	df = data.frame(x, "Cat5"=y)
 	df = df %>%
-		 group_by(hgnc) %>%
+		 group_by(Gene_Symbol) %>%
 		 top_n(1, Cat5)
 })
 names(mm) <- sample_names
@@ -50,8 +49,8 @@ for (f in sample_names) {
 	colnames(mm[[f]])[3] = f
 }
 
-bygene = left_join(genes, join_all(mm, type = 'full', by="hgnc")) %>%
-	 	 arrange(as.integer(chrom), start, end)
+bygene = left_join(genes, join_all(mm, type = 'full', by="Gene_Symbol")) %>%
+	 	 arrange(as.integer(Chromosome), Start, End)
 
 save(bygene, file="cnvkit/summary/bygene.RData")
 write.table(bygene, file="cnvkit/summary/bygene.txt", sep="\t", col.names=TRUE, row.names=FALSE, na="", quote=FALSE)
