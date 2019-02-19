@@ -594,7 +594,7 @@ genome_summary :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
 	
 TARGETS += cravat_summary
 cravat_summary :
