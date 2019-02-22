@@ -43,7 +43,7 @@ mm = lapply(1:length(sample_names), function(i, sample_names, genes, genes_grang
 	df = data.frame("Gene_Symbol"=x, "Cat5"=y)
 	df = df %>%
 		 group_by(Gene_Symbol) %>%
-		 top_n(1, Cat5)
+		 top_n(1, abs(Cat5))
 	z = as.numeric(df$Cat5)
 	names(z) = as.character(df$Gene_Symbol)
 	z = z[names(z) %in% genes[,1]]
