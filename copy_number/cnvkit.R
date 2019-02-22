@@ -49,7 +49,7 @@ if (opt$type=="total-copy") {
 	CN[,"Chromosome"] = as.numeric(CN[,"Chromosome"])
 	CN[CN[,"Log2Ratio"]<(-4) | CN[,"Log2Ratio"]>(4),"Log2Ratio"] = 0
 	CN = subset(CN, CN[,"Chromosome"]<=23)
-	tmp = pcf(data=winsorize(data=CN, method="mad", tau=2.5, k=25, verbose=FALSE), kmin = 50, gamma=70, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
+	tmp = pcf(data=winsorize(data=CN, method="mad", tau=2.5, k=10, verbose=FALSE), kmin = 10, gamma=40, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio")
 	save(CN, tmp, file=paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
 	tmp = prunesegments.cn(x=tmp, n=10)

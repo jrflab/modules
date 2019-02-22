@@ -14,8 +14,8 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-outfile_on_target = gsub("cnr", "plot", gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
-outfile_off_target = gsub("cnr", "plot", gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
+outfile_on_target = gsub("cnr", "log2", gsub(".cnr", ".ontarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
+outfile_off_target = gsub("cnr", "log2", gsub(".cnr", ".offtarget.pdf", opt$in_file, fixed=TRUE), fixed=TRUE)
 
 data = read.table(file=opt$in_file, header=TRUE, sep="\t", comment.char="#", stringsAsFactors=FALSE)
 data = subset(data, data[,"depth"]!=0)
