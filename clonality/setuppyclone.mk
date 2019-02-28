@@ -11,7 +11,7 @@ pyclone/%/config.yaml : sufam/%.tsv
 							  $(RSCRIPT) modules/clonality/tsvforpyclone.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) && \
 							  $(RSCRIPT) modules/clonality/pycloneconfig.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) && \
 							  source /home/$(USER)/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/$(USER)/share/usr/anaconda-envs/PyClone-0.13.1 && \
-							  for i in $(ls pyclone/$$(*)/*.tsv); do j=${i%.*}; PyClone build_mutations_file --in_file $i --out_file $j.yaml --prior total_copy_number; done;")
+							  for i in $$(ls pyclone/$$(*)/*.tsv); do j=${i%.*}; PyClone build_mutations_file --in_file $i --out_file $j.yaml --prior total_copy_number; done;")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
