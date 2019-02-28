@@ -9,7 +9,7 @@ define make-input-pyclone
 pyclone/%/config.yaml : sufam/%.tsv
 	$$(call RUN, -s 4G -m 6G,"mkdir -p pyclone/$$(*) && \
 								$(RSCRIPT) modules/clonality/tsvforpyclone.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) && \
-								touch pyclone/$$(*)/config.yaml")
+								$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES)")
 #								source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 #								PyClone build_mutations_file --in_file pyclone/$2/$1.tsv --out_file pyclone/$2/$1.yaml --prior total_copy_number")
 
@@ -20,7 +20,7 @@ $(foreach set,$(SAMPLE_SETS),\
 #define make-config-yaml
 #pyclone/%/config.yaml : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
 #	$$(call RUN,-c -s 4G -m 6G,"if [ ! -d pyclone/$$(*) ]; then mkdir pyclone/$$(*); fi && \
-#								$(RSCRIPT) modules/clonality/pycloneconfig.R --sample_name $$*")
+#								")
 #endef
 #$(foreach sample,$(NORMAL_SAMPLES),\
 #		$(eval $(call make-config-yaml,$(sample))))
