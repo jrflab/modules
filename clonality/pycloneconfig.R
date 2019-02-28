@@ -51,7 +51,7 @@ for (i in 1:length(tumor_samples)) {
 	if (i!=1) {
 		cat("\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 	}
-	cat(paste0("  ", tumor_ssamples[i], ":\n"), file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
+	cat(paste0("  ", tumor_samples[i], ":\n"), file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 	cat(paste0("    mutations_file: ", tumor_samples[i], ".yaml\n"), file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 	cat("\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 	cat("    tumour_content:\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
