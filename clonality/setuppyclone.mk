@@ -7,7 +7,7 @@ setup_pyclone : $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/config.yaml)
 
 define make-input-pyclone
 pyclone/%/config.yaml : sufam/%.tsv
-	$$(call RUN,-c -s 4G -m 6G,"mkdir -p pyclone/$$(*) && \
+	$$(call RUN, -s 4G -m 6G,"mkdir -p pyclone/$$(*) && \
 								$(RSCRIPT) modules/clonality/tsvforpyclone.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) && \
 								touch pyclone/$$(*)/config.yaml")
 #								source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
