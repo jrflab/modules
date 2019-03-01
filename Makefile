@@ -51,6 +51,10 @@ cravat_annotation :
 TARGETS += cnvkit
 cnvkit :
 	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
+	
+TARGETS += pyclone
+pyclone :
+	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
 
 #==================================================
 # aligners
