@@ -25,7 +25,7 @@ for (i in length(tumor_samples)) {
 	
 	x = apply(data, 2, mean, na.rm=TRUE)
 
-	if (dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
+	if (!dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
 		dir.create(paste0("pyclone/", opt$sample_set, "/plots"))
 	}
 	pdf(paste0("pyclone/", opt$sample_set, "/plots/", tumor_samples[i], "_histogram_ccf.pdf"))
@@ -40,7 +40,7 @@ for (i in length(tumor_samples)) {
     ccf[[i]] = x
 }	
 
-if (dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
+if (!dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
 	dir.create(paste0("pyclone/", opt$sample_set, "/plots"))
 }
 pdf(paste0("pyclone/", opt$sample_set, "/plots/2_by_2_scatter_plots.pdf"))
