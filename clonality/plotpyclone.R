@@ -21,10 +21,8 @@ tumor_samples = tumor_samples[!(tumor_samples %in% normal_sample)]
 ccf = list()
 for (i in length(tumor_samples)) {
 	data = read_tsv(file=paste0("pyclone/", opt$sample_set, "/trace/", tumor_samples[i], ".cellular_prevalence.tsv.bz2"))
-	data = data[-(1:opt$burnin),,drop=FALSE]
-	
+	data = data[-(1:as.numeric(opt$burnin)),,drop=FALSE]
 	x = apply(data, 2, mean, na.rm=TRUE)
-
 	if (!dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
 		dir.create(paste0("pyclone/", opt$sample_set, "/plots"))
 	}
@@ -36,7 +34,6 @@ for (i in length(tumor_samples)) {
     mtext(side=1, text="Cancer cell fraction (%)", line=4, cex=1.5)
     mtext(side=2, text="Frequency", line=4, cex=1.5)
     dev.off()
-    
     ccf[[i]] = x
 }	
 
