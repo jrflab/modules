@@ -10,7 +10,7 @@ PYCLONE_WORKFLOW += setup_pyclone
 
 pyclone_workflow : $(PYCLONE_WORKFLOW)
 
-include modules/varinat_callers/sufammultisample.mk
+include modules/variant_callers/sufammultisample.mk
 include modules/clonality/setuppyclone.mk
 #include modules/clonality/runpyclone.mk
 
