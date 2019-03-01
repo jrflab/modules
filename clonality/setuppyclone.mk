@@ -9,7 +9,7 @@ define make-input-pyclone
 pyclone/%/config.yaml : sufam/%.tsv
 	$$(call RUN, -s 4G -m 6G,"mkdir -p pyclone/$$(*) && \
 							  $(RSCRIPT) modules/clonality/tsvforpyclone.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) && \
-							  $(RSCRIPT) modules/clonality/pycloneconfig.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES)"
+							  $(RSCRIPT) modules/clonality/pycloneconfig.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES)")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
