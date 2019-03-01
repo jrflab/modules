@@ -659,14 +659,6 @@ hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
-TARGETS += multisample_pyclone
-multisample_pyclone:
-	$(MAKE) -f modules/copy_number/ascat.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/variant_callers/sufammultisample.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/clonality/setuppyclone.mk -j $(NUM_JOBS)
-	$(MAKE) -f modules/clonality/runpyclone.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
-	
 #==================================================
 # alpha testing
 #==================================================
