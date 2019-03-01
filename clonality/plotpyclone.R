@@ -44,20 +44,22 @@ pdf(paste0("pyclone/", opt$sample_set, "/plots/2_by_2_scatter_plots.pdf"))
 par(mar=c(6.1, 6.5, 4.1, 1.1))
 for (i in 1:(length(ccf)-1)) {
 	for (j in 2:(length(ccf))) {
-		plot(ccf[[i]]*100, ccf[[j]]*100, pch=21, col="salmon3", bg="grey90", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,100), ylim=c(0,100))
-    	axis(1, at=NULL, cex.axis=1.5, padj=0.25)
-    	axis(2, at=NULL, cex.axis=1.5, las=1)
-    	mtext(side=1, text=tumor_samples[i], line=4, cex=1.5)
-    	mtext(side=2, text=tumor_samples[j], line=4, cex=1.5)
-    	abline(h=10, lty=2, col="goldenrod3")
-    	abline(h=20, lty=3, col="goldenrod3")
-    	abline(h=90, lty=2, col="goldenrod3")
-    	abline(h=80, lty=3, col="goldenrod3")
-    	abline(v=10, lty=2, col="goldenrod3")
-    	abline(v=20, lty=3, col="goldenrod3")
-    	abline(v=90, lty=2, col="goldenrod3")
-    	abline(v=80, lty=3, col="goldenrod3")
-    	box(lwd=2)
-    }
+		if (i!=j) {
+			plot(ccf[[i]]*100, ccf[[j]]*100, pch=21, col="salmon3", bg="grey90", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,100), ylim=c(0,100))
+	    	axis(1, at=NULL, cex.axis=1.5, padj=0.25)
+	    	axis(2, at=NULL, cex.axis=1.5, las=1)
+	    	mtext(side=1, text=tumor_samples[i], line=4, cex=1.5)
+	    	mtext(side=2, text=tumor_samples[j], line=4, cex=1.5)
+	    	abline(h=10, lty=2, col="goldenrod3")
+	    	abline(h=20, lty=3, col="goldenrod3")
+	    	abline(h=90, lty=2, col="goldenrod3")
+	    	abline(h=80, lty=3, col="goldenrod3")
+	    	abline(v=10, lty=2, col="goldenrod3")
+	    	abline(v=20, lty=3, col="goldenrod3")
+	    	abline(v=90, lty=2, col="goldenrod3")
+	    	abline(v=80, lty=3, col="goldenrod3")
+	    	box(lwd=2)
+	    }
+	}
 }
 dev.off()
