@@ -64,3 +64,6 @@ for (i in 1:length(tumor_samples)) {
 	}
 }
 
+for (i in 1:length(tumor_samples)) {
+	system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate ~/share/usr/anaconda-envs/PyClone-0.13.1 && PyClone build_mutations_file --in_file pyclone/",  opt$sample_set, "/", tumor_samples[i], ".tsv --out_file pyclone/", opt$sample_set, "/", tumor_samples[i], ".yaml  --prior total_copy_number"))
+}
