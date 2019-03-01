@@ -22,10 +22,10 @@ else
 
 define combine-samples
 sufam/%.txt : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinesamples.R --sample_set $$*")
+	$$(call RUN,-s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/combinesamples.R --sample_set $$*")
 
 sufam/%.tsv : sufam/%.txt
-	$$(call RUN,-c -s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/updatesamples.R --sample_set $$*")
+	$$(call RUN,-s 4G -m 6G,"$(RSCRIPT) modules/variant_callers/updatesamples.R --sample_set $$*")
 	
 endef
 $(foreach set,$(SAMPLE_SETS),\
@@ -34,8 +34,8 @@ $(foreach set,$(SAMPLE_SETS),\
 endif
 
 summary/sufam_summary.xlsx : $(wildcard $(foreach set,$(SAMPLE_SETS),sufam/$(set).tsv))
-	$(call RUN,-c -s 12G -m 16G,"export R_LIBS='~/share/usr/anaconda-envs/jrflab-modules-0.1.4/lib/R/library:~/share/usr/lib64/R/library' && \
-								 $(RSCRIPT) modules/summary/sufamsummary.R --sample_sets '$(SAMPLE_SETS)'")
+	$(call RUN,-s 12G -m 16G,"export R_LIBS='~/share/usr/anaconda-envs/jrflab-modules-0.1.4/lib/R/library:~/share/usr/lib64/R/library' && \
+							  $(RSCRIPT) modules/summary/sufamsummary.R --sample_sets '$(SAMPLE_SETS)'")
 
 .DELETE_ON_ERROR:
 .SECONDARY:
