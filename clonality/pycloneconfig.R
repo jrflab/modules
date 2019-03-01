@@ -14,7 +14,7 @@ normal_sample = unlist(strsplit(opt$normal_samples, split=" ", fixed=TRUE))
 normal_sample = tumor_samples[tumor_samples %in% normal_sample]
 tumor_samples = tumor_samples[!(tumor_samples %in% normal_sample)]
 
-cat("num_iters: 10000\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = FALSE)
+cat("num_iters: 20000\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = FALSE)
 cat("\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 cat("base_measure_params:\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 cat("  alpha: 1\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
