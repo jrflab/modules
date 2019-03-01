@@ -10,5 +10,5 @@ pyclone/%/plots/2_by_2_scatter_plots.pdf : pyclone/%/pyclone.tsv
 	$$(call RUN,-s 4G -m 6G -w 7200,"$(RSCRIPT) modules/clonality/plotpyclone.R --sample_set $$(*) --normal_samples $(NORMAL_SAMPLES) --burnin 5000")
 
 endef
-$(foreach set,$(SAMPEL_SETS),\
+$(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call plot-pyclone,$(set))))
