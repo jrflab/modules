@@ -5,15 +5,16 @@ suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
 
-optList = list(make_option("--sample_name", default = NULL, help = "tumor normal sample name"))
+optList = list(make_option("--sample_name", default = NULL, help = "tumor normal sample name"),
+			   make_option("--sample_fraction", default = NULL, help = "fraction of mutations to consider"))
 
 parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-
 tumor_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[1]
 normal_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[2]
+sample_fraction = ifelse(is.na(as.numeric(opt$sample_fraction)), 1, as.numeric(opt$sample_fraction))
 
 mutation_summary = read_tsv(file="summary/tsv/mutation_summary.tsv") %>%
 				   filter(TUMOR_SAMPLE==tumor_sample) %>%
@@ -49,6 +50,8 @@ minor_cn = q1
 major_cn = qt-q1
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 sample_summary = sample_summary[!apply(sample_summary, 1, function(x) {any(is.na(x))}),,drop=FALSE]
+index = sort(sample(x=1:nrow(sample_summary), size=round(sample_fraction*nrow(sample_summary)), replace=FALSE))
+sample_summary = sample_summary[index,,drop=FALSE]
 write.table(sample_summary, paste0("pyclone/", opt$sample_name, "/", tumor_sample,".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 
 cat("num_iters: 10000\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = FALSE)
