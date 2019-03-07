@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/setup_pyclone.$(NOW)
 PHONY += pyclone
 
-pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/config.yaml)
+pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/trace/alpha.tsv.bz2)
 
 define make-pyclone
 pyclone/$1_$2/config.yaml : summary/tsv/mutation_summary.tsv
