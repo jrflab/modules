@@ -668,8 +668,8 @@ run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 	
-TARGETS += pyclone2
-pyclone2 :
+TARGETS += sspyclone
+sspyclone :
 	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
 
 

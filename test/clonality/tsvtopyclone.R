@@ -76,7 +76,7 @@ cat("\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE
 cat("  proposal:\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("    precision: 0.5\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
-cat(paste0("working_dir: pyclone/",opt$sample_name, "\n"), file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
+cat(paste0("working_dir: pyclone/",opt$sample_name, "\n"), file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("trace_dir: trace", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
