@@ -84,15 +84,29 @@ if (opt$type=="total-copy") {
 	}
 	abline(v=max(CN[,"pos"]), col="goldenrod3")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	cat5 = c(-0.85,
-			 -0.19,
-			 0.19,
-			 0.78)
+	file_names = dir(path="facets/cncf", pattern=opt$sample_name, full.names=TRUE)
+	file_names = file_names[grep(".Rdata", file_names, fixed=TRUE)]
+	load(file_names)
+	alpha = ifelse(is.na(fit$purity), 1, fit$purity)
+	psi = ifelse(is.na(fit$ploidy), 2, fit$ploid)
+	if (round(psi)==1 | round(psi)==2) {
+		cat5 = c(0, 1, 3, 7)
+	} else if (round(psi)==3) {
+		cat5 = c(0, 1, 4, 9)
+	} else if (round(psi)==4) {
+		cat5 = c(0, 1, 5, 10)
+	} else if (round(psi)==5) {
+		cat5 = c(0, 2, 6, 12)
+	} else if (round(psi)>=6) {
+		cat5 = c(0, 2, 7, 15)
+	} else {
+		cat5 = c(0, 1, 3, 7)
+	}
+	cat5 = log2((alpha*cat5 + (1-alpha)*2)/(alpha*psi + (1-alpha)*2))
 	for (j in 1:length(cat5)) {
 		abline(h=cat5[j], lty=3, lwd=.5, col="steelblue")
 	}
 	dev.off()
-	
 
 } else if (opt$type=="call-cna") {
 	
@@ -118,16 +132,33 @@ if (opt$type=="total-copy") {
 		return(x)
 	}
 	load(paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
+	file_names = dir(path="facets/cncf", pattern=opt$sample_name, full.names=TRUE)
+	file_names = file_names[grep(".Rdata", file_names, fixed=TRUE)]
+	load(file_names)
 	tmp = prunesegments.cn(x=tmp, n=10)
-	cat5t = c(-0.85,
-			  -0.19,
-			  0.19,
-			  0.78)
-	cat5 = rep(0, nrow(tmp))
-	cat5[tmp[,"Log2Ratio"] < cat5t[2]] = -1
-	cat5[tmp[,"Log2Ratio"] < cat5t[1]] = -2
-	cat5[tmp[,"Log2Ratio"] > cat5t[3]] = 1
-	cat5[tmp[,"Log2Ratio"] > cat5t[4]] = 2
+	alpha = ifelse(is.na(fit$purity), 1, fit$purity)
+	psi = ifelse(is.na(fit$ploidy), 2, fit$ploid)
+	qt = round((((2^(tmp[,"Log2Ratio"])) * (alpha*psi + 2*(1-alpha))) - 2*(1-alpha))/alpha)
+	qt[is.na(qt)] = 2
+	qt[is.infinite(qt)] = 2
+	cat5 = rep(0, length(qt))
+	if (round(psi)==1 | round(psi)==2) {
+		cat5t = c(0, 1, 3, 7)
+	} else if (round(psi)==3) {
+		cat5t = c(0, 1, 4, 9)
+	} else if (round(psi)==4) {
+		cat5t = c(0, 1, 5, 10)
+	} else if (round(psi)==5) {
+		cat5t = c(0, 2, 6, 12)
+	} else if (round(psi)>=6) {
+		cat5t = c(0, 2, 7, 15)
+	} else {
+		cat5t = c(0, 1, 3, 7)
+	}
+	cat5[qt <= cat5t[2]] = -1
+	cat5[qt <= cat5t[1]] = -2
+	cat5[qt >= cat5t[3]] = 1
+	cat5[qt >= cat5t[4]] = 2
 	tmp = cbind(tmp, "Cat5"=cat5)
 	save(CN, tmp, file=paste0("cnvkit/called/", opt$sample_name, ".RData"))
 	

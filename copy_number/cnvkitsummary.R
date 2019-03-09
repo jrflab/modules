@@ -21,7 +21,6 @@ parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = o
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-
 sample_names = unlist(strsplit(opt$sample_names, split=" ", fixed=TRUE))
 genes = read.csv(file="~/share/reference/annotation_gene_lists/annotation_impact_468.txt", header=TRUE, sep="\t", stringsAsFactors=FALSE) %>%
 		filter(Chromosome %in% as.character(c(1:22, "X", "Y"))) %>%
