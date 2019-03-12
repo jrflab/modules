@@ -49,6 +49,8 @@ normal_cn = rep(2, nrow(mutation_summary))
 minor_cn = q1
 major_cn = qt-q1
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
+index = sample_summary[,5]==0 & sample_summary[,6]==0
+sample_summary = sample_summary[!index,,drop=FALSE]
 sample_summary = sample_summary[!apply(sample_summary, 1, function(x) {any(is.na(x))}),,drop=FALSE]
 index = sort(sample(x=1:nrow(sample_summary), size=round(sample_fraction*nrow(sample_summary)), replace=FALSE))
 sample_summary = sample_summary[index,,drop=FALSE]
