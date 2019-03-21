@@ -659,11 +659,6 @@ hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
-TARGETS += sspyclone
-sspyclone :
-	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
-
-	
 #==================================================
 # alpha testing
 #==================================================
@@ -672,5 +667,13 @@ TARGETS += run_qdnaseq
 run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
+	
+TARGETS += sspyclone
+sspyclone :
+	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
+	
+TARGETS += cntitrations
+cntitrations :
+	$(call RUN_MAKE,modules/test/copy_number/titrations.mk)
 	
 .PHONY : $(TARGETS)
