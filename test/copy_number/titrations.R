@@ -21,6 +21,7 @@ for (i in 1:length(purity)) {
 	system(paste0("samtools view -s ", purity[i], "0 -b bam/", tumor_sample, ".bam > titrations/", tumor_sample, ".", purity[i], ".bam"))
 	system(paste0("samtools merge  titrations/", tumor_sample, "-", purity[i], ".bam titrations/", tumor_sample, ".", purity[i], ".bam bam/", normal_sample, ".bam"))
 	system(paste0("samtools index titrations/", tumor_sample, "-", purity[i], ".bam"))
+	file.copy(from=paste0("titrations/", tumor_sample, "-", purity[i], ".bam.bai"), to=paste0("titrations/", tumor_sample, "-", purity[i], ".bai"))
 	file.remove(paste0("titrations/", tumor_sample, ".", purity[i], ".bam"))
 }
 cat(sessionInfo()$R.version$version.string, file=paste0("titrations/", opt$tumor_normal, ".timestamp"))
