@@ -19,7 +19,7 @@ purity = c(.1, .2, .3, .4, .5, .7, .9)
 purity = purity[purity < fit$purity]
 for (i in 1:length(purity)) {
 	system(paste0("samtools view -s ", purity[i], "0 -b bam/", tumor_sample, ".bam > titrations/", tumor_sample, ".", purity[i], ".bam"))
-	system(paste0("samtools merge titration/", tumor_sample, purity[i], ".bam bam/", normal_sample, ".bam titrations/", tumor_sample, "-", purity[i], ".bam"))
+	system(paste0("samtools merge titrations/", tumor_sample, purity[i], ".bam bam/", normal_sample, ".bam titrations/", tumor_sample, "-", purity[i], ".bam"))
 	system(paste0("samtools index titrations/", tumor_sample, "-", purity[i], ".bam"))
 	file.remove(paste0("titrations/", tumor_sample, ".", purity[i], ".bam"))
 }
