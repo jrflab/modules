@@ -14,14 +14,15 @@ opt = arguments$options
 
 tumor_sample = strsplit(x=opt$tumor_normal, split="_", fixed=TRUE)[[1]][1]
 normal_sample = strsplit(x=opt$tumor_normal, split="_", fixed=TRUE)[[1]][2]
-load(paste0("facets/cncf/", opt$tumor_normal, ".Rdata"))
-purity = c(.1, .2, .3, .4, .5, .7, .9)
-purity = purity[purity < fit$purity]
-for (i in 1:length(purity)) {
-	system(paste0("samtools view -s ", purity[i], "0 -b bam/", tumor_sample, ".bam > titrations/", tumor_sample, ".", purity[i], ".bam"))
-	system(paste0("samtools merge  titrations/", tumor_sample, "-", purity[i], ".bam titrations/", tumor_sample, ".", purity[i], ".bam bam/", normal_sample, ".bam"))
-	system(paste0("samtools index titrations/", tumor_sample, "-", purity[i], ".bam"))
-	file.copy(from=paste0("titrations/", tumor_sample, "-", purity[i], ".bam.bai"), to=paste0("titrations/", tumor_sample, "-", purity[i], ".bai"))
-	file.remove(paste0("titrations/", tumor_sample, ".", purity[i], ".bam"))
+t_fraction = c(".10", ".20", ".30", ".40", ".50", ".60", ".70", ".80", ".90")
+n_fraction = rev(t_fraction)
+for (i in 1:length(t_fraction)) {
+	print(paste0("samtools view -s 0", t_fraction[i], " -b bam/", tumor_sample, ".bam > titrations/bam/", tumor_sample, t_fraction[i], ".bam"))
+	print(paste0("samtools view -s 0", n_fraction[i], " -b bam/", normal_sample, ".bam > titrations/bam/", normal_sample, n_fraction[i], ".bam"))
+	print(paste0("samtools merge  titrations/bam/", tumor_sample, t_fraction[i], n_fraction[i], ".bam titrations/bam/", tumor_sample, t_fraction[i], ".bam titrations/bam/", normal_sample, n_fraction[i],".bam"))
+	print(paste0("samtools index titrations/bam/", tumor_sample, t_fraction[i], n_fraction[i], ".bam"))
+	file.copy(from=paste0("titrations/bam/", tumor_sample, t_fraction[i], n_fraction[i], ".bam.bai"), to=paste0("titrations/bam/", tumor_sample, t_fraction[i], n_fraction[i], ".bai"))
+	file.remove(paste0("titrations/bam/", tumor_sample, t_fraction[i], ".bam"))
+	file.remove(paste0("titrations/bam/", normal_sample, n_fraction[i], ".bam"))
 }
-cat(sessionInfo()$R.version$version.string, file=paste0("titrations/", opt$tumor_normal, ".timestamp"))
+cat(sessionInfo()$R.version$version.string, file=paste0("titrations/bam/", opt$tumor_normal, ".timestamp"))
