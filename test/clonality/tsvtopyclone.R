@@ -26,8 +26,11 @@ mutation_summary = read_tsv(file="summary/tsv/mutation_summary.tsv", col_types =
  				   filter(TUMOR_DP>=50) %>%
  				   filter(NORMAL_DP<=500) %>%
  				   filter(NORMAL_DP>=10) %>%
- 				   mutate(UUID = paste0(CHROM, ":", POS))
- 				    				   
+ 				   mutate(CHROM = as.numeric(ifelse(CHROM=="X", 23, CHROM))) %>%
+ 				   mutate(CHROM = as.numeric(ifelse(CHROM=="Y", 24, CHROM))) %>%
+ 				   filter(CHROM<=22) %>%
+ 				   mutate(UUID = paste0(CHROM, ":", POS, "_", REF, "_", ALT))
+
 load(paste0("facets/cncf/", opt$sample_name, ".Rdata"))
 qt = q1 = rep(NA, nrow(mutation_summary))
 for (i in 1:nrow(mutation_summary)) {
@@ -41,6 +44,7 @@ for (i in 1:nrow(mutation_summary)) {
 }
 fsq = as.numeric(mutation_summary$TUMOR_MAF)
 n = as.numeric(mutation_summary$TUMOR_DP)
+mutation_id = as.character(mutation_summary$UUID)
 var_counts = round(fsq*n)
 ref_counts = round((1-fsq)*n)
 normal_cn = rep(2, nrow(mutation_summary))
