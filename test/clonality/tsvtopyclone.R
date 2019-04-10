@@ -53,6 +53,8 @@ major_cn = qt
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 index = apply(sample_summary, 1, function(x) {any(is.na(x))})
 sample_summary = sample_summary[!index,,drop=FALSE]
+index = sample_summary[,"major_cn"]==0
+sample_summary = sample_summary[!index,,drop=FALSE]
 write.table(sample_summary, paste0("pyclone/", opt$sample_name, "/", tumor_sample,".tsv"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
 
 cat("num_iters: 100000\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = FALSE)
