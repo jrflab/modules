@@ -13,7 +13,6 @@ opt = arguments$options
 
 tumor_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[1]
 normal_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[2]
-sample_fraction = ifelse(is.na(as.numeric(opt$sample_fraction)), 1, as.numeric(opt$sample_fraction))
 
 mutation_summary = read_tsv(file="summary/tsv/mutation_summary.tsv", col_types = cols(.default = col_character())) %>%
 				   type_convert() %>%
