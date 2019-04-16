@@ -15,7 +15,7 @@ pyclone/$1_$2/trace/alpha.tsv.bz2 : pyclone/$1_$2/config.yaml
 							 		  PyClone run_analysis --config_file pyclone/$1_$2/config.yaml --seed 0")
 							 		  
 pyclone/$1_$2/pyclone.tsv : pyclone/$1_$2/trace/alpha.tsv.bz2
-	$$(call RUN,-s 16G -m 24G -w 7200,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
+	$$(call RUN,-s 24G -m 48G -w 7200,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
 							 		 PyClone build_table --config_file pyclone/$1_$2/config.yaml --out_file pyclone/$1_$2/pyclone.tsv --max_cluster 10 --table_type old_style --burnin 50000")
 
 endef
