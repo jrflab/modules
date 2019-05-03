@@ -672,8 +672,4 @@ TARGETS += sspyclone
 sspyclone :
 	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
 	
-TARGETS += cntitrations
-cntitrations :
-	$(call RUN_MAKE,modules/test/copy_number/titrations.mk)
-	
 .PHONY : $(TARGETS)
