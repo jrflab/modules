@@ -72,7 +72,7 @@ if (nrow(data)==0) {
 	if (flag==1) {
 		offtarget = subset(data, data$gene!="-")
 	} else if (flag==2) {
-		offtarget = subset(data, data$gene!="Antitarget")
+		offtarget = subset(data, data$gene=="Antitarget")
 	}
 	tmp = offtarget[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
