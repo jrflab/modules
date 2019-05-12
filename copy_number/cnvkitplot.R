@@ -30,7 +30,18 @@ if (nrow(data)==0) {
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
 	data = subset(data, data[,"chromosome"]<=23)
 	
-	ontarget = subset(data, data$gene=="-")
+	if (sum(data$gene=="-")>0) {
+		flag = 1
+	} else if (sum(data$gene=="Antitarget")>0) {
+		flag = 2
+	}
+	
+	if (flag==1) {
+		ontarget = subset(data, data$gene=="-")
+	} else if (flag==2) {
+		ontarget = subset(data, data$gene!="Antitarget")
+	}
+	
 	col = rep("#9F6986", nrow(ontarget))
 	col[(ontarget[,"chromosome"]%%2)==1] = "#CECAC5"
 	pdf(file=outfile_on_target, width=14, height=5)
@@ -58,7 +69,11 @@ if (nrow(data)==0) {
 	box(lwd=2.5)
 	dev.off()
 	
-	offtarget = subset(data, data$gene!="-")
+	if (flag==1) {
+		offtarget = subset(data, data$gene!="-")
+	} else if (flag==2) {
+		offtarget = subset(data, data$gene!="Antitarget")
+	}
 	tmp = offtarget[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio")
 	tmp = winsorize(data=tmp, tau=3.5, k=25, verbose=FALSE, return.outliers=TRUE)
