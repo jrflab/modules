@@ -44,6 +44,7 @@ if (opt$type=="total-copy") {
 	data = read.csv(file=paste0("cnvkit/cnr/", opt$sample_name, ".cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	CN = data[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
+	CN[,"Chromosome"] = gsub(pattern="chr", replacement="", x=CN[,"Chromosome"], fixed=TRUE)
 	CN[CN[,"Chromosome"]=="X","Chromosome"] = 23
 	CN[CN[,"Chromosome"]=="Y","Chromosome"] = 24
 	CN[,"Chromosome"] = as.numeric(CN[,"Chromosome"])
