@@ -24,6 +24,7 @@ if (nrow(data)==0) {
 	system(paste0("touch ", outfile_on_target))
 	system(paste0("touch ", outfile_off_target))
 } else {
+	data[,"chromosome"] = gsub(pattern="chr", replacement="", x=data[,"chromosome"], fixed=TRUE)
 	data[data[,"chromosome"]=="X", "chromosome"] = 23
 	data[data[,"chromosome"]=="Y", "chromosome"] = 24
 	data[,"chromosome"] = as.numeric(data[,"chromosome"])
