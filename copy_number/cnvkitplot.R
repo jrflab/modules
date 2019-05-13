@@ -4,7 +4,7 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("copynumber"))
 suppressPackageStartupMessages(library("colorspace"))
 suppressPackageStartupMessages(library("ASCAT"))
-suppressPackageStartupMessages(library("CNtu"))
+suppressPackageStartupMessages(library("GAP"))
 
 'plot_log2_' <- function(x, title = "")
 {
