@@ -1,4 +1,4 @@
-plotSampleLRR <- function(x, fit)
+'plotSampleLRR' <- function(x, fit)
 {
     mat = x$jointseg
     cncf = fit$cncf
@@ -25,7 +25,53 @@ plotSampleLRR <- function(x, fit)
     box()
 }
 
-psi <- function (x, z)
+'plot_log2_' <- function(x, y, n=10, purity, ploidy, title = "")
+{
+
+	cn = x$jointseg %>%
+		 select(chrom, pos = maploc, log2 = cnlr)
+	seg = y$cncf %>%
+		  select(chrom, start = start, end = end, log2 = cnlr.median, n=num.mark)
+	seg = prune_(x=seg, n) %>%
+		  mutate(n = cumsum(n))
+	
+	data(CytoBand)
+   	par(mar=c(5, 5, 4, 2)+.1)
+   	end = NULL
+   	for (i in 1:23) {
+   		end = c(end, max(CytoBand[CytoBand[,1]==i,"End"]))
+   	}
+   	end = cumsum(end)
+   	start = c(1, end[1:22]+1)
+   	CytoBand = cbind(start, end)
+   	index = NULL
+   	for (i in 1:23) {
+   		index = c(index, seq(from = CytoBand[i, "start"], to=CytoBand[i, "end"], length=sum(cn$chrom==i)))
+   	}
+	plot(index, cn$log2, type="p", pch=".", cex=1.95, col="grey80", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
+ 	for (j in 1:nrow(seg)) {
+ 		if (j == 1) {
+ 			lines(x=c(1, index[seg[j,"n"]]), y=rep(seg[j,"log2"],2), lty=1, lwd=2.75, col="red")
+ 		} else {
+ 			lines(x=c(index[seg[j-1,"n"]], index[seg[j,"n"]]), y=rep(seg[j,"log2"],2), lty=1, lwd=2.75, col="red")
+ 		}
+  	}
+  	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
+	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+	abline(v=1, col="goldenrod3", lty=3, lwd=.5)
+	for (j in 1:23) {
+		abline(v=CytoBand[j,"end"], col="goldenrod3", lty=3, lwd=.5)
+	}
+	axis(1, at = .5*(CytoBand[,"start"]+CytoBand[,"end"]), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
+    for (k in c(1, 2, 4, 8, 14)) {
+		abline(h=(log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
+	}
+	rect(xleft=1-1e10, xright=CytoBand[23,"end"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	title(main = paste0(title, " | alpha = ", signif(alpha, 3), " | psi = ", signif(ploidy, 3)), line=-1, cex.main=.75, font.main=1)
+    box(lwd=1.5)
+}
+
+'psi' <- function (x, z)
 {
     xwin <- x
     xwin[x < -z] <- -z
@@ -33,7 +79,7 @@ psi <- function (x, z)
     return(xwin)
 }
 
-numericChrom <- function (chrom) 
+'numericChrom' <- function (chrom) 
 {
     if (!is.numeric(chrom)) {
         if (is.factor(chrom)) {
@@ -48,7 +94,7 @@ numericChrom <- function (chrom)
     return(chrom)
 }
 
-numericArms <- function (chrom, char.arms)
+'numericArms' <- function (chrom, char.arms)
 {
     p.arm <- which(char.arms == "p")
     q.arm <- which(char.arms == "q")
@@ -58,7 +104,7 @@ numericArms <- function (chrom, char.arms)
     return(arms)
 }
 
-madWins <- function (x, tau, k, digits) 
+'madWins' <- function (x, tau, k, digits) 
 {
     xhat <- medianFilter(x, k)
     d <- x - xhat
@@ -71,7 +117,7 @@ madWins <- function (x, tau, k, digits)
     return(list(ywin = xwin, sdev = SD, outliers = outliers))
 }
 
-medianFilter <- function (x, k) 
+'medianFilter' <- function (x, k) 
 {
     n <- length(x)
     filtWidth <- 2 * k + 1
@@ -91,7 +137,7 @@ medianFilter <- function (x, k)
 }
 
 
-winsorize <- function (data, pos.unit = "bp", arms = NULL, method = "mad", 
+'winsorize' <- function (data, pos.unit = "bp", arms = NULL, method = "mad", 
     tau = 2.5, k = 25, gamma = 40, iter = 1, assembly = "hg19", 
     digits = 4, return.outliers = FALSE, save.res = FALSE, file.names = NULL, 
     verbose = TRUE) 

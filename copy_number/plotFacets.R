@@ -18,8 +18,7 @@ if (!interactive()) {
 }
 
 
-optList <- list(
-                make_option("--centromereFile", default = NULL, type = "character", action = "store", help ="centromere file"),
+optList <- list(make_option("--centromereFile", default = NULL, type = "character", action = "store", help ="centromere file"),
                 make_option("--pqLine", default = F, action = "store_true", help = "draw pq centromere line"),
                 make_option("--outPrefix", default = NULL, help = "output prefix"))
 parser <- OptionParser(usage = "%prog [options] [facets Rdata file]", option_list = optList)
@@ -65,8 +64,8 @@ normalName <- facetsFile %>%
 			  sub('^.*_', '', .) %>%
 			  sub('\\..*', '', .)
 
-pdf(file = str_c(opt$outPrefix, ".pdf"), height = 3, width = 9)
-plotSampleLRR(out2, fit)
+pdf(file = str_c(opt$outPrefix, ".pdf"), width=10, height=4.25)
+plot_log2_(x=out2, y=fit, purity=purity, ploidy=ploidy, title = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE))
 dev.off()
 
 pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), height = 9, width = 9)
