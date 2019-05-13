@@ -70,7 +70,7 @@
 		abline(h=(log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
 	}
 	rect(xleft=1-1e10, xright=CytoBand[23,"end"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-	title(main = paste0(title, " | alpha = ", signif(alpha, 3), " | psi = ", signif(ploidy, 3)), line=-1, cex.main=.75, font.main=1)
+	title(main = paste0(title, " | alpha = ", signif(purity, 3), " | psi = ", signif(ploidy, 3)), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
 }
 
