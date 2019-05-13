@@ -65,9 +65,9 @@
     segend <- segbdry[-1]
     
     plot(jseg$cnlr[is.finite(jseg$cnlr)], pch=".", cex=2, col = c("grey","lightblue","azure4","slateblue")[chrcol], ylab=expression(Log[2]~"Ratio"), xaxt="n", las=1, ylim=c(-2,2))
-    abline(v=chrbdry, lwd=0.25)
+    abline(v=chrbdry, lwd=0.25, lty=3, col="brown")
     abline(h=median(jseg$cnlr, na.rm=TRUE), col="green2")
-    abline(h = x$dipLogR, col = "magenta4")
+    abline(h=x$dipLogR, col = "magenta4")
     segments(segstart, cnlr.median, segend, cnlr.median, lwd=1.75, col=2)
   
     plot(jseg$valor[is.finite(jseg$cnlr)], pch=".", cex=2.5, col = c("grey","lightblue","azure4","slateblue")[chrcol], ylab=expression(Log~"OR"), ylim=c(-4,4), xaxt="n", las=1)
@@ -82,13 +82,13 @@
         out$tcn[out$tcn > 10] <- 9 + log10(out$tcn[out$tcn > 10])
         ii <- which(out$lcn > 5)
         if (length(ii)>0) out$lcn[ii] <- 5 + log10(out$lcn[ii])
-        plot(c(0,length(jseg$cnlr)), c(0,max(out$tcn)), type="n", ylab="copy number (nv)", xaxt="n")
+        plot(c(0,length(jseg$cnlr)), c(0,max(out$tcn)), type="n", ylab="Absolute copies", xaxt="n", las=1)
         abline(v=chrbdry, lwd=0.25)
         segments(segstart, out$lcn, segend, out$lcn, lwd=1.75, col=2)
         segments(segstart, out$tcn, segend, out$tcn, lwd=1.75, col=1)
         # add the cf
         plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="", xaxt="n", yaxt="n")
-        mtext("cf-nv", side=2, at=0.5, line=0.3, las=2, cex=0.75)
+        mtext("CF", side=2, at=0.5, line=0.3, las=2, cex=0.75)
         cfcol <- cfpalette[round(10*out$cf+0.501)]
         rect(segstart, 0, segend, 1, col=cfcol, border=NA)
     }
@@ -98,13 +98,13 @@
         out$tcn.em[out$tcn.em > 10] <- 9 + log10(out$tcn.em[out$tcn.em > 10])
         ii <- which(out$lcn.em > 5)
         if (length(ii)>0) out$lcn.em[ii] <- 5 + log10(out$lcn.em[ii])
-        plot(c(0,length(jseg$cnlr)), c(0,max(out$tcn.em)), type="n", ylab="copy number (em)", xaxt="n")
+        plot(c(0,length(jseg$cnlr)), c(0,max(out$tcn.em)), type="n", ylab="Absolute copies", xaxt="n", las=1)
         abline(v=chrbdry, lwd=0.25)
         segments(segstart, out$lcn.em, segend, out$lcn.em, lwd=1.75, col=2)
         segments(segstart, out$tcn.em, segend, out$tcn.em, lwd=1.75, col=1)
         # add the cf
         plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="", xaxt="n", yaxt="n")
-        mtext("cf-em", side=2, at=0.5, line=0.2, las=2, cex=0.75)
+        mtext("CF", side=2, at=0.5, line=0.2, las=2, cex=0.75)
         cfcol <- cfpalette[round(10*out$cf.em+0.501)]
         rect(segstart, 0, segend, 1, col=cfcol, border=NA)
     }
