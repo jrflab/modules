@@ -22,9 +22,6 @@ suppressPackageStartupMessages(library("GAP"))
 		y[y[,"Chromosome"]==j,"End"] = y[y[,"Chromosome"]==j,"End"] + start[j]
 		x[x[,"chrom"]==j,"pos"] = x[x[,"chrom"]==j,"pos"] + start[j]
 	}
-   	
-   	
-   	
 	plot(x[,"pos"], x[,"Log2Ratio"], type="p", pch=".", cex=1.95, col="grey80", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
 	for (j in 1:nrow(y)) {
  		lines(x=c(y[j,"Start"], y[j,"End"]), y=rep(y[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
@@ -38,9 +35,8 @@ suppressPackageStartupMessages(library("GAP"))
 		abline(v=v, col="goldenrod3", lty=3, lwd=.5)
 	}
 	abline(v=max(x[,"pos"]), col="goldenrod3", lty=3, lwd=.5)
-	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	
-	rect(xleft=1-1e10, xright=CytoBand[23,"end"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)	
+	rect(xleft=1-1e10, xright=x[nrow(x),"pos"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = paste0(title, " | alpha = ", signif(alpha, 3), " | psi = ", signif(psi, 3)), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
 }
