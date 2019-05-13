@@ -10,6 +10,7 @@ suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("foreach"))
 suppressPackageStartupMessages(library("facets"))
 suppressPackageStartupMessages(library("pctGCdata"))
+suppressPackageStartupMessages(library("GAP"))
 
 source('modules/copy_number/facetsPlotSampleLRR.R')
 

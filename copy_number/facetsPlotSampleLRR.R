@@ -308,3 +308,25 @@
         return(invisible(NULL))
     }
 }
+
+'prune_' <- function(x, n=10)
+{
+	cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
+	for (j in 1:nrow(x)) {
+		cnm[,j] = abs(2^x[j,"log2"] - 2^x[,"log2"])
+	}
+	cnt = hclust(as.dist(cnm), "average")
+	cnc = cutree(tree=cnt, k=n)
+	for (j in unique(cnc)) {
+		indx = which(cnc==j)
+		if (length(indx)>2) {
+ 			mcl = mean(x[indx,"log2"])
+			scl = sd(x[indx,"log2"])
+			ind = which(x[indx,"log2"]<(mcl+1.96*scl) & x[indx,"log2"]>(mcl-1.96*scl))
+			x[indx[ind],"log2"] = mean(x[indx[ind],"log2"])
+		} else {
+			x[indx,"log2"] = mean(x[indx,"log2"])
+		}
+	}
+	return(x)
+}
