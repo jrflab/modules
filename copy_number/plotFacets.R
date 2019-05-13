@@ -69,8 +69,8 @@ pdf(file = str_c(opt$outPrefix, ".pdf"), width=10, height=4.25)
 plot_log2_(x=out2, y=fit, purity=fit$purity, ploidy=fit$ploidy, title = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE))
 dev.off()
 
-pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), height = 9, width = 9)
-plotSample(out2, fit)
+pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), width=10, height=9)
+plot_cncf_(out2, fit)
 dev.off()
 
 df <- left_join(out2$jointseg, out2$out)
