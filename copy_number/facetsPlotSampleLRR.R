@@ -25,7 +25,7 @@
     box()
 }
 
-'plot_log2_' <- function(x, y, n=10, purity, ploidy, title = "")
+'plot_log2_' <- function(x, y, n=10, purity=NA, ploidy=NA, title = "")
 {
 
 	cn = x$jointseg %>%
@@ -34,6 +34,9 @@
 		  select(chrom, start = start, end = end, log2 = cnlr.median, n=num.mark)
 	seg = prune_(x=seg, n) %>%
 		  mutate(n = cumsum(n))
+		  
+	purity = ifelse(is.na(purity), 1, purity)
+	ploidy = ifelse(is.na(ploidy), 2, ploidy)
 	
 	data(CytoBand)
    	par(mar=c(5, 5, 4, 2)+.1)
