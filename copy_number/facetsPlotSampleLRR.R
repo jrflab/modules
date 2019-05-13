@@ -30,10 +30,18 @@
 {
     def.par <- par(no.readonly = TRUE)
     plot.type <- match.arg(plot.type)
-    if (plot.type=="none") layout(matrix(1:2, ncol=1))
-    if (plot.type=="em") layout(matrix(rep(1:4, c(9,9,6,1)), ncol=1))
-    if (plot.type=="naive") layout(matrix(rep(1:4, c(9,9,6,1)), ncol=1))
-    if (plot.type=="both") layout(matrix(rep(1:6, c(9,9,6,1,6,1)), ncol=1))
+    if (plot.type=="none") {
+    	layout(matrix(1:2, ncol=1))
+    }
+    if (plot.type=="em") {
+    	layout(matrix(rep(1:4, c(9,9,6,1)), ncol=1))
+    }
+    if (plot.type=="naive") {
+    	layout(matrix(rep(1:4, c(9,9,6,1)), ncol=1))
+    }
+    if (plot.type=="both") {
+    	layout(matrix(rep(1:6, c(9,9,6,1,6,1)), ncol=1))
+    }
     par(mar=c(0.25,3,0.25,1), mgp=c(1.75, 0.6, 0), oma=c(3,0,1.25,0))
     jseg <- x$jointseg
     chrbdry <- which(diff(jseg$chrom) != 0)
