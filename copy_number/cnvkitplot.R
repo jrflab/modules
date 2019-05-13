@@ -25,6 +25,7 @@ suppressPackageStartupMessages(library("GAP"))
   	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	abline(v=1, col="goldenrod3", lty=3, lwd=.5)
+	abline(h=0, col="red", lty=1, lwd=1)
 	for (j in 1:23) {
 		abline(v=CytoBand[j,"end"], col="goldenrod3", lty=3, lwd=.5)
 	}
