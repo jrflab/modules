@@ -73,13 +73,15 @@
     segend <- segbdry[-1]
     
     plot(jseg$cnlr[is.finite(jseg$cnlr)], pch=".", cex=2, col = c("grey","lightblue","azure4","slateblue")[chrcol], ylab=expression(Log[2]~"Ratio"), xaxt="n", las=1, ylim=c(-2,2))
-    abline(v=chrbdry, lwd=0.25, lty=3, col="brown")
+    abline(v=chrbdry, lwd=0.5, lty=3, col="brown")
+    abline(v=1, lwd=0.5, lty=3, col="brown")
+    abline(v=nrow(jseg$cnlr[is.finite(jseg$cnlr)]), lwd=0.5, lty=3, col="brown")
     abline(h=median(jseg$cnlr, na.rm=TRUE), col="green2")
     abline(h=x$dipLogR, col = "magenta4")
     segments(segstart, cnlr.median, segend, cnlr.median, lwd=1.75, col=2)
   
     plot(jseg$valor[is.finite(jseg$cnlr)], pch=".", cex=2.5, col = c("grey","lightblue","azure4","slateblue")[chrcol], ylab=expression(Log~"OR"), ylim=c(-4,4), xaxt="n", las=1)
-    abline(v=chrbdry, lwd=0.25)
+    abline(v=chrbdry, lwd=0.5, lty=3, col="brown")
     segments(segstart, sqrt(mafR), segend, sqrt(mafR), lwd=1.75, col=2)
     segments(segstart, -sqrt(mafR), segend, -sqrt(mafR), lwd=1.75, col=2)
 
@@ -107,7 +109,7 @@
         ii <- which(out$lcn.em > 5)
         if (length(ii)>0) out$lcn.em[ii] <- 5 + log10(out$lcn.em[ii])
         plot(c(0,length(jseg$cnlr)), c(0,max(out$tcn.em)), type="n", ylab="Absolute copies", xaxt="n", las=1)
-        abline(v=chrbdry, lwd=0.25)
+        abline(v=chrbdry, lwd=0.5, lty=3, col="brown")
         segments(segstart, out$lcn.em, segend, out$lcn.em, lwd=1.75, col=2)
         segments(segstart, out$tcn.em, segend, out$tcn.em, lwd=1.75, col=1)
         # add the cf

@@ -73,63 +73,63 @@ pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), width
 plot_cncf_(out2, fit)
 dev.off()
 
-df <- left_join(out2$jointseg, out2$out)
-df$chrom <- as.character(df$chrom)
-df$chrom[df$chrom == "23"]  <- "X"
-df$chrom[df$chrom == "24"]  <- "Y"
-
-colours <- df$tcn
-colours[df$tcn == 2] <- "black"
-colours[df$tcn == 1] <- "darkred"
-colours[df$tcn == 3] <- "darkgreen"
-colours[df$tcn >= 4] <- "green"
-colours[df$tcn == 0] <- "red"
-
-ylim <- c(min(df$cnlr), max(df$cnlr) + 0.5)
-ylim[2] <- ylim[2]+0.5
-pdf(paste(opt$outPrefix,".(2).pdf", sep=""), height=5, width=18)
-plot(df$cnlr, pch=20, xlab='Index', ylab = "Copy number log-ratio", col = colours, ylim = ylim)
-abline(v=cumsum(rle(df$chrom)$lengths), col = "red", lty = 3)
-text(cumsum(rle(df$chrom)$lengths)-((rle(df$chrom)$lengths)/2), ylim[2]-0.25, labels = unique(df$chrom))
-
-if (!is.null(opt$centromereFile)) {
-    cen <- read.table(opt$centromereFile, sep = '\t')
-    for (j in unique(cen[,1])) {
-        pos <- cen[which(cen[,1] == j)[1],3]
-        index <- which(df$chrom == j & df$maploc > pos)[1]
-        if (opt$pqLine && !is.na(index)) {
-            abline(v = index, col = "darkgrey", lty = 3)
-        }
-    }
-}
-dev.off()
-
-
-for (chr in unique(df$chrom)) {
-    chdf <- filter(df, chrom == chr)
-    colours <- chdf$tcn
-    colours[chdf$tcn == 2] <- "black"
-    colours[chdf$tcn == 1] <- "darkred"
-    colours[chdf$tcn == 3] <- "darkgreen"
-    colours[chdf$tcn >= 4] <- "green"
-    colours[chdf$tcn == 0] <- "red"
-
-    if (nrow(chdf) > 0) {
-        ylim <- c(min(chdf$cnlr), max(chdf$cnlr) + 0.5)
-        pdf(paste(gsub("log2", "bychr", x=opt$outPrefix, fixed=TRUE), "_", chr, '.pdf', sep=""), height = 5, width = 6)
-        plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", ylim=ylim, col = colours, main = paste('Chromosome', chr))
-        points(chdf$cnlr.median.clust, pch = 20, col = 'blue')
-
-        if (!is.null(opt$centromereFile)) {
-            cen <- read.table(opt$centromereFile, sep = '\t')
-            for (j in unique(cen[,1])) {
-                pos <- cen[which(cen[,1]==j)[1],3]
-                index <- which(chdf$chrom == j & chdf$maploc > pos)[1]
-                if (opt$pqLine && !is.na(index)) {
-                    abline(v = index, col = "darkgrey", lty = 3)
-                }
-            }
-        }
-        dev.off()
-    }
-}
+# df <- left_join(out2$jointseg, out2$out)
+# df$chrom <- as.character(df$chrom)
+# df$chrom[df$chrom == "23"]  <- "X"
+# df$chrom[df$chrom == "24"]  <- "Y"
+# 
+# colours <- df$tcn
+# colours[df$tcn == 2] <- "black"
+# colours[df$tcn == 1] <- "darkred"
+# colours[df$tcn == 3] <- "darkgreen"
+# colours[df$tcn >= 4] <- "green"
+# colours[df$tcn == 0] <- "red"
+# 
+# ylim <- c(min(df$cnlr), max(df$cnlr) + 0.5)
+# ylim[2] <- ylim[2]+0.5
+# pdf(paste(opt$outPrefix,".(2).pdf", sep=""), height=5, width=18)
+# plot(df$cnlr, pch=20, xlab='Index', ylab = "Copy number log-ratio", col = colours, ylim = ylim)
+# abline(v=cumsum(rle(df$chrom)$lengths), col = "red", lty = 3)
+# text(cumsum(rle(df$chrom)$lengths)-((rle(df$chrom)$lengths)/2), ylim[2]-0.25, labels = unique(df$chrom))
+# 
+# if (!is.null(opt$centromereFile)) {
+#     cen <- read.table(opt$centromereFile, sep = '\t')
+#     for (j in unique(cen[,1])) {
+#         pos <- cen[which(cen[,1] == j)[1],3]
+#         index <- which(df$chrom == j & df$maploc > pos)[1]
+#         if (opt$pqLine && !is.na(index)) {
+#             abline(v = index, col = "darkgrey", lty = 3)
+#         }
+#     }
+# }
+# dev.off()
+# 
+# 
+# for (chr in unique(df$chrom)) {
+#     chdf <- filter(df, chrom == chr)
+#     colours <- chdf$tcn
+#     colours[chdf$tcn == 2] <- "black"
+#     colours[chdf$tcn == 1] <- "darkred"
+#     colours[chdf$tcn == 3] <- "darkgreen"
+#     colours[chdf$tcn >= 4] <- "green"
+#     colours[chdf$tcn == 0] <- "red"
+# 
+#     if (nrow(chdf) > 0) {
+#         ylim <- c(min(chdf$cnlr), max(chdf$cnlr) + 0.5)
+#         pdf(paste(gsub("log2", "bychr", x=opt$outPrefix, fixed=TRUE), "_", chr, '.pdf', sep=""), height = 5, width = 6)
+#         plot(chdf$cnlr, pch=20, xlab='Index', ylab="Copy number", ylim=ylim, col = colours, main = paste('Chromosome', chr))
+#         points(chdf$cnlr.median.clust, pch = 20, col = 'blue')
+# 
+#         if (!is.null(opt$centromereFile)) {
+#             cen <- read.table(opt$centromereFile, sep = '\t')
+#             for (j in unique(cen[,1])) {
+#                 pos <- cen[which(cen[,1]==j)[1],3]
+#                 index <- which(chdf$chrom == j & chdf$maploc > pos)[1]
+#                 if (opt$pqLine && !is.na(index)) {
+#                     abline(v = index, col = "darkgrey", lty = 3)
+#                 }
+#             }
+#         }
+#         dev.off()
+#     }
+# }
