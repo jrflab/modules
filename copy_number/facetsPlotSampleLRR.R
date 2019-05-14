@@ -97,8 +97,7 @@
         segments(segstart, out$lcn, segend, out$lcn, lwd=1.75, col=2)
         segments(segstart, out$tcn, segend, out$tcn, lwd=1.75, col=1)
         # add the cf
-        plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="", xaxt="n", yaxt="n")
-        mtext("CF", side=2, at=0.5, line=0.3, las=2, cex=0.75)
+        plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="CF", xaxt="n", yaxt="n")
         cfcol <- cfpalette[round(10*out$cf+0.501)]
         rect(segstart, 0, segend, 1, col=cfcol, border=NA)
     }
@@ -113,8 +112,7 @@
         segments(segstart, out$lcn.em, segend, out$lcn.em, lwd=1.75, col=2)
         segments(segstart, out$tcn.em, segend, out$tcn.em, lwd=1.75, col=1)
         # add the cf
-        plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="", xaxt="n", yaxt="n")
-        mtext("CF", side=2, at=0.5, line=0.2, las=2, cex=0.75)
+        plot(c(0,length(jseg$cnlr)), 0:1, type="n", ylab="CF", xaxt="n", yaxt="n")
         cfcol <- cfpalette[round(10*out$cf.em+0.501)]
         rect(segstart, 0, segend, 1, col=cfcol, border=NA)
     }
