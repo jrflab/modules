@@ -30,7 +30,6 @@ if (opt$type=="log2") {
 	par(mar=c(5, 5, 4, 2)+.1)
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
-	tmp = winsorize(data=CN[,c("Chromosome","Position","Log2Ratio")], tau=2.5, k=15, verbose=FALSE)
 	end = NULL
 	for (j in 1:23) {
 		end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
@@ -42,7 +41,7 @@ if (opt$type=="log2") {
 		CN[CN[,"Chromosome"]==j,"Position"] = CN[CN[,"Chromosome"]==j,"Position"] + start[j]
 	}
 	col = rainbow_hcl(nrow(CN), start=30, end=300)
-	plot(CN[,"Position"], tmp[,"Log2Ratio"], type="p", pch=".", cex=1.95, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
+	plot(CN[,"Position"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.95, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	abline(v=1, col="goldenrod3", lty=3, lwd=.5)
@@ -53,7 +52,7 @@ if (opt$type=="log2") {
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub("ascat/log2/", "", opt$file_out), line=-1, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/log2/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
 	dev.off()
 
