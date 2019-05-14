@@ -46,9 +46,9 @@ if (opt$type=="log2") {
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	for (j in 1:23) {
 		v = start[j]
-		abline(v=v, col="goldenrod3", lty=3, lwd=.5)
+		abline(v=v, col="goldenrod3", lty=3, lwd=1)
 	}
-	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=.5)
+	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
