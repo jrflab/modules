@@ -638,22 +638,6 @@ TARGETS += qdnaseq_copynumber_test
 qdnaseq_copynumber_test:
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 	
-TARGETS += cnvkit_coverage_test
-cnvkit_coverage_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitcoverage.mk)
-	
-TARGETS += cnvkit_reference_test
-cnvkit_reference_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitreference.mk)
-	
-TARGETS += cnvkit_fix_test
-cnvkit_fix_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitfix.mk)
-
-TARGETS += cnvkit_plot_test
-cnvkit_plot_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
-	
 TARGETS += hotspot_summary
 hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
@@ -671,5 +655,21 @@ run_qdnaseq :
 TARGETS += sspyclone
 sspyclone :
 	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
+	
+TARGETS += cnvkit_coverage_test
+cnvkit_coverage_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitcoverage.mk)
+	
+TARGETS += cnvkit_reference_test
+cnvkit_reference_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitreference.mk)
+	
+TARGETS += cnvkit_fix_test
+cnvkit_fix_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitfix.mk)
+
+TARGETS += cnvkit_plot_test
+cnvkit_plot_test :
+	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
 .PHONY : $(TARGETS)

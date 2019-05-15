@@ -1,14 +1,6 @@
-
-# common GATK steps for variant calling
-# Author: Raymond Lim <raylim@mm.st> & Fong Chun Chan <fongchunchan@gmail.com>
-#
-# GATK needs sorted, properly ordered bams
-# INPUTS: sample bams
-# OUTPUTS: vcf file for SNPs and indels
-# OPTIONS: GATK_HARD_FILTER_SNPS = true/false (default: true)
-# 		   GATK_POOL_SNP_RECAL = true/false (default: false)
-# 		   SPLIT_CHR = true/false (default: true)
-#
+# GATK_HARD_FILTER_SNPS = true/false (default: true)
+# GATK_POOL_SNP_RECAL = true/false (default: false)
+# SPLIT_CHR = true/false (default: true)
 
 ifndef GATK_MK
 
