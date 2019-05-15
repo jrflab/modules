@@ -4,6 +4,8 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/fix_bam.$(NOW)
 PHONY += fixed_bam
 
+DMP_FASTA ?= $REF_FASTA
+
 VPATH = fixed_bam unprocessed_bam
 PICARD_JAR = ~/share/usr/picard/bin/picard.jar
 
