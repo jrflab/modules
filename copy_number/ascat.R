@@ -219,7 +219,6 @@ if (opt$type=="log2") {
     rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
-	dev.off()
 		
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
 	points(CN_and_BAF[,"Position"], 1-CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col)
@@ -415,7 +414,7 @@ if (opt$type=="log2") {
     box(lwd=1.5)
 	dev.off()
 	
-} else if (opt$type=="by-chr") {
+} else if (opt$type=="bychr") {
 
 	'prunesegments.cn' <- function(x, n=10)
 	{
