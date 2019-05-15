@@ -108,63 +108,50 @@ sample_summary = sample_summary %>%
 				
 plot.0 =  ggplot(sample_summary, aes(x = VAF)) +
 		  geom_histogram(alpha = .8, fill="salmon") +
+		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nVAF(%)\n", y="Frequency\n") +
-		  coord_cartesian(xlim=c(0,100)) +
-		  theme(legend.justification = c(1, 0),
-		 	    legend.position = c(1, .5),
-		 	    legend.title = element_blank(),
-		 	    legend.background = element_blank())
+		  coord_cartesian(xlim=c(0,100))
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_vaf.pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
 
 plot.0 =  ggplot(sample_summary, aes(x = DP)) +
 		  geom_histogram(alpha = .8, fill="salmon") +
+		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
-		  labs(x="\nDP\n", y="Frequency\n") +
-		  theme(legend.justification = c(1, 0),
-		 	    legend.position = c(1, .5),
-		 	    legend.title = element_blank(),
-		 	    legend.background = element_blank())
+		  labs(x="\nDP\n", y="Frequency\n")
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_depth.pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
 
-plot.0 =  ggplot(sample_summary, aes(x = VAF, group=major_cn)) +
+plot.0 =  ggplot(sample_summary, aes(x = VAF, fill=major_cn)) +
 		  geom_histogram(alpha = .8) +
+		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nVAF(%)\n", y="Frequency\n") +
-		  coord_cartesian(xlim=c(0,100)) +
-		  theme(legend.justification = c(1, 0),
-		 	    legend.position = c(1, .5),
-		 	    legend.title = element_blank(),
-		 	    legend.background = element_blank())
+		  coord_cartesian(xlim=c(0,100))
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_vaf_by_cn.pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
 
-plot.0 =  ggplot(sample_summary, aes(x = DP, group=major_cn)) +
+plot.0 =  ggplot(sample_summary, aes(x = DP, fill=major_cn)) +
 		  geom_histogram(alpha = .8) +
+		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
-		  labs(x="\nDP\n", y="Frequency\n") +
-		  theme(legend.justification = c(1, 0),
-		 	    legend.position = c(1, .5),
-		 	    legend.title = element_blank(),
-		 	    legend.background = element_blank())
+		  labs(x="\nDP\n", y="Frequency\n")
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_depth_by_cn.pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
 
 plot.0 =  ggplot(sample_summary, aes(x = VAF, y = DP, fill=major_cn)) +
 		  geom_point(alpha=.85, size=2.5, shape=21) +
+		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nVAF (%)\n", y="DP\n") +
-		  coord_cartesian(xlim=c(0,100)) +
-		  theme(legend.justification = c(1, 0),
-		 	    legend.position = c(1, .5),
-		 	    legend.title = element_blank(),
-		 	    legend.background = element_blank())
+		  scale_x_log10() +
+		  scale_y_log10() +
+		  coord_cartesian(xlim=c(0,100))
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/scatter_vaf_depth_by_cn.pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
