@@ -102,7 +102,7 @@ system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activat
 
 sample_summary = sample_summary %>%
 				 mutate(VAF = 100*var_counts/(var_counts+ref_counts)) %>%
-				 mutate(DP = var_counts+ref_counts)
+				 mutate(DP = var_counts+ref_counts) %>%
 				 mutate(major_cn = ifelse(major_cn>10, 10, major_cn)) %>%
 				 mutate(major_cn = factor(major_cn))
 				
