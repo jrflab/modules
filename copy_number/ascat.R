@@ -40,7 +40,7 @@ if (opt$type=="log2") {
 	for (j in 1:23) {
 		CN[CN[,"Chromosome"]==j,"Position"] = CN[CN[,"Chromosome"]==j,"Position"] + start[j]
 	}
-	col = rep("grey85", nrow(CN))
+	col = rep("grey75", nrow(CN))
 	plot(CN[,"Position"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.95, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
 	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
@@ -72,7 +72,7 @@ if (opt$type=="log2") {
 	for (j in 1:23) {
 		BAF[BAF[,"Chromosome"]==j,"Position"] = BAF[BAF[,"Chromosome"]==j,"Position"] + start[j]
 	}
-	col = rep("grey85", nrow(BAF))
+	col = rep("grey75", nrow(BAF))
 	plot(BAF[,"Position"], BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1.25)
@@ -106,7 +106,7 @@ if (opt$type=="log2") {
 	for (j in 1:23) {
 		BAF[BAF[,"Chromosome"]==j,"Position"] = BAF[BAF[,"Chromosome"]==j,"Position"] + start[j]
 	}
-	col = rep("grey85", nrow(BAF))
+	col = rep("grey75", nrow(BAF))
 	plot(BAF[,"Position"], BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1.25)
@@ -199,41 +199,46 @@ if (opt$type=="log2") {
 		tmp[tmp[,"Chromosome"]==j,"Start"] = tmp[tmp[,"Chromosome"]==j,"Start"] + start[j]
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 	}
-	col = "grey80"
-	pdf(file=opt$file_out, height=2*7*10/7*2/3, width=7*20/7)
+	col = rep("grey75", nrow(CN_and_BAF))
+	pdf(file=opt$file_out, width=10, height=4.25*2)
 	par(mar=c(5, 5, 4, 2)+.1, mfrow=c(2,1))
-	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=2.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-2,2))
+	
+	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
 	for (j in 1:nrow(tmp)) {
 		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
 	}
-	axis(2, at = NULL, cex.axis = 1.15, las = 1)
+	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
-	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	abline(v=1, col="goldenrod3")
-	abline(h=0, col="red")
-	for (j in 2:23) {
+	for (j in 1:23) {
 		v = start[j]
-		abline(v=v, col="goldenrod3")
+		abline(v=v, col="goldenrod3", lty=3, lwd=1)
 	}
-	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3")
+	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
+	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=rep(" ", 23), cex.axis = 0.85, las = 1)
-	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=2.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1))
-	points(CN_and_BAF[,"Position"], 1-CN_and_BAF[,"BAF"], type="p", pch=".", cex=2.5, col=col)
+    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+    box(lwd=1.5)
+	dev.off()
+		
+	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
+	points(CN_and_BAF[,"Position"], 1-CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col)
 	for (j in 1:nrow(tmp)) {
 		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"BAF"],2), lty=1, lwd=2.75, col="red")
 		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(1-tmp[j,"BAF"],2), lty=1, lwd=2.75, col="red")
 	}
-	axis(2, at = NULL, cex.axis = 1.15, las = 1)
-	mtext(side = 2, text = "B Allele Frequency", line = 3.15, cex = 1.25)
-	abline(v=1, col="goldenrod3")
-	abline(h=0.5, col="red")
-	for (j in 2:23) {
+	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
+	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1.25)
+	for (j in 1:23) {
 		v = start[j]
-		abline(v=v, col="goldenrod3")
+		abline(v=v, col="goldenrod3", lty=3, lwd=1)
 	}
-	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3")
+	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
+	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
+	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+    box(lwd=1.5)
 	dev.off()
 	
 } else if (opt$type=="run-ascat") {
