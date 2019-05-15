@@ -1,6 +1,5 @@
-'plotSampleLRR' <- function(x, fit)
+'plot_sample_lrr_' <- function(x, fit)
 {
-	## deprecated function
     mat = x$jointseg
     cncf = fit$cncf
     dipLogR <- fit$dipLogR
