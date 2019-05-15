@@ -413,7 +413,71 @@ if (opt$type=="log2") {
     rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/total/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
-	dev.off()	
+	dev.off()
+	
+} else if (opt$type=="by-chr") {
+
+	'prunesegments.cn' <- function(x, n=10)
+	{
+		cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
+		for (j in 1:nrow(x)) {
+			cnm[,j] = abs(2^x[j,"Log2Ratio"] - 2^x[,"Log2Ratio"])
+		}
+		cnt = hclust(as.dist(cnm), "average")
+		cnc = cutree(tree=cnt, k=n)
+		for (j in unique(cnc)) {
+			indx = which(cnc==j)
+			if (length(indx)>2) {
+				mcl = mean(x[indx,"Log2Ratio"])
+				scl = sd(x[indx,"Log2Ratio"])
+				ind = which(x[indx,"Log2Ratio"]<(mcl+1.96*scl) & x[indx,"Log2Ratio"]>(mcl-1.96*scl))
+				x[indx[ind],"Log2Ratio"] = mean(x[indx[ind],"Log2Ratio"])
+			} else {
+				x[indx,"Log2Ratio"] = mean(x[indx,"Log2Ratio"])
+			}
+		}
+		return(x)
+	}
+
+	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
+	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
+	for (ii in 1:23) {
+		pdf(file=paste0(opt$file_out, "/chromosome_", ii, ".pdf"))
+		par(mar = c(6.1, 6, 4.1, 3))
+		zz = split.screen(figs=matrix(c(0,1,.15,1, 0.065,.975,0.1,.4), nrow=2, ncol=4, byrow=TRUE))
+		screen(zz[1])
+		start = 0
+		end = max(CytoBand[CytoBand[,1]==paste0("chr",ii),2])
+		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-4,4), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
+		index = CN[,"Chromosome"]==i
+		z0 = CN[index,c("Chromosome", "Position", "Log2Ratio"),drop=FALSE]
+		z1 = winsorize(data=z0, tau=3.5, k=15)
+		z2 = pcf(data=z1, kmin=100, gamma=100)
+		tmp = z2[,c("chrom","start.pos","end.pos","mean")]
+		colnames(tmp) = c("Chromosome", "Start", "End", "Log2Ratio")
+		points(z1[,"pos"], z1[,"cnlr"], type="p", pch=".", cex=1.15, col="grey75")
+		for (i in 1:nrow(tmp)) {
+			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
+		}
+		for (i in 1:(nrow(tmp)-1)) {
+			points(c(tmp[i,"End"], tmp[i+1,"Start"]), c(tmp[i,"Log2Ratio"],tmp[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
+		}
+		abline(h=0, lwd=1)
+		axis(2, at = c(-4,-3,-2,-1,0,1,2,3,4), labels=c(-4,-3,-2,-1,0,1,2,3,4), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
+		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
+		opt = list(gamma=1, rho=fit$purity, psi=fit$ploidy)
+		for (k in c(1, 3, 5, 8, 12)) {
+			abline(h=.09+(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="brown", lty=3)
+			mtext(text=k, side=4, line=.5, at=.09+(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="brown")
+		}
+		box(lwd=2)
+		screen(zz[2])
+		assembly = read.csv(file="modules/copy_number/hg19_cytoBandIdeo.txt", header=FALSE, sep="\t", stringsAsFactors=FALSE)
+		plotIdeogram(chrom=ii, TRUE, cyto.data = assembly, cex = .75, unit = "bp")
+		close.screen(all.screens=TRUE)
+		dev.off()
+	}
+	
 }
 
 warnings()
