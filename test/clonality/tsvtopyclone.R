@@ -152,8 +152,8 @@ plot.0 =  ggplot(sample_summary, aes(x = VAF, y = DP, fill=major_cn)) +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nVAF (%)\n", y="DP\n") +
 		  scale_x_log10() +
-		  scale_y_log10() +
-		  coord_cartesian(xlim=c(1,100)) +
+		  annotation_logticks(side="b") +
+		  coord_cartesian(xlim=c(5,100)) +
 		  guides(fill=guide_legend(title=c("Copy number")))
 pdf(file=paste0("pyclone/", opt$sample_name, "/report/scatter_vaf_depth_by_cn.pdf"), width=6, height=6)
 print(plot.0)
