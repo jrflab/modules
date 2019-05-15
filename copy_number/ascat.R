@@ -389,33 +389,31 @@ if (opt$type=="log2") {
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 		CN[CN[,"chrom"]==j,"pos"] = CN[CN[,"chrom"]==j,"pos"] + start[j]
 	}
-	col = "grey80"
-	pdf(file=opt$file_out, height=7*10/7*2/3, width=7*20/7)
+	col = rep("grey75", nrow(CN_and_BAF))
+	pdf(file=opt$file_out, width=10, height=4.2)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.5, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
- 	for (j in 1:nrow(tmp)) {
+	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
+	for (j in 1:nrow(tmp)) {
  		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
  	}
- 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
-	mtext(side = 1, text = "Chromosome", line = 3, cex = 1.25)
+	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
-	abline(v=1, col="goldenrod3")
-	abline(h=0, col="red")
-	for (j in 2:23) {
+	for (j in 1:23) {
 		v = start[j]
-		abline(v=v, col="goldenrod3")
+		abline(v=v, col="goldenrod3", lty=3, lwd=1)
 	}
-	abline(v=max(CN[,"pos"]), col="goldenrod3")
+	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=1)
+	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	
-	load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
-	
+    load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
 	for (k in 1:8) {
-		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="darkorange", lty=3)
-		mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="darkorange")
+		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
+		mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="brown")
 	}
-	dev.off()
-	
+    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	title(main = gsub(".pdf", "", gsub("ascat/totalcopy/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+    box(lwd=1.5)
+	dev.off()	
 }
 
 warnings()
