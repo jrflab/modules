@@ -54,6 +54,9 @@ ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 
 endef
 
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call ascat-run-ascat,$(tumor.$(pair)),$(normal.$(pair)))))
+
 define ascat-plot-chr
 ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p ascat && \
@@ -64,7 +67,7 @@ ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 endef
 
 $(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call ascat-run-ascat,$(tumor.$(pair)),$(normal.$(pair)))))
+		$(eval $(call ascat-plot-chr,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 .DELETE_ON_ERROR:
 .SECONDARY:
