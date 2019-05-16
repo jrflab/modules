@@ -1,7 +1,3 @@
-# This module fixes the mate information of a bam file to prepare it for proper extraction
-# input: $(SAMPLES)
-# Author: Fong Chun Chan <fongchunchan@gmail.com>
-
 include modules/Makefile.inc
 include modules/hg19.inc
 

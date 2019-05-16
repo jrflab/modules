@@ -1,8 +1,3 @@
-# various bam processing steps
-# can be used to reprocess bam files, merge them, or merge and reprocess bam files
-# possible post-processing steps are defined in modules/aligners/align.inc
-##### MAKE INCLUDES #####
-
 ifndef PROCESS_BAM_MK
 
 include modules/Makefile.inc

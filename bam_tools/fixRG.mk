@@ -1,5 +1,3 @@
-# various bam processing steps
-##### MAKE INCLUDES #####
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 include modules/aligners/align.inc

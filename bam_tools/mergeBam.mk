@@ -1,4 +1,3 @@
-# Merge samples using SAMPLE_SPLIT_FILE entries and then fix the read groups
 include modules/Makefile.inc
 
 LOGDIR = log/merge.$(NOW)
