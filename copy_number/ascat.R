@@ -553,10 +553,10 @@ if (opt$type=="log2") {
 		axis(2, at = c(-4,-3,-2,-1,0,1,2,3,4), labels=c(-4,-3,-2,-1,0,1,2,3,4), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
 		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
 		load(paste0(gsub("bychr", "ascat", opt$file_out, fixed=TRUE), ".RData"))
-		opt = list(gamma=1, rho=purity, psi=ploidy)
+		z3 = list(gamma=1, rho=purity, psi=ploidy)
 		for (k in c(1, 3, 5, 8, 12)) {
-			abline(h=.09+(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="brown", lty=3)
-			mtext(text=k, side=4, line=.5, at=.09+(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="brown")
+			abline(h=.09+(z3$gamma*log2(((z3$rho)*k + (1-z3$rho)*2)/((z3$rho)*z3$psi + (1-z3$rho)*2))), col="brown", lty=3)
+			mtext(text=k, side=4, line=.5, at=.09+(z3$gamma*log2(((z3$rho)*k + (1-z3$rho)*2)/((z3$rho)*z3$psi + (1-z3$rho)*2))), las=2, cex=.75, col="brown")
 		}
 		box(lwd=2)
 		screen(zz[2])
