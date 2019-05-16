@@ -440,7 +440,7 @@ if (opt$type=="log2") {
 	
 	'plotIdeogram' <- function (chrom, cyto.text = FALSE, cex = 0.6, cyto.data, cyto.unit = "bp", unit) {
 		if (chrom == 23) {
-        	chrom.cytoband <- cyto.data[cyto.data[, 1] == "chrX", ]
+        		chrom.cytoband <- cyto.data[cyto.data[, 1] == "chrX", ]
     	} else {
         	if (chrom == 24) {
             	chrom.cytoband <- cyto.data[cyto.data[, 1] == "chrY", ]
@@ -475,13 +475,12 @@ if (opt$type=="log2") {
     	ylow <- 0
     	yhigh <- 1
     	plot(x = c(0, max(xright)), y = c(ylow, yhigh), type = "n", axes = FALSE, xlab = "", ylab = "", xlim = c(0, max(xright)), ylim = c(0, 1), xaxs = "i")
-    	skip.rect <- c(1, centromere, n, stalk)
+    	skip.rect <- c(1, n, stalk)
     	rect(xleft[-skip.rect], rep(ylow, n - length(skip.rect)), xright[-skip.rect], rep(yhigh, n - length(skip.rect)), 
         col = col[-skip.rect], border = "black", density = density[-skip.rect], 
         angle = angle[-skip.rect])
     	draw.roundEdge(start = xleft[1], stop = xright[1], y0 = ylow, y1 = yhigh, col = col[1], bow = "left", density = density[1], angle = angle[1], chrom.length = chrom.length)
-    	draw.roundEdge(start = xleft[n], stop = xright[n], y0 = ylow, y1 = yhigh, col = col[n], bow = "right", density = density[n], 
-        angle = angle[n], chrom.length = chrom.length)
+    	draw.roundEdge(start = xleft[n], stop = xright[n], y0 = ylow, y1 = yhigh, col = col[n], bow = "right", density = density[n], angle = angle[n], chrom.length = chrom.length)
     	if (length(stalk) > 0) {
         	for (i in 1:length(stalk)) {
             	copynumber:::drawStalk(xleft[stalk[i]], xright[stalk[i]], ylow, yhigh, col = col[stalk[i]])
@@ -531,7 +530,7 @@ if (opt$type=="log2") {
 	for (ii in 1:23) {
 		pdf(file=paste0(opt$file_out, "/chromosome_", ii, ".pdf"))
 		par(mar = c(6.1, 6, 4.1, 3))
-		zz = split.screen(figs=matrix(c(0,1,.15,1, 0.065,.975,0.1,.4), nrow=2, ncol=4, byrow=TRUE))
+		zz = split.screen(figs=matrix(c(0,1,.15,1, 0,1,0.0775,.4), nrow=2, ncol=4, byrow=TRUE))
 		screen(zz[1])
 		start = 0
 		end = max(as.numeric(CytoBand[CytoBand[,1]==ii,4]))
@@ -542,7 +541,7 @@ if (opt$type=="log2") {
 		z2 = pcf(data=z1, kmin=100, gamma=100)
 		tmp = z2[,c("chrom","start.pos","end.pos","mean")]
 		colnames(tmp) = c("Chromosome", "Start", "End", "Log2Ratio")
-		points(z0[,"Position"], z1[,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey75")
+		points(z1[,"pos"], z1[,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey75")
 		for (i in 1:nrow(tmp)) {
 			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
 		}
