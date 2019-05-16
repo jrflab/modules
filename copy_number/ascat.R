@@ -454,7 +454,7 @@ if (opt$type=="log2") {
 		z2 = pcf(data=z1, kmin=100, gamma=100)
 		tmp = z2[,c("chrom","start.pos","end.pos","mean")]
 		colnames(tmp) = c("Chromosome", "Start", "End", "Log2Ratio")
-		points(z1[,"Position"], z1[,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey75")
+		points(z0[,"Position"], z1[,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey75")
 		for (i in 1:nrow(tmp)) {
 			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
 		}
