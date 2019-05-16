@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/ascat.$(NOW)
-PHONY += ascat ascat/log2 ascat/bafall ascat/bafhet ascat/mad ascat/log2nbaf ascat/ascat ascat/total
+PHONY += ascat ascat/log2 ascat/bafall ascat/bafhet ascat/mad ascat/log2nbaf ascat/ascat ascat/total ascat/bychr
 
-ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf ascat/bafall/$(pair).pdf ascat/bafhet/$(pair).pdf ascat/mad/$(pair).RData ascat/log2nbaf/$(pair).pdf ascat/ascat/$(pair).pdf ascat/total/$(pair).pdf)
+ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf ascat/bafall/$(pair).pdf ascat/bafhet/$(pair).pdf ascat/mad/$(pair).RData ascat/log2nbaf/$(pair).pdf ascat/ascat/$(pair).pdf ascat/total/$(pair).pdf ascat/bychr/$(pair)/timestamp)
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.Rdata
@@ -53,6 +53,13 @@ ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type total-copy --file_in $$< --file_out ascat/total/$1_$2.pdf")	
 
 endef
+
+define ascat-plot-chr
+ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type plot-chr --file_in $$< --file_out ascat/bychr/$1_$2/")
+		
+endef
+
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-run-ascat,$(tumor.$(pair)),$(normal.$(pair)))))
 		
