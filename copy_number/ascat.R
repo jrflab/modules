@@ -446,7 +446,7 @@ if (opt$type=="log2") {
 		zz = split.screen(figs=matrix(c(0,1,.15,1, 0.065,.975,0.1,.4), nrow=2, ncol=4, byrow=TRUE))
 		screen(zz[1])
 		start = 0
-		end = max(CytoBand[CytoBand[,1]==paste0("chr",ii),2])
+		end = max(as.numeric(CytoBand[CytoBand[,1]==paste0("chr",ii),2]))
 		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-4,4), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
 		index = CN[,"Chromosome"]==i
 		z0 = CN[index,c("Chromosome", "Position", "Log2Ratio"),drop=FALSE]
