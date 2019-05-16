@@ -564,7 +564,7 @@ if (opt$type=="log2") {
 		close.screen(all.screens=TRUE)
 		dev.off()
 	}
-	
+	cat("done!\n", file=paste0(opt$file_out, "/timestamp", append=FALSE))
 }
 
 warnings()
