@@ -388,7 +388,7 @@ if (opt$type=="log2") {
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 		CN[CN[,"chrom"]==j,"pos"] = CN[CN[,"chrom"]==j,"pos"] + start[j]
 	}
-	col = rep("grey75", nrow(CN_and_BAF))
+	col = rep("grey75", nrow(CN))
 	pdf(file=opt$file_out, width=10, height=4.2)
 	par(mar=c(5, 5, 4, 2)+.1)
 	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
@@ -401,7 +401,7 @@ if (opt$type=="log2") {
 		v = start[j]
 		abline(v=v, col="goldenrod3", lty=3, lwd=1)
 	}
-	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=1)
+	abline(v=max(CN[,"pos"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
@@ -409,7 +409,7 @@ if (opt$type=="log2") {
 		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
 		mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="brown")
 	}
-    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+    rect(xleft=1-1e10, xright=max(CN[,"pos"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/total/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
 	dev.off()
