@@ -448,7 +448,7 @@ if (opt$type=="log2") {
 		start = 0
 		end = max(as.numeric(CytoBand[CytoBand[,1]==ii,4]))
 		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-4,4), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
-		index = CN[,"Chromosome"]==i
+		index = CN[,"Chromosome"]==ii
 		z0 = CN[index,c("Chromosome", "Position", "Log2Ratio"),drop=FALSE]
 		z1 = winsorize(data=z0, tau=3.5, k=15)
 		z2 = pcf(data=z1, kmin=100, gamma=100)
