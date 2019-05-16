@@ -437,6 +437,94 @@ if (opt$type=="log2") {
 		}
 		return(x)
 	}
+	
+	'plotIdeogram' <- function (chrom, cyto.text = FALSE, cex = 0.6, cyto.data, cyto.unit = "bp", unit) {
+		if (chrom == 23) {
+        	chrom.cytoband <- cyto.data[cyto.data[, 1] == "chrX", ]
+    	} else {
+        	if (chrom == 24) {
+            	chrom.cytoband <- cyto.data[cyto.data[, 1] == "chrY", ]
+        	} else {
+            	chrom.cytoband <- cyto.data[cyto.data[, 1] == paste("chr", chrom, sep = ""), ]
+        	}
+    	}
+    	cyto.start <- chrom.cytoband[, 2]
+    	cyto.end <- chrom.cytoband[, 3]
+    	scale <- copynumber:::convert.unit(unit1 = unit, unit2 = cyto.unit)
+    	xleft <- cyto.start * scale
+    	xright <- cyto.end * scale
+    	n <- length(xleft)
+    	chrom.length <- xright[n] - xleft[1]
+    	stain <- chrom.cytoband[, 5]
+    	sep.stain <- c("gpos", "gneg", "acen", "gvar", "stalk")
+    	g <- sapply(sep.stain, grep, x = stain, fixed = TRUE)
+    	centromere <- g$acen
+    	stalk <- g$stalk
+    	col <- rep("", n)
+    	col[stain == "gneg"] <- "white"
+    	col[stain == "gpos100"] <- "black"
+    	col[stain == "gpos75"] <- "gray25"
+    	col[stain == "gpos50"] <- "gray50"
+    	col[stain == "gpos25"] <- "gray75"
+    	col[stain == "stalk"] <- "gray90"
+    	col[stain == "gvar"] <- "grey"
+    	col[stain == "acen"] <- "yellow"
+    	density <- rep(NA, n)
+    	angle <- rep(45, n)
+    	density[stain == "gvar"] <- 15
+    	ylow <- 0
+    	yhigh <- 1
+    	plot(x = c(0, max(xright)), y = c(ylow, yhigh), type = "n", axes = FALSE, xlab = "", ylab = "", xlim = c(0, max(xright)), ylim = c(0, 1), xaxs = "i")
+    	skip.rect <- c(1, centromere, n, stalk)
+    	rect(xleft[-skip.rect], rep(ylow, n - length(skip.rect)), xright[-skip.rect], rep(yhigh, n - length(skip.rect)), 
+        col = col[-skip.rect], border = "black", density = density[-skip.rect], 
+        angle = angle[-skip.rect])
+    	draw.roundEdge(start = xleft[1], stop = xright[1], y0 = ylow, y1 = yhigh, col = col[1], bow = "left", density = density[1], angle = angle[1], chrom.length = chrom.length)
+    	draw.roundEdge(start = xleft[n], stop = xright[n], y0 = ylow, y1 = yhigh, col = col[n], bow = "right", density = density[n], 
+        angle = angle[n], chrom.length = chrom.length)
+    	if (length(stalk) > 0) {
+        	for (i in 1:length(stalk)) {
+            	copynumber:::drawStalk(xleft[stalk[i]], xright[stalk[i]], ylow, yhigh, col = col[stalk[i]])
+        	}
+    	}
+    	if (cyto.text) {
+    		mtext(text = paste(chrom.cytoband[, 4], "-", sep = " "), side = 1, at = (xleft + (xright - xleft)/2), cex = cex, las = 2, adj = 1, xpd = NA)
+    	}
+	}
+
+	'draw.roundEdge' <- function (start, stop, y0, y1, col, bow, density = NA, angle = 45, lwd = 1, chrom.length) {
+    	f <- rep(0, 0)
+    	f[1] <- 0.001
+    	i = 1
+    	half <- y0 + (y1 - y0)/2
+    	while (f[i] < half) {
+    	    f[i + 1] <- f[i] * 1.3
+    	    i <- i + 1
+    	}
+    	f <- f[-length(f)]
+    	Y <- c(y1, y1, y1 - f, half, y0 + rev(f), y0, y0)
+    	cyto.length <- stop - start
+    	share <- cyto.length/chrom.length
+    	if (share > 0.2) {
+    	    share <- 0.2
+    	}
+    	if (bow == "left") {
+    	    round.start <- start + cyto.length * (1 - share)^20
+    	    x <- seq(round.start, start, length.out = (length(f) + 2))
+        	revx <- rev(x[-length(x)])
+        	x <- c(x, revx)
+        	X <- c(stop, x, stop)
+    	} else {
+        	if (bow == "right") {
+            	round.start <- stop - cyto.length * (1 - share)^20
+            	x <- seq(round.start, stop, length.out = (length(f) + 2))
+            	revx <- rev(x[-length(x)])
+            	x <- c(x, revx)
+            	X <- c(start, x, start)
+        	}
+    	}
+    	polygon(x = X, y = Y, col = col, border = "black", density = density, angle = angle, lwd = lwd)
+	}
 
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
