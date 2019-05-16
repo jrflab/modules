@@ -58,7 +58,8 @@ define ascat-plot-chr
 ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p ascat && \
 												 mkdir -p ascat/$1_$2 && \
-												 $(RSCRIPT) modules/copy_number/ascat.R --type plot-chr --file_in $$< --file_out ascat/bychr/$1_$2/")
+												 $(RSCRIPT) modules/copy_number/ascat.R --type plot-chr --file_in $$< --file_out ascat/bychr/$1_$2/ && \
+												 touch ascat/bychr/$1_$2/timestamp")
 		
 endef
 
