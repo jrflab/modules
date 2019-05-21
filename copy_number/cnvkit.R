@@ -93,9 +93,14 @@ if (opt$type=="total-copy") {
 	pdf(file=paste0("cnvkit/segmented/", opt$sample_name, ".pdf"), width=10, height=4.25)
 	file_names = dir(path="facets/cncf", pattern=opt$sample_name, full.names=TRUE)
 	file_names = file_names[grep(".Rdata", file_names, fixed=TRUE)]
-	load(file_names)
-	alpha = ifelse(is.na(fit$purity), 1, fit$purity)
-	psi = ifelse(is.na(fit$ploidy), 2, fit$ploidy)
+	if (length(file_names)==1) {
+		load(file_names)
+		alpha = fit$purity
+		psi = fit$ploidy
+	} else {
+		alpha = NA
+		psi = NA
+	}
 	plot_log2_(x=CN, y=tmp, title = opt$sample_name, alpha=alpha, psi=psi)
 	dev.off()
 
@@ -125,10 +130,15 @@ if (opt$type=="total-copy") {
 	load(paste0("cnvkit/totalcopy/", opt$sample_name, ".RData"))
 	file_names = dir(path="facets/cncf", pattern=opt$sample_name, full.names=TRUE)
 	file_names = file_names[grep(".Rdata", file_names, fixed=TRUE)]
-	load(file_names)
+	if (length(file_names)==1) {
+		load(file_names)
+		alpha = ifelse(is.na(fit$purity), 1, fit$purity)
+		psi = ifelse(is.na(fit$ploidy), 2, fit$ploid)
+	} else {
+		alpha = 1
+		psi = 2
+	}
 	tmp = prunesegments.cn(x=tmp, n=10)
-	alpha = ifelse(is.na(fit$purity), 1, fit$purity)
-	psi = ifelse(is.na(fit$ploidy), 2, fit$ploid)
 	qt = round((((2^(tmp[,"Log2Ratio"])) * (alpha*psi + 2*(1-alpha))) - 2*(1-alpha))/alpha)
 	qt[is.na(qt)] = 2
 	qt[is.infinite(qt)] = 2
