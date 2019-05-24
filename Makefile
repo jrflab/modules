@@ -654,7 +654,7 @@ run_qdnaseq :
 	
 TARGETS += cnv_access
 cnv_access :
-	$(call RUN_MAKE,modules/test/copy_number/cnvaccess.mk)
+	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
 	
 TARGETS += ss_pyclone
 ss_pyclone :
