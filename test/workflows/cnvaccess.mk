@@ -6,12 +6,13 @@ PHONY += cnvkit cnvkit/cnn cnvkit/cnn/tumor cnvkit/cnn/normal cnvkit/reference c
 
 CNV_KIT_WORKFLOW += cnvkit_coverage
 CNV_KIT_WORKFLOW += cnvkit_reference
+CNV_KIT_WORKFLOW += cnvkit_fix
 
 cnv_kit_workflow : $(CNV_KIT_WORKFLOW)
 
 include modules/test/copy_number/cnvkitcoverage.mk
 include modules/test/copy_number/cnvkitreference.mk
-#include modules/copy_number/cnvkitfix.mk
+include modules/test/copy_number/cnvkitfix.mk
 #include modules/copy_number/cnvkitplot.mk
 #include modules/copy_number/cnvkitsegment.mk
 #include modules/copy_number/cnvkitsummary.mk
