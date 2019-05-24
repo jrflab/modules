@@ -63,7 +63,6 @@ CUFFCMP ?= cuffcompare
 TOPHAT ?= tophat
 DEFUSE ?= $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 
-#VARSCAN
 ONCOFUSE_JAR ?= $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
 VARSCAN_JAR ?= $(JARDIR)/VarScan.v2.3.9.jar
 
