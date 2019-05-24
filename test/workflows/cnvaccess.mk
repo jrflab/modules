@@ -10,7 +10,7 @@ CNV_KIT_WORKFLOW += cnvkit_reference
 cnv_kit_workflow : $(CNV_KIT_WORKFLOW)
 
 include modules/test/copy_number/cnvkitcoverage.mk
-include modules/copy_number/cnvkitreference.mk
+include modules/test/copy_number/cnvkitreference.mk
 #include modules/copy_number/cnvkitfix.mk
 #include modules/copy_number/cnvkitplot.mk
 #include modules/copy_number/cnvkitsegment.mk
