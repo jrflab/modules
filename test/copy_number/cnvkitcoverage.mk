@@ -1,10 +1,10 @@
 include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
-LOGDIR ?= log/cnvkit_coverage_test.$(NOW)
+LOGDIR ?= log/cnvkit_coverage.$(NOW)
 PHONY += cnvkit cnvkit/cnn cnvkit/cnn/tumor cnvkit/cnn/normal
 
-cnvkit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).A.targetcoverage.cnn cnvkit/cnn/tumor/$(sample).B.targetcoverage.cnn cnvkit/cnn/tumor/$(sample).antitargetcoverage.cnn) $(foreach sample,$(NORMAL_SAMPLES),cnvkit/cnn/normal/$(sample).A.targetcoverage.cnn cnvkit/cnn/normal/$(sample).B.targetcoverage.cnn cnvkit/cnn/normal/$(sample).antitargetcoverage.cnn)
+cnvkit_coverage : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).A.targetcoverage.cnn cnvkit/cnn/tumor/$(sample).B.targetcoverage.cnn cnvkit/cnn/tumor/$(sample).antitargetcoverage.cnn) $(foreach sample,$(NORMAL_SAMPLES),cnvkit/cnn/normal/$(sample).A.targetcoverage.cnn cnvkit/cnn/normal/$(sample).B.targetcoverage.cnn cnvkit/cnn/normal/$(sample).antitargetcoverage.cnn)
 
 define cnvkit-tumor-cnn
 cnvkit/cnn/tumor/%.A.targetcoverage.cnn : bam/%.bam

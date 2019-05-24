@@ -652,24 +652,12 @@ run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 	
-TARGETS += sspyclone
-sspyclone :
+TARGETS += cnv_access
+cnv_access :
+	$(call RUN_MAKE,modules/test/copy_number/cnvaccess.mk)
+	
+TARGETS += ss_pyclone
+ss_pyclone :
 	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
-	
-TARGETS += cnvkit_coverage_test
-cnvkit_coverage_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitcoverage.mk)
-	
-TARGETS += cnvkit_reference_test
-cnvkit_reference_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitreference.mk)
-	
-TARGETS += cnvkit_fix_test
-cnvkit_fix_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitfix.mk)
-
-TARGETS += cnvkit_plot_test
-cnvkit_plot_test :
-	$(call RUN_MAKE,modules/test/copy_number/cnvkitplot.mk)
 	
 .PHONY : $(TARGETS)
