@@ -55,7 +55,7 @@ if (as.numeric(opt$type)==1) {
 	dataA = subset(dataA, dataA[,"chromosome"]<=23)
 	
 	tmp = dataA[,c("chromosome", "start", "log2"),drop=FALSE]
-	tmp = winsorize(data=tmp, tau=2.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
 	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
@@ -65,7 +65,7 @@ if (as.numeric(opt$type)==1) {
 	dataB = subset(dataB, dataB[,"chromosome"]<=23)
 	
 	tmp = dataB[,c("chromosome", "start", "log2"),drop=FALSE]
-	tmp = winsorize(data=tmp, tau=2.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
 	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
@@ -75,7 +75,7 @@ if (as.numeric(opt$type)==1) {
 	dataC = subset(dataC, dataC[,"chromosome"]<=23)
 	
 	tmp = dataC[,c("chromosome", "start", "log2"),drop=FALSE]
-	tmp = winsorize(data=tmp, tau=1.5, k=15, verbose=FALSE, return.outliers=TRUE)
+	tmp = winsorize(data=tmp, tau=1.5, k=25, verbose=FALSE, return.outliers=TRUE)
 	dataC[tmp$wins.outliers[,3]!=0,"log2"] = NA
 
 	data = rbind(dataA, dataB, dataC)
