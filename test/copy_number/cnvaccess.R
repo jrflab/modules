@@ -17,36 +17,35 @@ parser = OptionParser(usage = "%prog", option_list = args_list)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-'plot_log2_' <- function(x, title = "")
-{
-   	par(mar=c(5, 5, 4, 2)+.1)
-   	data("CytoBand")
-   	end = NULL
-   	for (i in 1:23) {
-   		end = c(end, max(CytoBand[CytoBand[,1]==i,"End"]))
-   	}
-   	end = cumsum(end)
-   	start = c(1, end[1:22]+1)
-   	CytoBand = cbind(start, end)
-   	index = NULL
-   	for (i in 1:23) {
-   		index = c(index, seq(from = CytoBand[i, "start"], to=CytoBand[i, "end"], length=sum(x$chromosome==i)))
-   	}
-	plot(index, x$log2, type="p", pch=".", cex=1.95, col="grey80", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
-  	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
-	abline(v=1, col="goldenrod3", lty=3, lwd=.5)
-	abline(h=0, col="red", lty=1, lwd=1)
-	for (j in 1:23) {
-		abline(v=CytoBand[j,"end"], col="goldenrod3", lty=3, lwd=.5)
-	}
-	axis(1, at = .5*(CytoBand[,"start"]+CytoBand[,"end"]), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-	rect(xleft=1-1e10, xright=CytoBand[23,"end"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-	title(main = title, line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
-}
-
 if (as.numeric(opt$type)==1) {
+
+	'plot_log2_' <- function(x, title = "") {
+		par(mar=c(5, 5, 4, 2)+.1)
+		data("CytoBand")
+		end = NULL
+		for (i in 1:23) {
+			end = c(end, max(CytoBand[CytoBand[,1]==i,"End"]))
+		}
+		end = cumsum(end)
+		start = c(1, end[1:22]+1)
+		CytoBand = cbind(start, end)
+		index = NULL
+		for (i in 1:23) {
+			index = c(index, seq(from = CytoBand[i, "start"], to=CytoBand[i, "end"], length=sum(x$chromosome==i)))
+		}
+		plot(index, x$log2, type="p", pch=".", cex=1.95, col="grey80", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
+		axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
+		mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+		abline(v=1, col="goldenrod3", lty=3, lwd=.5)
+		abline(h=0, col="red", lty=1, lwd=1)
+		for (j in 1:23) {
+			abline(v=CytoBand[j,"end"], col="goldenrod3", lty=3, lwd=.5)
+		}
+		axis(1, at = .5*(CytoBand[,"start"]+CytoBand[,"end"]), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
+		rect(xleft=1-1e10, xright=CytoBand[23,"end"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+		title(main = title, line=-1, cex.main=.75, font.main=1)
+		box(lwd=1.5)
+	}
 	
 	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
@@ -324,5 +323,69 @@ if (as.numeric(opt$type)==1) {
 	tmp = pcf(data=z0, kmin=10, gamma=50, normalize=FALSE, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio")
 	save(CN, tmp, file=paste0("cnvaccess/segmented/", opt$sample_name, ".RData"))
+
+} else if (as.numeric(opt$type)==4) {
+	
+	'prunesegments.cn' <- function(x, n=10)
+	{
+		cnm = matrix(NA, nrow=nrow(x), ncol=nrow(x))
+		for (j in 1:nrow(x)) {
+			cnm[,j] = abs(2^x[j,"Log2Ratio"] - 2^x[,"Log2Ratio"])
+		}
+		cnt = hclust(as.dist(cnm), "average")
+		cnc = cutree(tree=cnt, k=n)
+		for (j in unique(cnc)) {
+			indx = which(cnc==j)
+			if (length(indx)>2) {
+				mcl = mean(x[indx,"Log2Ratio"])
+				scl = sd(x[indx,"Log2Ratio"])
+				ind = which(x[indx,"Log2Ratio"]<(mcl+1.96*scl) & x[indx,"Log2Ratio"]>(mcl-1.96*scl))
+				x[indx[ind],"Log2Ratio"] = mean(x[indx[ind],"Log2Ratio"])
+			} else {
+				x[indx,"Log2Ratio"] = mean(x[indx,"Log2Ratio"])
+			}
+		}
+		return(x)
+	}
+	
+	'plot_log2_' <- function(x, y, title = "", alpha = NA, psi = NA) {
+		par(mar=c(5, 5, 4, 2)+.1)
+		data("CytoBand")
+		end = NULL
+		for (j in 1:23) {
+			end = c(end, max(CytoBand$End[CytoBand$Chromosome==j]))
+		}
+		end = cumsum(end)
+		start = rep(0, 23)
+		start[2:23] = end[1:22]+1
+		for (j in 1:23) {
+			y[y[,"Chromosome"]==j,"Start"] = y[y[,"Chromosome"]==j,"Start"] + start[j]
+			y[y[,"Chromosome"]==j,"End"] = y[y[,"Chromosome"]==j,"End"] + start[j]
+			x[x[,"chrom"]==j,"pos"] = x[x[,"chrom"]==j,"pos"] + start[j]
+		}
+		plot(x[,"pos"], x[,"Log2Ratio"], type="p", pch=".", cex=1, col="grey75", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
+		for (j in 1:nrow(y)) {
+			lines(x=c(y[j,"Start"], y[j,"End"]), y=rep(y[j,"Log2Ratio"],2), lty=1, lwd=1.75, col="red")
+		}
+		axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
+		mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+		abline(v=1, col="goldenrod3", lty=3, lwd=.5)
+		abline(h=0, col="red", lty=1, lwd=1)
+		for (j in 2:23) {
+			v = start[j]
+			abline(v=v, col="goldenrod3", lty=3, lwd=.5)
+		}
+		abline(v=max(x[,"pos"]), col="goldenrod3", lty=3, lwd=.5)
+		axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)	
+		rect(xleft=1-1e10, xright=x[nrow(x),"pos"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+		title(main = paste0(title, " | alpha = ", signif(alpha, 3), " | psi = ", signif(psi, 3)), line=-1, cex.main=.75, font.main=1)
+		box(lwd=1.5)
+	}
+	
+	load(paste0("cnvaccess/segmented/", opt$sample_name, ".RData"))
+	tmp = prunesegments.cn(x=tmp, n=5)
+	pdf(file=paste0("cnvaccess/plot/segmented/", opt$sample_name, ".pdf"), width=10, height=4.25)
+	plot_log2_(x=CN, y=tmp, title = opt$sample_name, alpha=NA, psi=NA)
+	dev.off()
 
 }
