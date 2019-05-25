@@ -90,6 +90,8 @@ if (as.numeric(opt$type)==1) {
 	
 } else if (as.numeric(opt$type)==2) {
 
+	data("CytoBand")
+
 	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
 	dataA[dataA[,"chromosome"]=="Y", "chromosome"] = 24
@@ -239,6 +241,7 @@ if (as.numeric(opt$type)==1) {
 	}
 
 	for (ii in 1:23) {
+		
 		pdf(file=paste0("cnvaccess/plot/bychr/", opt$sample_name, "/chromosome_", ii, ".pdf"))
 		par(mar = c(6.1, 6, 4.1, 3))
 		zz = split.screen(figs=matrix(c(0,1,.15,1, 0,1,0.0775,.4), nrow=2, ncol=4, byrow=TRUE))
@@ -273,6 +276,7 @@ if (as.numeric(opt$type)==1) {
 		plotIdeogram(chrom=ii, TRUE, cyto.data = assembly, cex = .75, unit = "bp")
 		close.screen(all.screens=TRUE)
 		dev.off()
+		
 	}
 	cat("done!\n", file=paste0("cnvaccess/plot/bychr/", opt$sample_name, "/timestamp"), append=FALSE)
 
