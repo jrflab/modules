@@ -6,6 +6,10 @@ PHONY += cnvaccess cnvaccess/cnn cnvaccess/cnn/tumor cnvaccess/cnn/normal
 
 cnvaccess_coverage : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnn/tumor/$(sample).A.targetcoverage.cnn cnvaccess/cnn/tumor/$(sample).B.targetcoverage.cnn cnvaccess/cnn/tumor/$(sample).C.antitargetcoverage.cnn) $(foreach sample,$(NORMAL_SAMPLES),cnvaccess/cnn/normal/$(sample).A.targetcoverage.cnn cnvaccess/cnn/normal/$(sample).B.targetcoverage.cnn cnvaccess/cnn/normal/$(sample).C.antitargetcoverage.cnn)
 
+ONTARGET_FILE_A = ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-A.sorted.bed
+ONTARGET_FILE_B ?= ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.bed
+OFFTARGET_FILE = ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-AB.offtarget.bed
+
 define cnvaccess-tumor-cnn
 cnvaccess/cnn/tumor/%.A.targetcoverage.cnn : bam/%.bam
 	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_A) -o cnvaccess/cnn/tumor/$$(*).A.targetcoverage.cnn && \
