@@ -280,6 +280,49 @@ if (as.numeric(opt$type)==1) {
 	}
 	cat("done!\n", file=paste0("cnvaccess/plot/bychr/", opt$sample_name, "/timestamp"), append=FALSE)
 
+} else if (as.numeric(opt$type)==3) {
+
+	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
+	dataA[dataA[,"chromosome"]=="Y", "chromosome"] = 24
+	dataA[,"chromosome"] = as.numeric(dataA[,"chromosome"])
+	dataA = subset(dataA, dataA[,"chromosome"]<=23)
+	
+	tmp = dataA[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
+	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
+	
+	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataB[dataB[,"chromosome"]=="X", "chromosome"] = 23
+	dataB[dataB[,"chromosome"]=="Y", "chromosome"] = 24
+	dataB[,"chromosome"] = as.numeric(dataB[,"chromosome"])
+	dataB = subset(dataB, dataB[,"chromosome"]<=23)
+	
+	tmp = dataB[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
+	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
+	
+	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataC[dataC[,"chromosome"]=="X", "chromosome"] = 23
+	dataC[dataC[,"chromosome"]=="Y", "chromosome"] = 24
+	dataC[,"chromosome"] = as.numeric(dataC[,"chromosome"])
+	dataC = subset(dataC, dataC[,"chromosome"]<=23)
+	
+	tmp = dataC[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=1.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	dataC[tmp$wins.outliers[,3]!=0,"log2"] = NA
+
+	CN = rbind(dataA, dataB, dataC)
+	index = order(CN[,2])
+	CN = CN[index,,drop=FALSE]
+	index = order(CN[,1])
+	CN = CN[index,,drop=FALSE]
+	CN = CN[,c("chromosome", "start", "log2"),drop=FALSE]
+	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
+	
+	z0 = CN[,c("Chromosome", "Position", "Log2Ratio"),drop=FALSE]
+	tmp = pcf(data=z0, kmin=10, gamma=50, normalize=FALSE, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
+	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio")
+	save(CN, tmp, file=paste0("cnvaccess/segmented/", opt$sample_name, ".RData"))
+
 }
-
-
