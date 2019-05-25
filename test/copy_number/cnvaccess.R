@@ -42,7 +42,7 @@ if (as.numeric(opt$type)==1) {
 	index = order(data[,1])
 	data = data[index,,drop=FALSE]
 	
-	pdf(file=outfile_f = paste0("cnvaccess/plot/log2/", opt$sample_name, ".pdf"), width=10, height=4.2)
+	pdf(file = paste0("cnvaccess/plot/log2/", opt$sample_name, ".pdf"), width=10, height=4.2)
 	par(mar=c(5, 5, 4, 2)+.1)
 	plot(data[,"log2"], type="p", pch=19, cex=.25, col="grey80", axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	axis(2, at = NULL, cex.axis = 1.15, las = 1)
