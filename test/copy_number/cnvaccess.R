@@ -54,11 +54,19 @@ if (as.numeric(opt$type)==1) {
 	dataA[,"chromosome"] = as.numeric(dataA[,"chromosome"])
 	dataA = subset(dataA, dataA[,"chromosome"]<=23)
 	
+	tmp = dataA[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=2.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
+	
 	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataB[dataB[,"chromosome"]=="X", "chromosome"] = 23
 	dataB[dataB[,"chromosome"]=="Y", "chromosome"] = 24
 	dataB[,"chromosome"] = as.numeric(dataB[,"chromosome"])
 	dataB = subset(dataB, dataB[,"chromosome"]<=23)
+	
+	tmp = dataB[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=2.5, k=25, verbose=FALSE, return.outliers=TRUE)
+	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
 	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataC[dataC[,"chromosome"]=="X", "chromosome"] = 23
@@ -66,6 +74,10 @@ if (as.numeric(opt$type)==1) {
 	dataC[,"chromosome"] = as.numeric(dataC[,"chromosome"])
 	dataC = subset(dataC, dataC[,"chromosome"]<=23)
 	
+	tmp = dataC[,c("chromosome", "start", "log2"),drop=FALSE]
+	tmp = winsorize(data=tmp, tau=1.5, k=15, verbose=FALSE, return.outliers=TRUE)
+	dataC[tmp$wins.outliers[,3]!=0,"log2"] = NA
+
 	data = rbind(dataA, dataB, dataC)
 	index = order(data[,2])
 	data = data[index,,drop=FALSE]
