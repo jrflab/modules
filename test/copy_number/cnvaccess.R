@@ -254,7 +254,7 @@ if (as.numeric(opt$type)==1) {
 		z1 = pcf(data=z0, kmin=10, gamma=50)
 		tmp = z1[,c("chrom","start.pos","end.pos","mean")]
 		colnames(tmp) = c("Chromosome", "Start", "End", "Log2Ratio")
-		points(z0[,"Position"], z0[,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey80")
+		points(z0[,"Position"], z0[,"Log2Ratio"], type="p", pch=".", cex=2, col="grey80")
 		for (i in 1:nrow(tmp)) {
 			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
 		}
