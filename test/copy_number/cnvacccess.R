@@ -5,15 +5,6 @@ suppressPackageStartupMessages(library("copynumber"))
 suppressPackageStartupMessages(library("colorspace"))
 suppressPackageStartupMessages(library("ASCAT"))
 
-'MAPD' <- function(x) {
-	i = 1
-	ii = length(x)-1
-	j = 2
-	jj = length(x)
-	y = median(abs(x[i:ii] - x[j:jj]))
-	return(invisible(y))
-}
-
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
