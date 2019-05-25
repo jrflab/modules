@@ -7,7 +7,7 @@ PHONY += cnvaccess cnvaccess/segmented
 cnvaccess_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/segmented/$(sample).RData)
 
 define cnvaccess-segment
-cnvaccess/segmented/%.RData : cnvaccess/cnr/%.cnr
+cnvaccess/segmented/%.RData : cnvaccess/cnr/%.A.cnr cnvaccess/cnr/%.B.cnr cnvaccess/cnr/%.C.cnr
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p cnvaccess/segmented && \
 												 $(RSCRIPT) modules/test/copy_number/cnvaccess.R --type 3 --sample_name $$(*)")
 												 
