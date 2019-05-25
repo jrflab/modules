@@ -375,7 +375,7 @@ if (as.numeric(opt$type)==1) {
 			v = start[j]
 			abline(v=v, col="goldenrod3", lty=3, lwd=.5)
 		}
-		abline(v=max(x[,"pos"]), col="goldenrod3", lty=3, lwd=.5)
+		abline(v=max(x[,"Position"]), col="goldenrod3", lty=3, lwd=.5)
 		axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)	
 		rect(xleft=1-1e10, xright=x[nrow(x),"Position"]+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 		title(main = paste0(title, " | alpha = ", signif(alpha, 3), " | psi = ", signif(psi, 3)), line=-1, cex.main=.75, font.main=1)
