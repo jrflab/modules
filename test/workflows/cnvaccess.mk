@@ -2,7 +2,7 @@ include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/cnvaccess.$(NOW)
-PHONY += cnvkit cnvaccess/cnn cnvaccess/cnn/tumor cnvaccess/cnn/normal cnvaccess/reference cnvaccess/cnr cnvkit/plot cnvkit/plot/log2 cnvaccess/plot/segmented cnvaccess/called cnvaccess/summary
+PHONY += cnvkit cnvaccess/cnn cnvaccess/cnn/tumor cnvaccess/cnn/normal cnvaccess/reference cnvaccess/cnr cnvkit/plot cnvkit/plot/log2 cnvkit/plot/segmented cnvkit/plot/bychr cnvaccess/plot/segmented cnvaccess/called cnvaccess/summary
 
 CNV_ACCESS_WORKFLOW += cnvaccess_coverage
 CNV_ACCESS_WORKFLOW += cnvaccess_reference
