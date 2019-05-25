@@ -19,7 +19,7 @@ opt = arguments$options
 file_a_pool = paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr")
 file_b_pool = paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr")
 file_c_pool = paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr")
-outfile_a = paste0("cnvaccess/log2/", opt$sample_name, ".A.cnr")
+outfile_a = paste0("cnvaccess/log2/", opt$sample_name, ".A.pdf")
 outfile_b = paste0("cnvaccess/log2/", opt$sample_name, ".B.cnr")
 outfile_c = paste0("cnvaccess/log2/", opt$sample_name, ".C.cnr")
 if (as.numeric(opt$type)==1) {
