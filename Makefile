@@ -48,9 +48,13 @@ TARGETS += cravat_annotation
 cravat_annotation :
 	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
 	
-TARGETS += cnvkit
-cnvkit :
+TARGETS += cnv_kit
+cnv_kit :
 	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
+	
+TARGETS += cnv_access
+cnv_access :
+	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
 	
 TARGETS += pyclone
 pyclone :
@@ -651,10 +655,6 @@ TARGETS += run_qdnaseq
 run_qdnaseq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-	
-TARGETS += cnv_access
-cnv_access :
-	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
 	
 TARGETS += ss_pyclone
 ss_pyclone :
