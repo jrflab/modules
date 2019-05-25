@@ -4,10 +4,10 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvaccess_plot.$(NOW)
 PHONY += cnvkit cnvaccess/plot
 
-cnvaccess_plot : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/plot/$(sample).A.ontarget.pdf
-				cnvaccess/log2/$(sample).B.ontarget.pdf
-				cnvaccess/log2/$(sample).AB.ontarget.pdf
-				cnvaccess/log2/$(sample).offtarget.pdf
+cnvaccess_plot : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/plot/$(sample).A.ontarget.pdf \
+				cnvaccess/log2/$(sample).B.ontarget.pdf \
+				cnvaccess/log2/$(sample).AB.ontarget.pdf \
+				cnvaccess/log2/$(sample).offtarget.pdf \
 				cnvaccess/log2/$(sample).pdf)
 
 define cnvaccess-plot
