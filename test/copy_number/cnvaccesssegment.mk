@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvaccess_segment.$(NOW)
 PHONY += cnvaccess cnvaccess/segmented
 
-cnvaccess_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/segmented/$(sample).RData)
+cnvaccess_segment : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/segmented/$(sample).RData)
 
 define cnvaccess-segment
 cnvaccess/segmented/%.RData : cnvaccess/cnr/%.cnr
