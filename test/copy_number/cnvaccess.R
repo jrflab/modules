@@ -125,7 +125,7 @@ if (as.numeric(opt$type)==1) {
 	CN = CN[index,,drop=FALSE]
 	index = order(CN[,1])
 	CN = CN[index,,drop=FALSE]
-	CN = [,c("chromosome", "start", "log2"),drop=FALSE]
+	CN = CN[,c("chromosome", "start", "log2"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
 
 	
