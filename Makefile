@@ -56,6 +56,10 @@ TARGETS += cnv_access
 cnv_access :
 	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
 	
+TARGETS += fast_access
+fast_access :
+	$(call RUN_MAKE,modules/test/workflows/fastaccess.mk)
+	
 TARGETS += pyclone
 pyclone :
 	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
