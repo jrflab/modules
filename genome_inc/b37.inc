@@ -13,9 +13,6 @@ ANNOVAR_REF = hg19
 CLINVAR = $(REF_DIR)/clinvar_20160531.vcf.gz
 EXAC_NONTCGA = $(REF_DIR)/ExAC.r0.3.nonTCGA.sites.vep.2.vcf.gz
 
-#UCSC_REFSEQ_GTF = $(REF_DIR)s/genomes/ucsc.refseq.gtf
-#REFSEQ_GTF := $(UCSC_REFSEQ_GTF)
-
 FREEC_REF = $(REF_DIR)/GATK_bundle/2.3/FREEC_ref
 CHR_LEN = $(REF_DIR)/GATK_bundle/2.3/b37.len
 
@@ -127,7 +124,6 @@ VEP_REF = GRCh37
 VEP_DATA = $(REF_DIR)/vep/v86
 VEP_OVERRIDES = $(REF_DIR)/isoform_overrides_at_mskcc
 VEP_SPECIES = homo_sapiens
-
 
 FUENTES_BED = $(REF_DIR)/fuentes_blacklist.b37.bed
 DGD_BED = $(REF_DIR)/dgd.b37.bed
