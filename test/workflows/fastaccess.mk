@@ -29,14 +29,14 @@ endef
  $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
  
-#define fast-access-tumor-normal
-#fastaccess/cnr/$1_A.cnr : fastaccess/pileup/$1_A.gz
-#	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
-#	
-#fastaccess/cnr/$1_B.cnr : fastaccess/pileup/$1_B.gz
-#
-#endef
-# $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+define fast-access-tumor
+fastaccess/cnr/$1.txt : fastaccess/snp/$1_A.gz fastaccess/snp/$1_B.gz
+	$$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) --option 1 --pool_A $$(<) --pool_B $$(<<)")
+
+endef
+ $(foreach sample,$(TUMOR_SAMPLES),\
+		$(eval $(call fast-access-tumor,$(sample)))) 
+ 
 
 include modules/variant_callers/gatk.mk
 include modules/bam_tools/processBam.mk
