@@ -38,10 +38,10 @@ fastaccess/vcf/targets_dbsnp_pool_B.vcf : $(POOL_B_BED)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 
 define snp-pileup-tumor-normal
-fastaccess/pileup/$1_A.gz : bam/$1.bam bam/$2.bam facets/vcf/targets_dbsnp_pool_A.vcf
+fastaccess/pileup/$1_A.gz : bam/$1.bam bam/$2.bam fastaccess/vcf/targets_dbsnp_pool_A.vcf
 	$$(call RUN,-c -s 8G -m 20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 	
-fastaccess/pileup/$1_B.gz : bam/$1.bam bam/$2.bam facets/vcf/targets_dbsnp_pool_B.vcf
+fastaccess/pileup/$1_B.gz : bam/$1.bam bam/$2.bam fastaccess/vcf/targets_dbsnp_pool_B.vcf
 	$$(call RUN,-c -s 8G -m 20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
 
 endef
