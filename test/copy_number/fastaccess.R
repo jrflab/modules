@@ -20,7 +20,7 @@ if (!interactive()) {
 
 optList <- list(
                 make_option("--option", default = NA, type = 'numeric', help = "Type of analysis"),
-                make_option("--sample_name", default = NA, type = 'numeric', help = "Sample name")
+                make_option("--sample_name", default = NA, type = 'numeric', help = "Sample name"),
                 make_option("--pool_A", default = NA, type = 'character', help = "Pool A snp pileup"),
                 make_option("--pool_B", default = NA, type = 'character', help = "Pool B snp pileup"),
                 )
