@@ -1,7 +1,7 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/fastaccess.$(NOW)
-PHONY += fastaccess fastaccess/vcf fastaccess/snp fastaccess/cnr fastaccess/plots
+PHONY += fastaccess fastaccess/vcf fastaccess/snp fastaccess/cnr fastaccess/plots fastaccess/plots/log2
 
 FACETS_ENV = $(HOME)/share/usr/anaconda-envs/facets-0.5.6/
 RUN_FACETS = $(RSCRIPT) modules/test/copy_number/fastaccess.R
@@ -10,7 +10,7 @@ POOL_B_BED = ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.bed
 SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=150000
 
-fastaccess : $(foreach sample,$(TUMOR_SAMPLES),fastaccess/snp/$(sample)_A.gz fastaccess/snp/$(sample)_B.gz fastaccess/cnr/$(sample).txt)
+fastaccess : $(foreach sample,$(TUMOR_SAMPLES),fastaccess/snp/$(sample)_A.gz fastaccess/snp/$(sample)_B.gz fastaccess/cnr/$(sample).txt fastaccess/plots/log2/$(sample).pdf)
 
 fastaccess/vcf/targets_dbsnp_pool_A.vcf : $(POOL_A_BED)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
@@ -36,6 +36,14 @@ fastaccess/cnr/%.txt : fastaccess/snp/%_A.gz fastaccess/snp/%_B.gz
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call fast-access-tumor,$(sample)))) 
+
+define fast-access-plot-log2
+fastaccess/plots/log2/%.pdf : fastaccess/cnr/%.txt
+	$$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) --option 2 --sample_name $$(*)")
+
+endef
+ $(foreach sample,$(TUMOR_SAMPLES),\
+		$(eval $(call fast-access-plot-log2,$(sample)))) 
  
 
 include modules/variant_callers/gatk.mk
