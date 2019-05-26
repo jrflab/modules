@@ -54,9 +54,9 @@ if (as.numeric(opt$option)==1) {
 	tmp = rbind(proc_A$jointseg, proc_B$jointseg)[,c("chrom", "maploc", "cnlr", "vafT"),drop=FALSE]
 	colnames(tmp) = c("Chromosome", "Position", "Log2Ratio", "BAF")
 	index = order(tmp[,"Position"])
-	tmp = tmp[index,,drop=FASE]
+	tmp = tmp[index,,drop=FALSE]
 	index = order(tmp[,"Chromosome"])
-	tmp = tmp[index,,drop=FASE]
+	tmp = tmp[index,,drop=FALSE]
 
 	sample_name = gsub("_A.gz", "", x=strsplit(opt$pool_A, split="/", fixed=TRUE)[[1]][3], fixed=TRUE)
 	write.table(tmp, file=paste0("fastaccess/cnr/", sample_name, ".txt"), sep="\t", col.names=TRUE, row.names=FALSE, quote=FALSE, append=FALSE)
