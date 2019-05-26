@@ -29,7 +29,7 @@ FACETS_OPTS = --genome $(REF) \
 SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=150000
 
-fastaccess : $(foreach sample,$(TUMOR_SAMPLES),fastaccess/pileup/$(sample).A.gz fastaccess/pileup/$(sample).B.gz)
+fastaccess : $(foreach sample,$(TUMOR_SAMPLES),fastaccess/pileup/$(sample)_A.gz fastaccess/pileup/$(sample)_B.gz)
 
 fastaccess/vcf/targets_dbsnp_pool_A.vcf : $(POOL_A_BED)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
