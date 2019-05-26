@@ -22,7 +22,7 @@ optList <- list(
                 make_option("--option", default = NA, type = 'numeric', help = "Type of analysis"),
                 make_option("--sample_name", default = NA, type = 'numeric', help = "Sample name"),
                 make_option("--pool_A", default = NA, type = 'character', help = "Pool A snp pileup"),
-                make_option("--pool_B", default = NA, type = 'character', help = "Pool B snp pileup"),
+                make_option("--pool_B", default = NA, type = 'character', help = "Pool B snp pileup")
                 )
 parser <- OptionParser(usage = "%prog [options] [tumor-normal base counts file]", option_list = optList)
 arguments <- parse_args(parser, positional_arguments = T)
