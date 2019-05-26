@@ -91,7 +91,7 @@ if (as.numeric(opt$option)==1) {
 		box(lwd=1.5)
 	}
 	
-	data = read.csv(file=paste0("fastaccess/cnr/", opt$sample_name, ".txt"), header=TRUE, sep="\t", stringsAsFators=FALSE)
+	data = read.csv(file=paste0("fastaccess/cnr/", opt$sample_name, ".txt"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	pdf(file=paste0("fastaccess/plots/log2/", opt$sample_name, ".pdf"), width=10, height=4.25)
 	plot_log2_(x=data, title = opt$sample_name)
 	dev.off()
