@@ -22,7 +22,7 @@ CN = list()
 for (i in 1:length(tumor_samples)) {
 	load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
 	CN[[i]] = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT", "het"),drop=FALSE]
-	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio", "BAF", "GT")
+	colnames(CN[[i]]) = c("Chromosome", "Position", "Log2Ratio", "BAF", "Genotype")
 }
 index = lapply(CN, function(x) {paste0(x[,1], ":", x[,2])})
 featureNames = unique(unlist(index))
@@ -44,7 +44,8 @@ for (i in 1:length(CN)) {
 }
 Log2Ratio = do.call(cbind, lapply(CN, function(x) { return(x[,"Log2Ratio"]) } ))
 BAF = do.call(cbind, lapply(CN, function(x) { return(x[,"BAF"]) } ))
+Genotype = do.call(cbind, lapply(CN, function(x) { return(x[,"Genotype"]) } ))
 annotation = data.frame(Chromosome=chr,
 						Position=pos)
 colnames(Log2Ratio) = colnames(BAF) = tumor_samples
-save(Log2Ratio, BAF, annotation, file=paste0("medicc/mad/", opt$sample_set, ".RData"))
+save(Log2Ratio, BAF, Genotype, annotation, file=paste0("medicc/mad/", opt$sample_set, ".RData"))
