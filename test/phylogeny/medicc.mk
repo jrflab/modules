@@ -68,14 +68,14 @@ $(foreach set,$(SAMPLE_SETS),\
 #endef
 #$(foreach set,$(SAMPLE_SETS),\
 #		$(eval $(call boot-medicc,$(set))))
-#		
-#define plot-medicc
-#medicc/plots/%.pdf : medicc/medicc/%/tree_final.new medicc/boot/%/init.timestamp
-#	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$(*)")
-#
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call plot-medicc,$(set))))
+		
+define plot-medicc
+medicc/plots/%_allele_specific.pdf medicc/plots/%_total_copy.pdf : medicc/medicc/allele_specific/%/tree_final.new medicc/medicc/total_copy/%/tree_final.new
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$(*)")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call plot-medicc,$(set))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
