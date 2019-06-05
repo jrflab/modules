@@ -16,6 +16,8 @@ $(foreach set,$(SAMPLE_SETS),\
 define ascat-mpcf
 medicc/aspcf/%.RData medicc/mpcf/%.RData : medicc/mad/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/ascat ]; then mkdir medicc/ascat; fi && \
+												 if [ ! -d medicc/aspcf ]; then mkdir medicc/aspcf; fi && \
+												 if [ ! -d medicc/mpcf ]; then mkdir medicc/mpcf; fi && \
 												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
 endef
 $(foreach set,$(SAMPLE_SETS),\
