@@ -198,6 +198,7 @@ tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 		
 		'absolute.cn' <- function(x, rho, psi, gamma) {
 			n = round((2^(x/gamma) * ((psi*alpha) + 2*(1-alpha)) - 2*(1-alpha))/alpha)
+			n[n<0] = 0
 			return(n)
 		}
 		

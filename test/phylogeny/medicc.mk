@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/mad medicc/aspcf medicc/mpcf medicc/medicc medicc/boot medicc/plots
+PHONY += medicc medicc/mad medicc/aspcf medicc/mpcf medicc/medicc medicc/medicc/allele_specific  medicc/medicc/total_copy medicc/boot medicc/plots
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/aspcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) #$(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set).pdf)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/aspcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/allele_specific/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/total_copy/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set).pdf)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -24,14 +24,17 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call ascat-mpcf,$(set))))
 
-#define init-medicc
-#medicc/medicc/%/desc.txt : medicc/mpcf/%.RData
-#	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
-#
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call init-medicc,$(set))))
-#
+define init-medicc
+medicc/medicc/allele_specific/%/desc.txt medicc/medicc/total_copy/%/desc.txt : medicc/mpcf/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/medicc ]; then mkdir medicc/medicc; fi && \
+												 if [ ! -d medicc/medicc/allele_specific ]; then mkdir medicc/medicc/allele_specific; fi && \
+												 if [ ! -d medicc/medicc/total_copy ]; then mkdir medicc/medicc/total_copy; fi && \
+												 $(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call init-medicc,$(set))))
+
 #define run-medicc
 #medicc/medicc/%/tree_final.new : medicc/medicc/%/desc.txt
 #	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
