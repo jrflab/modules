@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/mad medicc/mpcf medicc/medicc medicc/boot medicc/plots
+PHONY += medicc medicc/mad medicc/aspcf medicc/mpcf medicc/medicc medicc/boot medicc/plots
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) #$(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set).pdf)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/aspcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) #$(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set).pdf)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -13,14 +13,14 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call combine-samples,$(set))))
 
-#define ascat-mpcf
-#medicc/mpcf/%.RData : medicc/mad/%.RData
-#	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/ascat ]; then mkdir medicc/ascat; fi && \
-#												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call ascat-mpcf,$(set))))
-#
+define ascat-mpcf
+medicc/aspcf/%.RData medicc/mpcf/%.RData : medicc/mad/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/ascat ]; then mkdir medicc/ascat; fi && \
+												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call ascat-mpcf,$(set))))
+
 #define init-medicc
 #medicc/medicc/%/desc.txt : medicc/mpcf/%.RData
 #	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
