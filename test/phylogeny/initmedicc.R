@@ -20,6 +20,16 @@ opt <- arguments$options
 	tmp = tmp[index,,drop=FALSE]
 	q2[q2>4] = 4
 	q1[q1>4] = 4
+	
+	if (ncol(q2)<3) {
+		q1x = q1
+		colnames(q1x) = paste0(colnames(q1), "_pad00")
+		q1 = cbind(q1, q1x)
+		q2x = q2
+		colnames(q2x) = paste0(colnames(q2), "_pad00")
+		q2 = cbind(q2, q2x)
+	}
+	
 	desc = cbind(paste0("chrom", unique(tmp[,"Chromosome"])),
 				 paste0("major_chr", unique(tmp[,"Chromosome"]), ".fasta"),
 				 paste0("minor_chr", unique(tmp[,"Chromosome"]), ".fasta"))
@@ -50,6 +60,16 @@ opt <- arguments$options
 	tmp = tmp[index,,drop=FALSE]
 	q2[q2>4] = 4
 	q1[q1>4] = 4
+	
+	if (ncol(q2)<3) {
+		q1x = q1
+		colnames(q1x) = paste0(colnames(q1), "_pad00")
+		q1 = cbind(q1, q1x)
+		q2x = q2
+		colnames(q2x) = paste0(colnames(q2), "_pad00")
+		q2 = cbind(q2, q2x)
+	}
+	
 	desc = cbind(paste0("chrom", unique(tmp[,"Chromosome"])),
 				 paste0("major_chr", unique(tmp[,"Chromosome"]), ".fasta"),
 				 paste0("minor_chr", unique(tmp[,"Chromosome"]), ".fasta"))
