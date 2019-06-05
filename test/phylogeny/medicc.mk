@@ -29,6 +29,8 @@ medicc/medicc/allele_specific/%/desc.txt medicc/medicc/total_copy/%/desc.txt : m
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/medicc ]; then mkdir medicc/medicc; fi && \
 												 if [ ! -d medicc/medicc/allele_specific ]; then mkdir medicc/medicc/allele_specific; fi && \
 												 if [ ! -d medicc/medicc/total_copy ]; then mkdir medicc/medicc/total_copy; fi && \
+												 if [ ! -d medicc/medicc/allele_specific/$$* ]; then mkdir medicc/medicc/allele_specific/$$*; fi && \
+												 if [ ! -d medicc/medicc/total_copy/$$* ]; then mkdir medicc/medicc/total_copy/$$*; fi && \
 												 $(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
 
 endef
