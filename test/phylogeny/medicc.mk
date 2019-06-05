@@ -44,6 +44,7 @@ medicc/medicc/allele_specific/%/tree_final.new : medicc/medicc/allele_specific/%
 
 medicc/medicc/total_copy/%/tree_final.new : medicc/medicc/total_copy/%/desc.txt
 	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
+												  export TMPDIR=medicc/medicc/total_copy/$$*/ && \
 												  $(MEDICC_BIN)/medicc.py medicc/medicc/total_copy/$$*/desc.txt medicc/medicc/total_copy/$$* -t -v && \
 												  cp medicc/medicc/total_copy/$$*/tree_fitch_nc.xml medicc/medicc/total_copy/$$*/tree_final.xml && \
 												  cp medicc/medicc/total_copy/$$*/tree_fitch_nc.graph medicc/medicc/total_copy/$$*/tree_final.graph && \
