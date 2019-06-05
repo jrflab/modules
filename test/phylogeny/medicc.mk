@@ -42,9 +42,12 @@ medicc/medicc/allele_specific/%/tree_final.new : medicc/medicc/allele_specific/%
 	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
 												  $(MEDICC_BIN)/medicc.py medicc/medicc/allele_specific/$$*/desc.txt medicc/medicc/allele_specific/$$* -v")
 
-medicc/medicc/total_copy/%/tree_fitch_nc.new : medicc/medicc/total_copy/%/desc.txt
+medicc/medicc/total_copy/%/tree_final.new : medicc/medicc/total_copy/%/desc.txt
 	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
-												  $(MEDICC_BIN)/medicc.py medicc/medicc/total_copy/$$*/desc.txt medicc/medicc/total_copy/$$* -t -v")
+												  $(MEDICC_BIN)/medicc.py medicc/medicc/total_copy/$$*/desc.txt medicc/medicc/total_copy/$$* -t -v && \
+												  cp medicc/medicc/total_copy/$$*/tree_fitch_nc.xml medicc/medicc/total_copy/$$*/tree_final.xml && \
+												  cp medicc/medicc/total_copy/$$*/tree_fitch_nc.graph medicc/medicc/total_copy/$$*/tree_final.graph && \
+												  cp medicc/medicc/total_copy/$$*/tree_fitch_nc.new medicc/medicc/total_copy/$$*/tree_final.new")
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
