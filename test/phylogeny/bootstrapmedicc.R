@@ -38,9 +38,9 @@ set.seed(0)
 for (ii in 1:100) {
 	n = nchar(ii)
 	if (n==1) {
-		n = paste0("00", i)
+		n = paste0("00", ii)
 	} else if (n==2) {
-		n = paste0("0", i)
+		n = paste0("0", ii)
 	} else {
 		n = ii
 	}
