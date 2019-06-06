@@ -586,6 +586,10 @@ krona_classify :
 TARGETS += medicc
 medicc :
 	$(call RUN_MAKE,modules/test/phylogeny/medicc.mk)
+	
+TARGETS += fetch_impact
+fetch_impact :
+	$(call RUN_MAKE,modules/test/workflows/fetchimpact.mk)
 
 
 #==================================================
@@ -606,7 +610,7 @@ genome_summary :
 
 TARGETS += mutation_summary
 mutation_summary :
-	$(call RUN_MAKE,modules/summary/mutationSummary.mk)
+	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
 	
 TARGETS += cravat_summary
 cravat_summary :
