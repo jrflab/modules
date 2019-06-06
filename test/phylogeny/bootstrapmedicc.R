@@ -35,14 +35,14 @@ if (ncol(q2)<3) {
 }
 
 set.seed(0)
-for (i in 1:100) {
-	n = nchar(i)
+for (ii in 1:100) {
+	n = nchar(ii)
 	if (n==1) {
 		n = paste0("00", i)
 	} else if (n==2) {
 		n = paste0("0", i)
 	} else {
-		n = i
+		n = ii
 	}
 	index = order(sample(x=1:nrow(tmp), size=nrow(tmp), replace=TRUE))
 	q2_b = q2[index,,drop=FALSE]
@@ -69,7 +69,7 @@ for (i in 1:100) {
 			cat(paste0(q1_b[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/allele_specific/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
 		}
 	}
-	if (i==100) {
+	if (ii==100) {
 		cat("done!", file=paste0("medicc/boot/allele_specific/", opt$sample_set, "/init.timestamp"))
 	}
 }
