@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/mad medicc/aspcf medicc/mpcf medicc/medicc medicc/medicc/allele_specific  medicc/medicc/total_copy medicc/boot medicc/plots
+PHONY += medicc medicc/mad medicc/aspcf medicc/mpcf medicc/medicc medicc/medicc/allele_specific  medicc/medicc/total_copy medicc/boot medicc/boot/allele_specific medicc/boot/total_copy medicc/plots
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/aspcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/allele_specific/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/total_copy/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/allele_specific/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/medicc/total_copy/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set)_allele_specific.pdf) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set)_total_copy.pdf) #$(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)) $(foreach set,$(SAMPLE_SETS),medicc/boot/$(set)/init.timestamp)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/mad/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/aspcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/mpcf/$(set).RData) $(foreach set,$(SAMPLE_SETS),medicc/medicc/allele_specific/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/total_copy/$(set)/desc.txt) $(foreach set,$(SAMPLE_SETS),medicc/medicc/allele_specific/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/medicc/total_copy/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set)_allele_specific.pdf) $(foreach set,$(SAMPLE_SETS),medicc/plots/$(set)_total_copy.pdf) $(foreach set,$(SAMPLE_SETS),medicc/boot/allele_specific/$(set)/init.timestamp) $(foreach set,$(SAMPLE_SETS),medicc/boot/allele_specific/$(set)/bootstrap.timestamp)
 
 define combine-samples
 medicc/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -53,21 +53,21 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call run-medicc,$(set))))
 
-#define boot-medicc
-#medicc/boot/% medicc/boot/%/init.timestamp : medicc/mpcf/%.RData
-#	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
-#												 touch medicc/boot/$$*/init.timestamp")
-#
-#medicc/boot/%/bootstrap.timestamp : medicc/boot/%/init.timestamp
-#	$$(call RUN,-s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \
-#											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
-#											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/desc.txt; fi' && \
-#											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/*.fasta; fi' && \
-#											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/$$*/{}/chrom*; fi' && \
-#											  	   	   		touch medicc/boot/$$*/bootstrap.timestamp")
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call boot-medicc,$(set))))
+define boot-medicc
+medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
+												 touch medicc/boot/allele_specific/$$*/init.timestamp")
+
+medicc/boot/allele_specific/%/bootstrap.timestamp : medicc/boot/allele_specific/%/init.timestamp
+	$$(call RUN,-s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/allele_specific/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/desc.txt; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/*.fasta; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/chrom*; fi' && \
+											  	   	   		touch medicc/boot/allele_specific/$$*/bootstrap.timestamp")
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call boot-medicc,$(set))))
 		
 define plot-medicc
 medicc/plots/%_allele_specific.pdf medicc/plots/%_total_copy.pdf : medicc/medicc/allele_specific/%/tree_final.new medicc/medicc/total_copy/%/tree_final.new
