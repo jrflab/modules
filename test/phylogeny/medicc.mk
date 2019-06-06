@@ -55,8 +55,7 @@ $(foreach set,$(SAMPLE_SETS),\
 
 define boot-medicc
 medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
-	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$* && \
-												 touch medicc/boot/allele_specific/$$*/init.timestamp")
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$*")
 
 medicc/boot/allele_specific/%/bootstrap.timestamp : medicc/boot/allele_specific/%/init.timestamp
 	$$(call RUN,-s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \

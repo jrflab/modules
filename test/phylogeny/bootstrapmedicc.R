@@ -69,4 +69,7 @@ for (i in 1:100) {
 			cat(paste0(q1_b[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/boot/allele_specific/", opt$sample_set, "/", n, "/minor_chr", i, ".fasta"), append=TRUE)
 		}
 	}
+	if (i==100) {
+		cat("done!", file=paste0("medicc/boot/allele_specific/", opt$sample_set, "/init.timestamp"))
+	}
 }
