@@ -59,7 +59,7 @@ medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
 
 medicc/boot/allele_specific/%/bootstrap.timestamp : medicc/boot/allele_specific/%/init.timestamp
 	$$(call RUN,-s 2G -m 4G -n 12 -v $(MEDICC_ENV) -w 3600,"source $(MEDICC_VAR) && \
-											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/allele_specific/$$*/{}/desc.txt medicc/boot/$$*/{}/ -v; fi' && \
+											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ ! -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then $(MEDICC_BIN)/medicc.py medicc/boot/allele_specific/$$*/{}/desc.txt medicc/boot/allele_specific/$$*/{}/ -v; fi' && \
 											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/desc.txt; fi' && \
 											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/*.fasta; fi' && \
 											  	   	   		seq -f '%03g' 1 100 | parallel -j 12 'if [ -f medicc/boot/allele_specific/$$*/{}/tree_final.new ]; then rm -rf medicc/boot/allele_specific/$$*/{}/chrom*; fi' && \
