@@ -23,7 +23,7 @@ mutation_summary = read_tsv(file="summary/tsv/mutation_summary.tsv", col_types =
  				   filter(NORMAL_MAF==0) %>%
  				   filter(TUMOR_MAF>=.05) %>%
  				   filter(TUMOR_DP<=500) %>%
- 				   filter(TUMOR_DP>=50) %>%
+ 				   filter(TUMOR_DP>=20) %>%
  				   filter(NORMAL_DP<=500) %>%
  				   filter(NORMAL_DP>=10) %>%
  				   mutate(CHROM = as.numeric(ifelse(CHROM=="X", 23, CHROM))) %>%
