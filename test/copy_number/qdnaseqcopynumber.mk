@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/qdnaseq_copynumber.$(NOW)
 PHONY += qdnaseq qdnaseq/copynumber qdnaseq/copynumber/log2ratio qdnaseq/copynumber/segmented qdnaseq/copynumber/pcf
 
-qdnaseq : $(foreach sample,$(SAMPLES),qdnaseq/copynumber/log2ratio/$(sample).pdf qdnaseq/copynumber/segmented/$(sample).RData qdnaseq/copynumber/pcf/$(sample).pdf)
+qdnaseq_copynumber : $(foreach sample,$(SAMPLES),qdnaseq/copynumber/log2ratio/$(sample).pdf qdnaseq/copynumber/segmented/$(sample).RData qdnaseq/copynumber/pcf/$(sample).pdf)
 
 define qdnaseq-plot-log2ratio
 qdnaseq/copynumber/log2ratio/%.pdf : qdnaseq/bed/%.bed
