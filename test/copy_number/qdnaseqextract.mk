@@ -8,6 +8,7 @@ qdnaseq : $(foreach sample,$(SAMPLES),qdnaseq/readcounts/$(sample).pdf qdnaseq/i
 
 DEFAULT_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
 QDNASEQ_ENV = $(HOME)/share/usr/anaconda-envs/qdnaseq
+QDNASEQ_BINSIZE = 5
 
 define qdnaseq-log2ratio
 qdnaseq/readcounts/%.pdf qdnaseq/isobars/%.pdf qdnaseq/variance/%.pdf qdnaseq/log2ratio/%.pdf qdnaseq/bed/%.bed : bam/%.bam
