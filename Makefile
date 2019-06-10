@@ -63,6 +63,10 @@ fast_access :
 TARGETS += pyclone
 pyclone :
 	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
+	
+TARGETS += qdna_seq
+qdna_seq :
+	$(call RUN_MAKE,modules/test/workflows/qdnaseq.mk)
 
 #==================================================
 # aligners
@@ -659,11 +663,6 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
-TARGETS += qdna_seq
-qdna_seq :
-	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-	
 TARGETS += ss_pyclone
 ss_pyclone :
 	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
