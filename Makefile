@@ -659,8 +659,8 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
-TARGETS += run_qdnaseq
-run_qdnaseq :
+TARGETS += qdna_seq
+qdna_seq :
 	$(MAKE) -f modules/test/copy_number/qdnaseqextract.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
 	
