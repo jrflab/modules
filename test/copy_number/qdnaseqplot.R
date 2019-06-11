@@ -119,7 +119,7 @@ if (opt$type=="raw") {
 	axis(1, at = .5*(start+end), labels=c(1:22), cex.axis = 0.85, las = 1)
     rect(xleft=1-1e10, xright=max(data[,"Start"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = opt$sample, line=-1, cex.main=.75, font.main=1)
-	for (k in 1:8) {
+	for (k in c(1,2,3,4,6,9)) {
 		abline(h=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="brown", lty=3, cex=.5)
 		mtext(text=k, side=4, line=.5, at=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.5, col="brown")
 	}
