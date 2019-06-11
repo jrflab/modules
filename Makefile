@@ -36,37 +36,6 @@ TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 
-TARGETS += copynumber_summary
-copynumber_summary:
-	$(call RUN_MAKE,modules/test/workflows/copynumber_summary.mk)
-	
-TARGETS += viral_detection
-viral_detection:
-	$(call RUN_MAKE,modules/test/workflows/viral_detection.mk)
-	
-TARGETS += cravat_annotation
-cravat_annotation :
-	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
-	
-TARGETS += cnv_kit
-cnv_kit :
-	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
-	
-TARGETS += cnv_access
-cnv_access :
-	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
-	
-TARGETS += fast_access
-fast_access :
-	$(call RUN_MAKE,modules/test/workflows/fastaccess.mk)
-	
-TARGETS += pyclone
-pyclone :
-	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
-	
-TARGETS += qdna_seq
-qdna_seq :
-	$(call RUN_MAKE,modules/test/workflows/qdnaseq.mk)
 
 #==================================================
 # aligners
@@ -285,25 +254,13 @@ TARGETS += gistic
 gistic :
 	$(call RUN_MAKE,modules/copy_number/gistic.mk)
 	
-TARGETS += genome_altered
-genome_altered :
-	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
-	
-TARGETS += lst_score
-lst_score :
-	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
-	
-TARGETS += ntai_score
-ntai_score :
-	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
-	
-TARGETS += myriad_score
-myriad_score :
-	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
-	
 TARGETS += snp6
 snp6 :
 	$(call RUN_MAKE,modules/snp6/snp6.mk)
+	
+TARGETS += cnv_kit
+cnv_kit :
+	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
 
 TARGETS += cnvkit_coverage
 cnvkit_coverage :
@@ -332,6 +289,46 @@ cnvkit_pca :
 TARGETS += cnvkit_qc
 cnvkit_qc :
 	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
+	
+TARGETS += qdna_seq
+qdna_seq :
+	$(call RUN_MAKE,modules/test/workflows/qdnaseq.mk)
+	
+TARGETS += qdnaseq_extract_test
+qdnaseq_extract_test:
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqextract.mk)
+	
+TARGETS += qdnaseq_copynumber_test
+qdnaseq_copynumber_test:
+	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
+	
+TARGETS += cnv_access
+cnv_access :
+	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
+	
+TARGETS += fast_access
+fast_access :
+	$(call RUN_MAKE,modules/test/workflows/fastaccess.mk)
+	
+TARGETS += copynumber_summary
+copynumber_summary:
+	$(call RUN_MAKE,modules/test/workflows/copynumber_summary.mk)
+	
+TARGETS += genome_altered
+genome_altered :
+	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
+	
+TARGETS += lst_score
+lst_score :
+	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
+	
+TARGETS += ntai_score
+ntai_score :
+	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
+	
+TARGETS += myriad_score
+myriad_score :
+	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
 
 
 #==================================================
@@ -545,6 +542,10 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
+TARGETS += ms_pyclone
+ms_pyclone :
+	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
+	
 TARGETS += setup_pyclone
 setup_pyclone :
 	$(call RUN_MAKE,modules/clonality/setuppyclone.mk)
@@ -556,6 +557,10 @@ run_pyclone :
 TARGETS += plot_pyclone
 plot_pyclone :
 	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
+	
+TARGETS += ss_pyclone
+ss_pyclone :
+	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
 	
 
 #==================================================
@@ -582,6 +587,10 @@ contest :
 TARGETS += virus_detection_bowtie2
 virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
+	
+TARGETS += viral_detection
+viral_detection:
+	$(call RUN_MAKE,modules/test/workflows/viral_detection.mk)
 	
 TARGETS += krona_classify
 krona_classify :
@@ -637,6 +646,10 @@ TARGETS += ann_vcf
 ann_vcf: 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
+TARGETS += cravat_annotation
+cravat_annotation :
+	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
+	
 TARGETS += cravat_annotate
 cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
@@ -646,14 +659,6 @@ cravat_annotate :
 # beta testing
 #==================================================
 
-TARGETS += qdnaseq_extract_test
-qdnaseq_extract_test:
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqextract.mk)
-	
-TARGETS += qdnaseq_copynumber_test
-qdnaseq_copynumber_test:
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-	
 TARGETS += hotspot_summary
 hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
@@ -663,8 +668,4 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
-TARGETS += ss_pyclone
-ss_pyclone :
-	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
-	
 .PHONY : $(TARGETS)
