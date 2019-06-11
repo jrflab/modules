@@ -101,7 +101,7 @@ if (opt$type=="raw") {
 		segmented[segmented[,"Chromosome"]==j,"End"] = segmented[segmented[,"Chromosome"]==j,"End"] + start[j]
 		data[data[,"Chromosome"]==j,"Start"] = data[data[,"Chromosome"]==j,"Start"] + start[j]
 	}
-	col = "grey80"
+	col = "grey75"
 	pdf(file=outfile, width=10, height=4.25)
 	par(mar=c(5, 5, 4, 2)+.1)
 	plot(data[,"Start"], data[,"Log2Ratio"], type="p", pch=".", cex=1.95, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
@@ -144,9 +144,9 @@ if (opt$type=="raw") {
 		par(mar = c(6.1, 6, 4.1, 3))
 		start = 1
 		end = max(CytoBand[CytoBand[,"Chromosome"]==ii,"End"])
-		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-2,2), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
+		plot(1, 1, type="n", xlim=c(start,end), ylim=c(-4,4), xlab="", ylab="", main="", frame.plot=FALSE, axes=FALSE)
 		index = data[,"Chromosome"]==ii
-		points(data[index,"Start"], data[index,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey80")
+		points(data[index,"Start"], data[index,"Log2Ratio"], type="p", pch=".", cex=1.15, col="grey75")
 		tmp = subset(segmented, segmented[,"Chromosome"]==ii)
 		for (i in 1:nrow(tmp)) {
 			points(c(tmp[i,"Start"], tmp[i,"End"]), rep(tmp[i,"Log2Ratio"],2), type="l", col="red", lwd=4)
@@ -155,9 +155,9 @@ if (opt$type=="raw") {
 			points(c(tmp[i,"End"], tmp[i+1,"Start"]), c(tmp[i,"Log2Ratio"],tmp[i+1,"Log2Ratio"]), type="l", col="red", lwd=1)
 		}
 		abline(h=0, lwd=1)
-		axis(2, at = c(-2,-1.5,-1,-.5,0,.5,1,1.5,2), labels=c("-2","-1.5","-1","-.5","0",".5","1","1.5","2"), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
+		axis(2, at = c(-4,-2,0,2,4), labels=c("-4","-2","0","2", "4"), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
 		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
-		for (k in 1:8) {
+		for (k in c(1,2,3,4,6,9)) {
 			abline(h=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="darkorange", lty=3)
 			mtext(text=k, side=4, line=.5, at=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="darkorange")
 		}
