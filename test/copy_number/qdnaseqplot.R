@@ -168,6 +168,5 @@ if (opt$type=="raw") {
 		close.screen(all.screens=TRUE)
 		dev.off()
 	}
-
-
+	
 }

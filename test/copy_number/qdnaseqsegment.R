@@ -19,6 +19,6 @@ infile = paste0("qdnaseq/bed/", opt$sample, ".bed")
 outfile = paste0("qdnaseq/copynumber/segmented/", opt$sample, ".RData")
 data = read.table(file=infile, header=FALSE, sep="\t", skip=1, stringsAsFactors=FALSE)[,c(1,2,3,5),drop=FALSE]
 colnames(data) = c("Chromosome", "Start", "End", "Log2Ratio")
-segmented = pcf(data=winsorize(data=data[,c("Chromosome", "Start", "Log2Ratio"),drop=FALSE], method="mad", tau=2.5, k=25, verbose=FALSE), kmin = 50, gamma = 100, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
+segmented = pcf(data=winsorize(data=data[,c("Chromosome", "Start", "Log2Ratio"),drop=FALSE], method="mad", tau=2.5, k=25, verbose=FALSE), kmin = 100, gamma = 150, fast=FALSE, verbose=FALSE)[,2:7,drop=FALSE]
 colnames(segmented) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio")
 save(data, segmented, file=outfile)
