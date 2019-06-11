@@ -123,7 +123,7 @@ if (opt$type=="raw") {
 		abline(h=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), col="darkorange", lty=3)
 		mtext(text=k, side=4, line=.5, at=(opt$gamma*log2(((opt$rho)*k + (1-opt$rho)*2)/((opt$rho)*opt$psi + (1-opt$rho)*2))), las=2, cex=.75, col="darkorange")
 	}
-	box(lwd=2.5)
+	box(lwd=1.5)
 	dev.off()
 
 } else if (opt$type=="bychromosome") {
