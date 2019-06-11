@@ -202,10 +202,6 @@ TARGETS += facets
 facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
 	
-TARGETS += facets_plot
-facets_plot :
-	$(call RUN_MAKE,modules/copy_number/facetsplot.mk)
-	
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)
