@@ -48,8 +48,8 @@ mutation_id = as.character(mutation_summary$UUID)
 var_counts = round(fsq*n)
 ref_counts = round((1-fsq)*n)
 normal_cn = rep(2, nrow(mutation_summary))
-minor_cn = rep(0, nrow(mutation_summary))
-major_cn = qt
+minor_cn = q1
+major_cn = qt-q1
 sample_summary = data.frame(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
 index = apply(sample_summary, 1, function(x) {any(is.na(x))})
 sample_summary = sample_summary[!index,,drop=FALSE]
@@ -97,7 +97,7 @@ cat("    tumour_content:\n", file=paste0("pyclone/", opt$sample_name, "/config.y
 cat(paste0("      value: ", ifelse(is.na(fit$purity), 1.0, signif(fit$purity, 2)),"\n"), file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("\n", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
 cat("    error_rate: 0.01", file=paste0("pyclone/", opt$sample_name, "/config.yaml"), append = TRUE)
-system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate ~/share/usr/anaconda-envs/PyClone-0.13.1 && PyClone build_mutations_file --in_file pyclone/",  opt$sample_name, "/", tumor_sample, ".tsv --out_file pyclone/", opt$sample_name, "/", tumor_sample, ".yaml  --prior total_copy_number"))
+system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate ~/share/usr/anaconda-envs/PyClone-0.13.1 && PyClone build_mutations_file --in_file pyclone/",  opt$sample_name, "/", tumor_sample, ".tsv --out_file pyclone/", opt$sample_name, "/", tumor_sample, ".yaml  --prior parental_copy_number"))
 
 
 sample_summary = sample_summary %>%
