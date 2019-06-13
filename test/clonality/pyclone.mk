@@ -5,6 +5,8 @@ PHONY += pyclone
 
 pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/pyclone.tsv) #$(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/histogram_ccf.pdf) $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/report.tsv)
 
+MAX_CLUSTER ?= 5
+
 define make-pyclone
 pyclone/$1_$2/config.yaml : summary/tsv/mutation_summary.tsv
 	$$(call RUN, -s 16G -m 24G,"mkdir -p pyclone/$1_$2 && \
@@ -19,7 +21,7 @@ pyclone/$1_$2/trace/alpha.tsv.bz2 : pyclone/$1_$2/config.yaml
 							 		  
 pyclone/$1_$2/report/pyclone.tsv : pyclone/$1_$2/trace/alpha.tsv.bz2
 	$$(call RUN,-s 16G -m 24G -w 7200,"source /home/${USER}/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate /home/${USER}/share/usr/anaconda-envs/PyClone-0.13.1 && \
-							 		   PyClone build_table --config_file pyclone/$1_$2/config.yaml --out_file pyclone/$1_$2/report/pyclone.tsv --max_cluster 5 --table_type old_style --burnin 50000")
+							 		   PyClone build_table --config_file pyclone/$1_$2/config.yaml --out_file pyclone/$1_$2/report/pyclone.tsv --max_cluster $(MAX_CLUSTER) --table_type old_style --burnin 50000")
 							 		   
 #pyclone/$1_$2/report/histogram_ccf.pdf : pyclone/$1_$2/report/pyclone.tsv
 #	$$(call RUN, -s 24G -m 48G,"mkdir -p pyclone/$1_$2 && \
