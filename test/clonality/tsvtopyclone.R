@@ -106,25 +106,6 @@ sample_summary = sample_summary %>%
 				 mutate(major_cn = ifelse(major_cn>10, 10, major_cn)) %>%
 				 mutate(major_cn = factor(major_cn))
 				
-plot.0 =  ggplot(sample_summary, aes(x = VAF)) +
-		  geom_histogram(alpha = .8, fill="salmon") +
-		  theme_classic() +
-		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
-		  labs(x="\nVAF(%)\n", y="Frequency\n") +
-		  coord_cartesian(xlim=c(0,100))
-pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_vaf.pdf"), width=6, height=6)
-print(plot.0)
-dev.off()
-
-plot.0 =  ggplot(sample_summary, aes(x = DP)) +
-		  geom_histogram(alpha = .8, fill="salmon") +
-		  theme_classic() +
-		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=8), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
-		  labs(x="\nDP\n", y="Frequency\n")
-pdf(file=paste0("pyclone/", opt$sample_name, "/report/histogram_depth.pdf"), width=6, height=6)
-print(plot.0)
-dev.off()
-
 plot.0 =  ggplot(sample_summary, aes(x = VAF, fill=major_cn)) +
 		  geom_histogram(alpha = .8) +
 		  theme_classic() +

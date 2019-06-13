@@ -15,13 +15,13 @@ opt = arguments$options
 tumor_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[1]
 normal_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[2]
 
-file_paths = list(
-	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/pyclone.tsv"),
+in_file = paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/pyclone.tsv")
+out_file = list(
 	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/histogram_std.pdf"),
 	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/histogram_ccf.pdf")
 )
 
-mutation_summary = read_tsv(file=file_paths[[1]], col_types = cols(.default = col_character()), col_names = c("ID", "CCF", "STD", "C_ID")) %>%
+mutation_summary = read_tsv(file=in_file, col_types = cols(.default = col_character()), col_names = c("ID", "CCF", "STD", "C_ID")) %>%
 				   type_convert() %>%
 				   mutate(C_ID = factor(C_ID)) %>%
 				   mutate(CCF = as.numeric(CCF)) %>%
@@ -33,8 +33,8 @@ plot.0 =  ggplot(mutation_summary, aes(x=STD, color=C_ID)) +
 		  theme_classic() +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=9), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nSigma\n", y="Frequency\n") +
-		  guides(fill=guide_legend(title=c("Cluster")))
-pdf(file=file_paths[[2]], width=6, height=6)
+		  guides(color=guide_legend(title=c("Cluster")))
+pdf(file=out_file[[1]], width=6, height=6)
 print(plot.0)
 dev.off()
 		 
@@ -44,7 +44,7 @@ plot.0 =  ggplot(mutation_summary, aes(x=CCF, color=C_ID)) +
 		  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=9), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
 		  labs(x="\nCCF\n", y="Frequency\n") +
 		  coord_cartesian(xlim=c(0,1)) +
-		  guides(fill=guide_legend(title=c("Cluster")))
-pdf(file=file_paths[[3]], width=6, height=6)
+		  guides(color=guide_legend(title=c("Cluster")))
+pdf(file=out_file[[2]], width=6, height=6)
 print(plot.0)
 dev.off()
