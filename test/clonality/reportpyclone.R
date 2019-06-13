@@ -16,8 +16,8 @@ tumor_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[1]
 normal_sample = unlist(strsplit(opt$sample_name, split="_", fixed=TRUE))[2]
 
 file_paths = list(
-	paste0("pyclone/", tumor_sample, "_", normal_sample, "/pyclone.tsv"),
-	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report.tsv")
+	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/pyclone.tsv"),
+	paste0("pyclone/", tumor_sample, "_", normal_sample, "/report/report.tsv")
 )
 
 mutation_summary = read_tsv(file=file_paths[[1]], col_types = cols(.default = col_character()), col_names = c("ID", "CCF", "STD", "C_ID")) %>%
