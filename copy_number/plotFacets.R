@@ -91,7 +91,7 @@ for (chr in unique(df$chrom)) {
 		mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 		axis(1, at = NULL, labels = NULL, cex.axis = 0.85, las = 1)
     	rect(xleft=1-1e10, xright=nrow(chdf)+10e3, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-		title(main = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+		title(main = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE), line=-1.5, cex.main=.75, font.main=1)
     	box(lwd=1.5)
 
         if (!is.null(opt$centromereFile)) {

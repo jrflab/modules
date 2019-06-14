@@ -405,10 +405,10 @@ if (opt$type=="log2") {
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
-	for (k in 1:8) {
-		abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
-		mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="brown")
-	}
+	# for (k in 1:8) {
+	#	abline(h=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), col="brown", lty=3)
+	#	mtext(text=k, side=4, line=.5, at=(.75*log2(((purity)*k + (1-purity)*2)/((purity)*ploidy + (1-purity)*2))), las=2, cex=.75, col="brown")
+	# }
     rect(xleft=1-1e10, xright=max(CN[,"pos"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/total/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     box(lwd=1.5)
