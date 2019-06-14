@@ -48,9 +48,9 @@ names(cols) = 1:30
 
 df = data.frame(percentage = 100*as.numeric(extracted_signatures$weights[1,]),
 				signature_name = colnames(extracted_signatures$weights)) %>%
-				mutate(signature_name = gsub(pattern="Signature.", replacement="", signature_name)) %>%
-				filter(percentage!=0) %>%
+				mutate(signature_name = as.numeric(gsub(pattern="Signature.", replacement="", signature_name))) %>%
 				arrange(signature_name) %>%
+				filter(percentage!=0) %>%
 				mutate(signature_name = factor(signature_name)) %>%
 				mutate(lab.ypos = cumsum(percentage) - 0.5*percentage)
 				
