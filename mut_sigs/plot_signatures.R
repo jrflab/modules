@@ -51,9 +51,10 @@ df = data.frame(percentage = 100*as.numeric(extracted_signatures$weights[1,]),
 plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
 		  geom_bar(width = 1, stat = "identity", color = "white") +
 		  coord_polar("y", start = 0) +
-		  geom_text(aes(y = lab.ypos, label = percentage), color = "white") +
+		  geom_text(aes(y = lab.ypos, label = signif(percentage,3)), color = "white") +
+		  guides(fill=guide_legend(title="Signature")) +
 		  theme_void()
 		  
-pdf(file=paste0("deconstructsigs/plots/signature_exposures/", opt$sample_name, ".pdf"), width=25, height=5)
+pdf(file=paste0("deconstructsigs/plots/signature_exposures/", opt$sample_name, ".pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
