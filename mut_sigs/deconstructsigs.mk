@@ -20,7 +20,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 else 
 
 define extract-signatures
-deconstructsigs/signaures/%.RData : summary/tsv/mutation_summary.tsv
+deconstructsigs/signatures/%.RData : summary/tsv/mutation_summary.tsv
 	$$(call RUN,-c -s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/ --sample_name $$(*)")
 
 endef
