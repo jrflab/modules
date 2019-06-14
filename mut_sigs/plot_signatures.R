@@ -51,7 +51,7 @@ df = data.frame(percentage = 100*as.numeric(extracted_signatures$weights[1,]),
 				mutate(signature_name = as.numeric(gsub(pattern="Signature.", replacement="", signature_name))) %>%
 				arrange(signature_name) %>%
 				filter(percentage!=0) %>%
-				mutate(signature_name = factor(signature_name)) %>%
+				mutate(signature_name = factor(signature_name, ordered=TRUE, levels=sort(signature_name))) %>%
 				mutate(lab.ypos = cumsum(percentage) - 0.5*percentage)
 				
 plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
