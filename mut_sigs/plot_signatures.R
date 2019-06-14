@@ -41,4 +41,19 @@ pdf(file=paste0("deconstructsigs/plots/trint_context/", opt$sample_name, ".pdf")
 print(plot.0)
 dev.off()
 
-
+df = data.frame(percentage = 100*as.numeric(extracted_signatures$weights[1,]),
+				signature_name = colnames(extracted_signatures$weights)) %>%
+				mutate(signature_name = gsub(pattern="Signature.", replacement="", signature_name)) %>%
+				filter(percentage!=0) %>%
+				mutate(signature_name = factor(signature_name)) %>%
+				mutate(lab.ypos = cumsum(percentage) - 0.5*percentage)
+				
+plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
+		  geom_bar(width = 1, stat = "identity", color = "white") +
+		  coord_polar("y", start = 0) +
+		  geom_text(aes(y = lab.ypos, label = percentage), color = "white") +
+		  theme_void()
+		  
+pdf(file=paste0("deconstructsigs/plots/signature_exposures/", opt$sample_name, ".pdf"), width=25, height=5)
+print(plot.0)
+dev.off()
