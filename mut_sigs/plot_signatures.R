@@ -37,7 +37,7 @@ plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)
   		 theme(axis.text.y = element_text(size=14), axis.text.x = element_text(size=10, angle=90), legend.position="none")
 
 
-pdf(file=paste0("deconstructsigs/plots/", opt$sample_name, ".pdf"), width=25, height=5)
+pdf(file=paste0("deconstructsigs/plots/trint_context/", opt$sample_name, ".pdf"), width=25, height=5)
 print(plot.0)
 dev.off()
 
