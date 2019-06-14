@@ -58,7 +58,7 @@ plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
 		  geom_bar(width = 1, stat = "identity", color = "white") +
 		  scale_fill_manual(values=cols) +
 		  coord_polar("y", start = 0) +
-		  geom_text(aes(y = lab.ypos, label = signif(percentage,3)), color = "white") +
+		  geom_text(aes(y = lab.ypos, label = paste0(signif(percentage,3)), "%"), color = "white") +
 		  guides(fill=guide_legend(title="Signature")) +
 		  theme_void()
 		  
