@@ -1,7 +1,7 @@
 include modules/Makefile.inc
 
 LOGDIR = log/deconstruct_sigs.$(NOW)
-PHONY += deconstructsigs deconstructsigs/signatures deconstructsigs/plots deconstructsigs/plots/trint_context deconstructsigs/plots/signature_exposures
+PHONY += deconstructsigs deconstructsigs/signatures deconstructsigs/plots
 
 deconstructsigs : $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/signatures/$(sample).RData) $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/plots/trint_context/$(sample).pdf)
 

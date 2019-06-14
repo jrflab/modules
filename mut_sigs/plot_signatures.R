@@ -41,15 +41,21 @@ pdf(file=paste0("deconstructsigs/plots/trint_context/", opt$sample_name, ".pdf")
 print(plot.0)
 dev.off()
 
+palette = colorRampPalette(brewer.pal(9, "Set1"))
+cols = palette(30)
+names(cols) = 1:30
+
 df = data.frame(percentage = 100*as.numeric(extracted_signatures$weights[1,]),
 				signature_name = colnames(extracted_signatures$weights)) %>%
 				mutate(signature_name = gsub(pattern="Signature.", replacement="", signature_name)) %>%
 				filter(percentage!=0) %>%
+				arrange(signature_name) %>%
 				mutate(signature_name = factor(signature_name)) %>%
 				mutate(lab.ypos = cumsum(percentage) - 0.5*percentage)
 				
 plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
 		  geom_bar(width = 1, stat = "identity", color = "white") +
+		  scale_fill_manual(values=cols) +
 		  coord_polar("y", start = 0) +
 		  geom_text(aes(y = lab.ypos, label = signif(percentage,3)), color = "white") +
 		  guides(fill=guide_legend(title="Signature")) +
