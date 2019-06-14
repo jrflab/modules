@@ -6,6 +6,7 @@ suppressPackageStartupMessages(library("deconstructSigs"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("ggplot2"))
+suppressPackageStartupMessages(library("RColorBrewer"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
