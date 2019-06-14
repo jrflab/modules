@@ -162,6 +162,8 @@ HATCHET_ENV = $(HOME)/share/usr/anaconda-envs/hatchet
 HATCHET_VAR = $(HATCHET_ENV)/PROFILE
 HATCHET_BIN = $(HATCHET_ENV)/opt/machina/build
 
+DECONSTRUCTSIGS_ENV = $(HOME)/share/usr/anaconda-envs/deconstructsigs
+
 
 endif
 CONFIG_INC = true
