@@ -1,0 +1,44 @@
+#!/usr/bin/env Rscript
+
+suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("readr"))
+suppressPackageStartupMessages(library("deconstructSigs"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("ggplot2"))
+
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+}
+
+args_list <- list(
+					make_option("--sample_name", default = NA, type = 'character', help = "tumor sample name")
+				  )
+				  
+parser <- OptionParser(usage = "%prog", option_list = args_list)
+arguments <- parse_args(parser, positional_arguments = T)
+opt <- arguments$options
+
+load(file=paste0("deconstructsigs/signatures/", opt$sample_name, ".RData"))
+
+df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor),
+				trinucleotide_context = colnames(extracted_signatures$tumor)) %>%
+				mutate(ref = rep(c("C", "T"), each=48)) %>%
+				mutate(alt = rep(c("A", "G", "T", "A", "C", "G"), each=16)) %>%
+				mutate(base_change = factor(paste0(ref, ">", alt)))
+				
+
+plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)) +
+		 geom_bar(stat="identity") +
+		 facet_wrap(~base_change, ncol = 6, nrow = 1, scales = "free_x") +
+  		 ylab("\nFraction (%)\n") +
+  		 xlab(" ") +
+  		 theme_bw(base_size=15) +
+  		 theme(axis.text.y = element_text(size=14), axis.text.x = element_text(size=10, angle=90), legend.position="none")
+
+
+pdf(file=paste0("deconstructsigs/plots/", opt$sample_name, ".pdf"), width=25, height=5)
+print(plot.0)
+dev.off()
+
+

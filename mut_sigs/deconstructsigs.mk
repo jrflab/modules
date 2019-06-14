@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR = log/deconstruct_sigs.$(NOW)
-PHONY += deconstructsigs deconstructsigs/signatures
+PHONY += deconstructsigs deconstructsigs/signatures deconstructsigs/plots
 
-deconstructsigs : $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/signatures/$(sample).RData)
+deconstructsigs : $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/signatures/$(sample).RData) $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/plots/$(sample).pdf)
 
 SUFAM ?= false
 
@@ -22,6 +22,9 @@ else
 define extract-signatures
 deconstructsigs/signatures/%.RData : summary/tsv/mutation_summary.tsv
 	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/extract_signatures.R --sample_name $$(*)")
+	
+deconstructsigs/plots/%.pdf : deconstructsigs/signatures/%.RData
+	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/plot_signatures.R --sample_name $$(*)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
