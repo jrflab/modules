@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/ss_pyclone.$(NOW)
 PHONY += pyclone
 
-pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/pyclone.tsv) $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/summary.tsv) #$(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/report.tsv)
+pyclone : $(foreach pair,$(SAMPLE_PAIRS),pyclone/$(pair)/report/summary.tsv)
 
 MAX_CLUSTER ?= 5
 
@@ -26,13 +26,8 @@ pyclone/$1_$2/report/pyclone.tsv : pyclone/$1_$2/trace/alpha.tsv.bz2
 pyclone/$1_$2/report/summary.tsv : pyclone/$1_$2/report/pyclone.tsv
 	$$(call RUN, -s 24G -m 48G,"mkdir -p pyclone/$1_$2 && \
 								mkdir -p pyclone/$1_$2/report && \
-							    $(RSCRIPT) modules/test/clonality/plotpyclone.R --sample_name $1_$2")
+							    $(RSCRIPT) modules/test/clonality/reportpyclone.R --sample_name $1_$2")
 							    
-#pyclone/$1_$2/report/report.tsv : pyclone/$1_$2/report/pyclone.tsv
-#	$$(call RUN, -s 24G -m 48G,"mkdir -p pyclone/$1_$2 && \
-#								mkdir -p pyclone/$1_$2/report && \
-#							    $(RSCRIPT) modules/test/clonality/reportpyclone.R --sample_name $1_$2")
-
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call make-pyclone,$(tumor.$(pair)),$(normal.$(pair)))))
