@@ -11,7 +11,7 @@ ifeq ($(SUFAM),true)
 
 define extract-signatures
 deconstructsigs/signaures/%.RData : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/ --sample_name $$(*)")
+	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/ --sample_name $$(*)")
 	
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
@@ -21,7 +21,7 @@ else
 
 define extract-signatures
 deconstructsigs/signatures/%.RData : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-c -s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/ --sample_name $$(*)")
+	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/ --sample_name $$(*)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
