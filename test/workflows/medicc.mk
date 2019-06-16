@@ -20,7 +20,7 @@ medicc/allele_specific/medicc/%/desc.txt : medicc/allele_specific/aspcf/%.RData
 												 mkdir -p medicc/allele_specific/medicc/$$* && \
 												 $(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
 
-medicc/allele_specific/medicc/%/tree_final.new : medicc/medicc/allele_specific/%/desc.txt
+medicc/allele_specific/medicc/%/tree_final.new : medicc/allele_specific/medicc/%/desc.txt
 	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
 												  $(MEDICC_BIN)/medicc.py medicc/allele_specific/medicc/$$*/desc.txt medicc/allele_specific/medicc/$$* -v")
 
