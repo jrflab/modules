@@ -26,7 +26,8 @@ df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor),
 				trinucleotide_context = colnames(extracted_signatures$tumor)) %>%
 				mutate(ref = rep(c("C", "T"), each=48)) %>%
 				mutate(alt = rep(c("A", "G", "T", "A", "C", "G"), each=16)) %>%
-				mutate(base_change = factor(paste0(ref, ">", alt)))
+				mutate(base_change = factor(paste0(ref, ">", alt))) %>%
+				mutate(percentage = ifelse(percentage==0, 0.1, percentage))
 				
 
 plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)) +
