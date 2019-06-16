@@ -41,7 +41,7 @@ else
 
 PHONY += medicc medicc/total_copy medicc/total_copy/mad medicc/total_copy/mpcf medicc/total_copy/medicc
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/total_copy/mpcf/$(set).RData)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/total_copy/medicc/$(set)/desc.txt)
 
 define total-copy-medicc
 medicc/total_copy/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -52,8 +52,12 @@ medicc/total_copy/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets
 medicc/total_copy/mpcf/%.RData : medicc/total_copy/mad/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/total_copy/mpcf && \
 												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --type total_copy")
-
 												 
+medicc/total_copy/medicc/%/desc.txt : medicc/total_copy/mpcf/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/total_copy/medicc && \
+												 mkdir -p medicc/total_copy/medicc/$$* && \
+												 $(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$* --type total_copy")
+
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call total-copy-medicc,$(set))))
