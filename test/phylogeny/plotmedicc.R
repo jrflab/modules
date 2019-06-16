@@ -24,7 +24,7 @@ parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-if (opt$type=="allele-specific") {
+if (opt$type=="allele_specific") {
 	phylo_tree = read.tree(file=paste0("medicc/allele_specific/medicc/", opt$sample_set, "/tree_final.new"))
 	tip_labels = phylo_tree$tip.label
 	index = grep("pad00", tip_labels)
@@ -37,6 +37,6 @@ if (opt$type=="allele-specific") {
 	plotTree(tree=phylo_tree, color="#8CC63F", lwd=3, offset=1)
 	edgelabels(text=paste0(phylo_tree$edge.length, " "), cex=.75)
 	dev.off()
-} else if (opt$type=="total-copy") {
+} else if (opt$type=="total_copy") {
 
 }

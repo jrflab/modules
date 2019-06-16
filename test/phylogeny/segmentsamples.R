@@ -28,7 +28,7 @@ normal_samples = na.omit(unlist(strsplit(opt$normal_samples, split=" ", fixed=TR
 normal_samples = normal_samples[normal_samples %in% all_samples]
 tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
-if (opt$type=="allele-specific") {
+if (opt$type=="allele_specific") {
 	load(paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))
 	gamma = ifelse(is.na(as.numeric(opt$gamma)), 50, as.numeric(opt$gamma))
 	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
@@ -156,6 +156,6 @@ if (opt$type=="allele-specific") {
 		}
 	}
 	save(list=ls(all=TRUE), file=paste0("medicc/allele_specific/aspcf/", opt$sample_set, ".RData"))
-} else if (opt$type=="total-copy") {
+} else if (opt$type=="total_copy") {
 
 }

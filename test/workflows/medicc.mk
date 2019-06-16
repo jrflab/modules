@@ -2,7 +2,7 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
 
-ALLELE_SPECIFIC_COPY ?= true
+ALLELE_SPECIFIC_COPY ?= false
 
 ifeq ($(ALLELE_SPECIFIC_COPY),true)
 
@@ -38,6 +38,16 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call allele-specific-medicc,$(set))))
 		
 else
+
+PHONY += medicc medicc/total_copy medicc/total_copy/mad medicc/total_copy/mpcf medicc/total_copy/medicc
+
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/total_copy/mad/$(set).RData)
+
+define total-copy-medicc
+medicc/total_copy/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/total_copy && \
+												 mkdir -p medicc/total_copy/mad && \
+												 $(RSCRIPT) modules/test/phylogeny/combinesamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --type total_copy")
 
 endif
 
