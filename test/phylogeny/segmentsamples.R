@@ -156,4 +156,6 @@ if (opt$type=="allele-specific") {
 		}
 	}
 	save(list=ls(all=TRUE), file=paste0("medicc/allele_specific/aspcf/", opt$sample_set, ".RData"))
+} else if (opt$type=="total-copy") {
+
 }

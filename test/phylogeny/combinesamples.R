@@ -53,4 +53,6 @@ if (opt$type=="allele-specific") {
 							Position=pos)
 	colnames(Log2Ratio) = colnames(BAF) = tumor_samples
 	save(Log2Ratio, BAF, Genotype, annotation, file=paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))
+} else if (opt$type=="total-copy") {
+
 }

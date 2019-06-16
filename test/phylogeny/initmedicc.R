@@ -54,4 +54,6 @@ if (opt$type=="allele-specific") {
 			cat(paste0(q1[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/allele_specific/medicc/", opt$sample_set, "/minor_chr", i, ".fasta"), append=TRUE)
 		}
 	}
+} else if (opt$type=="total-copy") {
+
 }

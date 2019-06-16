@@ -37,4 +37,6 @@ if (opt$type=="allele-specific") {
 	plotTree(tree=phylo_tree, color="#8CC63F", lwd=3, offset=1)
 	edgelabels(text=paste0(phylo_tree$edge.length, " "), cex=.75)
 	dev.off()
+} else if (opt$type=="total-copy") {
+
 }
