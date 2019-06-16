@@ -31,7 +31,7 @@ df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor),
 				
 
 plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)) +
-		 geom_bar(stat="identity", color="black") +
+		 geom_bar(stat="identity") +
 		 facet_wrap(~base_change, ncol = 6, nrow = 1, scales = "free_x") +
   		 ylab("\nFraction (%)\n") +
   		 xlab(" ") +
