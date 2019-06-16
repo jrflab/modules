@@ -5,7 +5,7 @@ PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_
 
 medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/tree_final.pdf)
 
-define init-run-medicc
+define allele-specific-medicc
 medicc/allele_specific/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/allele_specific && \
 												 mkdir -p medicc/allele_specific/mad && \
@@ -30,7 +30,7 @@ medicc/allele_specific/medicc/%/tree_final.pdf : medicc/allele_specific/medicc/%
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call init-run-medicc,$(set))))
+		$(eval $(call allele-specific-medicc,$(set))))
 
 # define boot-medicc
 # medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
