@@ -40,7 +40,7 @@ plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)
   		 theme(axis.text.y = element_text(size=14), axis.text.x = element_text(size=10, angle=90), legend.position="none")
 
 
-pdf(file=paste0("deconstructsigs/plots/trint_context/", opt$sample_name, ".pdf"), width=25, height=5)
+pdf(file=paste0("deconstructsigs/plots/context/", opt$sample_name, ".pdf"), width=25, height=5)
 print(plot.0)
 dev.off()
 
@@ -64,6 +64,6 @@ plot.0  = ggplot(df, aes(x = "", y = percentage, fill = signature_name)) +
 		  guides(fill=guide_legend(title="Signature")) +
 		  theme_void()
 		  
-pdf(file=paste0("deconstructsigs/plots/signature_exposures/", opt$sample_name, ".pdf"), width=6, height=6)
+pdf(file=paste0("deconstructsigs/plots/exposures/", opt$sample_name, ".pdf"), width=6, height=6)
 print(plot.0)
 dev.off()
