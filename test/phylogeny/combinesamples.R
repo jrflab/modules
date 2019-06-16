@@ -48,4 +48,4 @@ Genotype = do.call(cbind, lapply(CN, function(x) { return(x[,"Genotype"]) } ))
 annotation = data.frame(Chromosome=chr,
 						Position=pos)
 colnames(Log2Ratio) = colnames(BAF) = tumor_samples
-save(Log2Ratio, BAF, Genotype, annotation, file=paste0("medicc/mad/", opt$sample_set, ".RData"))
+save(Log2Ratio, BAF, Genotype, annotation, file=paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))

@@ -540,23 +540,11 @@ absolute_seq :
 	
 TARGETS += ms_pyclone
 ms_pyclone :
-	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
-	
-TARGETS += setup_pyclone
-setup_pyclone :
-	$(call RUN_MAKE,modules/clonality/setuppyclone.mk)
-
-TARGETS += run_pyclone
-run_pyclone :
-	$(call RUN_MAKE,modules/clonality/runpyclone.mk)
-	
-TARGETS += plot_pyclone
-plot_pyclone :
-	$(call RUN_MAKE,modules/clonality/plotpyclone.mk)
+	$(call RUN_MAKE,modules/test/workflows/mspyclone.mk)
 	
 TARGETS += ss_pyclone
 ss_pyclone :
-	$(call RUN_MAKE,modules/test/clonality/pyclone.mk)
+	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
 	
 
 #==================================================
@@ -599,10 +587,6 @@ viral_detection:
 TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
-	
-TARGETS += medicc
-medicc :
-	$(call RUN_MAKE,modules/test/phylogeny/medicc.mk)
 	
 TARGETS += fetch_impact
 fetch_impact :
@@ -667,5 +651,14 @@ hotspot_summary:
 #==================================================
 # alpha testing
 #==================================================
+
+TARGETS += medicc_as
+medicc_as :
+	$(call RUN_MAKE,modules/test/workflows/mediccas.mk)
+	
+TARGETS += medicc_tc
+medicc_tc :
+	$(call RUN_MAKE,modules/test/workflows/medicctc.mk)
+
 
 .PHONY : $(TARGETS)
