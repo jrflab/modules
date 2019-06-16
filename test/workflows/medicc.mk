@@ -48,6 +48,10 @@ medicc/total_copy/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/total_copy && \
 												 mkdir -p medicc/total_copy/mad && \
 												 $(RSCRIPT) modules/test/phylogeny/combinesamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --type total_copy")
+												 
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call total-copy-medicc,$(set))))
 
 endif
 
