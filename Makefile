@@ -565,11 +565,11 @@ ss_pyclone :
 
 TARGETS += emu
 emu :
-	$(call RUN_MAKE,modules/mut_sigs/emu.mk)
+	$(call RUN_MAKE,modules/signatures/emu.mk)
 	
 TARGETS += deconstruct_sigs
 deconstruct_sigs :
-	$(call RUN_MAKE,modules/mut_sigs/deconstructsigs.mk)
+	$(call RUN_MAKE,modules/signatures/deconstruct_sigs.mk)
 
 
 #==================================================

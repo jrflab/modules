@@ -23,12 +23,13 @@ opt <- arguments$options
 load(file=paste0("deconstructsigs/signatures/", opt$sample_name, ".RData"))
 
 df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor),
-				trinucleotide_context = colnames(extracted_signatures$tumor)) %>%
 				mutate(ref = rep(c("C", "T"), each=48)) %>%
 				mutate(alt = rep(c("A", "G", "T", "A", "C", "G"), each=16)) %>%
+				mutate(prime_3 = rep(rep(c("A", "C", "G", "T"), each=4), times=6)) %>%
+				mutate(prime_5 = rep(c("A", "C", "G", "T"), times=24)) %>%
+				mutate(trinucleotide_context = paste0(prime_3, ref, prime_5)) %>%
 				mutate(base_change = factor(paste0(ref, ">", alt))) %>%
 				mutate(percentage = ifelse(percentage==0, 0.1, percentage))
-				
 
 plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)) +
 		 geom_bar(stat="identity") +

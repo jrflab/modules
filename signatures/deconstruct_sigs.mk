@@ -7,12 +7,12 @@ deconstructsigs : $(foreach sample,$(TUMOR_SAMPLES),deconstructsigs/signatures/$
 
 define extract-signatures
 deconstructsigs/signatures/%.RData : summary/tsv/mutation_summary.tsv
-	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/mut_sigs/extract_signatures.R --sample_name $$(*)")
+	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"$(RSCRIPT) modules/signatures/extract_signatures.R --sample_name $$(*)")
 	
 deconstructsigs/plots/trint_context/%.pdf : deconstructsigs/signatures/%.RData
 	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"mkdir -p  deconstructsigs/plots/trint_context && \
 													   mkdir -p  deconstructsigs/plots/signature_exposures && \
-													   $(RSCRIPT) modules/mut_sigs/plot_signatures.R --sample_name $$(*)")
+													   $(RSCRIPT) modules/signatures/plot_signatures.R --sample_name $$(*)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
