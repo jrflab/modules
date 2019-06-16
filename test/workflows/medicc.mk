@@ -5,7 +5,7 @@ PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_
 
 medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/desc.txt)
 
-define init-medicc
+define init-run-medicc
 medicc/allele_specific/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/allele_specific && \
 												 mkdir -p medicc/allele_specific/mad && \
@@ -20,19 +20,14 @@ medicc/allele_specific/medicc/%/desc.txt : medicc/allele_specific/aspcf/%.RData
 												 mkdir -p medicc/allele_specific/medicc/$$* && \
 												 $(RSCRIPT) modules/test/phylogeny/initmedicc.R --sample_set $$*")
 
+medicc/medicc/allele_specific/%/tree_final.new : medicc/medicc/allele_specific/%/desc.txt
+	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
+												  $(MEDICC_BIN)/medicc.py medicc/allele_specific/medicc/$$*/desc.txt medicc/allele_specific/medicc/$$* -v")
+
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call init-medicc,$(set))))
+		$(eval $(call init-run-medicc,$(set))))
 
-#define run-medicc
-#medicc/medicc/allele_specific/%/tree_final.new : medicc/medicc/allele_specific/%/desc.txt
-#	$$(call RUN,-c -s 8G -m 12G -v $(MEDICC_ENV),"source $(MEDICC_VAR) && \
-#												  $(MEDICC_BIN)/medicc.py medicc/medicc/allele_specific/$$*/desc.txt medicc/medicc/allele_specific/$$* -v")
-#
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call run-medicc,$(set))))
-#
 #define boot-medicc
 #medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
 #	$$(call RUN, -s 8G -m 12G -v $(ASCAT_ENV),"$(RSCRIPT) modules/test/phylogeny/bootstrapmedicc.R --sample_set $$*")
