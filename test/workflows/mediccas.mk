@@ -11,18 +11,13 @@ medicc/allele_specific/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),f
 												 mkdir -p medicc/allele_specific/mad && \
 												 $(RSCRIPT) modules/test/phylogeny/combinesamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)'")
 
-endef
-$(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call combine-samples,$(set))))
-
-define ascat-aspcf
 medicc/allele_specific/aspcf/%.RData : medicc/allele_specific/mad/%.RData
 	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/allele_specific/ascat && \
 												 mkdir -p medicc/allele_specific/aspcf && \
 												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call ascat-aspcf,$(set))))
+		$(eval $(call combine-samples,$(set))))
 
 #define init-medicc
 #medicc/medicc/allele_specific/%/desc.txt medicc/medicc/total_copy/%/desc.txt : medicc/mpcf/%.RData
