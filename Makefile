@@ -653,7 +653,7 @@ hotspot_summary:
 #==================================================
 
 TARGETS += medicc_allele_specific
-medicc_allele_spcific :
+medicc_allele_specific :
 	$(call RUN_MAKE,modules/test/workflows/mediccas.mk)
 	
 TARGETS += medicc_total_copy
