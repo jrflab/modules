@@ -652,12 +652,12 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
-TARGETS += medicc_as
-medicc_as :
+TARGETS += medicc_allele_spcific
+medicc_allele_spcific :
 	$(call RUN_MAKE,modules/test/workflows/mediccas.mk)
 	
-TARGETS += medicc_tc
-medicc_tc :
+TARGETS += medicc_total_copy
+medicc_total_copy :
 	$(call RUN_MAKE,modules/test/workflows/medicctc.mk)
 
 

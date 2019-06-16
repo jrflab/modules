@@ -25,7 +25,7 @@ normal_samples = na.omit(unlist(strsplit(opt$normal_samples, split=" ", fixed=TR
 normal_samples = normal_samples[normal_samples %in% all_samples]
 tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
-	load(paste0("medicc/mad/", opt$sample_set, ".RData"))
+	load(paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))
 	gamma = ifelse(is.na(as.numeric(opt$gamma)), 50, as.numeric(opt$gamma))
 	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
 	nbaf = ifelse(is.na(as.numeric(opt$nbaf)), 15, as.numeric(opt$nbaf))
@@ -151,61 +151,5 @@ tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 			q2[tmp[,1] %in% chr & tmp[,3] %in% pos,tumor_samples[i]] = apply(tmp3$seg_raw[,c("nA", "nB"),drop=FALSE], 1, max, na.rm=TRUE)
 		}
 	}
-	save(list=ls(all=TRUE), file=paste0("medicc/aspcf/", opt$sample_set, ".RData"))
+	save(list=ls(all=TRUE), file=paste0("medicc/allele_specific/aspcf/", opt$sample_set, ".RData"))
 	
-	load(paste0("medicc/mad/", opt$sample_set, ".RData"))
-	gamma = ifelse(is.na(as.numeric(opt$gamma)), 150, as.numeric(opt$gamma))
-	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 15, as.numeric(opt$nlog2))
-	colnames(Log2Ratio) = paste0("Log2Ratio_", colnames(Log2Ratio))
-	CN = cbind(annotation, Log2Ratio)
-	tmp = NULL
-	for (i in 1:23) {
-		cn = subset(CN, CN[,"Chromosome"]==i)
-		x = try(multipcf(data=winsorize(data=cn, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=gamma, normalize=FALSE, fast=FALSE, verbose=FALSE), silent=TRUE)
-		if (!("try-error" %in% is(x))) {
-			colnames(x)[1:5] = c("Chromosome", "Arm", "Start", "End", "N")
-			tmp = rbind(tmp, x)
-		}
-	}
-	
-	qt = matrix(NA, nrow=nrow(tmp), ncol=length(tumor_samples))
-	colnames(qt) = tumor_samples
-	for (i in 1:length(tumor_samples)) {
-		ascat = new.env()
-		load(paste0("ascat/ascat/", tumor_samples[i], "_", normal_samples, ".RData"), envir=ascat)
-
-		'prunesegments.cn' <- function(x, n=10)
-		{
-			cnm = matrix(NA, nrow=length(x), ncol=length(x))
-			for (j in 1:length(x)) {
-				cnm[,j] = abs(2^x[j] - 2^x)
-			}
-			cnt = hclust(as.dist(cnm), "average")
-			cnc = cutree(tree=cnt, k=n)
-			for (j in unique(cnc)) {
-				indx = which(cnc==j)
-				if (length(indx)>2) {
-					mcl = mean(x[indx])
-					scl = sd(x[indx])
-					ind = which(x[indx]<(mcl+1.96*scl) & x[indx]>(mcl-1.96*scl))
-					x[indx[ind]] = mean(x[indx[ind]])
-				} else {
-					x[indx] = mean(x[indx])
-				}
-			}
-			return(x)
-		}
-		
-		'absolute.cn' <- function(x, rho, psi, gamma) {
-			n = round((2^(x/gamma) * ((psi*rho) + 2*(1-rho)) - 2*(1-rho))/rho)
-			n[n<0] = 0
-			return(n)
-		}
-		
-		tmp[,paste0("Log2Ratio_", tumor_samples[i])] = prunesegments.cn(x=tmp[,paste0("Log2Ratio_", tumor_samples[i])], n=nlog2)
-		if (!(is.na(ascat$purity) & is.na(ascat$ploidy))) {
-			qt[,tumor_samples[i]] = absolute.cn(x=tmp[,paste0("Log2Ratio_", tumor_samples[i])], rho=ascat$purity, psi=ascat$ploidy, gamma=1)
-		}
-	}
-	save(list=ls(all=TRUE), file=paste0("medicc/mpcf/", opt$sample_set, ".RData"))
-

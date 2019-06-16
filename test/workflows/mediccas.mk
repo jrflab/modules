@@ -1,9 +1,9 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/medicc.$(NOW)
-PHONY += medicc medicc/allele_specific medicc/allele_specific/mad
+PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_specific/ascat medicc/allele_specific/aspcf
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/mad/$(set).RData) 
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/mpcf/$(set).RData)
 
 define combine-samples
 medicc/allele_specific/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -15,16 +15,15 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call combine-samples,$(set))))
 
-#define ascat-mpcf
-#medicc/aspcf/%.RData medicc/mpcf/%.RData : medicc/mad/%.RData
-#	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/ascat ]; then mkdir medicc/ascat; fi && \
-#												 if [ ! -d medicc/aspcf ]; then mkdir medicc/aspcf; fi && \
-#												 if [ ! -d medicc/mpcf ]; then mkdir medicc/mpcf; fi && \
-#												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
-#endef
-#$(foreach set,$(SAMPLE_SETS),\
-#		$(eval $(call ascat-mpcf,$(set))))
-#
+define ascat-aspcf
+medicc/allele_specific/aspcf/%.RData : medicc/allele_specific/mad/%.RData
+	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"mkdir -p medicc/allele_specific/ascat && \
+												 mkdir -p medicc/allele_specific/aspcf && \
+												 $(RSCRIPT) modules/test/phylogeny/segmentsamples.R --sample_set $$* --normal_samples '$(NORMAL_SAMPLES)' --gamma '$${mpcf_gamma}' --nlog2 '$${mpcf_nlog2}' --nbaf '$${mpcf_nbaf}'")
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call ascat-aspcf,$(set))))
+
 #define init-medicc
 #medicc/medicc/allele_specific/%/desc.txt medicc/medicc/total_copy/%/desc.txt : medicc/mpcf/%.RData
 #	$$(call RUN,-c -s 8G -m 12G -v $(ASCAT_ENV),"if [ ! -d medicc/medicc ]; then mkdir medicc/medicc; fi && \
