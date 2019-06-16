@@ -22,6 +22,7 @@ normal_samples = normal_samples[normal_samples %in% all_samples]
 tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
 if (opt$type=="allele_specific") {
+
 	CN = list()
 	for (i in 1:length(tumor_samples)) {
 		load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
@@ -53,7 +54,9 @@ if (opt$type=="allele_specific") {
 							Position=pos)
 	colnames(Log2Ratio) = colnames(BAF) = tumor_samples
 	save(Log2Ratio, BAF, Genotype, annotation, file=paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))
+	
 } else if (opt$type=="total_copy") {
+
 	CN = list()
 	for (i in 1:length(tumor_samples)) {
 		load(paste0("facets/cncf/", tumor_samples[i], "_", normal_samples, ".Rdata"))
@@ -83,4 +86,5 @@ if (opt$type=="allele_specific") {
 							Position=pos)
 	colnames(Log2Ratio) = tumor_samples
 	save(Log2Ratio, annotation, file=paste0("medicc/total_copy/mad/", opt$sample_set, ".RData"))
+	
 }
