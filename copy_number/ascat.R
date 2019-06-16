@@ -202,7 +202,7 @@ if (opt$type=="log2") {
 	col = rep("grey75", nrow(CN_and_BAF))
 	pdf(file=opt$file_out, width=10, height=4.25*2)
 	par(mar=c(5, 5, 4, 2)+.1)
-	zz = split.screen(figs=matrix(c(0,1,.4,1, 0,1,0,.6), nrow=2, col=4, byrow=TRUE))
+	zz = split.screen(figs=matrix(c(0,1,.425,1, 0,1,0,.575), nrow=2, ncol=4, byrow=TRUE))
 
 	screen(zz[1])
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
@@ -219,7 +219,7 @@ if (opt$type=="log2") {
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=rep(" ", 23), cex.axis = 0.85, las = 1)
     rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
     box(lwd=1.5)
 
 	screen(zz[2])
@@ -239,7 +239,7 @@ if (opt$type=="log2") {
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
     box(lwd=1.5)
     close.screen(all.screens=TRUE)
 	dev.off()
