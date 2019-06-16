@@ -1,6 +1,11 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/mediccas.$(NOW)
+LOGDIR ?= log/medicc.$(NOW)
+
+ALLELE_SPECIFIC_COPY ?= true
+
+ifeq ($(ALLELE_SPECIFIC_COPY),true)
+
 PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_specific/ascat medicc/allele_specific/aspcf medicc/allele_specific/medicc
 
 medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/tree_final.pdf)
@@ -31,6 +36,11 @@ medicc/allele_specific/medicc/%/tree_final.pdf : medicc/allele_specific/medicc/%
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call allele-specific-medicc,$(set))))
+		
+else
+
+endif
+
 
 # define boot-medicc
 # medicc/boot/allele_specific/%/init.timestamp : medicc/aspcf/%.RData
