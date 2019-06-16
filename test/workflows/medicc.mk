@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/mediccas.$(NOW)
 PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_specific/ascat medicc/allele_specific/aspcf medicc/allele_specific/medicc
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/desc.txt)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/medicc/$(set)/tree_final.new)
 
 define init-run-medicc
 medicc/allele_specific/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
