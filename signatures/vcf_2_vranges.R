@@ -15,7 +15,8 @@ suppressPackageStartupMessages(library("foreach"))
 optList <- list(
                 make_option("--genome", default = 'b37', help = "reference genome"),
                 make_option("--ignoreFilter", default = F, action = 'store_true', help = "ignore the filter column for vcf files"),
-                make_option("--outFile", default = NULL, type = "character", action = "store", help = "output directory"))
+                make_option("--outFile", default = NULL, type = "character", action = "store", help = "output directory")
+                )
 
 parser <- OptionParser(usage = "%prog [options] [vcf file(s)]", option_list = optList);
 arguments <- parse_args(parser, positional_arguments = T);

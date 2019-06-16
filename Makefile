@@ -567,6 +567,10 @@ TARGETS += emu
 emu :
 	$(call RUN_MAKE,modules/signatures/emu.mk)
 	
+TARGETS += mut_sig
+mut_sig :
+	$(call RUN_MAKE,modules/signatures/mut_sig.mk)
+	
 TARGETS += deconstruct_sigs
 deconstruct_sigs :
 	$(call RUN_MAKE,modules/signatures/deconstruct_sigs.mk)
@@ -612,10 +616,6 @@ fetch_impact :
 TARGETS += recurrent_mutations
 recurrent_mutations :
 	$(call RUN_MAKE,modules/recurrent_mutations/report.mk)
-
-TARGETS += mutsig_report
-mutsig_report :
-	$(call RUN_MAKE,modules/mut_sigs/mutSigReport.mk)
 	
 TARGETS += genome_summary
 genome_summary :
