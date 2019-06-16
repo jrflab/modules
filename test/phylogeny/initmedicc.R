@@ -6,12 +6,16 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--sample_set", default = NA, type = 'character', help = "sample names set"))
+args_list <- list(
+					make_option("--sample_set", default = NA, type = 'character', help = "sample names set"),
+					make_option("--type", default = NA, type = 'character', help = "allele specific or total copy")
+				 )
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
+if (opt$type=="allele-specific") {
 	load(paste0("medicc/allele_specific/aspcf/", opt$sample_set, ".RData"))
 	q1 = qt-q2
 	index = !apply(q2, 1, function(x) { any(is.na(x)) }) & !apply(q1, 1, function(x) { any(is.na(x)) })
@@ -50,4 +54,4 @@ opt <- arguments$options
 			cat(paste0(q1[tmp[,"Chromosome"]==i,j], collapse=""), "\n", file=paste0("medicc/allele_specific/medicc/", opt$sample_set, "/minor_chr", i, ".fasta"), append=TRUE)
 		}
 	}
-	
+}

@@ -10,11 +10,14 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--sample_set", default = NA, type = 'character', help = "sample names set"),
-				  make_option("--normal_samples", default = NA, type = 'character', help = "normal samples"),
-				  make_option("--gamma", default = NA, type = 'character', help = "segmentation parameter gamma"),
-				  make_option("--nlog2", default = NA, type = 'character', help = "number of clusters in Log2 ratio"),
-				  make_option("--nbaf", default = NA, type = 'character', help = "number of clusters in BAF"))
+args_list <- list(
+					make_option("--sample_set", default = NA, type = 'character', help = "sample names set"),
+					make_option("--normal_samples", default = NA, type = 'character', help = "normal samples"),
+					make_option("--gamma", default = NA, type = 'character', help = "segmentation parameter gamma"),
+					make_option("--nlog2", default = NA, type = 'character', help = "number of clusters in Log2 ratio"),
+					make_option("--nbaf", default = NA, type = 'character', help = "number of clusters in BAF"),
+					make_option("--type", default = NA, type = 'character', help = "allele specific or total copy")
+				 )
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
@@ -25,6 +28,7 @@ normal_samples = na.omit(unlist(strsplit(opt$normal_samples, split=" ", fixed=TR
 normal_samples = normal_samples[normal_samples %in% all_samples]
 tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 
+if (opt$type=="allele-specific") {
 	load(paste0("medicc/allele_specific/mad/", opt$sample_set, ".RData"))
 	gamma = ifelse(is.na(as.numeric(opt$gamma)), 50, as.numeric(opt$gamma))
 	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
@@ -152,4 +156,4 @@ tumor_samples = all_samples[!(all_samples %in% normal_samples)]
 		}
 	}
 	save(list=ls(all=TRUE), file=paste0("medicc/allele_specific/aspcf/", opt$sample_set, ".RData"))
-	
+}
