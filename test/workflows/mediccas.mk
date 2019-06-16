@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/medicc.$(NOW)
+LOGDIR ?= log/mediccas.$(NOW)
 PHONY += medicc medicc/allele_specific medicc/allele_specific/mad medicc/allele_specific/ascat medicc/allele_specific/aspcf
 
 medicc : $(foreach set,$(SAMPLE_SETS),medicc/allele_specific/aspcf/$(set).RData)
