@@ -652,13 +652,8 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
-TARGETS += medicc_allele_specific
-medicc_allele_specific :
-	$(call RUN_MAKE,modules/test/workflows/mediccas.mk)
+TARGETS += medicc
+medicc :
+	$(call RUN_MAKE,modules/test/workflows/medicc.mk)
 	
-TARGETS += medicc_total_copy
-medicc_total_copy :
-	$(call RUN_MAKE,modules/test/workflows/medicctc.mk)
-
-
 .PHONY : $(TARGETS)
