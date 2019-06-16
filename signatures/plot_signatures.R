@@ -22,7 +22,7 @@ opt <- arguments$options
 
 load(file=paste0("deconstructsigs/signatures/", opt$sample_name, ".RData"))
 
-df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor),
+df = data_frame(percentage = 100*as.vector(extracted_signatures$tumor)) %>%
 				mutate(ref = rep(c("C", "T"), each=48)) %>%
 				mutate(alt = rep(c("A", "G", "T", "A", "C", "G"), each=16)) %>%
 				mutate(prime_3 = rep(rep(c("A", "C", "G", "T"), each=4), times=6)) %>%
@@ -37,7 +37,7 @@ plot.0 = ggplot(df, aes(x=trinucleotide_context, y=percentage, fill=base_change)
   		 ylab("\nFraction (%)\n") +
   		 xlab(" ") +
   		 theme_bw(base_size=15) +
-  		 theme(axis.text.y = element_text(size=14), axis.text.x = element_text(size=10, angle=90), legend.position="none")
+  		 theme(axis.text.y = element_text(size=17), axis.text.x = element_text(size=15, angle=90), axis.title=element_text(size=20), legend.position="none")
 
 
 pdf(file=paste0("deconstructsigs/plots/context/", opt$sample_name, ".pdf"), width=25, height=5)
