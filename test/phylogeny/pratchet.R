@@ -13,7 +13,7 @@ if (!interactive()) {
 
 args_list <- list(
 					make_option("--sample_set", default = NA, type = 'character', help = "sample names set"),
-					make_option("--normal_samples", default = NA, type = 'character', help = "normal samples"),
+					make_option("--normal_samples", default = NA, type = 'character', help = "normal samples")
 				 )
 
 parser <- OptionParser(usage = "%prog", option_list = args_list)
