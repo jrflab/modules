@@ -14,7 +14,7 @@ normal_sample = unlist(strsplit(opt$normal_samples, split=" ", fixed=TRUE))
 normal_sample = tumor_samples[tumor_samples %in% normal_sample]
 tumor_samples = tumor_samples[!(tumor_samples %in% normal_sample)]
 
-cat("num_iters: 20000\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = FALSE)
+cat("num_iters: 10000\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = FALSE)
 cat("\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 cat("base_measure_params:\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
 cat("  alpha: 1\n", file=paste0("pyclone/", opt$sample_set, "/config.yaml"), append = TRUE)
@@ -65,5 +65,5 @@ for (i in 1:length(tumor_samples)) {
 }
 
 for (i in 1:length(tumor_samples)) {
-	system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate ~/share/usr/anaconda-envs/PyClone-0.13.1 && PyClone build_mutations_file --in_file pyclone/",  opt$sample_set, "/", tumor_samples[i], ".tsv --out_file pyclone/", opt$sample_set, "/", tumor_samples[i], ".yaml  --prior total_copy_number"))
+	system(paste0("source ~/share/usr/anaconda-envs/jrflab-modules-0.1.5/bin/activate ~/share/usr/anaconda-envs/PyClone-0.13.1 && PyClone build_mutations_file --in_file pyclone/",  opt$sample_set, "/", tumor_samples[i], ".tsv --out_file pyclone/", opt$sample_set, "/", tumor_samples[i], ".yaml  --prior parental_copy_number"))
 }

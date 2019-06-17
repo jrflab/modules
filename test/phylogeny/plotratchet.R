@@ -8,9 +8,6 @@ suppressPackageStartupMessages(library("doMC"))
 suppressPackageStartupMessages(library("stringr"))
 suppressPackageStartupMessages(library("phytools"))
 
-registerDoMC(12)
-
-
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }

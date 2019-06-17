@@ -1,6 +1,7 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/cnvkit.$(NOW)
+LOGDIR ?= log/ms_pyclone.$(NOW)
+PHONY += pyclone
 PHONY += sufam summary pyclone
 
 PYCLONE_WORKFLOW += sufam_multisample
