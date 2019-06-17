@@ -71,7 +71,6 @@ RBIND ?= $(SCRIPTS_DIR)/rbind.R
 NORMAL_FILTER ?= $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF ?= $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
 
-#JAVA_TMP := $(HOME)/tmp
 JAVA_BIN ?=  $(JAVA8_BIN)
 JAVA6_BIN ?= $(HOME)/share/usr/jdk1.6.0_45/bin/java
 JAVA7_BIN ?= $(HOME)/share/usr/jdk1.7.0_45/bin/java
@@ -164,6 +163,7 @@ HATCHET_BIN = $(HATCHET_ENV)/opt/machina/build
 
 DECONSTRUCTSIGS_ENV = $(HOME)/share/usr/anaconda-envs/deconstructsigs
 
+PHANGORN_ENV = $(HOME)/share/usr/anaconda-envs/phangorn
 
 endif
 CONFIG_INC = true
