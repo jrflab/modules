@@ -41,7 +41,7 @@ else
 
 PHONY += medicc medicc/total_copy medicc/total_copy/mad medicc/total_copy/mpcf medicc/total_copy/medicc
 
-medicc : $(foreach set,$(SAMPLE_SETS),medicc/total_copy/medicc/$(set)/tree_final.new)
+medicc : $(foreach set,$(SAMPLE_SETS),medicc/total_copy/medicc/$(set)/tree_final.new) $(foreach set,$(SAMPLE_SETS),medicc/total_copy/medicc/$(set)/tree_final.pdf)
 
 define total-copy-medicc
 medicc/total_copy/mad/%.RData : $(wildcard $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata))
@@ -64,6 +64,9 @@ medicc/total_copy/medicc/%/tree_final.new : medicc/total_copy/medicc/%/desc.txt
 												  cp medicc/total_copy/medicc/$$*/tree_fitch_nc.xml medicc/total_copy/medicc/$$*/tree_final.xml && \
 												  cp medicc/total_copy/medicc/$$*/tree_fitch_nc.graph medicc/total_copy/medicc/$$*/tree_final.graph && \
 												  cp medicc/total_copy/medicc/$$*/tree_fitch_nc.new medicc/total_copy/medicc/$$*/tree_final.new")
+												  
+medicc/total_copy/medicc/%/tree_final.pdf : medicc/total_copy/medicc/%/tree_final.new
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(PHYLO_ENV),"$(RSCRIPT) modules/test/phylogeny/plotmedicc.R --sample_set $$(*) --type total_copy")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
