@@ -4,10 +4,13 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("ggplot2"))
 
-optList = list(make_option("--sample_set", default = NULL, help = "sample set name"),
+optList = list(
+			   make_option("--sample_set", default = NULL, help = "sample set name"),
 			   make_option("--normal_samples", default = NULL, help = "normal sample names"),
-			   make_option("--burnin", default = NULL, help = "number of burnin mcmc"))
+			   make_option("--min_depth", default = NA, help = "minimum depth to consider")
+			   )
 			   
 parser = OptionParser(usage = "%prog [options] mutation_file", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
@@ -17,49 +20,46 @@ tumor_samples = unlist(strsplit(opt$sample_set, split="_", fixed=TRUE))
 normal_sample = unlist(strsplit(opt$normal_samples, split=" ", fixed=TRUE))
 normal_sample = tumor_samples[tumor_samples %in% normal_sample]
 tumor_samples = tumor_samples[!(tumor_samples %in% normal_sample)]
+min_depth = ifelse(is.na(opt$min_depth) | is.null(opt$min_depth) | opt$min_depth=="" | opt$min_depth==" ", 50, opt$min_depth)
 
-ccf = list()
-for (i in 1:length(tumor_samples)) {
-	data = read_tsv(file=paste0("pyclone/", opt$sample_set, "/trace/", tumor_samples[i], ".cellular_prevalence.tsv.bz2"))
-	data = data[-(1:as.numeric(opt$burnin)),,drop=FALSE]
-	x = apply(data, 2, mean, na.rm=TRUE)
-	if (!dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
-		dir.create(paste0("pyclone/", opt$sample_set, "/plots"))
-	}
-	pdf(paste0("pyclone/", opt$sample_set, "/plots/", tumor_samples[i], "_histogram_ccf.pdf"))
-	par(mar=c(6.1, 6.5, 4.1, 1.1))
-	hist(x*100, col="grey90", border="grey80", axes=FALSE, main="", xlab="", ylab="", xlim=c(0,100))
-	axis(1, at=NULL, cex.axis=1.5, padj=0.25)
-    axis(2, at=NULL, cex.axis=1.5, las=1)
-    mtext(side=1, text="Cancer cell fraction (%)", line=4, cex=1.5)
-    mtext(side=2, text="Frequency", line=4, cex=1.5)
-    dev.off()
-    ccf[[i]] = x
-}	
-
-if (!dir.exists(paste0("pyclone/", opt$sample_set, "/plots"))) {
-	dir.create(paste0("pyclone/", opt$sample_set, "/plots"))
+mutation_summary = read_tsv(file=paste0("sufam/", opt$sample_set, ".tsv"))
+index = apply(mutation_summary[,paste0("DP_", tumor_samples)], 1, function(x) {sum(x>=min_depth)})==length(tumor_samples)
+mutation_summary = mutation_summary[index,,drop=FALSE]
+pyclone_summary = read_tsv(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.tsv"), col_types = cols(.default = col_character())) %>%
+				  type_convert() %>%
+				  bind_cols(mutation_summary)
+				  
+clusters = table(pyclone_summary$cluster_id)
+if (any(clusters==1)) {
+	pyclone_summary = pyclone_summary %>%
+					  filter(!(cluster_id %in% names(clusters)[clusters==1]))
 }
-pdf(paste0("pyclone/", opt$sample_set, "/plots/2_by_2_scatter_plots.pdf"))
-par(mar=c(6.1, 6.5, 4.1, 1.1))
-for (i in 1:(length(ccf)-1)) {
-	for (j in 2:(length(ccf))) {
-		if (i!=j) {
-			plot(ccf[[i]]*100, ccf[[j]]*100, pch=21, col="salmon3", bg="grey90", axes=FALSE, frame.plot=FALSE, main="", xlab="", ylab="", xlim=c(0,100), ylim=c(0,100))
-	    	axis(1, at=NULL, cex.axis=1.5, padj=0.25)
-	    	axis(2, at=NULL, cex.axis=1.5, las=1)
-	    	mtext(side=1, text=tumor_samples[i], line=4, cex=1.5)
-	    	mtext(side=2, text=tumor_samples[j], line=4, cex=1.5)
-	    	abline(h=10, lty=2, col="goldenrod3")
-	    	abline(h=20, lty=3, col="goldenrod3")
-	    	abline(h=90, lty=2, col="goldenrod3")
-	    	abline(h=80, lty=3, col="goldenrod3")
-	    	abline(v=10, lty=2, col="goldenrod3")
-	    	abline(v=20, lty=3, col="goldenrod3")
-	    	abline(v=90, lty=2, col="goldenrod3")
-	    	abline(v=80, lty=3, col="goldenrod3")
-	    	box(lwd=2)
-	    }
+
+pdf(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.pdf"), width=7, height=6)
+for (i in 1:(length(tumor_samples)-1)) {
+	for (j in (i+1):length(tumor_samples)) {
+		x = pyclone_summary[,tumor_samples[i]] %>%
+			.[[1]]
+		y = pyclone_summary[,tumor_samples[j]] %>%
+			.[[1]]
+		z = pyclone_summary %>%
+			.[["cluster_id"]]
+		c_x = pyclone_summary %>%
+		  	  .[[paste0("CALL_", tumor_samples[i])]]
+		c_y = pyclone_summary %>%
+		  	  .[[paste0("CALL_", tumor_samples[j])]]
+		x[c_x==0] = 0
+		y[c_y==0] = 0
+		tmp.0 = data_frame(x=x, y=y, z=factor(z, ordered=TRUE))
+		plot.0 =  ggplot(tmp.0, aes(x=x, y=y, fill=z, color=z)) +
+				  geom_point(alpha = .8, size=2) +
+				  theme_classic() +
+				  coord_cartesian(xlim=c(0,1), ylim=c(0,1)) +
+				  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=9), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
+				  labs(x=paste0("\n",tumor_samples[i],"\n"), y=paste0("\n",tumor_samples[j],"\n")) +
+				  guides(color=guide_legend(title=c("Cluster"))) +
+				  guides(fill=FALSE)
+		print(plot.0)
 	}
 }
 dev.off()
