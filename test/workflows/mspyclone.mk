@@ -6,7 +6,7 @@ PHONY += pyclone sufam summary pyclone
 PYCLONE_WORKFLOW += sufam_multisample
 PYCLONE_WORKFLOW += setup_pyclone
 PYCLONE_WORKFLOW += run_pyclone
-#PYCLONE_WORKFLOW += plot_pyclone
+PYCLONE_WORKFLOW += plot_pyclone
 
 pyclone_workflow : $(PYCLONE_WORKFLOW)
 
