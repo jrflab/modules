@@ -53,7 +53,6 @@ for (i in 1:(length(tumor_samples)-1)) {
 		tmp.0 = data_frame(x=x, y=y, z=factor(z, ordered=TRUE))
 		plot.0 =  ggplot(tmp.0, aes(x=x, y=y, fill=z, color=z)) +
 				  geom_point(alpha = .8, size=2) +
-				  geom_contour() +
 				  theme_classic() +
 				  coord_cartesian(xlim=c(0,1), ylim=c(0,1)) +
 				  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=9), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
