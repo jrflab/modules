@@ -24,6 +24,8 @@ min_depth = ifelse(is.na(opt$min_depth) | is.null(opt$min_depth) | opt$min_depth
 mutation_summary = read_tsv(file=paste0("sufam/", opt$sample_set, ".tsv"))
 index = apply(mutation_summary[,paste0("DP_", tumor_samples)], 1, function(x) {sum(x>=min_depth)})==length(tumor_samples)
 mutation_summary = mutation_summary[index,,drop=FALSE]
+index = apply(mutation_summary[,paste0("CALL_", tumor_samples)], 1, function(x) {sum(x==0)})==length(tumor_samples)
+mutation_summary = mutation_summary[!index,,drop=FALSE]
 
 for (i in 1:length(tumor_samples)) {
 	mutation_id = paste0(mutation_summary$Gene_Symbol, "_", mutation_summary$HGVSp)

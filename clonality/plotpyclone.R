@@ -27,7 +27,8 @@ index = apply(mutation_summary[,paste0("DP_", tumor_samples)], 1, function(x) {s
 mutation_summary = mutation_summary[index,,drop=FALSE]
 pyclone_summary = read_tsv(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.tsv"), col_types = cols(.default = col_character())) %>%
 				  type_convert() %>%
-				  bind_cols(mutation_summary)
+				  bind_cols(mutation_summary) %>%
+				  arrange(cluster_id)
 				  
 clusters = table(pyclone_summary$cluster_id)
 if (any(clusters==1)) {
@@ -35,24 +36,28 @@ if (any(clusters==1)) {
 					  filter(!(cluster_id %in% names(clusters)[clusters==1]))
 }
 
-pdf(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.pdf"), width=7, height=6)
+df = pyclone_summary[,c("mutation_id", "cluster_id"),drop=FALSE]
+for (i in 1:length(tumor_samples)) {
+	x = pyclone_summary[,tumor_samples[i]] %>%
+		.[[1]]
+	c_x = pyclone_summary %>%
+		  .[[paste0("CALL_", tumor_samples[i])]]
+	x[c_x==0 | x<.025] = 0
+	df = cbind(df, x)
+	colnames(df)[i+2] = tumor_samples[i]
+}
+index = apply(df[,tumor_samples], 1, function(x) {sum(x==0)})==length(tumor_samples)
+df = df[!index,,drop=FALSE]
+
+pdf(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.pdf"), width=6.5, height=6)
 for (i in 1:(length(tumor_samples)-1)) {
 	for (j in (i+1):length(tumor_samples)) {
-		x = pyclone_summary[,tumor_samples[i]] %>%
-			.[[1]]
-		y = pyclone_summary[,tumor_samples[j]] %>%
-			.[[1]]
-		z = pyclone_summary %>%
-			.[["cluster_id"]]
-		c_x = pyclone_summary %>%
-		  	  .[[paste0("CALL_", tumor_samples[i])]]
-		c_y = pyclone_summary %>%
-		  	  .[[paste0("CALL_", tumor_samples[j])]]
-		x[c_x==0] = 0
-		y[c_y==0] = 0
+		x = df[,tumor_samples[i]]
+		y = df[,tumor_samples[j]]
+		z = df[,"cluster_id"]
 		tmp.0 = data_frame(x=x, y=y, z=factor(z, ordered=TRUE))
 		plot.0 =  ggplot(tmp.0, aes(x=x, y=y, fill=z, color=z)) +
-				  geom_point(alpha = .8, size=2) +
+				  geom_point(alpha = .55, size=2.5) +
 				  theme_classic() +
 				  coord_cartesian(xlim=c(0,1), ylim=c(0,1)) +
 				  theme(axis.text.y = element_text(size=15), axis.text.x = element_text(size=15), legend.text=element_text(size=9), legend.title=element_text(size=10), legend.background = element_blank(), legend.key.size = unit(1, 'lines')) +
