@@ -58,11 +58,32 @@ if (opt$type=="allele_specific") {
 } else if (opt$type=="total_copy") {
 	
 	load(paste0("medicc/total_copy/mpcf/", opt$sample_set, ".RData"))
+	ploidy = round(apply(((tmp[,"End"]-tmp[,"Start"])*qt)/sum(tmp[,"End"]-tmp[,"Start"]), 2, sum))
+	ploidy[ploidy>=4] = 4
+	ploidy[ploidy<=2] = 2
+	if (length(unique(ploidy))>1) {
+		index = which(ploidy==4)
+		
+		qt_4n = ceiling(apply(qt[,index,drop=FALSE], 1, mean)/2)*2
+		qt_4n[qt_4n==0 & apply(qt[,index,drop=FALSE], 1, mean)!=0] = 1
+		qt_2n = round(qt_4n/2)
+		qt_2n[qt_2n==0 & apply(qt[,index,drop=FALSE], 1, mean)!=0] = 1
+		qt = cbind(qt, diploid_ancestor=qt_2n, tetraploid_ancestor=qt_4n)
+		
+		q2_4n = ceiling(apply(q2[,index,drop=FALSE], 1, mean)/2)*2
+		q2_4n[q2_4n==0 & apply(q2[,index,drop=FALSE], 1, mean)!=0] = 1
+		q2_2n = round(q2_4n/2)
+		q2_2n[q2_2n==0 & apply(q2[,index,drop=FALSE], 1, mean)!=0] = 1	
+		q2 = cbind(q2, diploid_ancestor=q2_2n, tetraploid_ancestor=q2_4n)
+		
+	}
+	
 	q1 = qt-q2
 	index = !apply(q2, 1, function(x) { any(is.na(x)) }) & !apply(q1, 1, function(x) { any(is.na(x)) })
 	q2 = q2[index,,drop=FALSE]
 	q1 = q1[index,,drop=FALSE]
 	tmp = tmp[index,,drop=FALSE]
+	
 	q2[q2>4] = 4
 	q1[q1>4] = 4
 	
