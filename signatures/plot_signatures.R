@@ -92,7 +92,7 @@ vcf = preprocessInput_snv(input_data = mutation_summary,
                           reference_genome = BSgenome.Hsapiens.UCSC.hg19)
 patient_ids = unique(vcf$Sample)
 pdf(file=paste0("deconstructsigs/plots/context/", opt$sample_name, ".pdf"), width=18, height=5)
-plot96_mutation_spectrum(vcf, ymax=30, sample.col = "Sample",  plot.file = NULL)
+plot96_mutation_spectrum(vcf, ymax=20, sample.col = "Sample",  plot.file = NULL)
 dev.off()
 
 ## pie-charts of signatures
