@@ -8,6 +8,7 @@ suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("RColorBrewer"))
 suppressPackageStartupMessages(library("Palimpsest"))
+suppressPackageStartupMessages(library("BSgenome.Hsapiens.UCSC.hg19"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -85,13 +86,12 @@ load(file=paste0("deconstructsigs/signatures/", opt$sample_name, ".RData"))
 
 ## barplot of base changes with 3' and 5' context
 colnames(mutation_summary) = c("Sample", "CHROM", "POS", "REF", "ALT")
-mutation_summary$CHROM = paste0("chr", mutation_summary$CHROM)
 mutation_summary = cbind(mutation_summary, "Type"=rep("SNV", nrow(mutation_summary)))
 vcf = preprocessInput_snv(input_data = mutation_summary,
                           ensgene = ensgene,
                           reference_genome = BSgenome.Hsapiens.UCSC.hg19)
 patient_ids = unique(vcf$Sample)
-pdf(file=paste0("deconstructsigs/plots/context/", opt$sample_name, ".pdf"), width=12, height=6)
+pdf(file=paste0("deconstructsigs/plots/context/", opt$sample_name, ".pdf"), width=18, height=5)
 plot96_mutation_spectrum(vcf, ymax=30, sample.col = "Sample",  plot.file = NULL)
 dev.off()
 
