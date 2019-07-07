@@ -1,7 +1,7 @@
 include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
-LOGDIR ?= log/umicollapsing.$(NOW)
+LOGDIR ?= log/umi_collapsing.$(NOW)
 PHONY += fgbio
 
 collapsed_umi : $(foreach sample,$(SAMPLES),fgbio/$(sample).qn.sorted.ubam)
@@ -27,7 +27,8 @@ fgbio/$1.qn.sorted.ubam : $3
 													  SORT_ORDER=queryname \
 													  TMP_DIR=$(TMPDIR)")
 endef
-$(foreach ss,$(SPLIT_SAMPLES),$(if $(fq.$(ss)),$(eval $(call fastq-to-ubam,$(split.$(ss)),$(ss),$(fq.$(ss))))))
+$(foreach ss,$(SPLIT_SAMPLES),\
+	$(if $(fq.$(ss)),$(eval $(call fastq-to-ubam,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
