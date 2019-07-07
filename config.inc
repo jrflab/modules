@@ -165,5 +165,7 @@ DECONSTRUCTSIGS_ENV = $(HOME)/share/usr/anaconda-envs/deconstructsigs
 
 PHANGORN_ENV = $(HOME)/share/usr/anaconda-envs/phangorn
 
+FGBIO_ENV = $(HOME)/share/usr/anaconda-envs/fgbio-0.8.1
+
 endif
 CONFIG_INC = true

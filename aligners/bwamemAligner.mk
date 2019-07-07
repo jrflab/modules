@@ -23,7 +23,6 @@ FASTQ_CHUNK_SEQ := $(shell seq 1 $(FASTQ_CHUNKS))
 FASTQUTILS = $(HOME)/share/usr/ngsutils/bin/fastqutils
 
 BWA_ALN_OPTS ?= -M
-#BWA_ALN_OPTS ?= -q 20
 BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 8
 BWAMEM_MEM_PER_THREAD = $(if $(findstring true,$(PDX)),4G,2G)
@@ -41,7 +40,6 @@ bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
 bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 	$(call RUN,,"ln -f $(<) $(@)")
 
-#$(call align-split-fastq,name,split-name,fastqs)
 define align-split-fastq
 bwamem/bam/$2.bwamem.bam : $3
 	$$(call RUN,-n $$(BWAMEM_THREADS) -s 1G -m $$(BWAMEM_MEM_PER_THREAD),"$$(BWA) mem -t $$(BWAMEM_THREADS) $$(BWA_ALN_OPTS) -R \"@RG\tID:$2\tLB:$1\tPL:$${SEQ_PLATFORM}\tSM:$1\" $$(BWAMEM_REF_FASTA) $$^ | $$(SAMTOOLS) view -bhS - > $$@")
