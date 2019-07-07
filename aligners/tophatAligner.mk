@@ -1,10 +1,3 @@
-# This module is for the Tophat aligner
-# input: $(SAMPLES) 
-# Options: 
-# 	BAM_PHRED64 = true/false
-# 	NO_NOVEL_SPLICING = true/false
-# 	NUM_CORES = 4
-#	INNER_MATE_DIST = 200
 include modules/Makefile.inc
 
 BAM_NO_REALN = true

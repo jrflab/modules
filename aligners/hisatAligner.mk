@@ -1,5 +1,3 @@
-# This module is for the hisat aligner
-# input: $(SAMPLES) 
 include modules/Makefile.inc
 
 BAM_NO_REALN = true

@@ -1,7 +1,3 @@
-# gsnap alignment makefile
-# input: $(SAMPLES)
-# Options: BAM_PHRED64 = true/false
-
 include modules/Makefile.inc
 include modules/hg19.inc
 

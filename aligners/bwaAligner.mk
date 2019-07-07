@@ -1,9 +1,3 @@
-# vim: set ft=make :
-# BWA alignment of short reads
-# OPTIONS: NO_MARKDUP = true/false (default: false)
-# 		   EXTRACT_FASTQ = true/false (default: false)
-# 		   BAM_NO_RECAL = true/false (default: false)
-
 include modules/Makefile.inc
 include modules/variant_callers/gatk.inc
 include modules/aligners/align.inc

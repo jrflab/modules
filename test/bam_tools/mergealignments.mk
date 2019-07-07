@@ -15,7 +15,7 @@ POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 
 define merge-alignments
 fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
-	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
+	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
 									  $(JAVA) -Xmx8g -jar $(PICARD) SamToFastq \
 									  I=$$^ \
 									  FASTQ=/dev/stdout \

@@ -1,4 +1,3 @@
-# align unaligned (to human) sequences to the IADB database using gmap
 include modules/Makefile.inc
 
 OPTS = -d IADB -D ${GSNAP_REF} -B 4 -t 4 -A sam --novelsplicing=1 --pairexpect=200 -n 1 --quiet-if-excessive --nofails
@@ -7,7 +6,7 @@ ifeq ($(BAM_PHRED64),true)
 endif
 GSNAP_SGE_RREQ = $(call MEM_FREE,2G,4G) -q all.q -pe $(PARALLEL_ENV) 4 -now n
 
-REQUIRED_FLAGS = 4 # read unmapped
+REQUIRED_FLAGS = 4
 BAM_FILTER_FLAGS = 1536
 
 SAMPLE_FILE = samples.txt
@@ -22,10 +21,6 @@ LOGDIR = iadb/log
 .PHONY : all
 
 all : $(foreach sample,$(SAMPLES),iadb/bam/$(sample).bam)
-
-#iadb/fastq/%.1.fastq iadb/fastq/%.2.fastq : %.bam
-#SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,6G,7G)" $(MKDIR) $(@D) $(LOGDIR); \
-#$(BAM2FASTQ) --no-aligned -o "iadb/fastq/$*#.fastq" $< &> $(LOGDIR)/$(@F).log && mv iadb/fastq/$*_1.fastq iadb/fastq/$*.1.fastq && mv iadb/fastq/$*_2.fastq iadb/fastq/$*.2.fastq
 
 iadb/unaln_bam/%.bam : %.bam
 	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,1G,2G)" $(MKDIR) $(@D) $(LOGDIR); $(SAMTOOLS) view -f $(REQUIRED_FLAGS) -F $(BAM_FILTER_FLAGS) -bh $< > $@ 2> $(LOGDIR)/$(@F).log

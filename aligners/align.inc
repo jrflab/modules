@@ -1,4 +1,3 @@
-# define the alignment postprocess steps
 ifndef ALIGN_INC
 BAM_PHRED64 ?= false
 BAM_DUP_TYPE ?= markdup
@@ -8,7 +7,7 @@ BAM_NO_REALN ?= false
 SPLIT_CHR ?= true
 SPLIT_FASTQ ?= false
 BAM_NO_SORT ?= false
-BAM_FIX_RG ?= false # fix the readgroups so that it corresponds with the bam filename
+BAM_FIX_RG ?= false
 SEQ_PLATFORM ?= illumina
 
 BAM_SUFFIX := $(subst $( ),.,$(strip \

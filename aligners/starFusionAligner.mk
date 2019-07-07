@@ -1,5 +1,3 @@
-# star alignment + star fusion
-#
 include modules/Makefile.inc
 
 STAR_CHIMERIC = true

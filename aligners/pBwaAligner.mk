@@ -1,5 +1,3 @@
-# parallelized BWA
-# Doesn't seem to work
 include modules/Makefile.inc
 
 SAM_TO_FASTQ = $(JAVA) -Xmx2G -jar $(JARDIR)/SamToFastq.jar VALIDATION_STRINGENCY=LENIENT
@@ -25,9 +23,6 @@ bwa/sai/%.1.sai bwa/sai/%.2.sai : fastq/%.1.fastq.gz fastq/%.2.fastq.gz
 %.bam.bai : %.bam
 	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,1G,2G)" $(MKDIR) $(@D) $(LOGDIR); $(SAMTOOLS) index $< &> $(LOGDIR)/$(@F).log
 
-#fastq/%.1.fastq fastq/%.2.fastq : gsc_bam/%.bam
-#SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,3G,6G)" $(MKDIR) $(@D) $(LOGDIR); $(SAM_TO_FASTQ) I=$< FASTQ=fastq/$*.1.fastq SECOND_END_FASTQ=fastq/$*.2.fastq &> $(LOGDIR)/$(@F).log
-
 fastq/%.1.fastq.gz fastq/%.2.fastq.gz : gsc_bam/%.bam
 	SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,10G,12G)" $(MKDIR) $(@D) $(LOGDIR); $(BAM2FASTQ) -o fastq/$*#.fastq $< &> $(LOGDIR)/$(@F).log && mv fastq/$*_1.fastq fastq/$*.1.fastq && mv fastq/$*_2.fastq fastq/$*.2.fastq && gzip fastq/$*.1.fastq fastq/$*.2.fastq
 
@@ -36,9 +31,6 @@ bwa/bam/%.bwa.sam : bwa/sai/%.1.sai bwa/sai/%.2.sai fastq/%.1.fastq.gz fastq/%.2
 			 LBID=`echo "$*" | sed 's/_[0-9]\+//'`; \
 			 $(PBWA) sampe -f $@ -P -r "@RG\tID:$*\tLB:$${LBID}\tPL:${SEQ_PLATFORM}\tSM:$*" $(REF_FASTA) $(basename $(word 1,$^)) $(basename $(word 2,$^)) $(word 3,$^) $(word 4,$^) 2> $(LOGDIR)/$(@F).log
 
-
-#%.sorted.bam : %.bam
-#SGE_RREQ="$(SGE_RREQ) $(call MEM_FREE,5G,8G)" $(MKDIR) $(LOGDIR); $(SAMTOOLS) sort -m ${SAMTOOLS_SORT_MEM} $< $(basename $@) &> $(LOGDIR)/$(@F).log && rm $<
 
 bam/%.bam : bwa/bam/%.bwa.sorted.filtered.fixmate.markdup.bam
 	$(MKDIR) $(@D); ln -f $< $@

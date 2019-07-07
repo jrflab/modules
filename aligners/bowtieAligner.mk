@@ -1,9 +1,3 @@
-# performs bowtie alignment from reads extracted from bam files
-# INPUT: bam files
-# OUTPUT: bowtie aligned bam files
-# OPTIONS: BAM_PHRED64 = true/false
-# 		   LOCAL = true/false (preform local alignments)
-# 		   RMDUP = true/false
 include modules/Makefile.inc
 include modules/aligners/align.inc
 
