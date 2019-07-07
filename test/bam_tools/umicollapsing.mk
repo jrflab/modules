@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/umicollapsing.$(NOW)
 PHONY += fgbio
 
-collapsed_umi : $(foreach sample,$(SAMPLES),fgbio/$(sample).ubam)
+collapsed_umi : $(foreach sample,$(SAMPLES),fgbio/$(sample).qn.sorted.ubam)
 
 TMPDIR ?= /home/${USER}/share/data/${USER}/tmp
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java

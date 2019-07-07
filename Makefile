@@ -665,5 +665,8 @@ hotspot_summary:
 # alpha testing
 #==================================================
 
+TARGETS += umi_collapsing
+umi_collapsing :
+	$(call RUN_MAKE,modules/test/bam_tools/umicollapsing.mk)
 
 .PHONY : $(TARGETS)
