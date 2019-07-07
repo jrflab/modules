@@ -14,21 +14,20 @@ POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
 define fastq-to-ubam
-fgbio/%.ubam : 
+fgbio/$2.qn.sorted.ubam : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(FGBIO_ENV),"set -o pipefail && \
-													  fgbio --tmp-dir $(TMPDIR) -Xms1g -Xmx12g FastqToBam --input CD10_P_Post_IGO_09342_B_8_S128_R1_001.fastq.gz CD10_P_Post_IGO_09342_B_8_S128_R2_001.fastq.gz \
+													  fgbio --tmp-dir $(TMPDIR) -Xms1g -Xmx12g FastqToBam --input $$^ \
 													  --read-structures 3M+T 3M+T \
-													  --sample CD10-P-Post \
-													  --output CD10-P-Post.ubam \
-													  --library CD10-P-Post && \
-													  $JAVA -Xmx8G -jar $PICARD SortSam \
-													  I=CD10-P-Post.ubam \
-													  O=CD10-P-Post.qn.sorted.ubam \
+													  --sample $1 \
+													  --output $1.ubam \
+													  --library $1 && \
+													  $JAVA -Xmx8G -jar $(PICARD) SortSam \
+													  I=$1.ubam \
+													  O=$1.qn.sorted.ubam \
 													  SORT_ORDER=queryname \
-													  TMP_DIR=$TMPDIR")
+													  TMP_DIR=$(TMPDIR)")
 endef
- $(foreach sample,$(SAMPLES),\
-		$(eval $(call fix-bam,$(sample))))
+$(foreach ss,$(SPLIT_SAMPLES),$(if $(fq.$(ss)),$(eval $(call align-split-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
