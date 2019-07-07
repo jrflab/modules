@@ -21,7 +21,7 @@ fgbio/$1.qn.sorted.ubam : $3
 													  --sample $1 \
 													  --output fgbio/$1.ubam \
 													  --library $1 && \
-													  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
+													  $(JAVA) -Xmx8g -jar $(PICARD) SortSam \
 													  I=fgbio/$1.ubam \
 													  O=fgbio/$1.qn.sorted.ubam \
 													  SORT_ORDER=queryname \
