@@ -14,16 +14,16 @@ POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
 define fastq-to-ubam
-fgbio/$2.qn.sorted.ubam : $3
+fgbio/$1.qn.sorted.ubam : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(FGBIO_ENV),"set -o pipefail && \
 													  fgbio --tmp-dir $(TMPDIR) -Xms1g -Xmx12g FastqToBam --input $$^ \
 													  --read-structures 3M+T 3M+T \
 													  --sample $1 \
-													  --output $1.ubam \
+													  --output fgbio/$1.ubam \
 													  --library $1 && \
 													  $JAVA -Xmx8G -jar $(PICARD) SortSam \
-													  I=$1.ubam \
-													  O=$1.qn.sorted.ubam \
+													  I=fgbio/$1.ubam \
+													  O=fgbio/$1.qn.sorted.ubam \
 													  SORT_ORDER=queryname \
 													  TMP_DIR=$(TMPDIR)")
 endef
