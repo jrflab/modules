@@ -20,7 +20,7 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  I=$$^ \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
-									  CLIPPING_ACTION=2 \
+									  CLIPPING_ACTION=N \
 									  INTERLEAVE=true \
 									  NON_PF=true \
 									  TMP_DIR=$(TMPDIR) | \
