@@ -668,5 +668,9 @@ hotspot_summary:
 TARGETS += umi_collapsing
 umi_collapsing :
 	$(call RUN_MAKE,modules/test/bam_tools/umicollapsing.mk)
+	
+TARGETS += merge_alignments
+merge_alignments :
+	$(call RUN_MAKE,modules/test/bam_tools/mergealignments.mk)
 
 .PHONY : $(TARGETS)
