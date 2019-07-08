@@ -1,4 +1,3 @@
-# run absolute using strelka,mutect,scalpel,titan,oncoscan OR varscan_cnv
 include modules/Makefile.inc
 include modules/vcf_tools/vcftools.mk
 
