@@ -17,18 +17,18 @@ define merge-alignments
 fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
 									  $(JAVA) -Xmx16G -jar $(PICARD) SamToFastq \
-									  I=$$^ \
+									  I=fgbio/$$(*).qn.sorted.ubam \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
 									  CLIPPING_ACTION=N \
 									  INTERLEAVE=true \
 									  NON_PF=true \
 									  TMP_DIR=$(TMPDIR) | \
-									  bwa mem -M -t 12 -R \"@RG\tID:$1\tLB:$1\tPL:illumina\tSM:$1\" \
+									  bwa mem -M -t 12 -R \"@RG\tID:$$(*)\tLB:$$(*)\tPL:illumina\tSM:$$(*)\" \
 									  -p $(REF_FASTA) /dev/stdin | \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=/dev/stdin \
-									  O=$$@ \
+									  O=fgbio/$$(*).qn.sorted.bam \
 									  SORT_ORDER=queryname \
 									  TMP_DIR=$(TMPDIR)")
 									  
@@ -37,9 +37,9 @@ fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
 									  		   $(JAVA) -Xmx12G -jar $(PICARD) MergeBamAlignment \
 									  		   VALIDATION_STRINGENCY=SILENT \
 									  		   R=$(REF_FASTA) \
-									  		   UNMAPPED_BAM=fgbio/$1.qn.sorted.ubam \
-									  		   ALIGNED_BAM=fgbio/$1.qn.sorted.bam \
-									  		   OUTPUT=fgbio/$1.merged.bam \
+									  		   UNMAPPED_BAM=fgbio/$$(*).qn.sorted.ubam \
+									  		   ALIGNED_BAM=fgbio/$$(*).qn.sorted.bam \
+									  		   OUTPUT=fgbio/$$(*).merged.bam \
 									  		   CREATE_INDEX=true \
 									  		   ADD_MATE_CIGAR=true \
 									  		   CLIP_ADAPTERS=false \
@@ -53,11 +53,11 @@ fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
 									  
 fgbio/%.regrouped.bam : fgbio/%.merged.bam
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
-									  samtools view -H fgbio/$1.merged.bam > fgbio/$1.sam && \
-									  grep \"^@RG\" fgbio/$1.sam | sed \"s/ID:A/ID:$1/g\" >> fgbio/$1.sam && \
-									  samtools reheader -P fgbio/$1.sam fgbio/$1.merged.bam > fgbio/$1.regrouped.bam && \
-									  samtools index fgbio/$1.regrouped.bam && \
-									  mv fgbio/$1.regrouped.bam.bai fgbio/$1.regrouped.bai")
+									  samtools view -H fgbio/$$(*).merged.bam > fgbio/$$(*).sam && \
+									  grep \"^@RG\" fgbio/$$(*).sam | sed \"s/ID:A/ID:$$(*)/g\" >> fgbio/$$(*).sam && \
+									  samtools reheader -P fgbio/$$(*).sam fgbio/$$(*).merged.bam > fgbio/$$(*).regrouped.bam && \
+									  samtools index fgbio/$$(*).regrouped.bam && \
+									  mv fgbio/$$(*).regrouped.bam.bai fgbio/$$(*).regrouped.bai")
 
 endef
 $(foreach sample,$(SAMPLES),\
