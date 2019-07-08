@@ -32,14 +32,14 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  SORT_ORDER=queryname \
 									  TMP_DIR=$(TMPDIR)")
 									  
-fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
+fgbio/%.merged.bam : fgbio/%.qn.sorted.bam fgbio/%.qn.sorted.bam
 	$$(call RUN,-c -n 1 -s 12G -m 24G -w 2880,"set -o pipefail && \
 									  		   $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
 									  		   VALIDATION_STRINGENCY=SILENT \
 									  		   R=$(REF_FASTA) \
-									  		   UNMAPPED_BAM=$1.qn.sorted.ubam \
-									  		   ALIGNED_BAM=$1.qn.sorted.bam \
-									  		   OUTPUT=$1.merged.bam \
+									  		   UNMAPPED_BAM=$$(<) \
+									  		   ALIGNED_BAM=$$(<<) \
+									  		   OUTPUT=$$@ \
 									  		   CREATE_INDEX=true \
 									  		   ADD_MATE_CIGAR=true \
 									  		   CLIP_ADAPTERS=false \
