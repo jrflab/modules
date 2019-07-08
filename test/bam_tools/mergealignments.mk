@@ -39,7 +39,7 @@ fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
 									  		   R=$(REF_FASTA) \
 									  		   UNMAPPED_BAM=fgbio/$1.qn.sorted.ubam \
 									  		   ALIGNED_BAM=fgbio/$1.qn.sorted.bam \
-									  		   OUTPUT=$$@ \
+									  		   OUTPUT=fgbio/$1.merged.bam \
 									  		   CREATE_INDEX=true \
 									  		   ADD_MATE_CIGAR=true \
 									  		   CLIP_ADAPTERS=false \
@@ -53,11 +53,11 @@ fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
 									  
 fgbio/%.regrouped.bam : fgbio/%.merged.bam
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
-									  samtools view -H $1.merged.bam > $1.sam && \
-									  grep \"^@RG\" $1.sam | sed \"s/ID:A/ID:$1/g\" >> $1.sam && \
-									  samtools reheader -P $1.sam $1.bam > $1.regrouped.bam && \
-									  samtools index $1.regrouped.bam && \
-									  mv $1.bam.bai $1.regrouped.bai")
+									  samtools view -H fgbio/$1.merged.bam > fgbio/$1.sam && \
+									  grep \"^@RG\" fgbio/$1.sam | sed \"s/ID:A/ID:$1/g\" >> fgbio/$1.sam && \
+									  samtools reheader -P fgbio/$1.sam fgbio/$1.merged.bam > fgbio/$1.regrouped.bam && \
+									  samtools index fgbio/$1.regrouped.bam && \
+									  mv fgbio/$1.regrouped.bam.bai fgbio/$1.regrouped.bai")
 
 endef
 $(foreach sample,$(SAMPLES),\
