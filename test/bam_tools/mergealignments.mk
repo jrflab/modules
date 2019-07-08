@@ -16,7 +16,7 @@ POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 define merge-alignments
 fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
-									  $(JAVA) -Xmx8G -jar $(PICARD) SamToFastq \
+									  $(JAVA) -Xmx16G -jar $(PICARD) SamToFastq \
 									  I=$$^ \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
@@ -33,23 +33,23 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  TMP_DIR=$(TMPDIR)")
 									  
 fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
-	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
-									  $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
-									  VALIDATION_STRINGENCY=SILENT \
-									  R=$(REF_FASTA) \
-									  UNMAPPED_BAM=$1.qn.sorted.ubam \
-									  ALIGNED_BAM=$1.qn.sorted.bam \
-									  OUTPUT=$1.merged.bam \
-									  CREATE_INDEX=true \
-									  ADD_MATE_CIGAR=true \
-									  CLIP_ADAPTERS=false \
-									  CLIP_OVERLAPPING_READS=false \
-									  INCLUDE_SECONDARY_ALIGNMENTS=true \
-									  MAX_INSERTIONS_OR_DELETIONS=-1 \
-									  PRIMARY_ALIGNMENT_STRATEGY=MostDistant \
-									  ATTRIBUTES_TO_RETAIN=XS \
-									  SO=coordinate \
-									  TMP_DIR=$(TMPDIR)")
+	$$(call RUN,-c -n 1 -s 8G -m 16G -w 2880,"set -o pipefail && \
+									  		  $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
+									  		  VALIDATION_STRINGENCY=SILENT \
+									  		  R=$(REF_FASTA) \
+									  		  UNMAPPED_BAM=$1.qn.sorted.ubam \
+									  		  ALIGNED_BAM=$1.qn.sorted.bam \
+									  		  OUTPUT=$1.merged.bam \
+									  		  CREATE_INDEX=true \
+									  		  ADD_MATE_CIGAR=true \
+									  		  CLIP_ADAPTERS=false \
+									  		  CLIP_OVERLAPPING_READS=false \
+									  		  INCLUDE_SECONDARY_ALIGNMENTS=true \
+									  		  MAX_INSERTIONS_OR_DELETIONS=-1 \
+									  		  PRIMARY_ALIGNMENT_STRATEGY=MostDistant \
+									  		  ATTRIBUTES_TO_RETAIN=XS \
+									  		  SO=coordinate \
+									  		  TMP_DIR=$(TMPDIR)")
 									  
 fgbio/%.regrouped.bam : fgbio/%.merged.bam
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
