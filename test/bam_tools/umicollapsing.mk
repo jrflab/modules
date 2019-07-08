@@ -17,7 +17,7 @@ define fastq-to-ubam
 fgbio/$1.qn.sorted.ubam : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(FGBIO_ENV),"set -o pipefail && \
 													  fgbio --tmp-dir $(TMPDIR) -Xms1g -Xmx12g FastqToBam --input $$^ \
-													  --read-structures 3M+T 3M+T \
+													  --read-structures 3M2S+T 3M2S+T \
 													  --sample $1 \
 													  --output fgbio/$1.ubam \
 													  --library $1 && \
