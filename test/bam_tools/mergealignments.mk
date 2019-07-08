@@ -28,7 +28,7 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  -p $(REF_FASTA) /dev/stdin | \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=/dev/stdin \
-									  O=$1.qn.sorted.bam \
+									  O=$$@ \
 									  SORT_ORDER=queryname \
 									  TMP_DIR=$(TMPDIR)")
 									  
