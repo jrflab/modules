@@ -16,7 +16,7 @@ POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 define merge-alignments
 fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
-									  $(JAVA) -Xmx8g -jar $(PICARD) SamToFastq \
+									  $(JAVA) -Xmx8G -jar $(PICARD) SamToFastq \
 									  I=$$^ \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
@@ -26,7 +26,7 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  TMP_DIR=$(TMPDIR) | \
 									  bwa mem -M -t 12 -R \"@RG\tID:$1\tLB:$1\tPL:illumina\tSM:$1\" \
 									  -p $(REF_FASTA) /dev/stdin | \
-									  $(JAVA) -Xmx8g -jar $(PICARD) SortSam \
+									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=/dev/stdin \
 									  O=$1.qn.sorted.bam \
 									  SORT_ORDER=queryname \
@@ -34,7 +34,7 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  
 fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
-									  $(JAVA) -Xmx12g -jar $PICARD MergeBamAlignment \
+									  $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
 									  VALIDATION_STRINGENCY=SILENT \
 									  R=$(REF_FASTA) \
 									  UNMAPPED_BAM=$1.qn.sorted.ubam \
