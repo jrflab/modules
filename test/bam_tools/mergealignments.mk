@@ -33,23 +33,23 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  TMP_DIR=$(TMPDIR)")
 									  
 fgbio/%.merged.bam : fgbio/%.qn.sorted.bam
-	$$(call RUN,-c -n 1 -s 8G -m 16G -w 2880,"set -o pipefail && \
-									  		  $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
-									  		  VALIDATION_STRINGENCY=SILENT \
-									  		  R=$(REF_FASTA) \
-									  		  UNMAPPED_BAM=$1.qn.sorted.ubam \
-									  		  ALIGNED_BAM=$1.qn.sorted.bam \
-									  		  OUTPUT=$1.merged.bam \
-									  		  CREATE_INDEX=true \
-									  		  ADD_MATE_CIGAR=true \
-									  		  CLIP_ADAPTERS=false \
-									  		  CLIP_OVERLAPPING_READS=false \
-									  		  INCLUDE_SECONDARY_ALIGNMENTS=true \
-									  		  MAX_INSERTIONS_OR_DELETIONS=-1 \
-									  		  PRIMARY_ALIGNMENT_STRATEGY=MostDistant \
-									  		  ATTRIBUTES_TO_RETAIN=XS \
-									  		  SO=coordinate \
-									  		  TMP_DIR=$(TMPDIR)")
+	$$(call RUN,-c -n 1 -s 12G -m 24G -w 2880,"set -o pipefail && \
+									  		   $(JAVA) -Xmx12G -jar $PICARD MergeBamAlignment \
+									  		   VALIDATION_STRINGENCY=SILENT \
+									  		   R=$(REF_FASTA) \
+									  		   UNMAPPED_BAM=$1.qn.sorted.ubam \
+									  		   ALIGNED_BAM=$1.qn.sorted.bam \
+									  		   OUTPUT=$1.merged.bam \
+									  		   CREATE_INDEX=true \
+									  		   ADD_MATE_CIGAR=true \
+									  		   CLIP_ADAPTERS=false \
+									  		   CLIP_OVERLAPPING_READS=false \
+									  		   INCLUDE_SECONDARY_ALIGNMENTS=true \
+									  		   MAX_INSERTIONS_OR_DELETIONS=-1 \
+									  		   PRIMARY_ALIGNMENT_STRATEGY=MostDistant \
+									  		   ATTRIBUTES_TO_RETAIN=XS \
+									  		   SO=coordinate \
+									  		   TMP_DIR=$(TMPDIR)")
 									  
 fgbio/%.regrouped.bam : fgbio/%.merged.bam
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
