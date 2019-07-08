@@ -661,16 +661,18 @@ hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
-#==================================================
-# alpha testing
-#==================================================
-
 TARGETS += umi_collapsing
 umi_collapsing :
 	$(call RUN_MAKE,modules/test/bam_tools/umicollapsing.mk)
-	
+
 TARGETS += merge_alignments
 merge_alignments :
 	$(call RUN_MAKE,modules/test/bam_tools/mergealignments.mk)
 
+	
+#==================================================
+# alpha testing
+#==================================================
+
+	
 .PHONY : $(TARGETS)
