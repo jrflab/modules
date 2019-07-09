@@ -37,7 +37,7 @@ fgbio/%.bam : fgbio/%.filtered.bam
 									  SORT_ORDER=coordinate \
 									  TMP_DIR=$(TMPDIR)")
 
-bam/$1.bam : fgbio/%.bam
+bam/%.bam : fgbio/%.bam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
 									  mkdir -p bam && \
 									  cp fgbio/$$(*).bam bam/$$(*).bam && \
