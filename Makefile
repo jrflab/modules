@@ -674,5 +674,9 @@ merge_alignments :
 # alpha testing
 #==================================================
 
-	
+TARGETS += call_consensus
+call_consensus :
+	$(call RUN_MAKE,modules/test/bam_tools/callconsensus.mk)
+
+
 .PHONY : $(TARGETS)
