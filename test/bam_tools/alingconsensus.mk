@@ -38,11 +38,11 @@ fgbio/%.bam : fgbio/%.filtered.bam
 									  TMP_DIR=$(TMPDIR)")
 
 bam/%.bam : fgbio/%.bam
-	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
-									  mkdir -p bam && \
-									  cp fgbio/$$(*).bam bam/$$(*).bam && \
-									  samtools index bam/$$(*).bam && \
-									  cp bam/$$(*).bam.bai bam/$$(*).bai")
+	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
+									 mkdir -p bam && \
+									 cp fgbio/$$(*).bam bam/$$(*).bam && \
+									 samtools index bam/$$(*).bam && \
+									 cp bam/$$(*).bam.bai bam/$$(*).bai")
 endef
 $(foreach sample,$(SAMPLES),\
 		$(eval $(call bam-to-bam,$(sample))))
