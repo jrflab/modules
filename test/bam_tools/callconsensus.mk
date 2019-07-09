@@ -13,10 +13,11 @@ REF_FASTA ?= /home/${USER}/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-A.sorted.list
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
-MIN_READS ?= 1
+MIN_READS ?= 5
 MAX_READ_ERROR ?= 0.025
 MAX_BASE_ERROR ?= 0.1
 MIN_BASE_QUAL ?= 10
+MAX_N ?= 0.1
 
 define call-consensus
 fgbio/%.groupedbyumi.bam : fgbio/%.regrouped.bam
@@ -59,7 +60,8 @@ fgbio/%.filtered.bam : fgbio/%.consensus.bam
 													   --min-reads $(MIN_READS) \
 													   --max-read-error-rate $(MAX_READ_ERROR)\
 													   --max-base-error-rate $(MAX_BASE_ERROR) \
-													   --min-base-quality $(MIN_BASE_QUAL)")
+													   --min-base-quality $(MIN_BASE_QUAL) \
+													   --max-no-call-fraction $(MAX_N)")
 
 
 endef
