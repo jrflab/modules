@@ -18,11 +18,11 @@ fgbio/%.bam : fgbio/%.filtered.bam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=fgbio/$$(*).filtered.bam \
-									  O=/dev/stdout \
+									  O=fgbio/$$(*).sorted.bam \
 									  SORT_ORDER=queryname \
-									  TMP_DIR=$(TMPDIR) | \
+									  TMP_DIR=$(TMPDIR) && \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SamToFastq \
-									  I=/dev/stdin \
+									  I=fgbio/$$(*).sorted.bam \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
 									  CLIPPING_ACTION=2 \
