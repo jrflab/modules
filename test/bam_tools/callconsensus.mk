@@ -13,6 +13,11 @@ REF_FASTA ?= /home/${USER}/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-A.sorted.list
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
+MIN_READS ?= 1
+MAX_READ_ERROR ?= 0.025
+MAX_BASE_ERROR ?= 0.1
+MIN_BASE_QUAL ?= 10
+
 define call-consensus
 fgbio/%.groupedbyumi.bam : fgbio/%.regrouped.bam
 	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(FGBIO_ENV),"set -o pipefail && \
@@ -47,14 +52,14 @@ fgbio/%.consensus.bam : fgbio/%.groupedbyumi.bam
 													   
 fgbio/%.filtered.bam : fgbio/%.consensus.bam
 	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(FGBIO_ENV),"set -o pipefail && \
-													   fgbio --tmp-dir $TMPDIR -Xms1G -Xmx24G FilterConsensusReads \
+													   fgbio --tmp-dir $(TMPDIR) -Xms1G -Xmx24G FilterConsensusReads \
 													   --input fgbio/$$(*).consensus.bam \
 													   --output fgbio/$$(*).filtered.bam \
 													   --ref $(REF_FASTA) \
-													   --min-reads 1 \
-													   --max-read-error-rate 0.025 \
-													   --max-base-error-rate 0.1 \
-													   --min-base-quality 10")
+													   --min-reads $(MIN_READS) \
+													   --max-read-error-rate $(MAX_READ_ERROR)\
+													   --max-base-error-rate $(MAX_BASE_ERROR) \
+													   --min-base-quality $(MIN_BASE_QUAL)")
 
 
 endef
