@@ -14,7 +14,7 @@ POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
 define bam-to-bam
-fgbio/$%.bam : fgbio/%.filtered.bam
+fgbio/%.bam : fgbio/%.filtered.bam
 	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=fgbio/$$(*).filtered.bam \
