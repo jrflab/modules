@@ -677,6 +677,10 @@ merge_alignments :
 TARGETS += call_consensus
 call_consensus :
 	$(call RUN_MAKE,modules/test/bam_tools/callconsensus.mk)
+	
+TARGETS += align_consensus
+align_consensus :
+	$(call RUN_MAKE,modules/test/bam_tools/alignconsensus.mk)
 
 
 .PHONY : $(TARGETS)
