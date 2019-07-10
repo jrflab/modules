@@ -33,7 +33,7 @@ fgbio/%.bam : fgbio/%.sorted.bam
 									  NON_PF=true \
 									  TMP_DIR=$(TMPDIR) | \
 									  bwa mem -M -t 12 -R \"@RG\tID:$$(*)\tLB:$$(*)\tPL:illumina\tSM:$$(*)\" \
-									  -p $REF /dev/stdin | \
+									  -p $REF_FASTA /dev/stdin | \
 									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
 									  I=/dev/stdin \
 									  O=fgbio/$$(*).bam \
