@@ -21,5 +21,5 @@ for (i in 1:length(sample_names)) {
 	hla_genotypes[[i]] = cbind(gen_1, gen_2)
 }
 hla_genotypes = do.call(rbind, hla_genotypes)
-hla_genoptypes = cbind("SAMPLE_NAMES"=sample_names, hla_genotypes)
+hla_genotypes = cbind("SAMPLE_NAMES"=sample_names, hla_genotypes)
 write.table(hla_genotypes, file="hla_polysolver/summary/genotype_summary.txt", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
