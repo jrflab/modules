@@ -14,18 +14,21 @@ POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-p
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
 define bam-to-bam
-fgbio/%.bam : fgbio/%.filtered.bam
-	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
-									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
+fgbio/%.sorted.bam : fgbio/%.filtered.bam
+	$$(call RUN,-c -s 12G -m 16G,"set -o pipefail && \
+									  $(JAVA) -Xmx12G -jar $(PICARD) SortSam \
 									  I=fgbio/$$(*).filtered.bam \
 									  O=fgbio/$$(*).sorted.bam \
 									  SORT_ORDER=queryname \
-									  TMP_DIR=$(TMPDIR) && \
-									  $(JAVA) -Xmx8G -jar $(PICARD) SamToFastq \
+									  TMP_DIR=$(TMPDIR)")
+
+fgbio/%.bam : fgbio/%.sorted.bam
+	$$(call RUN,-c -n 12 -s 2G -m 4G,"set -o pipefail && \
+									  $(JAVA) -Xmx16G -jar $(PICARD) SamToFastq \
 									  I=fgbio/$$(*).sorted.bam \
 									  FASTQ=/dev/stdout \
 									  CLIPPING_ATTRIBUTE=XT \
-									  CLIPPING_ACTION=2 \
+									  CLIPPING_ACTION=N \
 									  INTERLEAVE=true \
 									  NON_PF=true \
 									  TMP_DIR=$(TMPDIR) | \
