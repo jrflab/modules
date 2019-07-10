@@ -47,7 +47,7 @@ if (as.numeric(opt$type)==1) {
 		box(lwd=1.5)
 	}
 	
-	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
 	dataA[dataA[,"chromosome"]=="Y", "chromosome"] = 24
 	dataA[,"chromosome"] = as.numeric(dataA[,"chromosome"])
@@ -57,7 +57,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataB[dataB[,"chromosome"]=="X", "chromosome"] = 23
 	dataB[dataB[,"chromosome"]=="Y", "chromosome"] = 24
 	dataB[,"chromosome"] = as.numeric(dataB[,"chromosome"])
@@ -67,7 +67,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".no-pool.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataC[dataC[,"chromosome"]=="X", "chromosome"] = 23
 	dataC[dataC[,"chromosome"]=="Y", "chromosome"] = 24
 	dataC[,"chromosome"] = as.numeric(dataC[,"chromosome"])
@@ -91,7 +91,7 @@ if (as.numeric(opt$type)==1) {
 
 	data("CytoBand")
 
-	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
 	dataA[dataA[,"chromosome"]=="Y", "chromosome"] = 24
 	dataA[,"chromosome"] = as.numeric(dataA[,"chromosome"])
@@ -101,7 +101,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataB[dataB[,"chromosome"]=="X", "chromosome"] = 23
 	dataB[dataB[,"chromosome"]=="Y", "chromosome"] = 24
 	dataB[,"chromosome"] = as.numeric(dataB[,"chromosome"])
@@ -111,7 +111,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".no-pool.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataC[dataC[,"chromosome"]=="X", "chromosome"] = 23
 	dataC[dataC[,"chromosome"]=="Y", "chromosome"] = 24
 	dataC[,"chromosome"] = as.numeric(dataC[,"chromosome"])
@@ -281,7 +281,7 @@ if (as.numeric(opt$type)==1) {
 
 } else if (as.numeric(opt$type)==3) {
 
-	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataA = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-A.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataA[dataA[,"chromosome"]=="X", "chromosome"] = 23
 	dataA[dataA[,"chromosome"]=="Y", "chromosome"] = 24
 	dataA[,"chromosome"] = as.numeric(dataA[,"chromosome"])
@@ -291,7 +291,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataA[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataB = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".pool-B.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataB[dataB[,"chromosome"]=="X", "chromosome"] = 23
 	dataB[dataB[,"chromosome"]=="Y", "chromosome"] = 24
 	dataB[,"chromosome"] = as.numeric(dataB[,"chromosome"])
@@ -301,7 +301,7 @@ if (as.numeric(opt$type)==1) {
 	tmp = winsorize(data=tmp, tau=2.5, k=10, verbose=FALSE, return.outliers=TRUE)
 	dataB[tmp$wins.outliers[,3]!=0,"log2"] = NA
 	
-	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".C.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
+	dataC = read.table(file=paste0("cnvaccess/cnr/", opt$sample_name, ".no-pool.cnr"), header=TRUE, sep="\t", stringsAsFactors=FALSE)
 	dataC[dataC[,"chromosome"]=="X", "chromosome"] = 23
 	dataC[dataC[,"chromosome"]=="Y", "chromosome"] = 24
 	dataC[,"chromosome"] = as.numeric(dataC[,"chromosome"])
