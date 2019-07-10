@@ -6,10 +6,8 @@ PHONY += fgbio bam
 
 align_consensus : $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
-TMPDIR ?= /home/${USER}/share/data/${USER}/tmp
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
 PICARD = /home/${USER}/share/usr/picard/bin/picard.jar
-REF_FASTA ?= /home/${USER}/share/reference/GATK_bundle/2.3/human_g1k_v37.fasta
 POOL_A_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-A.sorted.list
 POOL_B_INTERVAL ?= /home/${USER}/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.list
 
