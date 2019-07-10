@@ -35,6 +35,10 @@ somatic_indels:
 TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
+	
+TARGETS += msk_access
+msk_access :
+	$(call RUN_MAKE,modules/test/workflows/mskaccess.mk)
 
 
 #==================================================
@@ -668,12 +672,7 @@ umi_collapsing :
 TARGETS += merge_alignments
 merge_alignments :
 	$(call RUN_MAKE,modules/test/bam_tools/mergealignments.mk)
-
 	
-#==================================================
-# alpha testing
-#==================================================
-
 TARGETS += call_consensus
 call_consensus :
 	$(call RUN_MAKE,modules/test/bam_tools/callconsensus.mk)
@@ -681,6 +680,13 @@ call_consensus :
 TARGETS += align_consensus
 align_consensus :
 	$(call RUN_MAKE,modules/test/bam_tools/alignconsensus.mk)
+
+
+#==================================================
+# alpha testing
+#==================================================
+
+
 
 
 .PHONY : $(TARGETS)
