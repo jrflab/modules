@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/hla_polysolver.$(NOW)
 PHONY += hla_polysolver hla_polysolver/summary
 
-hla_polysolver : $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).taskcomplete) hla_polysolver/summary/genotype_summary.txt
+hla_polysolver : hla_polysolver/summary/genotype_summary.txt #$(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).taskcomplete)
 
 define hla-polysolver
 hla_polysolver/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
