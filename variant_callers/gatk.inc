@@ -1,6 +1,3 @@
-# vim:set ft=make:
-#
-
 ifndef GATK_INC
 DEFAULT_JAVA_MEM = 18G
 GATK = $(call GATK_MEM,$(DEFAULT_JAVA_MEM))
