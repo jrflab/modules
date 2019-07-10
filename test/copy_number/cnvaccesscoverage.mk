@@ -17,7 +17,7 @@ ONTARGET_FILE_B ?= ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorte
 OFFTARGET_FILE = ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-AB.offtarget.bed
 
 define mark-duplicates
-cnvaccess/bam/%.bam : fgbio/%.merged.bam
+cnvaccess/bam/%.bam : fgbio/%.regrouped.bam
 	$$(call RUN,-c -n 1 -s 12G -m 18G,"java -Djava.io.tmpdir=$(TMPDIR) -Xmx16G -jar $$(PICARD_JAR) MarkDuplicates \
 									   I=$$(<) \
 									   O=cnvaccess/bam/$$(*).bam \
