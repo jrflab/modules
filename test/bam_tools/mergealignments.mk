@@ -24,8 +24,14 @@ fgbio/%.qn.sorted.bam : fgbio/%.qn.sorted.ubam
 									  TMP_DIR=$(TMPDIR) | \
 									  bwa mem -M -t 12 -R \"@RG\tID:$$(*)\tLB:$$(*)\tPL:illumina\tSM:$$(*)\" \
 									  -p $(REF_FASTA) /dev/stdin | \
-									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
+									  $(JAVA) -Xmx16G -jar $(PICARD) FixMateInformation \
 									  I=/dev/stdin \
+									  O=fgbio/$$(*).mate.fixed.bam \
+									  SORT_ORDER=coordinate \
+									  TMP_DIR=$(TMPDIR) \
+									  VALIDATION_STRINGENCY=LENIENT && \
+									  $(JAVA) -Xmx8G -jar $(PICARD) SortSam \
+									  I=fgbio/$$(*).mate.fixed.bam \
 									  O=fgbio/$$(*).qn.sorted.bam \
 									  SORT_ORDER=queryname \
 									  TMP_DIR=$(TMPDIR)")
