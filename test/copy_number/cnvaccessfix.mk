@@ -4,7 +4,9 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvaccess_fix.$(NOW)
 PHONY += cnvkit cnvaccess/cnr
 
-cnvaccess_fix : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-A.cnr) $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-B.cnr) $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).no-pool.cnr)
+cnvaccess_fix : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-A.cnr) \
+				$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-B.cnr) \
+				$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).no-pool.cnr)
 
 define cnvaccess-cnr
 cnvaccess/cnr/%.pool-A.cnr : cnvaccess/cnn/tumor/%.pool-A.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-A.antitargetcoverage.cnn cnvaccess/reference/on_target_pool_A.cnr
