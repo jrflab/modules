@@ -37,7 +37,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 hla_polysolver/summary/genotype_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).taskcomplete)
 	$(call RUN,-c -s 12G -m 24G,"mkdir -p hla_polysolver/summary && \
-							 	 $(RSCRIPT) modules/variant_callers/somatic/hla_summary.R --sample_names '$$(SAMPLE_PAIRS)'")
+							 	 $(RSCRIPT) modules/variant_callers/somatic/hla_summary.R --sample_names $$(SAMPLE_PAIRS)")
 
 .DELETE_ON_ERROR:
 .SECONDARY:
