@@ -4,7 +4,13 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvaccess_coverage.$(NOW)
 PHONY += cnvaccess cnvaccess/bam cnvaccess/cnn cnvaccess/cnn/tumor cnvaccess/cnn/normal
 
-cnvaccess_coverage : $(foreach sample,$(SAMPLES),cnvaccess/bam/$(sample).bam) #$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnn/tumor/$(sample).pool-A.targetcoverage.cnn cnvaccess/cnn/tumor/$(sample).pool-B.targetcoverage.cnn cnvaccess/cnn/tumor/$(sample).no-pool.antitargetcoverage.cnn) $(foreach sample,$(NORMAL_SAMPLES),cnvaccess/cnn/normal/$(sample).pool-A.targetcoverage.cnn cnvaccess/cnn/normal/$(sample).pool-B.targetcoverage.cnn cnvaccess/cnn/normal/$(sample).no-pool.antitargetcoverage.cnn)
+cnvaccess_coverage : $(foreach sample,$(SAMPLES),cnvaccess/bam/$(sample).bam) \
+					 #$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnn/tumor/$(sample).pool-A.targetcoverage.cnn \
+					 #cnvaccess/cnn/tumor/$(sample).pool-B.targetcoverage.cnn \
+					 #cnvaccess/cnn/tumor/$(sample).no-pool.antitargetcoverage.cnn) \
+					 #$(foreach sample,$(NORMAL_SAMPLES),cnvaccess/cnn/normal/$(sample).pool-A.targetcoverage.cnn \
+					 #cnvaccess/cnn/normal/$(sample).pool-B.targetcoverage.cnn \
+					 #cnvaccess/cnn/normal/$(sample).no-pool.antitargetcoverage.cnn)
 
 ONTARGET_FILE_A = ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-A.sorted.bed
 ONTARGET_FILE_B ?= ~/share/reference/target_panels/MSK-ACCESS-v1_0-probe-B.sorted.bed
