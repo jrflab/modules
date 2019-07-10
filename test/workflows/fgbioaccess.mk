@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/msk_access.$(NOW)
+LOGDIR ?= log/fgbio_access.$(NOW)
 PHONY += bam fgbio cnvaccess
 
 MSK_ACCESS_WORKFLOW += collapsed_umi
