@@ -22,12 +22,13 @@ normal_sample = tumor_samples[tumor_samples %in% normal_sample]
 tumor_samples = tumor_samples[!(tumor_samples %in% normal_sample)]
 min_depth = ifelse(is.na(opt$min_depth) | is.null(opt$min_depth) | opt$min_depth=="" | opt$min_depth==" ", 50, opt$min_depth)
 
-mutation_summary = read_tsv(file=paste0("sufam/", opt$sample_set, ".tsv"))
+mutation_summary = read_tsv(file=paste0("sufam/", opt$sample_set, ".tsv")) %>%
+				   mutate(mutation_id = paste0(Gene_Symbol, "_", HGVSp))
 index = apply(mutation_summary[,paste0("DP_", tumor_samples)], 1, function(x) {sum(x>=min_depth)})==length(tumor_samples)
 mutation_summary = mutation_summary[index,,drop=FALSE]
 pyclone_summary = read_tsv(file=paste0("pyclone/", opt$sample_set, "/report/pyclone.tsv"), col_types = cols(.default = col_character())) %>%
 				  type_convert() %>%
-				  bind_cols(mutation_summary) %>%
+				  full_join(mutation_summary, by="mutation_id") %>%
 				  arrange(cluster_id) %>%
 				  mutate(mutation_type = ifelse(Variant_Caller=="mutect", "SNV", "Indel")) %>%
 				  mutate(nref = nchar(Ref)) %>%
