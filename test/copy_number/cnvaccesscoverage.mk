@@ -58,19 +58,19 @@ cnvaccess/cnn/normal/%.pool-A.targetcoverage.cnn : cnvaccess/bam/%.bam
 	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_A) -o cnvaccess/cnn/normal/$$(*).pool-A.targetcoverage.cnn")
 
 cnvaccess/cnn/normal/%.pool-A.antitargetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).pool-A.antitargetcoverage.cnn")
+	$$(call RUN,-n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).pool-A.antitargetcoverage.cnn")
 	
 cnvaccess/cnn/normal/%.pool-B.targetcoverage.cnn : cnvaccess/bam/%.bam
 	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_B) -o cnvaccess/cnn/normal/$$(*).pool-B.targetcoverage.cnn")
 
 cnvaccess/cnn/normal/%.pool-B.antitargetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).pool-B.antitargetcoverage.cnn")
+	$$(call RUN,-n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).pool-B.antitargetcoverage.cnn")
 
 cnvaccess/cnn/normal/%.no-pool.antitargetcoverage.cnn : cnvaccess/bam/%.bam
 	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvaccess/cnn/normal/$$(*).no-pool.antitargetcoverage.cnn")
 
 cnvaccess/cnn/normal/%.no-pool.targetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).no-pool.targetcoverage.cnn")
+	$$(call RUN,-n 1 -s 1G -m 2G,"touch cnvaccess/cnn/normal/$$(*).no-pool.targetcoverage.cnn")
 	
 endef
  $(foreach sample,$(NORMAL_SAMPLES),\
