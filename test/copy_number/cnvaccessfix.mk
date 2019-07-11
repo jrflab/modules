@@ -2,7 +2,7 @@ include modules/Makefile.inc
 include modules/genome_inc/b37.inc
 
 LOGDIR ?= log/cnvaccess_fix.$(NOW)
-PHONY += cnvkit cnvaccess/cnr
+PHONY += cnvaccess cnvaccess/cnr
 
 cnvaccess_fix : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-A.cnr) \
 				$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-B.cnr) \
