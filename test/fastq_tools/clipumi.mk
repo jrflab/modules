@@ -15,13 +15,7 @@ define clip-umi-fastq
 marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
 									  mkdir -p marianas/$1 && \
-									  $(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms2G -Xmx16G -cp $(MARIANAS) \
-									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
-									  $$(^) \
-									  3 && \
-									  echo $1 && \
-									  echo $2 && \
-									  echo $3")
+									  a=($(echo $3 | tr ',' \"\n\"))")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),$(eval $(call clip-umi-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
