@@ -19,9 +19,7 @@ marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : $3
 									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
 									  $$(^) \
 									  3 && \
-									  echo $1 \
-									  echo $2 \
-									  echo $3")
+									  echo $3 | sed s/.fastq.gz/_umi-clipped.fastq.gz/g")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),$(eval $(call clip-umi-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
