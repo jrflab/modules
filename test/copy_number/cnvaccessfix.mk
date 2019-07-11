@@ -9,7 +9,7 @@ cnvaccess_fix : $(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).pool-A
 				$(foreach sample,$(TUMOR_SAMPLES),cnvaccess/cnr/$(sample).no-pool.cnr)
 
 define cnvaccess-cnr
-cnvaccess/cnr/%.pool-A.cnr : cnvaccess/cnn/tumor/%.pool-A.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-A.antitargetcoverage.cnn cnvaccess/reference/on_target_pool_A.cnr
+cnvaccess/cnr/%.pool-A.cnr : cnvaccess/reference/on_target_pool_A.cnr #cnvaccess/cnn/tumor/%.pool-A.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-A.antitargetcoverage.cnn cnvaccess/reference/on_target_pool_A.cnr
 	$$(call RUN,-c -s 6G -m 8G,"cnvkit.py fix $$(<) $$(<<) cnvaccess/reference/on_target_pool_A.cnr -o cnvaccess/cnr/$$(*).pool-A.cnr")
 
 cnvaccess/cnr/%.pool-B.cnr : cnvaccess/cnn/tumor/%.pool-B.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-B.antitargetcoverage.cnn cnvaccess/reference/on_target_pool_B.cnr
