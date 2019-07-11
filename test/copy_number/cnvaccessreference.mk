@@ -4,9 +4,9 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/cnvaccess_reference.$(NOW)
 PHONY += cnvkit cnvaccess/reference
 
-ACCESS_REF_FILE_A ?= ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-A.cnr
-ACCESS_REF_FILE_B ?= ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-B.cnr
-ACCESS_REF_FILE_OFF ?= ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-noprobe.cnr
+ACCESS_REF_FILE_A = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-A.cnr
+ACCESS_REF_FILE_B = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-B.cnr
+ACCESS_REF_FILE_OFF = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-noprobe.cnr
 
 USE_REF ?= true
 
