@@ -8,7 +8,7 @@ ACCESS_REF_FILE_A = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-A.c
 ACCESS_REF_FILE_B = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-probe-B.cnr
 ACCESS_REF_FILE_OFF = ~/share/reference/cnvkit_reference/MSK-ACCESS-v1_0-noprobe.cnr
 
-USE_REF ?= false
+USE_REF ?= true
 
 cnvaccess_reference: cnvaccess/reference/on_target_pool_A.cnr cnvaccess/reference/on_target_pool_B.cnr cnvaccess/reference/off_target_no_pool.cnr
 
