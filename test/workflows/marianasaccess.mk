@@ -7,7 +7,7 @@ MSK_ACCESS_WORKFLOW += clip_umi
 
 msk_access_workflow : $(MSK_ACCESS_WORKFLOW)
 
-include modules/test/bam_tools/clipumi.mk
+include modules/test/fastq_tools/clipumi.mk
 
 .DELETE_ON_ERROR:
 .SECONDARY:
