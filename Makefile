@@ -688,7 +688,7 @@ align_consensus :
 
 TARGETS += marianas_access
 marianas_access :
-	$(call RUN_MAKE,modules/test/workflow/marianasaccess.mk)
+	$(call RUN_MAKE,modules/test/workflows/marianasaccess.mk)
 
 
 .PHONY : $(TARGETS)
