@@ -8,10 +8,10 @@ MSK_ACCESS_WORKFLOW += mearge_alignments
 MSK_ACCESS_WORKFLOW += call_consensus
 MSK_ACCESS_WORKFLOW += align_consensus
 MSK_ACCESS_WORKFLOW += cnvaccess_coverage
-#MSK_ACCESS_WORKFLOW += cnvaccess_reference
-#MSK_ACCESS_WORKFLOW += cnvaccess_fix
-#MSK_ACCESS_WORKFLOW += cnvaccess_plot
-#MSK_ACCESS_WORKFLOW += cnvaccess_segment
+MSK_ACCESS_WORKFLOW += cnvaccess_reference
+MSK_ACCESS_WORKFLOW += cnvaccess_fix
+MSK_ACCESS_WORKFLOW += cnvaccess_plot
+MSK_ACCESS_WORKFLOW += cnvaccess_segment
 
 msk_access_workflow : $(MSK_ACCESS_WORKFLOW)
 
