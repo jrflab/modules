@@ -21,17 +21,24 @@ cnvaccess/bam/%.bam : fgbio/%.regrouped.bam
 									   samtools index cnvaccess/bam/$$(*).bam && \
 									   cp cnvaccess/bam/$$(*).bam.bai cnvaccess/bam/$$(*).bai")
 
-cnvaccess/cnn/tumor/%.pool-A.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-A.antitargetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_A) -o cnvaccess/cnn/tumor/$$(*).pool-A.targetcoverage.cnn && \
-									 touch cnvaccess/cnn/tumor/$$(*).pool-A.antitargetcoverage.cnn")
-	
-cnvaccess/cnn/tumor/%.pool-B.targetcoverage.cnn cnvaccess/cnn/tumor/%.pool-B.antitargetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_B) -o cnvaccess/cnn/tumor/$$(*).pool-B.targetcoverage.cnn && \
-									 touch cnvaccess/cnn/tumor/$$(*).pool-B.antitargetcoverage.cnn")
+cnvaccess/cnn/tumor/%.pool-A.targetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_A) -o cnvaccess/cnn/tumor/$$(*).pool-A.targetcoverage.cnn")
 
-cnvaccess/cnn/tumor/%.no-pool.antitargetcoverage.cnn cnvaccess/cnn/tumor/%.no-pool.targetcoverage.cnn : cnvaccess/bam/%.bam
-	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvaccess/cnn/tumor/$$(*).no-pool.antitargetcoverage.cnn && \
-									 touch cnvaccess/cnn/tumor/$$(*).no-pool.targetcoverage.cnn")
+cnvaccess/cnn/tumor/%.pool-A.antitargetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/tumor/$$(*).pool-A.antitargetcoverage.cnn")
+	
+cnvaccess/cnn/tumor/%.pool-B.targetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(ONTARGET_FILE_B) -o cnvaccess/cnn/tumor/$$(*).pool-B.targetcoverage.cnn")
+
+cnvaccess/cnn/tumor/%.pool-B.antitargetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/tumor/$$(*).pool-B.antitargetcoverage.cnn")
+
+cnvaccess/cnn/tumor/%.no-pool.antitargetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 4 -s 6G -m 8G,"cnvkit.py coverage -p 4 -q 0 $$(<) $$(OFFTARGET_FILE) -o cnvaccess/cnn/tumor/$$(*).no-pool.antitargetcoverage.cnn")
+
+cnvaccess/cnn/tumor/%.no-pool.targetcoverage.cnn : cnvaccess/bam/%.bam
+	$$(call RUN,-c -n 1 -s 1G -m 2G,"touch cnvaccess/cnn/tumor/$$(*).no-pool.targetcoverage.cnn")
+	
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call cnvaccess-tumor-cnn,$(sample))))
