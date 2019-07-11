@@ -15,13 +15,13 @@ cnvaccess_reference: cnvaccess/reference/on_target_pool_A.cnr cnvaccess/referenc
 ifeq ($(USE_REF),true)
 
 cnvaccess/reference/on_target_pool_A.cnr : $(ACCESS_REF_FILE_A)
-	$(call RUN,-n 1 -s 1G -m 2G,"cp $$(ACCESS_REF_FILE_A) cnvaccess/reference/on_target_pool_A.cnr")
+	$(call RUN,-n 1 -s 1G -m 2G,"cp $(ACCESS_REF_FILE_A) cnvaccess/reference/on_target_pool_A.cnr")
 	
 cnvaccess/reference/on_target_pool_B.cnr : $(ACCESS_REF_FILE_B)
-	$(call RUN,-n 1 -s 1G -m 2G,"cp $$(ACCESS_REF_FILE_B) cnvaccess/reference/on_target_pool_B.cnr")
+	$(call RUN,-n 1 -s 1G -m 2G,"cp $(ACCESS_REF_FILE_B) cnvaccess/reference/on_target_pool_B.cnr")
 	
 cnvaccess/reference/off_target_no_pool.cnr : $(ACCESS_REF_FILE_OFF)
-	$(call RUN,-n 1 -s 1G -m 2G,"cp $$(ACCESS_REF_FILE_OFF) cnvaccess/reference/off_target_no_pool.cnr")
+	$(call RUN,-n 1 -s 1G -m 2G,"cp $(ACCESS_REF_FILE_OFF) cnvaccess/reference/off_target_no_pool.cnr")
 
 else
 
