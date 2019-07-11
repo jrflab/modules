@@ -686,7 +686,9 @@ align_consensus :
 # alpha testing
 #==================================================
 
-
+TARGETS += marianas_access
+marianas_access :
+	$(call RUN_MAKE,modules/test/workflow/marianasaccess.mk)
 
 
 .PHONY : $(TARGETS)
