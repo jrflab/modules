@@ -16,7 +16,8 @@ marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
 									  mkdir -p marianas/$1 && \
 									  FASTQ=`echo $3 | sed 's/\n/\n/g'` && \
-									  echo $$(FASTQ)")
+									  cp $${FASTQ[0]} marianas/$1/$1_R1.fastq.gz && \
+									  cp $${FASTQ[1]} marianas/$1/$1_R2.fastq.gz")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),$(eval $(call clip-umi-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
