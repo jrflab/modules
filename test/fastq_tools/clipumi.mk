@@ -32,7 +32,7 @@ marianas/%/%_R1_umi-clipped.fastq.gz marianas/%/%_R2_umi-clipped.fastq.gz : mari
 
 endef
  $(foreach sample,$(SAMPLES),\
-		$(eval $(call fix-bam,$(sample))))
+		$(eval $(call clip-umi,$(sample))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
