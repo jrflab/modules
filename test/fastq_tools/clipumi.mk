@@ -28,7 +28,8 @@ marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz : 
 									  $(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms2G -Xmx8G -cp $(MARIANAS) \
 									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
 									  $1_R1.fastq.gz $1_R2.fastq.gz \
-									  3")
+									  3 && \
+									  cd ../..")
 
 endef
 $(foreach sample,$(SAMPLES),\
