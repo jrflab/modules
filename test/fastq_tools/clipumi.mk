@@ -4,7 +4,8 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/clip_umi.$(NOW)
 PHONY += marianas
 
-clip_umi : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1.fastq.gz) $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2.fastq.gz)
+clip_umi : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1.fastq.gz) \
+		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2.fastq.gz)
 
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
 MARIANAS = /home/${USER}/share/usr/marianas-1.8.1/Marianas-1.8.1.jar
