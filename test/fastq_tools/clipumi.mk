@@ -6,8 +6,8 @@ PHONY += marianas
 
 clip_umi : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1.fastq.gz) \
 		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2.fastq.gz) \
-		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1_umi-clipped.fastq.gz)
-		   #$(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2_umi-clipped.fastq.gz)
+		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1_umi-clipped.fastq.gz) \
+		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2_umi-clipped.fastq.gz)
 
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
 MARIANAS = /home/${USER}/share/usr/marianas-1.8.1/Marianas-1.8.1.jar
@@ -23,7 +23,7 @@ $(foreach ss,$(SPLIT_SAMPLES),\
  
 
 define clip-umi
-marianas/%/%_R1_umi-clipped.fastq.gz marianas/%/%_R2_umi-clipped.fastq.gz : marianas/%/%_R1.fastq.gz marianas/%/%_R2.fastq.gz
+marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz : marianas/%/%_R1.fastq.gz marianas/%/%_R2.fastq.gz
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"$(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms2G -Xmx8G -cp $(MARIANAS) \
 									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
 									  $$(<) $$(<<) \
