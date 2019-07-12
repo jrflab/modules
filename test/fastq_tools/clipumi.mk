@@ -10,8 +10,8 @@ JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
 MARIANAS = /home/${USER}/share/usr/marianas-1.8.1/Marianas-1.8.1.jar
 
 define copy-fastq
-marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : #$3
-	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
+marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : $3
+	$$(call RUN,-c -n 1 -s 2G -m 4G,"set -o pipefail && \
 								  mkdir -p marianas/$1 && \
 								  $(RSCRIPT) modules/test/fastq_tools/copyfastq.R --sample_name $1 --fastq_files $3")
 
