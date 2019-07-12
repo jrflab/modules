@@ -8,7 +8,6 @@ clip_umi : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R1_umi-clipp
 		   $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)_R2_umi-clipped.fastq.gz)
 
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
-PICARD = /home/${USER}/share/usr/picard/bin/picard.jar
 MARIANAS = /home/${USER}/share/usr/marianas/Marianas-1.8.1.jar
 
 define copy-fastq
@@ -25,9 +24,9 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 define clip-umi
 marianas/%/%_R1_umi-clipped.fastq.gz marianas/%/%_R2_umi-clipped.fastq.gz : marianas/%/%_R1.fastq.gz marianas/%/%_R2.fastq.gz
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
-									  $(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms8G -Xmx8G -cp Marianas-1.8.1.jar \
+									  $(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms8G -Xmx8G -cp $(MARIANAS) \
 									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
-									  marianas/$$(*)/$$(*)_R1_umi-clipped.fastq.gz marianas/$$(*)/$$(*)_R2_umi-clipped.fastq.gz \
+									  marianas/$$(*)/$$(*)_R1.fastq.gz marianas/$$(*)/$$(*)_R2.fastq.gz \
 									  3")
 
 endef
