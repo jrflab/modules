@@ -23,14 +23,16 @@ $(foreach ss,$(SPLIT_SAMPLES),\
 	
 	
 define clip-umi
-marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz : marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz
+marianas/%/%_R1_umi-clipped.fastq.gz marianas/%/%_R2_umi-clipped.fastq.gz : marianas/%/%_R1.fastq.gz marianas/%/%_R2.fastq.gz
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
 									  $(JAVA) -Djava.io.tmpdir=$(TMPDIR) -server -Xms8G -Xmx8G -cp Marianas-1.8.1.jar \
 									  org.mskcc.marianas.umi.duplex.fastqprocessing.ProcessLoopUMIFastq \
-									  marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz \
+									  marianas/$$(*)/$$(*)_R1_umi-clipped.fastq.gz marianas/$$(*)/$$(*)_R2_umi-clipped.fastq.gz \
 									  3")
 
 endef
+ $(foreach sample,$(SAMPLES),\
+		$(eval $(call fix-bam,$(sample))))
 
 .DELETE_ON_ERROR:
 .SECONDARY:
