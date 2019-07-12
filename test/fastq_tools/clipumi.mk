@@ -15,7 +15,7 @@ define clip-umi-fastq
 marianas/$1/$1_R1.fastq.gz marianas/$1/$1_R2.fastq.gz : $3
 	$$(call RUN,-c -n 1 -s 8G -m 16G,"set -o pipefail && \
 									  mkdir -p marianas/$1 && \
-									  $(RSCRIPT) copyfastq.R $3")
+									  $(RSCRIPT) modules/test/fastq_tools/copyfastq.R --sample_name $1 --fastq_files $3")
 endef
 $(foreach ss,$(SPLIT_SAMPLES),\
 	$(if $(fq.$(ss)),$(eval $(call clip-umi-fastq,$(split.$(ss)),$(ss),$(fq.$(ss))))))
