@@ -9,12 +9,16 @@ BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 12
 BWAMEM_MEM_PER_THREAD = 2G
 
-align_fastq : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample).bam)
+align_fastq : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample).sorted.bam)
 
 define fastq-to-bam
-marianas/$1/$1.bam : marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz
+marianas/$1/$1.bwamem.bam : marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz
 	$$(call RUN,-c -n $(BWAMEM_THREADS) -s 1G -m $(BWAMEM_MEM_PER_THREAD),"set -o pipefail && \
 																		   $(BWA) mem -t $(BWAMEM_THREADS) $(BWA_ALN_OPTS) -R \"@RG\tID:$1\tLB:$1\tPL:${SEQ_PLATFORM}\tSM:$1\" $(BWAMEM_REF_FASTA) $$(^) | $(SAMTOOLS) view -bhS - > $$(@)")
+
+marianas/$1/$1.sorted.bam : marianas/$1/$1.bwamem.bam
+	$$(call RUN,-c -n 12 -s 1G -m 2G,"set -o pipefail && \
+									  samtools sort -@ 12 -m 12G $$(^) -o $$(@) -T $(TMPDIR)")
 
 endef
 $(foreach sample,$(SAMPLES),\
