@@ -16,7 +16,7 @@ SAMTOOLS_MEM_THREAD = 2G
 GATK_THREADS = 8
 GATK_MEM_THREAD = 2G
 
-align_fastq : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample).realn.bam)
+align_fastq : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample).std.bam)
 
 define fastq-to-bam
 marianas/$1/$1.bwamem.bam : marianas/$1/$1_R1_umi-clipped.fastq.gz marianas/$1/$1_R2_umi-clipped.fastq.gz
@@ -38,6 +38,26 @@ marianas/$1/$1.realn.bam : marianas/$1/$1.sorted.bam marianas/$1/$1.intervals
 	$$(call RUN,-c -n $(GATK_THREADS) -s 1G -m $(GATK_MEM_THREAD),"set -o pipefail && \
 									   							   /home/$(USER)/share/usr/jdk1.8.0_121/bin/java -Djava.io.tmpdir=$(TMPDIR) -Xms1G -Xmx12G -jar /home/$(USER)/share/usr/lib/java/GenomeAnalysisTK-3.7.jar \
 									   							   -S LENIENT -T IndelRealigner -I $$(<) -R $(REF_FASTA) -targetIntervals $$(<<) -o $$(@) --knownAlleles /home/brownd7/share/reference/GATK_bundle/2.3/Mills_and_1000G_gold_standard.indels.b37.vcf.gz")
+									   							   
+marianas/$1/$1.dedup.bam : marianas/$1/%.realn.bam
+	$$(call RUN, -c -n 1 -s 12G -m 18G -w 7200,"java -Djava.io.tmpdir=$$(TMPDIR) -Xms2G -Xmx16G -jar $$(PICARD_JAR) MarkDuplicates \
+												I=$$(<) \
+												O=$$(@) \
+												M=marianas/$1/$1.txt \
+												TMP_DIR=$(TMPDIR)")
+marianas/$1/$1.std.bam : marianas/$1/$1.dedup.bam
+	$$(call RUN, -c -n 1 -s 12G -m 18G -w 7200,"java -Djava.io.tmpdir=$(TMPDIR) -Xms2G -Xmx16G -jar $$(PICARD_JAR) AddOrReplaceReadGroups \
+												I=$$(<) \
+												O=$$(@) \
+												RGID=$1 \
+												RGLB=$1 \
+												RGPL=illumina \
+												RGPU=NA \
+												RGSM=$1 \
+												TMP_DIR=$(TMPDIR) && \
+												samtools index $$(@) && \
+												cp marianas/$1/$1.bam.bai marianas/$1/$1.bai")
+
 
 endef
 $(foreach sample,$(SAMPLES),\
@@ -47,3 +67,5 @@ $(foreach sample,$(SAMPLES),\
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: $(PHONY)
+
+
