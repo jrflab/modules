@@ -9,9 +9,9 @@ BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 12
 BWAMEM_MEM_PER_THREAD = 2G
 
-SAMTOOLS_THREADS = 12
-SAMTOOLS_MEM = 12G
-SAMTOOLS_MEM_THREAD = 2G
+SAMTOOLS_THREADS = 6
+SAMTOOLS_MEM = 16G
+SAMTOOLS_MEM_THREAD = 4G
 
 GATK_THREADS = 8
 GATK_MEM_THREAD = 2G
@@ -27,7 +27,7 @@ marianas/$1/$1.sorted.bam : marianas/$1/$1.bwamem.bam
 	$$(call RUN,-c -n $(SAMTOOLS_THREADS) -s 1G -m $(SAMTOOLS_MEM_THREAD) -w 1440,"set -o pipefail && \
 									  									   		   samtools sort -@ $(SAMTOOLS_THREADS) -m $(SAMTOOLS_MEM) $$(^) -o $$(@) -T $(TMPDIR) && \
 									  									   		   samtools index $$(@) && \
-									  									   		   cp marianas/$1/$1.bam.bai marianas/$1/$1.bai")
+									  									   		   cp marianas/$1/$1.sorted.bam.bai marianas/$1/$1.sorted.bai")
 									  									   		   
 marianas/$1/$1.fixed.bam : marianas/$1/$1.sorted.bam
 	$$(call RUN,-c -n 1 -s 12G -m 18G -w 1440,"set -o pipefail && \
