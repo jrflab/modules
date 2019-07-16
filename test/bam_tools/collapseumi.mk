@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/collapseumi.$(NOW)
 PHONY += marianas
 
-umi_colapse : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)-pileup.txt)
+umi_collapse : $(foreach sample,$(SAMPLES),marianas/$(sample)/$(sample)-pileup.txt)
 
 JAVA = /home/${USER}/share/usr/jdk1.8.0_74/bin/java
 MARIANAS = /home/${USER}/share/usr/marianas-1.8.1/Marianas-1.8.1.jar
