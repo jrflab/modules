@@ -15,7 +15,8 @@ define waltz-genotype
 marianas/$1/$1-pileup.txt : marianas/$1/$1.bam
 	$$(call RUN,-c -n 1 -s 8G -m 12G,"set -o pipefail && \
 									  cd marianas/$1 && \
-									  $(JAVA) -server -Xms2G -Xmx8G -cp $(WALTZ) org.mskcc.juber.waltz.Waltz PileupMetrics 20 $1.bam $(REF_FASTA) $(BED_FILE)")
+									  $(JAVA) -server -Xms2G -Xmx8G -cp $(WALTZ) org.mskcc.juber.waltz.Waltz PileupMetrics 20 $1.bam $(REF_FASTA) $(BED_FILE) && \
+									  cd ../..")
 
 endef
 $(foreach sample,$(SAMPLES),\
