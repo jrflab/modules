@@ -33,7 +33,7 @@ signature_input = mut.to.sigs.input(mut.ref = data.frame(mutation_summary),
 									alt = "alt")
 									
 extracted_signatures = whichSignatures(tumor.ref = signature_input,
-									   signatures.ref = signatures.cosmic[c(1,2,3,5,8,12,15:25),,drop=FALSE],
+									   signatures.ref = signatures.cosmic,
 									   contexts.needed = TRUE)
 									   
 save(list=ls(all=TRUE), file=paste0("deconstructsigs/signatures/", opt$sample_name, ".RData"))
