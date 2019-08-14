@@ -36,10 +36,6 @@ TARGETS += somatic_variants
 somatic_variants:
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 	
-TARGETS += fgbio_access
-fgbio_access :
-	$(call RUN_MAKE,modules/test/workflows/fgbioaccess.mk)
-
 
 #==================================================
 # aligners
@@ -301,14 +297,6 @@ qdnaseq_extract_test:
 TARGETS += qdnaseq_copynumber_test
 qdnaseq_copynumber_test:
 	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-	
-TARGETS += cnv_access
-cnv_access :
-	$(call RUN_MAKE,modules/test/workflows/cnvaccess.mk)
-	
-TARGETS += fast_access
-fast_access :
-	$(call RUN_MAKE,modules/test/workflows/fastaccess.mk)
 	
 TARGETS += copynumber_summary
 copynumber_summary:
@@ -665,30 +653,9 @@ hotspot_summary:
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
-TARGETS += umi_collapsing
-umi_collapsing :
-	$(call RUN_MAKE,modules/test/bam_tools/umicollapsing.mk)
-
-TARGETS += merge_alignments
-merge_alignments :
-	$(call RUN_MAKE,modules/test/bam_tools/mergealignments.mk)
-	
-TARGETS += call_consensus
-call_consensus :
-	$(call RUN_MAKE,modules/test/bam_tools/callconsensus.mk)
-	
-TARGETS += align_consensus
-align_consensus :
-	$(call RUN_MAKE,modules/test/bam_tools/alignconsensus.mk)
-
-
 #==================================================
 # alpha testing
 #==================================================
-
-TARGETS += marianas_access
-marianas_access :
-	$(call RUN_MAKE,modules/test/workflows/marianasaccess.mk)
 
 
 .PHONY : $(TARGETS)
