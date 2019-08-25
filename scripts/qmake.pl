@@ -6,10 +6,6 @@ use warnings;
 use Cwd;
 
 my $cwd = getcwd;
-#my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com";
-#my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
-#my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
-
 my $err_slack = "pipeline_error";
 my $fin_slack = "pipeline_finished";
 
