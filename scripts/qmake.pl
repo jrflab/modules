@@ -149,26 +149,49 @@ do {
             }
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
         }
-
-        my $pipeline_channel_msg = "\@${slackname} $project_name :";
-        if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
-            if ($retcode == 0) {
-                # op success
-                my $slack_msg = "*COMPLETE* $name :ok_hand:";
-                &slack($fin_slack, "$pipeline_channel_msg $slack_msg");
-                &slack($opt{c}, $slack_msg) if $opt{c};
-            } else {
-                # op failure
-                my $slack_msg = "*FAILURE* $cwd/$logfile";
-                if ($n + 1 == $attempts) {
-                    # final attempt
-                    $slack_msg = ":troll: $slack_msg";
-                    &slack($opt{c}, $slack_msg) if $opt{c};
-                }
-                &slack($err_slack, "$pipeline_channel_msg $slack_msg");
-                # wait a bit before retrying to allow cleanup
-                sleep 30;
+        
+        if ($username eq "selenicp") {
+            my $pipeline_channel_msg = "\@${slackname} $project_name :";
+            if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
+             if ($retcode == 0) {
+                 # op success
+                 my $slack_msg = "*FAILURE* $cwd/$logfile";
+                 $slack_msg = "$slack_msg :troll:";
+                 &slack($opt{c}, $slack_msg) if $opt{c};
+             } else {
+                 # op failure
+                 my $slack_msg = "*FAILURE* $cwd/$logfile";
+                 if ($n + 1 == $attempts) {
+                     # final attempt
+                     $slack_msg = "$slack_msg :troll:";
+                     &slack($opt{c}, $slack_msg) if $opt{c};
+                 }
+                 &slack($err_slack, "$pipeline_channel_msg $slack_msg");
+                 # wait a bit before retrying to allow cleanup
+                 sleep 30;
             }
+          }
+        } else {
+            my $pipeline_channel_msg = "\@${slackname} $project_name :";
+            if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
+             if ($retcode == 0) {
+                 # op success
+                 my $slack_msg = "*COMPLETE* $name :the_horns:";
+                 &slack($fin_slack, "$pipeline_channel_msg $slack_msg");
+                 &slack($opt{c}, $slack_msg) if $opt{c};
+             } else {
+                 # op failure
+                 my $slack_msg = "*FAILURE* $cwd/$logfile";
+                 if ($n + 1 == $attempts) {
+                     # final attempt
+                     $slack_msg = "$slack_msg :troll:";
+                     &slack($opt{c}, $slack_msg) if $opt{c};
+                 }
+                 &slack($err_slack, "$pipeline_channel_msg $slack_msg");
+                 # wait a bit before retrying to allow cleanup
+                 sleep 30;
+            }
+          }
         }
     }
 } while ($retcode && ++$n < $attempts);
