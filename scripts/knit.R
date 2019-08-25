@@ -12,7 +12,6 @@ input <- args[1]
 outPrefix <- args[2]
 args <- args[c(-1,-2)]
 
-#create output dirs
 figPath <- file.path(outPrefix, 'figure/')
 cachePath <- file.path(outPrefix, 'cache/')
 dir.create(figPath, showWarnings = F, recursive = T)
