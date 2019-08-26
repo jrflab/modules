@@ -1,5 +1,4 @@
 #!/usr/bin/env perl
-# wrapper script for qmake to remove newlines
 
 use strict;
 use warnings;
@@ -13,7 +12,6 @@ my %slack_map = (
     limr => "raylim",
     debruiji => "debruiji",
     brownd7 => "brownd7",
-    selenicp => "selenicp",
     lees19 => "lees19",
     ferrandl => "ferrandl",
     dacruzpa => "dacruzpa"
@@ -61,48 +59,8 @@ my $logparent = "log";
 $attempts = $opt{r} if defined $opt{r};
 $name = $opt{n} if defined $opt{n};
 $logparent = $opt{l} if defined $opt{l};
-
 my $qmake = shift @ARGV; 
-
 my $args = join " ", @ARGV;
-
-# makefile processing
-=pod
-my $orig_args = $args;
-
-$args =~ s;-f (\S+);"-f " . dirname($1) . "/." . basename($1) . ".tmp";e;
-my $optf = $1;
-
-my @makefiles;
-if (defined $optf) {
-    push @makefiles, $optf;
-} else {
-    if ($args =~ /--/) {
-        $args .= " -f .Makefile.tmp";
-    } else {
-        $args .= "-- -f .Makefile.tmp";
-    }
-    push @makefiles, "Makefile";
-}
-
-
-
-do {
-    my $makefile = glob(shift(@makefiles));
-    
-    open IN, "<$makefile" or die "Unable to open $makefile\n";
-    my $tmpfile = glob(dirname($makefile) . "/." . basename($makefile) . ".tmp");
-    open OUT, ">$tmpfile" or die "Unable to open $tmpfile\n";
-    while (<IN>) {
-        s/\\\n$//;
-        if (!/^include \S+\.tmp/ && s;^include (\S+);"include " . dirname($1) . "/." . basename($1) . ".tmp";e) {
-            push @makefiles, $1;
-        }
-        print OUT $_;
-    }
-} until (scalar @makefiles == 0);
-=cut
-
 my $n = 0;
 my $retcode;
 do {
@@ -146,7 +104,7 @@ do {
             $mail_subject .= " Attempt " . ($n + 1) if $n > 0; 
         }
         
-        if ($username eq "selenicp") {
+        if ($username eq "") {
             my $pipeline_channel_msg = "\@${slackname} $project_name :";
             if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
              if ($retcode == 0) {
