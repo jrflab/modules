@@ -1,4 +1,5 @@
 #!/bin/bash
+
 UP=$(pgrep -u limr gfServer | wc -l);
 if [ "$UP" -ne 1 ];
 then

@@ -1,5 +1,4 @@
 #!/usr/bin/env perl
-# parse samples file to get sample sets (space delimited, normal last)
 
 use strict;
 use warnings;

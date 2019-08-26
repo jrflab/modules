@@ -1,4 +1,5 @@
 #!/bin/bash
+
 UP=$(pgrep -u limr mysqld | wc -l);
 if [ "$UP" -ne 1 ];
 then

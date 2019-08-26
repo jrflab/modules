@@ -1,5 +1,4 @@
 #!/usr/bin/env perl
-# join EFF lines
 
 use strict;
 use List::MoreUtils qw(first_index indexes);
