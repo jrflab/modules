@@ -21,7 +21,12 @@ my %slack_map = (
     debruiji => "debruiji",
     defilipm => "maria",
     bermans => "hxrts",
-    gularter => "rjgularte"
+    gularter => "rjgularte",
+    brownd7 => "brownd7",
+    selenicp => "selenicp",
+    dacruzpa => "dacruzpa",
+    lees19 => "lees19",
+    ferrandl => "ferrandl"
 );
 
 
