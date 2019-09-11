@@ -9,4 +9,4 @@ The easiest way to download this pipeline is to clone the repository.
 git clone https://github.com/jrflab/modules.git
 ```
 
-Good luck with the rest!
+Good luck!
