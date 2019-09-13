@@ -23,7 +23,7 @@ FFPE_NORMAL_FILTER ?= false
 ANN_PATHOGEN ?= false
 ANN_FACETS ?= false
 ANN_MUT_TASTE ?= false
-ANN_PROVEAN ?= false
+ANN_PROVEAN = true
 ifeq ($(ANN_PATHOGEN),true)
 $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 	$(error non-hg19/b37 pathogen annotation unsupported))
@@ -40,9 +40,7 @@ endif
 ifeq ($(ANN_MUT_TASTE),true)
 SOMATIC_INDEL_ANN2 += mut_taste
 endif
-ifeq ($(ANN_PROVEAN),true)
 SOMATIC_INDEL_ANN2 += provean
-endif
 SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm parssnp)
 
 # indel/snv initial round of annotations
