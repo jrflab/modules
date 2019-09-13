@@ -5,7 +5,7 @@ PHONY += cravat
 
 cravat_annotate : $(foreach sample,$(SAMPLES),cravat/$(sample).vcf cravat/$(sample).maf cravat/$(sample).cravat.vcf cravat/$(sample).tsv cravat/$(sample).txt)
 
-DEFAULT_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
+DEFAULT_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.5
 CRAVAT_ENV = $(HOME)/share/usr/anaconda-envs/open-cravat
 
 define cravat-annotation
