@@ -43,8 +43,14 @@ sub HELP_MESSAGE {
 
 sub slack {
     my ($slack_channel, $slack_message) = @_;
-    my $slack_url = "\$'https://jrflab.slack.com/services/hooks/slackbot?token=2TWPiY9Hu4EUteoECqCEfYAZ&channel=%23$slack_channel'";
-    system "curl --data ' $slack_message' $slack_url &> /dev/null";
+    my $slack_url = "";
+    if ($slack_channel eq "pipeline_error") {
+    	$slack_url = $ENV{SLACK_URL_ERR};
+    } elsif ($slack_channel eq "pipeline_finished") {
+    	$slack_url = $ENV{SLACK_URL_FIN};
+    }
+    system "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"$slack_message\"}' $slack_url &> /dev/null";
+
 }
 
 
