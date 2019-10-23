@@ -118,8 +118,8 @@ if (sum(pass) == 0) {
         alt <- sapply(geno(vcf[pass])$AD[!is.na(ol), tumorSample], function(x) x[2])
         vaf <- alt / (alt + ref)
 
-        ccfFit <- computeCCF(vaf = vaf, tcn, lcn, purity = purity)
-        conf <- confCCF(alt = alt, ref = ref, tcn, lcn, purity = purity,
+        ccfFit <- compute_ccf(vaf = vaf, tcn, lcn, purity = purity)
+        conf <- conf_ccf(alt = alt, ref = ref, tcn, lcn, purity = purity,
                             multiplicity = ccfFit$multiplicity)
         ccfLower <- conf$lower
         ccfUpper <- conf$upper
