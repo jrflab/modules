@@ -151,7 +151,7 @@ do {
             #close MAIL;
         }
 
-        my $pipeline_channel_msg = "\@${slackname} $project_name :";
+        my $pipeline_channel_msg = "<\@${slackname}|cal> $project_name :";
         if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
             if ($retcode == 0) {
                 # op success
