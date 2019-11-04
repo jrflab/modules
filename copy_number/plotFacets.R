@@ -70,7 +70,7 @@ normalName <- facetsFile %>%
 pdf(file = str_c(opt$outPrefix, ".pdf"), width=10, height=4.25)
 if (OLD_STYLE) {
 	plot_sample_lrr_(x=out2, fit=fit)
-else {
+} else {
 	plot_log2_(x=out2, y=fit, purity=fit$purity, ploidy=fit$ploidy, title = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE))
 }
 dev.off()
