@@ -26,6 +26,8 @@ parser <- OptionParser(usage = "%prog [options] [facets Rdata file]", option_lis
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
+OLD_STYLE = TRUE
+
 if (length(arguments$args) < 1) {
     cat("Need facets Rdata file\n")
     print_help(parser)
@@ -66,7 +68,11 @@ normalName <- facetsFile %>%
 			  sub('\\..*', '', .)
 
 pdf(file = str_c(opt$outPrefix, ".pdf"), width=10, height=4.25)
-plot_log2_(x=out2, y=fit, purity=fit$purity, ploidy=fit$ploidy, title = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE))
+if (OLD_STYLE) {
+	plot_sample_lrr_(x=out2, fit=fit)
+else {
+	plot_log2_(x=out2, y=fit, purity=fit$purity, ploidy=fit$ploidy, title = gsub("facets/plots/log2/", "", opt$outPrefix, fixed=TRUE))
+}
 dev.off()
 
 pdf(file = str_c(gsub("log2", "cncf", opt$outPrefix, fixed=TRUE), ".pdf"), width=10, height=7)
