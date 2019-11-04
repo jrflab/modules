@@ -6,27 +6,18 @@ use warnings;
 use Cwd;
 
 my $cwd = getcwd;
-#my $fin_email_addrs = "qmake.finished\@raylim.mm.st charlottekyng+qmake.finished\@gmail.com";
-#my $err_email_addrs = "qmake.error\@raylim.mm.st charlottekyng+qmake.error\@gmail.com";
-#my $start_email_addrs = "qmake.start\@raylim.mm.st charlottekyng+qmake.start\@gmail.com";
-
 my $err_slack = "pipeline_error";
 my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
-    limr => "raylim",
-    burkek => "burkek",
-    schizasm => "schizasm",
-    ngk1 => "charlottekyng",
-    debruiji => "debruiji",
-    defilipm => "maria",
-    bermans => "hxrts",
-    gularter => "rjgularte",
-    brownd7 => "brownd7",
-    selenicp => "selenicp",
-    dacruzpa => "dacruzpa",
-    lees19 => "lees19",
-    ferrandl => "ferrandl"
+    brownd7 => "U6F3B13B4",
+    limr => "U07F86SBH",
+    debruiji => "U07F8F7KP",
+    gularter => "U0YGXCG7R",
+    selenicp => "U22A5U23X",
+    dacruzpa => "U6PAUB3C6",
+    ferrandl => "UEE8Z6QQ7",
+    farmanba => "UMZJ9LXE1"
 );
 
 
