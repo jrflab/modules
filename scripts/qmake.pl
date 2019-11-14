@@ -10,16 +10,11 @@ my $err_slack = "pipeline_error";
 my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
-    brownd7 => "U6F3B13B4",
-    limr => "U07F86SBH",
-    debruiji => "U07F8F7KP",
-    gularter => "U0YGXCG7R",
     selenicp => "U22A5U23X",
     dacruzpa => "U6PAUB3C6",
-    ferrandl => "UEE8Z6QQ7",
-    farmanba => "UMZJ9LXE1"
+    farmanba => "UMZJ9LXE1",
+    gazzoa => "UP67G7GDV"
 );
-
 
 sub HELP_MESSAGE {
     print "Usage: qmake.pl -n [name] -m -r [numAttempts]\n";
