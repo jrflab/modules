@@ -23,7 +23,7 @@ FFPE_NORMAL_FILTER ?= false
 ANN_PATHOGEN ?= false
 ANN_FACETS ?= false
 ANN_MUT_TASTE ?= false
-ANN_PROVEAN = true
+ANN_PROVEAN ?= false
 ifeq ($(ANN_PATHOGEN),true)
 $(if $(or $(findstring b37,$(REF)),$(findstring hg19,$(REF))),,\
 	$(error non-hg19/b37 pathogen annotation unsupported))
