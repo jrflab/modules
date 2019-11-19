@@ -76,7 +76,7 @@ hml_down = hml_up = NULL
 for (i in 1:nrow(all_vars)) {
 	chr = paste0("chr", all_vars[i,"CHROM"])
 	start = as.numeric(all_vars[i,"POS"])
-	n = as.numeric(nchar(all_vars[i,"REF"]))
+	n = as.numeric(nchar(all_vars[i,"REF"]))-1
 	
 	deleted = getSeqFrom(chr = chr, start = start, end = start + n)
 	prevn = getSeqFrom(chr = chr, start = start - n - 1, end = start - 1)
