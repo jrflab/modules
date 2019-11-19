@@ -39,17 +39,17 @@ del_count = all_vars %>%
 			dplyr::group_by(SAMPLE_UUID) %>%
 			dplyr::summarize(del_count = n())
 mean_delen = all_vars %>%
-			 mutate(del_len = nchar(REF)) %>%
+			 mutate(del_len = nchar(REF)-1) %>%
 			 mutate(SAMPLE_UUID = paste0(TUMOR_SAMPLE, "_", NORMAL_SAMPLE)) %>%
 			 dplyr::group_by(SAMPLE_UUID) %>%
 			 dplyr::summarize(mean_delen = mean(del_len))
 median_delen = all_vars %>%
-			   mutate(del_len = nchar(REF)) %>%
+			   mutate(del_len = nchar(REF)-1) %>%
 			   mutate(SAMPLE_UUID = paste0(TUMOR_SAMPLE, "_", NORMAL_SAMPLE)) %>%
 			   dplyr::group_by(SAMPLE_UUID) %>%
 			   dplyr::summarize(median_delen = median(del_len))
 deln4_count = all_vars %>%
-			  mutate(del_len = nchar(REF)) %>%
+			  mutate(del_len = nchar(REF)-1) %>%
 			  mutate(SAMPLE_UUID = paste0(TUMOR_SAMPLE, "_", NORMAL_SAMPLE)) %>%
 			  dplyr::group_by(SAMPLE_UUID) %>%
 			  dplyr::summarize(deln4_count = sum(del_len>=4))
@@ -75,12 +75,12 @@ deln4_count = all_vars %>%
 hml_down = hml_up = NULL
 for (i in 1:nrow(all_vars)) {
 	chr = paste0("chr", all_vars[i,"CHROM"])
-	start = as.numeric(all_vars[i,"POS"])
+	start = as.numeric(all_vars[i,"POS"])+1
 	n = as.numeric(nchar(all_vars[i,"REF"]))-1
 	
-	deleted = getSeqFrom(chr = chr, start = start, end = start + n)
-	prevn = getSeqFrom(chr = chr, start = start - n - 1, end = start - 1)
-	nextn = getSeqFrom(chr = chr, start = start + n + 1, end = start + 2*n + 1)
+	deleted = getSeqFrom(chr = chr, start = start, end = start + n - 1)
+	prevn = getSeqFrom(chr = chr, start = start - n, end = start - 1)
+	nextn = getSeqFrom(chr = chr, start = start + n, end = start + 2*n - 1)
 	
 	hml_down = c(hml_down, checkHomLen(deleted = deleted, next50 = prevn))
 	hml_up = c(hml_up, checkHomLen(deleted = deleted, next50 = nextn))
