@@ -617,6 +617,11 @@ mutation_summary :
 TARGETS += cravat_summary
 cravat_summary :
 	$(call RUN_MAKE,modules/summary/cravat_summary.mk)
+	
+
+TARGETS += delmh_summary
+delmh_summary :
+	$(call RUN_MAKE,modules/summary/delmh_summary.mk)
 
 
 #==================================================
