@@ -87,7 +87,7 @@ for (i in 1:nrow(all_vars)) {
 }
 
 mh_3 = data_frame(SAMPLE_UUID = paste0(all_vars$TUMOR_SAMPLE, "_", all_vars$NORMAL_SAMPLE),
-				   del_len = nchar(all_vars$REF),
+				   del_len = nchar(all_vars$REF)-1,
 				   max_mhlen_5p = hml_down,
 				   max_mhlen_3p = hml_up,
 	  			   max_mhlen = apply(cbind(hml_down, hml_up), 1, max)) %>%
@@ -97,7 +97,7 @@ mh_3 = data_frame(SAMPLE_UUID = paste0(all_vars$TUMOR_SAMPLE, "_", all_vars$NORM
 	    dplyr::summarize(deln4_mhlen_3_counts = sum(is_3))
 
 mhl_3 = data_frame(SAMPLE_UUID = paste0(all_vars$TUMOR_SAMPLE, "_", all_vars$NORMAL_SAMPLE),
-				   del_len = nchar(all_vars$REF),
+				   del_len = nchar(all_vars$REF)-1,
 				   max_mhlen_5p = hml_down,
 				   max_mhlen_3p = hml_up,
 	  			   max_mhlen = apply(cbind(hml_down, hml_up), 1, max)) %>%
