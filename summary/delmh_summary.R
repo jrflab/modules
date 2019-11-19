@@ -28,9 +28,10 @@ all_normals = all_vars %>%
 all_patients = unique(paste0(all_tumors, "_", all_normals))
 
 all_vars = all_vars %>%
-		   filter(Variant_Classification=="Frame_Shift_Del" | Variant_Classification=="In_Frame_Del") %>%
-		   filter((grepl("varscan", variantCaller) & grepl("strelka", variantCaller)) |
-				  (((grepl("platypus", variantCaller) & grepl("scalpel", variantCaller)) | (grepl("platypus", variantCaller) & grepl("lancet", variantCaller)))))
+	   filter(Variant_Classification=="Frame_Shift_Del" | Variant_Classification=="In_Frame_Del") %>%
+	   filter((grepl("varscan", variantCaller) & grepl("strelka", variantCaller)) |
+	   	  ((grepl("platypus", variantCaller) & grepl("scalpel", variantCaller)) & ((nchar(REF)-nchar(ALT))>4) & Variant_Classifictaion!="In_Frame_Del") |
+	   	  ((grepl("platypus", variantCaller) & grepl("lancet", variantCaller)) & ((nchar(REF)-nchar(ALT))>4) & Variant_Classifictaion!="In_Frame_Del"))
 
 patient_summary = data_frame(SAMPLE_UUID = all_patients)
 del_count = all_vars %>%
