@@ -40,7 +40,7 @@ endif
 ifeq ($(ANN_MUT_TASTE),true)
 SOMATIC_INDEL_ANN2 += mut_taste
 endif
-SOMATIC_INDEL_ANN2 += provean
+#SOMATIC_INDEL_ANN2 += provean
 SOMATIC_SNV_ANN2 = $(if $(findstring b37,$(REF)),nsfp chasm parssnp)
 
 # indel/snv initial round of annotations
