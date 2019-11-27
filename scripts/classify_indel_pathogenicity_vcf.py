@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--qsub_queue', nargs='?', default='jrf.q,all.q', help='qsub queue')
     parser.add_argument('--num_provean_threads', nargs='?', default=4, type=int, help='number of provean threads')
     parser.add_argument('--run_local', action='store_true', default=False, help='run provean locally')
-    parser.add_argument('--no_remote', action='store_true', default=False, help='no remote queries: can only call potentially pathogenic')
+    parser.add_argument('--no_remote', action='store_true', default=True, help='no remote queries: can only call potentially pathogenic')
     parser.add_argument('--no_mt_provean', action='store_true', default=False, help='do not run mutation taster / provean')
     args = parser.parse_args()
 
