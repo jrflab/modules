@@ -13,7 +13,8 @@ my %slack_map = (
     brownd7 => "U6F3B13B4",
     selenicp => "U22A5U23X",
     dacruzpa => "U6PAUB3C6",
-    gazzoa => "UP67G7GDV"
+    gazzoa => "UP67G7GDV",
+    feinberj => "URKJ612C8"
 );
 
 sub HELP_MESSAGE {
