@@ -5,6 +5,7 @@ include modules/aligners/align.inc
 ALIGNER := tmap
 LOGDIR := log/tmap.$(NOW)
 
+
 SAMTOOLS_SORT_MEM = 2000000000
 
 FASTQ_CHUNKS := 10
