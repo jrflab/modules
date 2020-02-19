@@ -14,20 +14,20 @@ R ?= R
 MY_RSCRIPT ?= Rscript
 RSCRIPT ?= Rscript
 
-# General python 2.7 environment
+## General python 2.7 environment
 ANACONDA_27_ENV ?= $(HOME)/share/usr/anaconda-envs/anaconda-2.7
 
-# SUFAM python environment
+## SUFAM python environment
 SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev
 
 MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
-# jrflab modules environment
+## jrflab modules environment
 JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
 
-### Applications
+## Applications
 UNZIP ?= /usr/bin/unzip
 FASTQC ?= $(PERL) $(HOME)/share/usr/FastQC/fastqc
 MUTECT_JAR ?= $(JARDIR)/muTect-1.1.7.jar
@@ -58,11 +58,11 @@ DEFUSE ?= $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
 ONCOFUSE_JAR ?= $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
 VARSCAN_JAR ?= $(JARDIR)/VarScan.v2.3.9.jar
 
-# PICARD tools
+## PICARD tools
 PICARD_DIR ?= $(JARDIR)/picard-1.92
 PICARD_JAR ?= $(JARDIR)/picard-tools-1.141/picard.jar
 
-# scripts
+## scripts
 SCRIPTS_DIR ?= modules/scripts
 MERGE ?= $(SCRIPTS_DIR)/merge.R
 VCF_TO_TABLE ?= $(SCRIPTS_DIR)/vcfToTable.R
@@ -78,7 +78,7 @@ JAVA8_BIN ?= $(HOME)/share/usr/jdk1.8.0_121/bin/java
 
 GET_INSERT_SIZE ?= $(HOME)/share/usr/bin/getInsertSize.py
 
-#GATK
+## GATK
 GATK_JAR ?= $(JARDIR)/GenomeAnalysisTK.jar
 GATK_JAR2 ?= $(JARDIR)/GenomeAnalysisTK-3.7.jar
 
