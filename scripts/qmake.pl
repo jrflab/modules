@@ -10,9 +10,10 @@ my $err_slack = "pipeline_error";
 my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
-    selenicp => "UBF6MRSV8",
+    selenicp => "U22A5U23X",
     dacruzpa => "U6PAUB3C6",
-    feinberj => "URKJ612C8"
+    feinberj => "URKJ612C8",
+    parejaf => "UBF6MRSV8"
 );
 
 sub HELP_MESSAGE {
