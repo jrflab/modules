@@ -14,7 +14,7 @@ RSCRIPT_ASCAT = modules/copy_number/ascat.R
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.RData
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 1 --file_in $$(<) --file_out $(@)")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 1 --file_in $$(<) --file_out $$(@)")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -22,7 +22,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 define ascat-plot-bafall
 ascat/bafall/$1_$2.pdf : facets/cncf/$1_$2.RData
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 2 --file_in $$(<) --file_out $(@)")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 2 --file_in $$(<) --file_out $$(@)")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
