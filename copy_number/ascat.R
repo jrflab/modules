@@ -9,14 +9,14 @@ if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
-args_list <- list(make_option("--type", default = NA, type = 'character', help = "type of analysis"),
-				  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
-				  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
-				  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
-				  make_option("--nlog2", default = NA, type = 'numeric', help = "number of clusters in Log2 ratio"),
-				  make_option("--nbaf", default = NA, type = 'numeric', help = "number of clusters in BAF"),
-				  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
-				  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
+args_list <- list(make_option("--option", default = NA, type = 'numeric', help = "type of analysis"),
+		  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
+		  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
+		  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
+		  make_option("--nlog2", default = NA, type = 'numeric', help = "number of clusters in Log2 ratio"),
+		  make_option("--nbaf", default = NA, type = 'numeric', help = "number of clusters in BAF"),
+		  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
+		  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)
@@ -24,10 +24,10 @@ opt <- arguments$options
 load("modules/copy_number/CytoBand.RData")
 load(opt$file_in)
 
-if (opt$type=="log2") {
+if (opt$option == 1) {
 
-	pdf(file=opt$file_out, width=10, height=4.25)
-	par(mar=c(5, 5, 4, 2)+.1)
+	pdf(file = opt$file_out, width = 10, height = 4.25)
+	par(mar = c(5, 5, 4, 2)+.1)
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
 	end = NULL
@@ -51,12 +51,12 @@ if (opt$type=="log2") {
 	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/log2/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+	box(lwd=1.5)
 	dev.off()
 
-} else if (opt$type=="bafall") {
+} else if (opt$option == 2) {
 	
 	pdf(file=opt$file_out, width=10, height=4.25)
 	par(mar=c(5, 5, 4, 2)+.1)
@@ -88,7 +88,7 @@ if (opt$type=="log2") {
     box(lwd=1.5)
 	dev.off()
 
-} else if (opt$type=="bafhet") {
+} else if (opt$option == 3) {
 
 	pdf(file=opt$file_out, width=10, height=4.25)
 	par(mar=c(5, 5, 4, 2)+.1)
@@ -122,7 +122,7 @@ if (opt$type=="log2") {
     box(lwd=1.5)
 	dev.off()
 
-} else if (opt$type=="aspcf") {
+} else if (opt$option == 4) {
 
 	gamma = ifelse(is.na(as.numeric(opt$gamma)), 70, as.numeric(opt$gamma))
 	
@@ -136,7 +136,7 @@ if (opt$type=="log2") {
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
-} else if (opt$type=="plot-aspcf") {
+} else if (opt$option == 5) {
 
 	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
 	nbaf = ifelse(is.na(as.numeric(opt$nbaf)), 15, as.numeric(opt$nbaf))
@@ -218,9 +218,9 @@ if (opt$type=="log2") {
 	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=rep(" ", 23), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+    	rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+    	box(lwd=1.5)
 
 	screen(zz[2])
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
@@ -238,13 +238,13 @@ if (opt$type=="log2") {
 	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
+    	rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
-    box(lwd=1.5)
-    close.screen(all.screens=TRUE)
+    	box(lwd=1.5)
+    	close.screen(all.screens=TRUE)
 	dev.off()
 	
-} else if (opt$type=="run-ascat") {
+} else if (opt$option == 6) {
 	
 	nlog2 = ifelse(is.na(as.numeric(opt$nlog2)), 10, as.numeric(opt$nlog2))
 	nbaf = ifelse(is.na(as.numeric(opt$nbaf)), 15, as.numeric(opt$nbaf))
@@ -349,7 +349,7 @@ if (opt$type=="log2") {
     	save(tmp, tmp2, tmp3, CN_and_BAF, purity, ploidy, file=gsub(".pdf", ".RData", opt$file_out))
     }
 	
-} else if (opt$type=="total-copy") {
+} else if (opt$option == 7) {
 
 	'prunesegments.cn' <- function(x, n=10)
 	{
@@ -414,7 +414,7 @@ if (opt$type=="log2") {
     box(lwd=1.5)
 	dev.off()
 	
-} else if (opt$type=="plot-chr") {
+} else if (opt$option == 8) {
 
 	'prunesegments.cn' <- function(x, n=10)
 	{
