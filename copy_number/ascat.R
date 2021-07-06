@@ -364,7 +364,7 @@ if (opt$option == 1) {
 	col = rep("grey75", nrow(CN))
 	pdf(file=opt$file_out, width=10, height=3.5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=FALSE, xlab="", ylab="", main="", ylim=c(-4,5))
+	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=FALSE, xlab="", ylab="", main="", ylim=c(-5,5))
 	for (j in 1:nrow(tmp)) {
  		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
  	}
