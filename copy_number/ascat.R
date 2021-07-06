@@ -45,6 +45,7 @@ if (opt$option == 1) {
 	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
+	axis(1, at = c(start, end[length(end)]), labels = rep("", length(start)+1), tcl = .25)
 	dev.off()
 
 } else if (opt$option == 2) {
