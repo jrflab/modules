@@ -182,10 +182,10 @@ if (opt$option == 1) {
 	screen(zz[1])
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,4))
 	for (j in 1:nrow(tmp)) {
-		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
+		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.25, col="red")
 	}
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1)
 	for (j in 1:23) {
 		v = start[j]
 		abline(v=v, col="goldenrod3", lty=3, lwd=1)
@@ -198,11 +198,11 @@ if (opt$option == 1) {
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1))
 	points(CN_and_BAF[,"Position"], 1-CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col)
 	for (j in 1:nrow(tmp)) {
-		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"BAF"],2), lty=1, lwd=2.75, col="red")
-		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(1-tmp[j,"BAF"],2), lty=1, lwd=2.75, col="red")
+		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"BAF"],2), lty=1, lwd=2.25, col="red")
+		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(1-tmp[j,"BAF"],2), lty=1, lwd=2.25, col="red")
 	}
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1.25)
+	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1)
 	for (j in 1:23) {
 		v = start[j]
 		abline(v=v, col="goldenrod3", lty=3, lwd=1)
