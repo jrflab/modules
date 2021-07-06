@@ -64,7 +64,7 @@ ascat/total/$1_$2.pdf : facets/cncf/$1_$2.RData
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call ascat-run-ascat,$(tumor.$(pair)),$(normal.$(pair)))))
+		$(eval $(call ascat-run-total,$(tumor.$(pair)),$(normal.$(pair)))))
 
 
 #define ascat-plot-chr
