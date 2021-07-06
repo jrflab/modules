@@ -67,16 +67,15 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-run-total,$(tumor.$(pair)),$(normal.$(pair)))))
 
 
-#define ascat-plot-chr
-#ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
-#	$$(call RUN, -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p ascat/bychr/ && \
-#											   mkdir -p ascat/bychr/$1_$2 && \
-#											   $(RSCRIPT) modules/copy_number/ascat.R --type plot-chr --file_in $$< --file_out ascat/bychr/$1_$2")
-#		
-#endef
-#
-#$(foreach pair,$(SAMPLE_PAIRS),\
-#		$(eval $(call ascat-plot-chr,$(tumor.$(pair)),$(normal.$(pair)))))
+define ascat-plot-chr
+ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.RData
+	$$(call RUN, -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p ascat/bychr/ && \
+						   mkdir -p ascat/bychr/$1_$2 && \
+						   $(RSCRIPT) $(RSCRIPT_ASCAT) --option 8 --file_in $$(<) --file_out $$(@)")
+		
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call ascat-plot-chr,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 .DUMMY := $(shell mkdir -p version; \
 	    $(ASCAT_ENV)/bin/R --version &> version/ascat.txt)
