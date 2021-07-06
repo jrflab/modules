@@ -8,7 +8,8 @@ ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/aspcf/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).RData) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf)
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp) \
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.RData
