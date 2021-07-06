@@ -3,8 +3,8 @@ include modules/Makefile.inc
 LOGDIR ?= log/ascat.$(NOW)
 
 ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
@@ -28,14 +28,14 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-plot-bafall,$(tumor.$(pair)),$(normal.$(pair)))))
 
-#define ascat-plot-bafhet
-#ascat/bafhet/$1_$2.pdf : facets/cncf/$1_$2.Rdata
-#	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) modules/copy_number/ascat.R --type bafhet --file_in $$< --file_out ascat/bafhet/$1_$2.pdf")
-#	
-#endef
-#$(foreach pair,$(SAMPLE_PAIRS),\
-#		$(eval $(call ascat-plot-bafhet,$(tumor.$(pair)),$(normal.$(pair)))))
-#		
+define ascat-plot-bafhet
+ascat/bafhet/$1_$2.pdf : facets/cncf/$1_$2.RData
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 3 --file_in $$(<) --file_out $$(@)")
+	
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call ascat-plot-bafhet,$(tumor.$(pair)),$(normal.$(pair)))))
+		
 #define ascat-aspcf
 #ascat/mad/$1_$2.RData : facets/cncf/$1_$2.Rdata
 #	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type aspcf --file_in $$< --file_out ascat/mad/$1_$2.RData --gamma '$${aspcf_gamma.$1}'")
