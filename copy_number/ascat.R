@@ -101,7 +101,6 @@ if (opt$option == 1) {
 } else if (opt$option == 4) {
 
 	gamma = ifelse(is.na(as.numeric(opt$gamma)), 70, as.numeric(opt$gamma))
-	
 	CN_and_BAF = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT"),drop=FALSE]
 	index = out2$jointseg[,"het"]==1
 	CN_and_BAF = CN_and_BAF[index,,drop=FALSE]
