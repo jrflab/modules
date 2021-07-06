@@ -25,7 +25,7 @@ parser <- OptionParser(usage = "%prog [options] [facets Rdata file]", option_lis
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
-OLD_STYLE = TRUE
+OLD_STYLE = FALSE
 
 if (length(arguments$args) < 1) {
     cat("Need facets Rdata file\n")
@@ -57,14 +57,13 @@ if (!dir.exists("facets/plots/bychr")) {
 	dir.create("facets/plots/bychr")
 }
 
-
 tumorName <- facetsFile %>%
-			 sub('.*/', '', .) %>%
-			 sub('_.*', '', .)
+	     sub('.*/', '', .) %>%
+	     sub('_.*', '', .)
 normalName <- facetsFile %>%
-			  sub('.*/', '', .) %>%
-			  sub('^.*_', '', .) %>%
-			  sub('\\..*', '', .)
+	      sub('.*/', '', .) %>%
+	      sub('^.*_', '', .) %>%
+	      sub('\\..*', '', .)
 
 pdf(file = str_c(opt$outPrefix, ".pdf"), width=10, height=4.25)
 if (OLD_STYLE) {
