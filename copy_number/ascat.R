@@ -210,8 +210,6 @@ if (opt$option == 1) {
 	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    	
-	
     	close.screen(all.screens=TRUE)
 	dev.off()
 	
@@ -364,22 +362,17 @@ if (opt$option == 1) {
 		CN[CN[,"chrom"]==j,"pos"] = CN[CN[,"chrom"]==j,"pos"] + start[j]
 	}
 	col = rep("grey75", nrow(CN))
-	pdf(file=opt$file_out, width=10, height=4.2)
+	pdf(file=opt$file_out, width=10, height=3.5)
 	par(mar=c(5, 5, 4, 2)+.1)
-	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(-4,5))
+	plot(CN[,"pos"], CN[,"Log2Ratio"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=FALSE, xlab="", ylab="", main="", ylim=c(-4,5))
 	for (j in 1:nrow(tmp)) {
  		lines(x=c(tmp[j,"Start"], tmp[j,"End"]), y=rep(tmp[j,"Log2Ratio"],2), lty=1, lwd=2.75, col="red")
  	}
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
-	for (j in 1:23) {
-		v = start[j]
-		abline(v=v, col="goldenrod3", lty=3, lwd=1)
-	}
-	abline(v=max(CN[,"pos"]), col="goldenrod3", lty=3, lwd=1)
-	abline(h=0, col="red")
-	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    	dev.off()
+	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1)
+	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1, tcl = -.35)
+	axis(1, at = c(start, end[length(end)]), labels = rep("", length(start)+1), tcl = .35)
+	dev.off()
 	
 } else if (opt$option == 8) {
 
