@@ -289,35 +289,35 @@ if (opt$option == 1) {
 	gender = "2323"
 	sexchromosomes = c(23, 24)
 	tmp2 = list(Tumor_LogR=Tumor_LogR,
-		 	    Tumor_BAF=Tumor_BAF,
-			    Tumor_LogR_segmented=Tumor_LogR_segmented,
-			    Tumor_BAF_segmented=Tumor_BAF_segmented,
-			    SNPpos=SNPpos,
-			    chromosomes=ch,
-			    chrnames=chrs,
-			    gender=gender,
-			    sexchromosomes=sexchromosomes)
+		    Tumor_BAF=Tumor_BAF,
+		    Tumor_LogR_segmented=Tumor_LogR_segmented,
+		    Tumor_BAF_segmented=Tumor_BAF_segmented,
+		    SNPpos=SNPpos,
+		    chromosomes=ch,
+		    chrnames=chrs,
+		    gender=gender,
+		    sexchromosomes=sexchromosomes)
 	
-    tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
-        	                baf=tmp2$Tumor_BAF,
-        	                lrrsegmented=tmp2$Tumor_LogR_segmented,
-        	                bafsegmented=tmp2$Tumor_BAF_segmented,
-        	                gender=tmp2$gender,
-        	                SNPpos=tmp2$SNPpos,
-        	                chromosomes=tmp2$chromosomes,
-        	                chrnames=tmp2$chrnames,
-        	                sexchromosomes=tmp2$sexchromosomes,
-        	                failedqualitycheck=FALSE,
-        	                distance = opt$file_out,
-        	                copynumberprofile = NULL,
-        	                nonroundedprofile = NULL, 
-        	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
+	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
+			    baf=tmp2$Tumor_BAF,
+			    lrrsegmented=tmp2$Tumor_LogR_segmented,
+			    bafsegmented=tmp2$Tumor_BAF_segmented,
+			    gender=tmp2$gender,
+			    SNPpos=tmp2$SNPpos,
+			    chromosomes=tmp2$chromosomes,
+			    chrnames=tmp2$chrnames,
+			    sexchromosomes=tmp2$sexchromosomes,
+			    failedqualitycheck=FALSE,
+			    distance = gsub(".RData", ".pdf", x=opt$file_out, fixed=TRUE),
+			    copynumberprofile = NULL,
+			    nonroundedprofile = NULL, 
+			    aberrationreliability = NULL,
+			    gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
         ploidy = sum((tmp3$seg_raw[,"nAraw"]+tmp3$seg_raw[,"nBraw"])*(tmp2$SNPpos[tmp3$seg_raw[,"end"],"pos"]-tmp2$SNPpos[tmp3$seg_raw[,"start"],"pos"])/sum(as.numeric(tmp2$SNPpos[tmp3$seg_raw[,"end"],"pos"]-tmp2$SNPpos[tmp3$seg_raw[,"start"],"pos"])))
-    	save(tmp, tmp2, tmp3, CN_and_BAF, purity, ploidy, file=gsub(".pdf", ".RData", opt$file_out))
+    	save(tmp, tmp2, tmp3, CN_and_BAF, purity, ploidy, file=opt$file_out)
     }
 	
 } else if (opt$option == 7) {
