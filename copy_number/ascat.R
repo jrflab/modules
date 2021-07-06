@@ -175,7 +175,7 @@ if (opt$option == 1) {
 		tmp[tmp[,"Chromosome"]==j,"End"] = tmp[tmp[,"Chromosome"]==j,"End"] + start[j]
 	}
 	col = rep("grey75", nrow(CN_and_BAF))
-	pdf(file=opt$file_out, width = 10, height = 3.25*2)
+	pdf(file=opt$file_out, width = 10, height = 3.5*2)
 	par(mar=c(5, 5, 4, 2)+.1)
 	zz = split.screen(figs=matrix(c(0,1,.425,1, 0,1,0,.575), nrow=2, ncol=4, byrow=TRUE))
 
