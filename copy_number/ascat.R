@@ -513,7 +513,7 @@ if (opt$option == 1) {
 		abline(h=0, lwd=1)
 		axis(2, at = c(-4,-3,-2,-1,0,1,2,3,4), labels=c(-4,-3,-2,-1,0,1,2,3,4), cex.axis = 1.25, las = 1, lwd=1.5, lwd.ticks=1.35)
 		mtext(side = 2, text = expression("Log"[2]~"Ratio"), line = 4, cex = 1.5)
-		load(gsub("/timestamp", gsub("bychr", "ascat", opt$file_out, fixed=TRUE), ".RData", fixed = TRUE))
+		load(gsub("/timestamp", ".RData", gsub("bychr", "ascat", opt$file_out, fixed=TRUE), fixed = TRUE))
 		z3 = list(gamma=1, rho=purity, psi=ploidy)
 		for (k in c(1, 3, 5, 8, 12)) {
 			abline(h=.09+(z3$gamma*log2(((z3$rho)*k + (1-z3$rho)*2)/((z3$rho)*z3$psi + (1-z3$rho)*2))), col="brown", lty=3)
