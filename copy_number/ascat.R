@@ -74,7 +74,7 @@ if (opt$option == 1) {
 
 } else if (opt$option == 3) {
 
-	pdf(file=opt$file_out, width=10, height=4.25)
+	pdf(file = opt$file_out, width = 10, height = 3.5)
 	par(mar=c(5, 5, 4, 2)+.1)
 	BAF = out2$jointseg[,c("chrom", "maploc", "vafT"),drop=FALSE]
 	index = out2$jointseg[,"het"]==1
@@ -91,19 +91,11 @@ if (opt$option == 1) {
 		BAF[BAF[,"Chromosome"]==j,"Position"] = BAF[BAF[,"Chromosome"]==j,"Position"] + start[j]
 	}
 	col = rep("grey75", nrow(BAF))
-	plot(BAF[,"Position"], BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
+	plot(BAF[,"Position"], BAF[,"BAF"], type = "p", pch = ".", cex = 1, col = col, axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-0.125,1.125))
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1.25)
-	for (j in 1:23) {
-		v = start[j]
-		abline(v=v, col="goldenrod3", lty=3, lwd=1)
-	}
-	abline(v=max(BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
-	abline(h=0.5, col="red")
-	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/bafhet/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1)
+	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1, tcl = -.35)
+	axis(1, at = c(start, end[length(end)]), labels = rep("", length(start)+1), tcl = .35)
 	dev.off()
 
 } else if (opt$option == 4) {
