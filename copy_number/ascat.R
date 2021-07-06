@@ -41,7 +41,7 @@ if (opt$option == 1) {
 		CN[CN[,"Chromosome"]==j,"Position"] = CN[CN[,"Chromosome"]==j,"Position"] + start[j]
 	}
 	col = rep("grey75", nrow(CN))
-	plot(CN[,"Position"], CN[,"Log2Ratio"], type="p", pch=".", cex=1.95, col=col, axes=FALSE, frame=FALSE, xlab="", ylab="", main="", ylim=c(-5 , 5))
+	plot(CN[,"Position"], CN[,"Log2Ratio"], type = "p", pch = ".", cex = 1.95, col = col, axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-5 , 5))
 	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1)
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1, tcl = -.35)
@@ -65,7 +65,7 @@ if (opt$option == 1) {
 		BAF[BAF[,"Chromosome"]==j,"Position"] = BAF[BAF[,"Chromosome"]==j,"Position"] + start[j]
 	}
 	col = rep("grey75", nrow(BAF))
-	plot(BAF[,"Position"], BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
+	plot(BAF[,"Position"], BAF[,"BAF"], type = "p", pch = ".", cex = 1.95, col = col, axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(0,1.125))
 	axis(2, at = NULL, labels = NULL, cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression("BAF"), line = 3.15, cex = 1)
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1, tcl = -.35)
