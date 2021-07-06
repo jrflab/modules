@@ -26,7 +26,7 @@ load(opt$file_in)
 
 if (opt$option == 1) {
 
-	pdf(file = opt$file_out, width = 10, height = 4.25)
+	pdf(file = opt$file_out, width = 10, height = 3.5)
 	par(mar = c(5, 5, 4, 2)+.1)
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
