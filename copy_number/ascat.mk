@@ -5,8 +5,8 @@ LOGDIR ?= log/ascat.$(NOW)
 ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/aspcf/$(pair).pdf)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf)
 
@@ -42,14 +42,14 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-aspcf,$(tumor.$(pair)),$(normal.$(pair)))))
 
-#define ascat-plot-aspcf
-#ascat/log2nbaf/$1_$2.pdf : ascat/mad/$1_$2.RData
-#	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type plot-aspcf --file_in $$< --file_out ascat/log2nbaf/$1_$2.pdf --nlog2 '$${aspcf_nlog2.$1}' --nbaf '$${aspcf_nbaf.$1}'")
-#	
-#endef
-#$(foreach pair,$(SAMPLE_PAIRS),\
-#		$(eval $(call ascat-plot-aspcf,$(tumor.$(pair)),$(normal.$(pair)))))
-#		
+define ascat-plot-aspcf
+ascat/aspcf/$1_$2.pdf : ascat/mad/$1_$2.RData
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 5 --file_in $$(<) --file_out $$(@) --nlog2 '$${aspcf_nlog2.$1}' --nbaf '$${aspcf_nbaf.$1}'")
+	
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call ascat-plot-aspcf,$(tumor.$(pair)),$(normal.$(pair)))))
+		
 #define ascat-run-ascat
 #ascat/ascat/$1_$2.pdf : ascat/mad/$1_$2.RData
 #	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type run-ascat --file_in $$< --file_out ascat/ascat/$1_$2.pdf --rho '$${ascat_rho.$1}' --psi '$${ascat_psi.$1}' --nlog2 '$${aspcf_nlog2.$1}' --nbaf '$${aspcf_nbaf.$1}'")

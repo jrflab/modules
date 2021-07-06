@@ -214,7 +214,7 @@ if (opt$option == 1) {
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     	rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/aspcf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
     	box(lwd=1.5)
     	close.screen(all.screens=TRUE)
 	dev.off()
