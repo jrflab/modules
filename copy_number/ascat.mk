@@ -12,7 +12,7 @@ ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf)
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.RData
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) modules/copy_number/ascat.R --option 2 --file_in $$< --file_out ascat/log2/$1_$2.pdf")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) modules/copy_number/ascat.R --option 1 --file_in $$< --file_out ascat/log2/$1_$2.pdf")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
