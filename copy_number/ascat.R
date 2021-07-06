@@ -488,7 +488,7 @@ if (opt$option == 1) {
 	CN = out2$jointseg[,c("chrom", "maploc", "cnlr"),drop=FALSE]
 	colnames(CN) = c("Chromosome", "Position", "Log2Ratio")
 	for (ii in 1:23) {
-		pdf(file=paste0(gsub("/timestamp", opt$file_out, fixed = TRUE), "/chromosome_", ii, ".pdf"))
+		pdf(file=paste0(gsub("/timestamp", "", opt$file_out, fixed = TRUE), "/chromosome_", ii, ".pdf"))
 		par(mar = c(6.1, 6, 4.1, 3))
 		zz = split.screen(figs=matrix(c(0,1,.15,1, 0,1,0.0775,.4), nrow=2, ncol=4, byrow=TRUE))
 		screen(zz[1])
