@@ -10,8 +10,6 @@ ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf)
 
-RSCRIPT_ASCAT = modules/copy_number/ascat.R
-
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.RData
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) $(RSCRIPT_ASCAT) --option 1 --file_in $$(<) --file_out $$(@)")

@@ -43,6 +43,7 @@ BGZIP ?= $(HOME)/share/usr/bin/bgzip
 IGVTOOLS ?= $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS ?= $(HOME)/share/usr/bin/vcftools-0.1.10
 VCF_SORT ?= $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
+RSCRIPT_ASCAT = modules/copy_number/ascat.R
 
 SNP_EFF_JAR ?= $(JARDIR)/snpEff-4.3.jar
 SNP_SIFT_JAR ?= $(JARDIR)/SnpSift-4.3.jar
