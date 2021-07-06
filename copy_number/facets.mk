@@ -70,6 +70,7 @@ CONVERT_BC_TO_SNP_PILEUP = python modules/copy_number/convert_basecount_to_snp_p
 facets/pileup/%.txt.gz : facets/base_count/%.bc.gz
 	$(call RUN,-s 12G -m 14G,"$(CONVERT_BC_TO_SNP_PILEUP) $< | gzip -c > $@")
 else
+
 define snp-pileup-tumor-normal
 facets/pileup/$1_$2.txt.gz : bam/$1.bam bam/$2.bam $$(FACETS_SNP_VCF)
 	$$(call RUN,-c -s 8G -m 20G,"rm -f $$@ && $$(SNP_PILEUP) $$(SNP_PILEUP_OPTS) $$(<<<) $$@ $$(<<) $$(<)")
@@ -77,7 +78,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),$(eval $(call snp-pileup-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 endif
 
-facets/cncf/%.txt facets/cncf/%.RData : facets/pileup/%.txt.gz
+facets/cncf/%.RData : facets/pileup/%.txt.gz
 	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
 #facets/plots/log2/%.pdf : facets/cncf/%.RData
