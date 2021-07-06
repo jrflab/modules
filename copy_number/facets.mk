@@ -47,8 +47,8 @@ FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 facets : facets/vcf/targets_dbsnp.vcf \
 	 $(foreach pair,$(SAMPLE_PAIRS),facets/pileup/$(pair).txt.gz) \
-	 $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).RData)
-#	 facets/plots/log2/$(pair).pdf) \
+	 $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).RData) \
+	 $(foreach pair,$(SAMPLE_PAIRS), facets/plots/log2/$(pair).pdf) \
 #	 facets/summary/bygene.txt \
 #	 facets/summary/bygene.pdf \
 #	 facets/summary/summary.tsv
@@ -81,9 +81,9 @@ endif
 facets/cncf/%.RData : facets/pileup/%.txt.gz
 	$(call RUN,-c -v $(FACETS_ENV) -s 8G -m 60G,"$(RUN_FACETS) $(call FACETS_OPTS,$*) --out_prefix $(@D)/$* $<")
 
-#facets/plots/log2/%.pdf : facets/cncf/%.RData
-#	$(call RUN,-v $(FACETS_ENV) -s 4G -m 6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
-#
+facets/plots/log2/%.pdf : facets/cncf/%.RData
+	$(call RUN,-v $(FACETS_ENV) -s 4G -m 6G,"$(PLOT_FACETS) --centromereFile $(CENTROMERE_TABLE) --outPrefix $(@D)/$* $<")
+
 #facets/summary/bygene.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 #	$(call RUN,-c -s 8G -m 30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 #
