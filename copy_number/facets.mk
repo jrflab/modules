@@ -87,8 +87,8 @@ facets/plots/log2/%.pdf : facets/cncf/%.RData
 facets/summary/bygene.txt : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).RData)
 	$(call RUN,-c -s 8G -m 30G,"$(FACETS_GENE_CN) $(FACETS_GENE_CN_OPTS) --outFile $@ $^")
 
-#facets/summary/bygene.pdf : facets/summary/bygene.txt
-#	$(call RUN,-s 8G -m 10G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
+facets/summary/bygene.pdf : facets/summary/bygene.txt
+	$(call RUN,-s 8G -m 30G,"$(FACETS_PLOT_GENE_CN) $(FACETS_PLOT_GENE_CN_OPTS) $< $@")
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(FACETS_ENV)/bin/R --version &> version/facets.txt)
