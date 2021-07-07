@@ -49,9 +49,8 @@ facets : facets/vcf/targets_dbsnp.vcf \
 	 $(foreach pair,$(SAMPLE_PAIRS),facets/pileup/$(pair).txt.gz) \
 	 $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).RData) \
 	 $(foreach pair,$(SAMPLE_PAIRS),facets/plots/log2/$(pair).pdf) \
-	 facets/summary/bygene.txt
-#	 facets/summary/bygene.pdf \
-#	 facets/summary/summary.tsv
+	 facets/summary/bygene.txt \
+	 facets/summary/bygene.pdf
 
 #facets/summary/summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
 #	$(call RUN,-c -s 8G -m 12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
