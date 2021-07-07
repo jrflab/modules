@@ -1,30 +1,18 @@
 #!/usr/bin/env Rscript
 
-#---------------
-# initialization
-#---------------
-
-# load base libraries
-for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr", 
-              "stringr","tidyr","magrittr","foreach", "rtracklayer","grid","rlist", "RMySQL")) {
-    suppressPackageStartupMessages(library(lib, character.only=TRUE))
+for (lib in c("optparse","RColorBrewer","GenomicRanges","plyr","dplyr", "stringr","tidyr","magrittr","foreach", "rtracklayer","grid","rlist", "RMySQL")) {
+	suppressPackageStartupMessages(library(lib, character.only=TRUE))
 }
 
-#--------------
-# parse options
-#--------------
-
-optList <- list(
-				make_option("--outFile", default = NULL, help = "output file"),
-				make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
-				make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
-				make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
-				make_option("--mysqlPassword", default = NULL, help = "MySQL server password"),
-				make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
-				make_option("--genesFile", default = NULL, help = "list of genes to include (hgnc symbols)"),
-				make_option("--annotFile", default = "~/share/reference/annotation_gene_lists/geneCN.txt", help = "file with annotations to replace MySQL sever query"))
+optList <- list(make_option("--outFile", default = NULL, help = "output file"),
+		make_option("--mysqlHost", default = '10.0.200.48', help = "MySQL server hostname"),
+		make_option("--mysqlPort", default = 38493, help = "MySQL server port"),
+		make_option("--mysqlUser", default = 'embl', help = "MySQL server username"),
+		make_option("--mysqlPassword", default = NULL, help = "MySQL server password"),
+		make_option("--mysqlDb", default = 'homo_sapiens_core_75_37', help = "MySQL server database"),
+		make_option("--genesFile", default = NULL, help = "list of genes to include (hgnc symbols)"),
+		make_option("--annotFile", default = "~/share/reference/annotation_gene_lists/geneCN.txt", help = "file with annotations to replace MySQL sever query"))
 parser <- OptionParser(usage = "%prog [options] [facets files]", option_list = optList)
-
 arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
@@ -45,7 +33,6 @@ if (is.null(opt$annotFile)) {
 	cat('Connecting to ensembl ... ')
 	mydb <- connect()
 	on.exit(dbDisconnect(mydb))
-
 	query <- "select r.name as chrom,
 	g.seq_region_start as start,
 	g.seq_region_end as end,
@@ -75,8 +62,8 @@ if (is.null(opt$annotFile)) {
 cat(paste("Found", nrow(genes), "records\n"))
 
 genes %<>% filter(chrom %in% as.character(c(1:22, "X", "Y"))) %>%
-		   filter(!duplicated(hgnc)) %>%
-		   arrange(as.integer(chrom), start, end)
+	   filter(!duplicated(hgnc)) %>%
+	   arrange(as.integer(chrom), start, end)
 
 if (!is.null(opt$genesFile)) {
 	g <- scan(opt$genesFile, what = 'character')
@@ -87,9 +74,7 @@ if (!is.null(opt$genesFile)) {
 		cat(absentGenes, sep = '\n');
 	}
 }
-
 cat(paste("Filtering to", nrow(genes), "records\n"))
-
 genesGR <- genes %$% GRanges(seqnames = chrom, ranges = IRanges(start, end), band = band, hgnc = hgnc)
 			
 mm <- lapply(facetsFiles, function(f) {
