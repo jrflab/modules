@@ -18,16 +18,16 @@ FACETS_NDEPTH_MAX ?= 1000
 FACETS_HET_THRESHOLD ?= 0.25
 FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --genome $(REF) \
-			  $(if $(facets_cval1.$1),--cval1 $(facets_diplogr.$1),--cval1 $(FACETS_CVAL1)) \
-			  $(if $(facets_cval2.$1),--cval2 $(facets_diplogr.$1),--cval2 $(FACETS_CVAL1)) \
-			  --het_threshold $(FACETS_HET_THRESHOLD) \
-			  --min_nhet $(FACETS_MIN_NHET) \
-			  --snp_nbhd $(FACETS_SNP_NBHD) \
-			  $(if $(facets_pre_cval.$1),--pre_cval $(facets_pre_cval.$1),--pre_cval $(FACETS_PRE_CVAL)) \
-			  --ndepth_max $(FACETS_NDEPTH_MAX) \
-			  --use_emcncf2 \
-			  $(if $(facets_diplogr.$1),--diplogr $(facets_diplogr.$1)) \
-			  $(if $(facets_purity.$1),--purity $(facets_purity.$1))
+	      $(if $(facets_cval1.$1),--cval1 $(facets_diplogr.$1),--cval1 $(FACETS_CVAL1)) \
+	      $(if $(facets_cval2.$1),--cval2 $(facets_diplogr.$1),--cval2 $(FACETS_CVAL1)) \
+	      --het_threshold $(FACETS_HET_THRESHOLD) \
+	      --min_nhet $(FACETS_MIN_NHET) \
+	      --snp_nbhd $(FACETS_SNP_NBHD) \
+	      $(if $(facets_pre_cval.$1),--pre_cval $(facets_pre_cval.$1),--pre_cval $(FACETS_PRE_CVAL)) \
+	      --ndepth_max $(FACETS_NDEPTH_MAX) \
+	      --use_emcncf2 \
+	      $(if $(facets_diplogr.$1),--diplogr $(facets_diplogr.$1)) \
+	      $(if $(facets_purity.$1),--purity $(facets_purity.$1))
 SNP_PILEUP = snp-pileup
 SNP_PILEUP_OPTS = -A --min-map-quality=15 --min-base-quality=15 --gzip --max-depth=15000
 FACETS_DBSNP = $(if $(TARGETS_FILE),facets/vcf/targets_dbsnp.vcf,$(DBSNP))
@@ -39,9 +39,9 @@ else
 FACETS_SNP_VCF = $(FACETS_DBSNP)
 endif
 FACETS_GENE_CN_OPTS = $(if $(GENES_FILE),--genesFile $(GENES_FILE)) \
-					  --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
-					  --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
-					  --mysqlDb $(EMBL_MYSQLDB_DB)
+					 --mysqlHost $(EMBL_MYSQLDB_HOST) --mysqlPort $(EMBL_MYSQLDB_PORT) \
+					 --mysqlUser $(EMBL_MYSQLDB_USER) $(if $(EMBL_MYSQLDB_PW),--mysqlPassword $(EMBL_MYSQLDB_PW)) \
+					 --mysqlDb $(EMBL_MYSQLDB_DB)
 FACETS_PLOT_GENE_CN_OPTS = --sampleColumnPostFix '_LRR_threshold'
 
 
@@ -51,15 +51,6 @@ facets : facets/vcf/targets_dbsnp.vcf \
 	 $(foreach pair,$(SAMPLE_PAIRS),facets/plots/log2/$(pair).pdf) \
 	 facets/summary/bygene.txt \
 	 facets/summary/bygene.pdf
-
-#facets/summary/summary.tsv : $(foreach pair,$(SAMPLE_PAIRS),facets/cncf/$(pair).Rdata)
-#	$(call RUN,-c -s 8G -m 12G,"$(CREATE_FACETS_SUMMARY) --outFile $@ $^")
-#
-#facets/vcf/dbsnp_het_gatk.snps.vcf : $(FACETS_DBSNP) $(foreach sample,$(SAMPLES),gatk/vcf/$(sample).variants.snps.het.pass.vcf)
-#	$(call RUN,-c -s 4G -m 6G,"$(call GATK_MEM,3G) $(if $(TARGETS_FILE),-L $(TARGETS_FILE)) -T CombineVariants --minimalVCF $(foreach i,$^, --variant $i) -R $(REF_FASTA) -o $@")
-#
-#%.het.vcf : %.vcf
-#	$(call RUN,-c -s 9G -m 12G,"$(call GATK_MEM,8G) -V $< -T VariantFiltration -R $(REF_FASTA) --genotypeFilterName 'hom' --genotypeFilterExpression 'isHet == 0' -o $@")
 
 facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
@@ -94,6 +85,3 @@ facets/summary/bygene.pdf : facets/summary/bygene.txt
 .SECONDARY:
 .DELETE_ON_ERROR: 
 .PHONY: facets
-
-include modules/variant_callers/gatk.mk
-include modules/bam_tools/processBam.mk
