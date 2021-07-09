@@ -150,7 +150,7 @@ do {
         if ($opt{s} && ($retcode == 0 || $n == 0 || $n + 1 == $attempts)) {
             if ($retcode == 0) {
                 # op success
-                my $slack_msg = "*COMPLETE* $name :metal:";
+                my $slack_msg = "*COMPLETE* $name :the_horns:";
                 &slack($fin_slack, "$pipeline_channel_msg $slack_msg");
                 &slack($opt{c}, $slack_msg) if $opt{c};
             } else {
