@@ -158,7 +158,7 @@ do {
                 my $slack_msg = "*FAILURE* $cwd/$logfile";
                 if ($n + 1 == $attempts) {
                     # final attempt
-                    $slack_msg = ":finnadie: $slack_msg";
+                    $slack_msg = ":-1: $slack_msg";
                     &slack($opt{c}, $slack_msg) if $opt{c};
                 }
                 &slack($err_slack, "$pipeline_channel_msg $slack_msg");
