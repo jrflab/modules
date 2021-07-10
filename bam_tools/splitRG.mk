@@ -8,7 +8,8 @@ define split-rg
 rg/EEC128/$1.bam : bam/EEC128.bam
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
 				      mkdir -p rg/EEC128 && \
-				      $$(SAMTOOLS) view -b -r $1 bam/EEC128.bam > rg/EEC128/$1.bam")
+				      $$(SAMTOOLS) view -b -r $1 bam/EEC128.bam > rg/EEC128/$1.bam && \
+				      $$(SAMTOOLS) index rg/EEC128/$1.bam")
 
 endef
 $(foreach sample,$(SAMPLES),\
