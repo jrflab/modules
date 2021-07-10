@@ -444,6 +444,11 @@ process_bam :
 TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+	
+TARGETS += split_rg
+split_rg :
+	$(call RUN_MAKE,modules/bam_tools/splitRG.mk)
+
 
 
 #==================================================
