@@ -12,7 +12,7 @@ rg/EEC128/$1.bam : bam/EEC128.bam
 
 endef
 $(foreach sample,$(SAMPLES),\
-		$(eval $(call bam-to-fastq,$(sample))))
+		$(eval $(call split-rg,$(sample))))
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(SAMTOOLS) --version > version/splitRG.txt;)
