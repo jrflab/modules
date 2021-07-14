@@ -3,8 +3,8 @@ include modules/Makefile.inc
 LOGDIR ?= log/get_basecount.$(NOW)
 PHONY += getbasecount
 
-GBC_ENV = $(home)/share/data/common/eec_sc_split/etc/conda
-GBC_EXE = $(home)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
+GBC_ENV = $(HOME)/share/data/common/eec_sc_split/etc/conda
+GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 
 getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).txt)
 
