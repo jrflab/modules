@@ -14,7 +14,7 @@ MAKELOG = log/$(@).$(NOW).log
 
 USE_CLUSTER ?= true
 QMAKE = modules/scripts/qmake.pl -n $@.$(NOW) $(if $(SLACK_CHANNEL),-c $(SLACK_CHANNEL)) -r $(NUM_ATTEMPTS) -m -s -- make
-NUM_JOBS ?= 50
+NUM_JOBS ?= 100
 
 define RUN_QMAKE
 $(QMAKE) -e -f $1 -j $2 $(TARGET) && \
