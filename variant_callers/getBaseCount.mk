@@ -8,7 +8,7 @@ GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 MAPQ := 10
 BAQ := 15
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).txt)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).tsv)
 
 define get-basecount
 gbc/EEC128/$1.txt : bam/EEC128/$1.bam
@@ -24,6 +24,11 @@ gbc/EEC128/$1.txt : bam/EEC128/$1.bam
 						    --filter_improper_pair 0 \
 						    --filter_qc_failed 1 \
 						    --thread 6")
+						    
+gbc/EEC128/$1.tsv : gbc/EEC128/$1.txt
+	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
+				      $(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<)")
+
 
 endef
 $(foreach sample,$(SAMPLES),\
