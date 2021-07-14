@@ -4,6 +4,7 @@ LOGDIR ?= log/get_basecount.$(NOW)
 PHONY += getbasecount
 
 GBC_ENV = $(home)/share/data/common/eec_sc_split/etc/conda
+GBC_EXE = $(home)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 
 getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).txt)
 
@@ -11,7 +12,7 @@ define get-basecount
 gbc/EEC128/$1.txt : bam/EEC128/$1.bam
 	$$(call RUN,-n 6 -s 1G -m 2G -v $(GBC_ENV),"set -o pipefail && \
 				      		    mkdir -p gbc/EEC128 && \
-						    etc/GetBaseCounts/GetBaseCounts --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
+						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
 						    --bam $$(<) \
 						    --vcf etc/vcf/EEC128.vcf \
 						    --output $$(@) \
