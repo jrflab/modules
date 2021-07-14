@@ -21,4 +21,4 @@ genotype = readr::read_tsv(file = opt$file_name, col_names = TRUE, col_types = c
 	   dplyr::arrange(Chrom_N, Pos) %>%
 	   dplyr::select(-Chrom_N)
 
-write_tsv(genotype, file = gsub(pattern = ".txt", replacement = ".tsv", x = opt$file_name), append = FALSE, col_names = TRUE)
+write_tsv(genotype, path = gsub(pattern = ".txt", replacement = ".tsv", x = opt$file_name), append = FALSE, col_names = TRUE)
