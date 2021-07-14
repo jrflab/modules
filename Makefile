@@ -192,6 +192,10 @@ sufam:
 TARGETS += sufam_summary
 sufam_summary:
 	$(call RUN_MAKE,modules/variant_callers/sufammultisample.mk)
+	
+TARGETS += get_basecount
+get_basecount:
+	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
 
 
 #==================================================
@@ -444,6 +448,11 @@ process_bam :
 TARGETS += merge_bam
 merge_bam :
 	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
+	
+TARGETS += split_rg
+split_rg :
+	$(call RUN_MAKE,modules/bam_tools/splitRG.mk)
+
 
 
 #==================================================
