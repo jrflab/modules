@@ -16,7 +16,7 @@ opt <- arguments$options
 
 genotype = readr::read_tsv(file = opt$file_name, col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	   readr::type_convert() %>%
-	   dplyr::mutate(Chrom_N = gsub(pattern = "chr", replacement = "" x = Chrom, fixed = TRUE)) %>%
+	   dplyr::mutate(Chrom_N = gsub(pattern = "chr", replacement = "", x = Chrom, fixed = TRUE)) %>%
 	   readr::type_convert() %>%
 	   dplyr::arrange(Chrom_N, Pos) %>%
 	   dplyr::select(-Chrom_N)
