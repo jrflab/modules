@@ -26,7 +26,7 @@ gbc/EEC87/$1.txt : bam/EEC87/$1.bam
 						    --thread 6")
 						    
 gbc/EEC87/$1.tsv : gbc/EEC87/$1.txt
-	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
+	$$(call RUN,-n 1 -s 6G -m 8G,"set -o pipefail && \
 				      $(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<)")
 
 
