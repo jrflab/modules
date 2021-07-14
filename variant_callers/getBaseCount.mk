@@ -27,7 +27,7 @@ $(foreach sample,$(SAMPLES),\
 		$(eval $(call get-basecount,$(sample))))
 
 ..DUMMY := $(shell mkdir -p version; \
-	     /lila/home/brownd7/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts > version/get_basecount.txt;)
+	     /lila/home/brownd7/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts &> version/get_basecount.txt;)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: getbasecount
