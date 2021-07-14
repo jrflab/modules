@@ -192,6 +192,10 @@ sufam:
 TARGETS += sufam_summary
 sufam_summary:
 	$(call RUN_MAKE,modules/variant_callers/sufammultisample.mk)
+	
+TARGETS += get_basecount
+get_basecount:
+	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
 
 
 #==================================================
