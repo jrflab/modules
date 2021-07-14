@@ -16,7 +16,7 @@ $(foreach sample,$(SAMPLES),\
 		$(eval $(call split-rg,$(sample))))
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(SAMTOOLS) --version > version/splitRG.txt;)
+	     $(SAMTOOLS) --version > version/split_rg.txt;)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: split
