@@ -5,6 +5,8 @@ PHONY += getbasecount
 
 GBC_ENV = $(HOME)/share/data/common/eec_sc_split/etc/conda
 GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
+MAPQ := 10
+BAQ := 15
 
 getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).txt)
 
@@ -16,8 +18,8 @@ gbc/EEC128/$1.txt : bam/EEC128/$1.bam
 						    --bam $$(<) \
 						    --vcf etc/vcf/EEC128.vcf \
 						    --output $$(@) \
-						    --maq 0 \
-						    --baq 0 \
+						    --maq $(MAPQ) \
+						    --baq $(BAQ) \
 						    --filter_duplicate 0 \
 						    --filter_improper_pair 0 \
 						    --filter_qc_failed 1 \
