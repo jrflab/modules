@@ -14,7 +14,7 @@ LOGDIR ?= log/genome_summary.$(NOW)
 #		 summary/tsv/genome_summary.tsv \
 #		 summary/genome_summary.xlsx
 		 
-genome_summary += genome_altered
+#genome_summary += genome_altered
 genome_summary += lst_score
 genome_summary += ntai_score
 genome_summary += myriad_score
