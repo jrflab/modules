@@ -1,8 +1,8 @@
 include modules/Makefile.inc
 #include modules/copy_number/genomealtered.mk
-#include modules/copy_number/lstscore.mk
+include modules/copy_number/lstscore.mk
 #include modules/copy_number/ntaiscore.mk
-include modules/copy_number/myriadhrdscore.mk
+#include modules/copy_number/myriadhrdscore.mk
 
 LOGDIR ?= log/genome_summary.$(NOW)
 
