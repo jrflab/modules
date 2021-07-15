@@ -1,27 +1,46 @@
 include modules/Makefile.inc
-#include modules/copy_number/genomealtered.mk
-include modules/copy_number/lstscore.mk
-include modules/copy_number/ntaiscore.mk
-#include modules/copy_number/myriadhrdscore.mk
 
 LOGDIR ?= log/genome_summary.$(NOW)
 
-#GENOME_ALTERED = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
-#LST_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst))
-#NTAI_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai))
-#MYRIAD_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs))
 
-#genome_summary : genome_stats/genome_altered.tsv \
-#		 genome_stats/lst_score.tsv \
-#		 genome_stats/ntai_score.tsv \
-#		 genome_stats/myriad_score.tsv \
+genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).fga) \
+		 genome_stats/genome_altered.tsv \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).lst) \
+		 genome_stats/lst_score.tsv \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).ntai) \
+		 genome_stats/ntai_score.tsv \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
+		 genome_stats/myriad_score.tsv
 #		 summary/tsv/genome_summary.tsv \
 #		 summary/genome_summary.xlsx
 		 
-#genome_summary += genome_altered
-#genome_summary += lst_score
-#genome_summary += ntai_score
-#genome_summary += myriad_score
+define fraction-genome-altered
+genome_stats/$1_$2.fga : facets/cncf/$1_$2.Rdata
+	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/genomealtered.R --file_in $$(<) --file_out $$(@)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call fraction-genome-altered,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+define lst-score
+genome_stats/$1_$2.lst : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/lstscore.R --file_in $$< --file_out $$(@)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call lst-score,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+define ntai-score
+genome_stats/$1_$2.ntai : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ntaiscore.R --file_in $$< --file_out $$(@)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call ntai-score,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+define myriad-score
+genome_stats/$1_$2.mrs : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/myriadhrdscore.R --file_in $$< --file_out $$(@)")
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call myriad-score,$(tumor.$(pair)),$(normal.$(pair)))))
 
 #genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
 #	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
