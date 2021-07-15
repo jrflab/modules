@@ -2,7 +2,7 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/genome_summary.$(NOW)
 
-GENOME_ALTERED ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
+GENOME_ALTERED = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
 LST_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst))
 NTAI_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai))
 MYRIAD_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs))
@@ -22,7 +22,7 @@ genome_summary += myriad_score
 genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
-				     cat $(GENOME_ALTERED) > $$(@)")
+				     cat $$(GENOME_ALTERED) > $$(@)")
 							 
 genome_stats/lst_score.tsv : $(LST_SCORE)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
