@@ -19,7 +19,7 @@ genome_summary += lst_score
 genome_summary += ntai_score
 genome_summary += myriad_score
 
-genome_stats/genome_altered.tsv : $$(GENOME_ALTERED)
+genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
 				     cat $(GENOME_ALTERED) > $$(@)")
