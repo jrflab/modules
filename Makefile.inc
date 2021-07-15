@@ -80,7 +80,7 @@ ALL_SAMPLES = $(SAMPLE_PAIRS) $(SAMPLES)
 
 SHELL = /bin/bash
 
-export TMPDIR := $(HOME)/share/data/common/.TemporaryItems
+export TMPDIR := $(HOME)/share/data/$(USER)/tmp
 
 PICARD_MEM = 10G
 PICARD_OPTS = VALIDATION_STRINGENCY=LENIENT MAX_RECORDS_IN_RAM=4000000
