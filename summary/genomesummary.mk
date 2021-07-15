@@ -15,8 +15,8 @@ LOGDIR ?= log/genome_summary.$(NOW)
 #		 summary/genome_summary.xlsx
 		 
 #genome_summary += genome_altered
-genome_summary += lst_score
-genome_summary += ntai_score
+#genome_summary += lst_score
+#genome_summary += ntai_score
 genome_summary += myriad_score
 
 #genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
@@ -51,7 +51,7 @@ genome_summary += myriad_score
 .SECONDARY:
 .PHONY: genome_sumary
 
-include modules/copy_number/genomealtered.mk
-include modules/copy_number/lstscore.mk
-include modules/copy_number/ntaiscore.mk
+#include modules/copy_number/genomealtered.mk
+#include modules/copy_number/lstscore.mk
+#include modules/copy_number/ntaiscore.mk
 include modules/copy_number/myriadhrdscore.mk
