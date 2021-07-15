@@ -27,7 +27,8 @@ gbc/EEC14/$1.txt : bam/EEC14/$1.bam
 						    
 gbc/EEC14/$1.tsv : gbc/EEC14/$1.txt
 	$$(call RUN,-n 1 -s 6G -m 8G,"set -o pipefail && \
-				      $(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<)")
+				      $(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<) && \
+				      rm $$(<)")
 
 
 endef
