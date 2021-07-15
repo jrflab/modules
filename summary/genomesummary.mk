@@ -21,7 +21,7 @@ LOGDIR ?= log/genome_summary.$(NOW)
 #genome_summary += genome_altered
 #genome_summary += lst_score
 #genome_summary += ntai_score
-genome_summary += myriad_score
+#genome_summary += myriad_score
 
 #genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
 #	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
