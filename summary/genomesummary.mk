@@ -50,22 +50,22 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
-				     cat $(GENOME_ALTERED) > $$(@)")
+				     cat $(GENOME_ALTERED) > $(@)")
 							 
 genome_stats/lst_score.tsv : $(LST_SCORE)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
-				     cat $(LST_SCORE) > $$(@)")
+				     cat $(LST_SCORE) > $(@)")
 				     
 genome_stats/ntai_score.tsv : $(NTAI_SCORE)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
-				     cat $(NTAI_SCORE) > $$(@)")
+				     cat $(NTAI_SCORE) > $(@)")
 
 genome_stats/myriad_score.tsv : $(MYRIAD_SCORE)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
-				     cat $(MYRIAD_SCORE) > $$(@)")
+				     cat $(MYRIAD_SCORE) > $(@)")
 
 #summary/tsv/genome_summary.tsv : genome_stats/genome_altered.tsv genome_stats/lst_score.tsv genome_stats/ntai_score.tsv genome_stats/myriad_score.tsv
 #	$(call RUN,-n 1 -s 6G -m 8G,"set -o pipefail && \
