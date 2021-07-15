@@ -14,10 +14,10 @@ genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).fga) \
 #		 summary/tsv/genome_summary.tsv \
 #		 summary/genome_summary.xlsx
 
-GENOME_ALTERED ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
-LST_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst))
-NTAI_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai))
-MYRIAD_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs))
+GENOME_ALTERED = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
+LST_SCORE = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst))
+NTAI_SCORE = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai))
+MYRIAD_SCORE = $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs))
 		 
 define fraction-genome-altered
 genome_stats/$1_$2.fga : facets/cncf/$1_$2.Rdata
