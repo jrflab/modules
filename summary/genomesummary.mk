@@ -17,7 +17,7 @@ genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).fga) \
 GENOME_ALTERED ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga))
 LST_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst))
 NTAI_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai))
-MYRIAD_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs)
+MYRIAD_SCORE ?= $(wildcard $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs))
 		 
 define fraction-genome-altered
 genome_stats/$1_$2.fga : facets/cncf/$1_$2.Rdata
@@ -47,26 +47,26 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call myriad-score,$(tumor.$(pair)),$(normal.$(pair)))))
 
-#genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
-#	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
-#				     mkdir -p genome_stats && \
-#				     cat $$(GENOME_ALTERED) > $$(@)")
-#							 
-#genome_stats/lst_score.tsv : $(LST_SCORE)
-#	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
-#				     mkdir -p genome_stats && \
-#				     cat $(LST_SCORE) > $$(@)")
-#				     
-#genome_stats/ntai_score.tsv : $(NTAI_SCORE)
-#	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
-#				     mkdir -p genome_stats && \
-#				     cat $(NTAI_SCORE) > $$(@)")
-#
-#genome_stats/myriad_score.tsv : $(MYRIAD_SCORE)
-#	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
-#				     mkdir -p genome_stats && \
-#				     cat $(MYRIAD_SCORE) > $$(@)")
-#
+genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
+	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
+				     mkdir -p genome_stats && \
+				     cat $(GENOME_ALTERED) > $$(@)")
+							 
+genome_stats/lst_score.tsv : $(LST_SCORE)
+	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
+				     mkdir -p genome_stats && \
+				     cat $(LST_SCORE) > $$(@)")
+				     
+genome_stats/ntai_score.tsv : $(NTAI_SCORE)
+	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
+				     mkdir -p genome_stats && \
+				     cat $(NTAI_SCORE) > $$(@)")
+
+genome_stats/myriad_score.tsv : $(MYRIAD_SCORE)
+	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
+				     mkdir -p genome_stats && \
+				     cat $(MYRIAD_SCORE) > $$(@)")
+
 #summary/tsv/genome_summary.tsv : genome_stats/genome_altered.tsv genome_stats/lst_score.tsv genome_stats/ntai_score.tsv genome_stats/myriad_score.tsv
 #	$(call RUN,-n 1 -s 6G -m 8G,"set -o pipefail && \
 #				     mkdir -p genome_stats && \
