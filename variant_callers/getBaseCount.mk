@@ -8,15 +8,15 @@ GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 MAPQ := 10
 BAQ := 15
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC87/$(sample).tsv)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC128/$(sample).tsv)
 
 define get-basecount
-gbc/EEC87/$1.txt : bam/EEC87/$1.bam
+gbc/EEC128/$1.txt : bam/EEC128/$1.bam
 	$$(call RUN,-n 6 -s 3G -m 6G -v $(GBC_ENV),"set -o pipefail && \
-				      		    mkdir -p gbc/EEC87 && \
+				      		    mkdir -p gbc/EEC128 && \
 						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
 						    --bam $$(<) \
-						    --vcf etc/vcf/EEC87.vcf \
+						    --vcf etc/vcf/EEC128.vcf \
 						    --output $$(@) \
 						    --maq $(MAPQ) \
 						    --baq $(BAQ) \
@@ -25,10 +25,10 @@ gbc/EEC87/$1.txt : bam/EEC87/$1.bam
 						    --filter_qc_failed 1 \
 						    --thread 6")
 						    
-gbc/EEC87/$1.tsv : gbc/EEC87/$1.txt
-	$$(call RUN,-n 1 -s 6G -m 8G,"set -o pipefail && \
-				      $(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<) && \
-				      rm $$(<)")
+gbc/EEC128/$1.tsv : gbc/EEC128/$1.txt
+	$$(call RUN,-n 1 -s 12G -m 18G,"set -o pipefail && \
+					$(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<) && \
+					rm $$(<)")
 
 
 endef
