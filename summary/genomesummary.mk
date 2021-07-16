@@ -77,4 +77,4 @@ summary/genome_summary.xlsx : summary/tsv/genome_summary.tsv
 
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY: genome_sumary
+.PHONY: genome_summary
