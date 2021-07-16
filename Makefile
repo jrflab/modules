@@ -556,11 +556,6 @@ TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
 	
-TARGETS += fetch_impact
-fetch_impact :
-	$(call RUN_MAKE,modules/test/workflows/fetchimpact.mk)
-
-
 #==================================================
 # phylogeny
 #==================================================
