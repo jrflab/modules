@@ -556,18 +556,6 @@ TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
 	
-#==================================================
-# phylogeny
-#==================================================
-
-TARGETS += medicc
-medicc :
-	$(call RUN_MAKE,modules/test/workflows/medicc.mk)
-	
-TARGETS += pratchet
-pratchet :
-	$(call RUN_MAKE,modules/test/workflows/pratchet.mk)
-
 
 #==================================================
 # reports
