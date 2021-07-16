@@ -189,10 +189,6 @@ TARGETS += sufam
 sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamsampleset.mk)
 	
-TARGETS += sufam_summary
-sufam_summary:
-	$(call RUN_MAKE,modules/variant_callers/sufammultisample.mk)
-	
 TARGETS += get_basecount
 get_basecount:
 	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
@@ -290,39 +286,6 @@ TARGETS += cnvkit_qc
 cnvkit_qc :
 	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
 	
-TARGETS += qdna_seq
-qdna_seq :
-	$(call RUN_MAKE,modules/test/workflows/qdnaseq.mk)
-	
-TARGETS += qdnaseq_extract_test
-qdnaseq_extract_test:
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqextract.mk)
-	
-TARGETS += qdnaseq_copynumber_test
-qdnaseq_copynumber_test:
-	$(call RUN_MAKE,modules/test/copy_number/qdnaseqcopynumber.mk)
-	
-TARGETS += copynumber_summary
-copynumber_summary:
-	$(call RUN_MAKE,modules/test/workflows/copynumber_summary.mk)
-	
-TARGETS += genome_altered
-genome_altered :
-	$(call RUN_MAKE,modules/copy_number/genomealtered.mk)
-	
-TARGETS += lst_score
-lst_score :
-	$(call RUN_MAKE,modules/copy_number/lstscore.mk)
-	
-TARGETS += ntai_score
-ntai_score :
-	$(call RUN_MAKE,modules/copy_number/ntaiscore.mk)
-	
-TARGETS += myriad_score
-myriad_score :
-	$(call RUN_MAKE,modules/copy_number/myriadhrdscore.mk)
-
-
 #==================================================
 # structural variant callers
 #==================================================
@@ -589,23 +552,6 @@ TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
 	
-TARGETS += fetch_impact
-fetch_impact :
-	$(call RUN_MAKE,modules/test/workflows/fetchimpact.mk)
-
-
-#==================================================
-# phylogeny
-#==================================================
-
-TARGETS += medicc
-medicc :
-	$(call RUN_MAKE,modules/test/workflows/medicc.mk)
-	
-TARGETS += pratchet
-pratchet :
-	$(call RUN_MAKE,modules/test/workflows/pratchet.mk)
-
 
 #==================================================
 # reports
