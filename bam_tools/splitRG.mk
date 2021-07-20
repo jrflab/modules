@@ -12,7 +12,7 @@ bam/EEC131/$1.bam : etc/bam/EEC131.bam
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
 
 bam/EEC131/$1.bam.bai : bam/EEC131/$1.bam
-	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
+	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(SAMTOOLS) index $$(<)")
 
 endef
