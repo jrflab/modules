@@ -12,7 +12,7 @@ getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC132/$(sample).tsv)
 define get-basecount
 gbc/EEC132/$1.txt : bam/EEC132/$1.bam
 	$$(call RUN,-n 6 -s 3G -m 6G -v $(GBC_ENV),"set -o pipefail && \
-				      		    mkdir -p gbc/EEC87 && \
+				      		    mkdir -p gbc/EEC132 && \
 						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
 						    --bam $$(<) \
 						    --vcf etc/vcf/EEC132.vcf \
