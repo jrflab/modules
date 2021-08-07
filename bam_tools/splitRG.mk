@@ -6,7 +6,7 @@ split : $(foreach sample,$(SAMPLES),bam/HEC6-ISHI/$(sample).bam) \
 	$(foreach sample,$(SAMPLES),bam/HEC6-ISHI/$(sample).bam.bai)
 
 define split-rg
-bam/HEC6-ISHI/$1.bam : etc/bam/HEC6-ISHI-1.bam
+bam/HEC6-ISHI/$1.bam : etc/bam/HEC6-ISHI-2.bam
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
 				      mkdir -p bam/HEC6-ISHI && \
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
