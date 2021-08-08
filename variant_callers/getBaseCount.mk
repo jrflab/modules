@@ -7,7 +7,7 @@ GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 MAPQ := 10
 BAQ := 15
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC131/$(sample).tsv)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/HEC6/$(sample).tsv)
 
 define get-basecount
 gbc/HEC6/$1.txt : bam/HEC6/$1.bam
