@@ -2,16 +2,16 @@ include modules/Makefile.inc
 
 LOGDIR = log/split_rg.$(NOW)
 
-split : $(foreach sample,$(SAMPLES),bam/EEC91/$(sample).bam) \
-	$(foreach sample,$(SAMPLES),bam/EEC91/$(sample).bam.bai)
+split : $(foreach sample,$(SAMPLES),bam/MFE296/$(sample).bam) \
+	$(foreach sample,$(SAMPLES),bam/MFE296/$(sample).bam.bai)
 
 define split-rg
-bam/EEC91/$1.bam : etc/bam/EEC91-1.bam
+bam/MFE296/$1.bam : etc/bam/MFE296-2.bam
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
-				      mkdir -p bam/EEC91 && \
+				      mkdir -p bam/MFE296 && \
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
 
-bam/EEC91/$1.bam.bai : bam/EEC91/$1.bam
+bam/MFE296/$1.bam.bai : bam/MFE296/$1.bam
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(SAMTOOLS) index $$(<)")
 
