@@ -7,15 +7,15 @@ GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
 MAPQ := 10
 BAQ := 15
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/ISHI-HEC6/$(sample).tsv)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC91/$(sample).tsv)
 
 define get-basecount
-gbc/ISHI-HEC6/$1.txt : bam/ISHI-HEC6/$1.bam
+gbc/EEC91/$1.txt : bam/EEC91/$1.bam
 	$$(call RUN,-n 6 -s 3G -m 6G -v $(GBC_ENV),"set -o pipefail && \
-				      		    mkdir -p gbc/ISHI-HEC6 && \
+				      		    mkdir -p gbc/EEC91 && \
 						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
 						    --bam $$(<) \
-						    --vcf etc/vcf/ISHI-HEC6.vcf \
+						    --vcf etc/vcf/EEC91.vcf \
 						    --output $$(@) \
 						    --maq $(MAPQ) \
 						    --baq $(BAQ) \
@@ -24,7 +24,7 @@ gbc/ISHI-HEC6/$1.txt : bam/ISHI-HEC6/$1.bam
 						    --filter_qc_failed 1 \
 						    --thread 6")
 						    
-gbc/ISHI-HEC6/$1.tsv : gbc/ISHI-HEC6/$1.txt
+gbc/EEC91/$1.tsv : gbc/EEC91/$1.txt
 	$$(call RUN,-n 1 -s 12G -m 18G,"set -o pipefail && \
 					$(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<) && \
 					rm $$(<)")
