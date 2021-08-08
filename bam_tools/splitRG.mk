@@ -6,7 +6,7 @@ split : $(foreach sample,$(SAMPLES),bam/MFE296/$(sample).bam) \
 	$(foreach sample,$(SAMPLES),bam/MFE296/$(sample).bam.bai)
 
 define split-rg
-bam/MFE296/$1.bam : etc/bam/MFE296-1.bam
+bam/MFE296/$1.bam : etc/bam/MFE296-2.bam
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
 				      mkdir -p bam/MFE296 && \
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
