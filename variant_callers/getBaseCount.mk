@@ -10,12 +10,12 @@ BAQ := 15
 getbasecount : $(foreach sample,$(SAMPLES),gbc/EEC131/$(sample).tsv)
 
 define get-basecount
-gbc/EEC131/$1.txt : bam/EEC131/$1.bam
+gbc/HEC6/$1.txt : bam/HEC6/$1.bam
 	$$(call RUN,-n 6 -s 3G -m 6G -v $(GBC_ENV),"set -o pipefail && \
-				      		    mkdir -p gbc/EEC131 && \
+				      		    mkdir -p gbc/HEC6 && \
 						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
 						    --bam $$(<) \
-						    --vcf etc/vcf/EEC131.vcf \
+						    --vcf etc/vcf/HEC6.vcf \
 						    --output $$(@) \
 						    --maq $(MAPQ) \
 						    --baq $(BAQ) \
@@ -24,7 +24,7 @@ gbc/EEC131/$1.txt : bam/EEC131/$1.bam
 						    --filter_qc_failed 1 \
 						    --thread 6")
 						    
-gbc/EEC131/$1.tsv : gbc/EEC131/$1.txt
+gbc/HEC6/$1.tsv : gbc/HEC6/$1.txt
 	$$(call RUN,-n 1 -s 12G -m 18G,"set -o pipefail && \
 					$(RSCRIPT) modules/variant_callers/getBaseCount.R --file_name $$(<) && \
 					rm $$(<)")
