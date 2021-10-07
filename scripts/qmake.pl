@@ -14,7 +14,8 @@ my %slack_map = (
     dacruzpa => "U6PAUB3C6",
     brownd7 => "W013UH0HWUF",
     parejaf => "UBF6MRSV8",
-    zhuy1 => "W013UH382P9"
+    zhuy1 => "W013UH382P9",
+    peix => "W0147TPN3E1"
 );
 
 sub HELP_MESSAGE {
