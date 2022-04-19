@@ -124,7 +124,7 @@ if (opt$type=="log2") {
 
 } else if (opt$type=="aspcf") {
 
-	gamma = ifelse(is.na(as.numeric(opt$gamma)), 70, as.numeric(opt$gamma))
+	gamma = ifelse(is.na(as.numeric(opt$gamma)), 20, as.numeric(opt$gamma))
 	
 	CN_and_BAF = out2$jointseg[,c("chrom", "maploc", "cnlr", "vafT"),drop=FALSE]
 	index = out2$jointseg[,"het"]==1

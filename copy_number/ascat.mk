@@ -49,7 +49,12 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 define ascat-aspcf
 ascat/mad/$1_$2.RData : facets/cncf/$1_$2.Rdata
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type aspcf --file_in $$< --file_out ascat/mad/$1_$2.RData --gamma '$${aspcf_gamma.$1}'")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"set -o pipefail && \
+						    $(RSCRIPT) modules/copy_number/ascat.R \
+						    --type aspcf \
+						    --file_in $$(<) \
+						    --file_out ascat/mad/$1_$2.RData \
+						    --gamma '$${aspcf_gamma.$1}'")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
