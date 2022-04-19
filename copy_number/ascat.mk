@@ -3,10 +3,10 @@ include modules/Makefile.inc
 LOGDIR ?= log/ascat.$(NOW)
 
 ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/baf_all/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/baf_het/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf)
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2_baf/$(pair).pdf)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp)
@@ -24,24 +24,24 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-plot-log2,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define ascat-plot-bafall
-ascat/bafall/$1_$2.pdf : facets/cncf/$1_$2.Rdata
+ascat/baf_all/$1_$2.pdf : facets/cncf/$1_$2.Rdata
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"set -o pipefail && \
 						    $(RSCRIPT) modules/copy_number/ascat.R \
 						    --type bafall \
 						    --file_in $$(<) \
-						    --file_out ascat/bafall/$1_$2.pdf")
+						    --file_out ascat/baf_all/$1_$2.pdf")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-plot-bafall,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define ascat-plot-bafhet
-ascat/bafhet/$1_$2.pdf : facets/cncf/$1_$2.Rdata
+ascat/baf_het/$1_$2.pdf : facets/cncf/$1_$2.Rdata
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"set -o pipefail && \
 						    $(RSCRIPT) modules/copy_number/ascat.R \
 						    --type bafhet \
 						    --file_in $$(<) \
-						    --file_out ascat/bafhet/$1_$2.pdf")
+						    --file_out ascat/baf_het/$1_$2.pdf")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -61,12 +61,12 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-aspcf,$(tumor.$(pair)),$(normal.$(pair)))))
 
 define ascat-plot-aspcf
-ascat/log2nbaf/$1_$2.pdf : ascat/mad/$1_$2.RData
+ascat/log2_baf/$1_$2.pdf : ascat/mad/$1_$2.RData
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"set -o pipefail && \
 						    $(RSCRIPT) modules/copy_number/ascat.R \
 						    --type plot-aspcf \
 						    --file_in $$(<) \
-						    --file_out ascat/log2nbaf/$1_$2.pdf \
+						    --file_out ascat/log2_baf/$1_$2.pdf \
 						    --nlog2 '$${aspcf_nlog2.$1}' \
 						    --nbaf '$${aspcf_nbaf.$1}'")
 	

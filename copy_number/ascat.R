@@ -143,6 +143,7 @@ if (opt$type=="log2") {
 	for (i in 1:23) {
 		tmp[tmp$chrom == i,"end.pos"] = (TMP$Position[TMP$Chromosome == i])[tmp$end.pos[tmp$chrom == i]]
 	}
+	CN_and_BAF = TMP
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
