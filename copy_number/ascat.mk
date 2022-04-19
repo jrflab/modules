@@ -3,8 +3,8 @@ include modules/Makefile.inc
 LOGDIR ?= log/ascat.$(NOW)
 
 ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
@@ -37,7 +37,11 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define ascat-plot-bafhet
 ascat/bafhet/$1_$2.pdf : facets/cncf/$1_$2.Rdata
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"$(RSCRIPT) modules/copy_number/ascat.R --type bafhet --file_in $$< --file_out ascat/bafhet/$1_$2.pdf")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 1G -m 2G,"set -o pipefail && \
+						    $(RSCRIPT) modules/copy_number/ascat.R \
+						    --type bafhet \
+						    --file_in $$(<) \
+						    --file_out ascat/bafhet/$1_$2.pdf")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
