@@ -329,30 +329,30 @@ if (opt$type=="log2") {
 	gender = "2323"
 	sexchromosomes = c(23, 24)
 	tmp2 = list(Tumor_LogR=Tumor_LogR,
-		 	    Tumor_BAF=Tumor_BAF,
-			    Tumor_LogR_segmented=Tumor_LogR_segmented,
-			    Tumor_BAF_segmented=Tumor_BAF_segmented,
-			    SNPpos=SNPpos,
-			    chromosomes=ch,
-			    chrnames=chrs,
-			    gender=gender,
-			    sexchromosomes=sexchromosomes)
+		    Tumor_BAF=Tumor_BAF,
+		    Tumor_LogR_segmented=Tumor_LogR_segmented,
+		    Tumor_BAF_segmented=Tumor_BAF_segmented,
+		    SNPpos=SNPpos,
+		    chromosomes=ch,
+		    chrnames=chrs,
+		    gender=gender,
+		    sexchromosomes=sexchromosomes)
 	
-    tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
-        	                baf=tmp2$Tumor_BAF,
-        	                lrrsegmented=tmp2$Tumor_LogR_segmented,
-        	                bafsegmented=tmp2$Tumor_BAF_segmented,
-        	                gender=tmp2$gender,
-        	                SNPpos=tmp2$SNPpos,
-        	                chromosomes=tmp2$chromosomes,
-        	                chrnames=tmp2$chrnames,
-        	                sexchromosomes=tmp2$sexchromosomes,
-        	                failedqualitycheck=FALSE,
-        	                distance = opt$file_out,
-        	                copynumberprofile = NULL,
-        	                nonroundedprofile = NULL, 
-        	                aberrationreliability = NULL,
-        	                gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
+    	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
+			    baf=tmp2$Tumor_BAF,
+			    lrrsegmented=tmp2$Tumor_LogR_segmented,
+			    bafsegmented=tmp2$Tumor_BAF_segmented,
+			    gender=tmp2$gender,
+			    SNPpos=tmp2$SNPpos,
+			    chromosomes=tmp2$chromosomes,
+			    chrnames=tmp2$chrnames,
+			    sexchromosomes=tmp2$sexchromosomes,
+			    failedqualitycheck=FALSE,
+			    distance = opt$file_out,
+			    copynumberprofile = NULL,
+			    nonroundedprofile = NULL, 
+			    aberrationreliability = NULL,
+			    gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho

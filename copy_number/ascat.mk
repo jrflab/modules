@@ -6,8 +6,8 @@ ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/baf_all/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/baf_het/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2_baf/$(pair).pdf)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2_baf/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp)
 
@@ -76,7 +76,15 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 define ascat-run-ascat
 ascat/ascat/$1_$2.pdf : ascat/mad/$1_$2.RData
-	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"$(RSCRIPT) modules/copy_number/ascat.R --type run-ascat --file_in $$< --file_out ascat/ascat/$1_$2.pdf --rho '$${ascat_rho.$1}' --psi '$${ascat_psi.$1}' --nlog2 '$${aspcf_nlog2.$1}' --nbaf '$${aspcf_nbaf.$1}'")
+	$$(call RUN,-c -v $(ASCAT_ENV) -s 3G -m 6G,"set -o pipefail && \
+						    $(RSCRIPT) modules/copy_number/ascat.R \
+						    --type run-ascat \
+						    --file_in $$(<) \
+						    --file_out ascat/ascat/$1_$2.pdf \
+						    --rho '$${ascat_rho.$1}' \
+						    --psi '$${ascat_psi.$1}' \
+						    --nlog2 '$${aspcf_nlog2.$1}' \
+						    --nbaf '$${aspcf_nbaf.$1}'")
 	
 ascat/total/$1_$2.pdf : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
 	$$(call RUN,-c -v $(ASCAT_ENV) -s 6G -m 12G,"$(RSCRIPT) modules/copy_number/ascat.R --type total-copy --file_in $$< --file_out ascat/total/$1_$2.pdf")	
