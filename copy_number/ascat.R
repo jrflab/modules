@@ -51,9 +51,9 @@ if (opt$type=="log2") {
 	abline(v=max(CN[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+    	rect(xleft=1-1e10, xright=max(CN[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/log2/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+    	box(lwd=1.5)
 	dev.off()
 
 } else if (opt$type=="bafall") {
@@ -85,7 +85,7 @@ if (opt$type=="log2") {
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     	rect(xleft=1-1e10, xright=max(BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/bafall/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+    	box(lwd=1.5)
 	dev.off()
 
 } else if (opt$type=="bafhet") {
@@ -132,7 +132,17 @@ if (opt$type=="log2") {
 	colnames(CN_and_BAF) = c("Chromosome", "Position", "Log2Ratio", "BAF")
 	index = CN_and_BAF[,"BAF"]>0.5
 	CN_and_BAF[index,"BAF"] = 1 - CN_and_BAF[index,"BAF"]
+	TMP = CN_and_BAF
+	for (i in 1:23) {
+		CN_and_BAF$Position[CN_and_BAF$Chromosome == i] = 1:sum(CN_and_BAF$Chromosome == i)
+	}
 	tmp = multipcf(data=winsorize(data=CN_and_BAF, method="mad", tau=2.5, k=25, verbose=FALSE), gamma=gamma, fast=FALSE, verbose=FALSE)
+	for (i in 1:23) {
+		tmp[tmp$chrom == i,"start.pos"] = (TMP$Position[TMP$Chromosome == i])[tmp$start.pos[tmp$chrom == i]]
+	}
+	for (i in 1:23) {
+		tmp[tmp$chrom == i,"end.pos"] = (TMP$Position[TMP$Chromosome == i])[tmp$end.pos[tmp$chrom == i]]
+	}
 	colnames(tmp) = c("Chromosome", "Arm", "Start", "End", "N", "Log2Ratio", "BAF")
 	save(CN_and_BAF, tmp, file=opt$file_out)
 
