@@ -10,13 +10,13 @@ if (!interactive()) {
 }
 
 args_list <- list(make_option("--type", default = NA, type = 'character', help = "type of analysis"),
-				  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
-				  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
-				  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
-				  make_option("--nlog2", default = NA, type = 'numeric', help = "number of clusters in Log2 ratio"),
-				  make_option("--nbaf", default = NA, type = 'numeric', help = "number of clusters in BAF"),
-				  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
-				  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
+		  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
+		  make_option("--file_out", default = NA, type = 'character', help = "output file name"),
+		  make_option("--gamma", default = NA, type = 'numeric', help = "gamma parameter in pcf"),
+		  make_option("--nlog2", default = NA, type = 'numeric', help = "number of clusters in Log2 ratio"),
+		  make_option("--nbaf", default = NA, type = 'numeric', help = "number of clusters in BAF"),
+		  make_option("--rho", default = NA, type = 'numeric', help = "purity for ASCAT"),
+		  make_option("--psi", default = NA, type = 'numeric', help = "ploidy for ASCAT"))
 				  
 parser <- OptionParser(usage = "%prog", option_list = args_list)
 arguments <- parse_args(parser, positional_arguments = T)

@@ -1,9 +1,15 @@
 include modules/Makefile.inc
 
 LOGDIR ?= log/ascat.$(NOW)
-PHONY += ascat ascat/log2 ascat/bafall ascat/bafhet ascat/mad ascat/log2nbaf ascat/ascat ascat/total ascat/bychr
 
-ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf ascat/bafall/$(pair).pdf ascat/bafhet/$(pair).pdf ascat/mad/$(pair).RData ascat/log2nbaf/$(pair).pdf ascat/ascat/$(pair).pdf ascat/total/$(pair).pdf ascat/bychr/$(pair)/timestamp)
+ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf)
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
+#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp)
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.Rdata
@@ -67,7 +73,9 @@ endef
 
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-plot-chr,$(tumor.$(pair)),$(normal.$(pair)))))
-		
-.DELETE_ON_ERROR:
+
+..DUMMY := $(shell mkdir -p version; \
+	     R --version > version/ascat.txt;)
 .SECONDARY:
-.PHONY: $(PHONY)
+.DELETE_ON_ERROR:
+.PHONY: ascat
