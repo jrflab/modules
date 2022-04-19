@@ -4,8 +4,8 @@ LOGDIR ?= log/ascat.$(NOW)
 
 ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafall/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bafhet/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData)
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2nbaf/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
 #	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
