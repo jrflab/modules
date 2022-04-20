@@ -84,7 +84,7 @@ if (opt$type=="log2") {
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     	rect(xleft=1-1e10, xright=max(BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/bafall/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/baf_all/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     	box(lwd=1.5)
 	dev.off()
 
@@ -118,7 +118,7 @@ if (opt$type=="log2") {
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
     	rect(xleft=1-1e10, xright=max(BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/bafhet/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
+	title(main = gsub(".pdf", "", gsub("ascat/baf_het/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
     	box(lwd=1.5)
 	dev.off()
 
@@ -229,9 +229,9 @@ if (opt$type=="log2") {
 	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=rep(" ", 23), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+    	rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+	title(main = gsub(".pdf", "", gsub("ascat/log2_baf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
+    	box(lwd=1.5)
 
 	screen(zz[2])
 	plot(CN_and_BAF[,"Position"], CN_and_BAF[,"BAF"], type="p", pch=".", cex=1, col=col, axes=FALSE, frame=TRUE, xlab="", ylab="", main="", ylim=c(0,1.125))
@@ -249,10 +249,10 @@ if (opt$type=="log2") {
 	abline(v=max(CN_and_BAF[,"Position"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0.5, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
-	title(main = gsub(".pdf", "", gsub("ascat/log2nbaf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
-    box(lwd=1.5)
-    close.screen(all.screens=TRUE)
+    	rect(xleft=1-1e10, xright=max(CN_and_BAF[,"Position"])+1e10, ybottom=1, ytop=1.25, col="lightgrey", border="black", lwd=1.5)
+	title(main = gsub(".pdf", "", gsub("ascat/log2_baf/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1.35, cex.main=.75, font.main=1)
+    	box(lwd=1.5)
+    	close.screen(all.screens=TRUE)
 	dev.off()
 	
 } else if (opt$type=="run-ascat") {
@@ -328,31 +328,35 @@ if (opt$type=="log2") {
 	chrs = 1:23
 	gender = "2323"
 	sexchromosomes = c(23, 24)
-	tmp2 = list(Tumor_LogR=Tumor_LogR,
-		    Tumor_BAF=Tumor_BAF,
-		    Tumor_LogR_segmented=Tumor_LogR_segmented,
-		    Tumor_BAF_segmented=Tumor_BAF_segmented,
-		    SNPpos=SNPpos,
-		    chromosomes=ch,
-		    chrnames=chrs,
-		    gender=gender,
-		    sexchromosomes=sexchromosomes)
+	tmp2 = list(Tumor_LogR = Tumor_LogR,
+		    Tumor_BAF = Tumor_BAF,
+		    Tumor_LogR_segmented = Tumor_LogR_segmented,
+		    Tumor_BAF_segmented = Tumor_BAF_segmented,
+		    SNPpos = SNPpos,
+		    chromosomes = ch,
+		    chrnames = chrs,
+		    gender = gender,
+		    sexchromosomes = sexchromosomes)
 	
-    	tmp3 = try(runASCAT(lrr=tmp2$Tumor_LogR,
-			    baf=tmp2$Tumor_BAF,
-			    lrrsegmented=tmp2$Tumor_LogR_segmented,
-			    bafsegmented=tmp2$Tumor_BAF_segmented,
-			    gender=tmp2$gender,
-			    SNPpos=tmp2$SNPpos,
-			    chromosomes=tmp2$chromosomes,
-			    chrnames=tmp2$chrnames,
-			    sexchromosomes=tmp2$sexchromosomes,
-			    failedqualitycheck=FALSE,
+    	tmp3 = try(runASCAT(lrr = tmp2$Tumor_LogR,
+			    baf = tmp2$Tumor_BAF,
+			    lrrsegmented = tmp2$Tumor_LogR_segmented,
+			    bafsegmented = tmp2$Tumor_BAF_segmented,
+			    gender = tmp2$gender,
+			    SNPpos = tmp2$SNPpos,
+			    chromosomes = tmp2$chromosomes,
+			    chrnames = tmp2$chrnames,
+			    sexchromosomes = tmp2$sexchromosomes,
+			    failedqualitycheck = FALSE,
 			    distance = opt$file_out,
 			    copynumberprofile = NULL,
 			    nonroundedprofile = NULL, 
 			    aberrationreliability = NULL,
-			    gamma = 1, rho_manual = rho, psi_manual = psi, y_limit = 3, circos = NA))
+			    gamma = 1,
+			    rho_manual = rho,
+			    psi_manual = psi,
+			    y_limit = 3,
+			    circos = NA))
                         
     if (!("try-error" %in% is(tmp3))) {
         purity = tmp3$rho
