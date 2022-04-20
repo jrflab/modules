@@ -423,10 +423,10 @@ if (opt$type=="log2") {
 	abline(v=max(CN[,"pos"]), col="goldenrod3", lty=3, lwd=1)
 	abline(h=0, col="red")
 	axis(1, at = .5*(start+end), labels=c(1:22, "X"), cex.axis = 0.85, las = 1)
-    load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
-    rect(xleft=1-1e10, xright=max(CN[,"pos"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
+    	load(gsub(".pdf", ".RData", gsub("total", "ascat", opt$file_out)))
+    	rect(xleft=1-1e10, xright=max(CN[,"pos"])+1e10, ybottom=4, ytop=6, col="lightgrey", border="black", lwd=1.5)
 	title(main = gsub(".pdf", "", gsub("ascat/total/", "", opt$file_out, fixed=TRUE), fixed=TRUE), line=-1, cex.main=.75, font.main=1)
-    box(lwd=1.5)
+    	box(lwd=1.5)
 	dev.off()
 	
 } else if (opt$type=="plot-chr") {
