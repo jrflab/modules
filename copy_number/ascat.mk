@@ -8,8 +8,8 @@ ascat : $(foreach pair,$(SAMPLE_PAIRS),ascat/log2/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/mad/$(pair).RData) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/log2_baf/$(pair).pdf) \
 	$(foreach pair,$(SAMPLE_PAIRS),ascat/ascat/$(pair).pdf) \
-	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf)
-#	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp)
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/total/$(pair).pdf) \
+	$(foreach pair,$(SAMPLE_PAIRS),ascat/bychr/$(pair)/timestamp)
 
 define ascat-plot-log2
 ascat/log2/$1_$2.pdf : facets/cncf/$1_$2.Rdata
@@ -99,12 +99,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 define ascat-plot-chr
 ascat/bychr/$1_$2/timestamp : facets/cncf/$1_$2.Rdata ascat/ascat/$1_$2.pdf
-	$$(call RUN, -v $(ASCAT_ENV) -s 6G -m 12G,"mkdir -p ascat/bychr/ && \
-											   mkdir -p ascat/bychr/$1_$2 && \
-											   $(RSCRIPT) modules/copy_number/ascat.R --type plot-chr --file_in $$< --file_out ascat/bychr/$1_$2")
+	$$(call RUN, -v $(ASCAT_ENV) -s 6G -m 12G,"set -o pipefail && \
+						   $(RSCRIPT) modules/copy_number/ascat.R \
+						   --type plot-chr \
+						   --file_in $$(<) \
+						   --file_out ascat/bychr/$1_$2")
 		
 endef
-
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ascat-plot-chr,$(tumor.$(pair)),$(normal.$(pair)))))
 
