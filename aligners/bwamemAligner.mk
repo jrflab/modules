@@ -56,7 +56,7 @@ metrics/$1.dedup_metrics.txt : bam/$1.bam
 								 MAX_RECORDS_IN_RAM=4000000 \
 								 TMP_DIR=$(TMPDIR) \
 								 INPUT=$$(<) \
-								 OUTPUT=/dev/null
+								 OUTPUT=/dev/null \
 								 METRICS=$$(@)")
 
 endef
