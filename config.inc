@@ -14,18 +14,17 @@ R ?= R
 MY_RSCRIPT ?= Rscript
 RSCRIPT ?= Rscript
 
-## General python 2.7 environment
-ANACONDA_27_ENV ?= $(HOME)/share/usr/anaconda-envs/anaconda-2.7
-
-## SUFAM python environment
-SUFAM_ENV ?= $(HOME)/share/usr/anaconda-envs/sufam-dev
-
+ANACONDA_27_ENV = $(HOME)/share/usr/anaconda-envs/anaconda-2.7
+SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 MUTSIG_REPORT_ENV = $(HOME)/share/usr/anaconda-envs/mutsig-report-0.0.1
+JRFLAB_MODULES_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
+ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
+VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
+ASCAT_ENV = $(HOME)/share/usr/anaconda-envs/ascat
+MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
+INNOVATION_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
 
 JARDIR ?= $(HOME)/share/usr/lib/java
-
-## jrflab modules environment
-JRFLAB_MODULES_ENV ?= $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
 
 ## Applications
 UNZIP ?= /usr/bin/unzip
@@ -125,9 +124,6 @@ TVC ?= $(HOME)/share/usr/bin/tvc
 
 ANNOVAR = $(PERL) $(HOME)/share/usr/annovar-2017-07-16/table_annovar.pl
 
-ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
-
-VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
 VEP_PATH = $(VEP_ENV)/bin
 
 SPLIT_BED = python modules/scripts/split_bed.py
@@ -137,35 +133,8 @@ SNP_FILTER_VCF = python modules/vcf_tools/snp_filter_vcf.py
 
 MERGE_VCF = python modules/vcf_tools/merge_vcf.py
 
-ASCAT_ENV = $(HOME)/share/usr/anaconda-envs/ascat
-
-MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 MEDICC_VAR = $(MEDICC_ENV)/PROFILE
 MEDICC_BIN = $(MEDICC_ENV)/opt/medicc
-
-PHYLO_ENV = $(HOME)/share/usr/anaconda-envs/phylotools
-
-CNTILP_ENV = $(HOME)/share/usr/anaconda-envs/cnt-ilp
-CNTILP_CONF = $(CNTILP_ENV)/PROFILE
-CNTILP_BIN = $(CNTILP_ENV)/opt/CNT-ILP/build
-
-CNTMD_ENV = $(HOME)/share/usr/anaconda-envs/cnt-md
-CNTMD_CONF = $(CNTMD_ENV)/PROFILE
-CNTMD_BIN = $(CNTMD_ENV)/opt/CNT-MD/build
-
-MACHINA_ENV = $(HOME)/share/usr/anaconda-envs/machina
-MACHINA_VAR = $(MACHINA_ENV)/PROFILE
-MACHINA_BIN = $(MACHINA_ENV)/opt/machina/build
-
-HATCHET_ENV = $(HOME)/share/usr/anaconda-envs/hatchet
-HATCHET_VAR = $(HATCHET_ENV)/PROFILE
-HATCHET_BIN = $(HATCHET_ENV)/opt/machina/build
-
-DECONSTRUCTSIGS_ENV = $(HOME)/share/usr/anaconda-envs/deconstructsigs
-
-PHANGORN_ENV = $(HOME)/share/usr/anaconda-envs/phangorn
-
-FGBIO_ENV = $(HOME)/share/usr/anaconda-envs/fgbio-0.8.1
 
 endif
 CONFIG_INC = true

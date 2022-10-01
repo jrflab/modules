@@ -21,13 +21,8 @@ BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 8
 BWAMEM_MEM_PER_THREAD = $(if $(findstring true,$(PDX)),4G,2G)
 
-..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
-.SECONDARY:
-.DELETE_ON_ERROR: 
-.PHONY: bwamem
-
-
-BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
+BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam) \
+	   $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
 
 bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
 
@@ -50,6 +45,29 @@ bwamem/bam/%.bwamem.bam : fastq/%.fastq.gz
 
 fastq/%.fastq.gz : fastq/%.fastq
 	$(call RUN,,"gzip -c $< > $(@) && $(RM) $<")
+	
+define dedup-metrics
+metrics/$1.dedup_metrics.txt : bam/$1.bam
+	$$(call RUN, -c -n 1 -s 16G -m 24G -v $(INNOVATION_ENV), "set -o pipefail && \
+								 picard \
+								 -Xmx16G \
+								 MarkDuplicates \
+								 VALIDATION_STRINGENCY=LENIENT \
+								 MAX_RECORDS_IN_RAM=4000000 \
+								 TMP_DIR=$(TMPDIR) \
+								 INPUT=$$(<) \
+								 OUTPUT=/dev/null
+								 METRICS=$$(@)")
+
+endef
+$(foreach sample,$(SAMPLES),\
+	$(eval $(call dedup-metrics,$(sample))))
+
+
+..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
+.SECONDARY:
+.DELETE_ON_ERROR: 
+.PHONY: bwamem
 
 include modules/bam_tools/processBam.mk
 include modules/fastq_tools/fastq.mk
