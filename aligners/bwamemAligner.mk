@@ -21,10 +21,10 @@ BWAMEM_REF_FASTA ?= $(REF_FASTA)
 BWAMEM_THREADS = 8
 BWAMEM_MEM_PER_THREAD = $(if $(findstring true,$(PDX)),4G,2G)
 
-BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam) \
-	   $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
+BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
-bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS))
+bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS)) \
+	 $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
 
 bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 	$(call RUN,,"ln -f $(<) $(@)")
