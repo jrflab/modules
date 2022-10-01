@@ -192,6 +192,10 @@ sufam:
 TARGETS += get_basecount
 get_basecount:
 	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
+	
+TARGETS += strelka_varscan_indels
+strelka_varscan_indels:
+	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
 
 #==================================================
@@ -213,10 +217,6 @@ norm_copynum :
 TARGETS += titan
 titan :
 	$(call RUN_MAKE,modules/copy_number/titan.mk)
-
-TARGETS += strelka_varscan_indels
-strelka_varscan_indels:
-	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
 TARGETS += varscan_cnv
 varscan_cnv :
@@ -256,36 +256,9 @@ snp6 :
 	
 TARGETS += cnv_kit
 cnv_kit :
-	$(call RUN_MAKE,modules/test/workflows/cnvkit.mk)
+	$(call RUN_MAKE,modules/copy_number/cnvkit.mk)
 
-TARGETS += cnvkit_coverage
-cnvkit_coverage :
-	$(call RUN_MAKE,modules/copy_number/cnvkitcoverage.mk)
-	
-TARGETS += cnvkit_reference
-cnvkit_reference :
-	$(call RUN_MAKE,modules/copy_number/cnvkitreference.mk)
-	
-TARGETS += cnvkit_fix
-cnvkit_fix :
-	$(call RUN_MAKE,modules/copy_number/cnvkitfix.mk)
 
-TARGETS += cnvkit_plot
-cnvkit_plot :
-	$(call RUN_MAKE,modules/copy_number/cnvkitplot.mk)
-	
-TARGETS += cnvkit_heatmap
-cnvkit_heatmap :
-	$(call RUN_MAKE,modules/copy_number/cnvkitheatmap.mk)
-	
-TARGETS += cnvkit_pca
-cnvkit_pca :
-	$(call RUN_MAKE,modules/copy_number/cnvkitprcomp.mk)
-	
-TARGETS += cnvkit_qc
-cnvkit_qc :
-	$(call RUN_MAKE,modules/copy_number/cnvkitqc.mk)
-	
 #==================================================
 # structural variant callers
 #==================================================
