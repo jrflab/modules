@@ -48,16 +48,16 @@ fastq/%.fastq.gz : fastq/%.fastq
 	
 define dedup-metrics
 metrics/$1.dedup_metrics.txt : bam/$1.bam
-	$$(call RUN, -c -n 1 -s 16G -m 24G -v $(INNOVATION_ENV), "set -o pipefail && \
-								 picard \
-								 -Xmx16G \
-								 MarkDuplicates \
-								 VALIDATION_STRINGENCY=LENIENT \
-								 MAX_RECORDS_IN_RAM=4000000 \
-								 TMP_DIR=$(TMPDIR) \
-								 INPUT=$$(<) \
-								 OUTPUT=/dev/null \
-								 METRICS_FILE=$$(@)")
+	$$(call RUN, -c -n 1 -s 16G -m 24G -v $(INNOVATION_ENV) -w 24:00:00, "set -o pipefail && \
+									      picard \
+									      -Xmx16G \
+									      MarkDuplicates \
+									      VALIDATION_STRINGENCY=LENIENT \
+									      MAX_RECORDS_IN_RAM=4000000 \
+									      TMP_DIR=$(TMPDIR) \
+									      INPUT=$$(<) \
+									      OUTPUT=/dev/null \
+									      METRICS_FILE=$$(@)")
 
 endef
 $(foreach sample,$(SAMPLES),\
