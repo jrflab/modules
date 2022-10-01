@@ -57,7 +57,7 @@ metrics/$1.dedup_metrics.txt : bam/$1.bam
 								 TMP_DIR=$(TMPDIR) \
 								 INPUT=$$(<) \
 								 OUTPUT=/dev/null \
-								 METRICS=$$(@)")
+								 METRICS_FILE=$$(@)")
 
 endef
 $(foreach sample,$(SAMPLES),\
