@@ -25,7 +25,8 @@ BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
 bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS)) \
 	 $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt) \
-	 metrics/dedup_metrics.txt
+	 metrics/dedup_metrics.txt \
+	 metrics/dedup_summary.txt \
 
 bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 	$(call RUN,,"ln -f $(<) $(@)")
@@ -68,6 +69,9 @@ metrics/dedup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
 							       $(RSCRIPT) $(SCRIPTS_DIR)/dedup_summary.R --option 1 --sample_names '$(SAMPLES)'")
 
+metrics/dedup_summary.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
+							       $(RSCRIPT) $(SCRIPTS_DIR)/dedup_summary.R --option 2 --sample_names '$(SAMPLES)'")
 
 
 ..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )

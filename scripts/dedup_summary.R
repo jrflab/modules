@@ -27,4 +27,21 @@ if (as.numeric(opt$option)==1) {
 	x = do.call(rbind, x)
 	write_tsv(x, path="metrics/dedup_metrics.txt", na = "NA", append = FALSE, col_names = TRUE)
 
+} else if (as.numeric(opt$option)==2) {
+	sample_names = unlist(strsplit(x=as.character(opt$sample_names), split=" ", fixed=TRUE))
+	x = list()
+	for (i in 1:length(sample_names)) {
+		x[[i]] = readr::read_tsv(file = paste0("metrics/", sample_names[i], ".dedup_metrics.txt"),
+					 skip = 10, col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			 readr::type_convert() %>%
+			 dplyr::select(family_size = BIN,
+				       coverage_multiple = CoverageMult,
+				       all_counts = all_sets,
+				       optical_counts = optical_sets,
+				       non_optical_counts = non_optical_sets) %>%
+			 dplyr::mutate(sample_name = sample_names[i])
+	}
+	x = do.call(rbind, x)
+	write_tsv(x, path="metrics/dedup_summary.txt", na = "NA", append = FALSE, col_names = TRUE)
+
 }
