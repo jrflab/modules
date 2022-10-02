@@ -24,7 +24,8 @@ BWAMEM_MEM_PER_THREAD = $(if $(findstring true,$(PDX)),4G,2G)
 BWA_BAMS = $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
 bwamem : $(BWA_BAMS) $(addsuffix .bai,$(BWA_BAMS)) \
-	 $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
+	 $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt) \
+	 metrics/dedup_metrics.txt
 
 bam/%.bam : bwamem/bam/%.bwamem.$(BAM_SUFFIX)
 	$(call RUN,,"ln -f $(<) $(@)")
@@ -62,6 +63,11 @@ metrics/$1.dedup_metrics.txt : bam/$1.bam
 endef
 $(foreach sample,$(SAMPLES),\
 	$(eval $(call dedup-metrics,$(sample))))
+	
+metrics/dedup_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).dedup_metrics.txt)
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
+							       $(RSCRIPT) $(SCRIPTS_DIR)/dedup_summary.R --option 1 --sample_names '$(SAMPLES)'")
+
 
 
 ..DUMMY := $(shell mkdir -p version; $(BWA) &> version/bwamem.txt; echo "options: $(BWA_ALN_OPTS)" >> version/bwamem.txt )
