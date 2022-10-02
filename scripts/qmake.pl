@@ -10,7 +10,7 @@ my $err_slack = "pipeline_error";
 my $fin_slack = "pipeline_finished";
 
 my %slack_map = (
-    brownd7 => "W01BT68MSSD",
+    brownd7 => "W013UH0HWUF",
     selenicp => "W0142HA5LNA",
     dacruzpa => "W01BT68MSSD",
     parejaf => "W01BLNUF7J8",
