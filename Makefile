@@ -574,6 +574,10 @@ cravat_annotation :
 TARGETS += cravat_annotate
 cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
+	
+TARGETS += ann_summary_vcf
+ann_summary_vcf: 
+	$(call RUN_MAKE,modules/vcf_tools/annotateSummaryVcf.mk)
 
 
 #==================================================
