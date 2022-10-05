@@ -27,5 +27,5 @@ if (as.numeric(opt$option)==1) {
 			     INFO = ".") %>%
 	       dplyr::select(`#CHROM`, POS, ID, REF, ALT, QUAL, FILTER, INFO)
 	cat("##fileformat=VCFv4.2\n", file = opt$output, append = FALSE) 
-	readr::write_tsv(smry, path = opt$output, na = "NA", append = FALSE, col_names = TRUE)
+	readr::write_tsv(smry, path = opt$output, na = "NA", append = TRUE, col_names = TRUE)
 }
