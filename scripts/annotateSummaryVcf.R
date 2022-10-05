@@ -48,6 +48,6 @@ if (as.numeric(opt$option)==1) {
 			    CCF = smry$ccf,
 			    LOH = smry$facetsLOHCall,
 			    HOTSPOT = smry$HOTSPOT)
-	readr::write_stv(x = maf, path = opt$output)
+	readr::write_tsv(x = maf, path = opt$output)
 	
 }
