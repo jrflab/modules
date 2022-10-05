@@ -10,7 +10,7 @@ VCF2MAF = vcf2maf.pl
 		   
 vcf2maf/mutation_summary.vcf : summary/tsv/mutation_summary.tsv
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/annotateSummaryVcf.R --option 1 --input $$(<) --output $$(@)")
+					  $(RSCRIPT) $(SCRIPTS_DIR)/annotateSummaryVcf.R --option 1 --input $(<) --output $(@)")
 							
 vcf2maf/mutation_summary.maf : vcf2maf/mutation_summary.vcf
 	$(call RUN, -c -n 12 -s 2G -m 3G -v $(VCF2MAF_ENV) -w 72:00:00,"set -o pipefail && \
