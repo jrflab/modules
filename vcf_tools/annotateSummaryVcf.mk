@@ -22,7 +22,7 @@ vcf2maf/mutation_summary.maf : vcf2maf/mutation_summary.vcf
 									--vep-data $(HOME)/share/reference/vep \
 									--vep-forks 12 \
 									--ref-fasta $(HOME)/share/reference/vep/v86/homo_sapiens/86_GRCh37/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa.gz \
-									--filter-vcf $(HOME)/share/reference/vep/v86/homo_sapiens/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz \
+									--filter-vcf $(HOME)/share/reference/vep/v86/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz \
 									--species homo_sapiens \
 									--ncbi-build GRCh37 \
 									--maf-center MSKCC && \
