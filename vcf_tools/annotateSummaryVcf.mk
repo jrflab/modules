@@ -4,7 +4,7 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/annotate_smry_maf.$(NOW)
 
 annotate_smry_maf : vcf2maf/mutation_summary.vcf \
-		    vcf2maf/mutation_summary.maf \
+		    vcf2maf/mutation_summary.maf
 		   
 VCF2MAF_ENV = $(HOME)/share/usr/env/vcf2maf-1.6.17
 VCF2MAF = vcf2maf.pl
