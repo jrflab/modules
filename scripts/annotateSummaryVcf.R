@@ -41,7 +41,7 @@ if (as.numeric(opt$option)==1) {
 			    Matched_Norm_Sample_UUID = smry$NORMAL_SAMPLE,
 			    t_depth = smry$TUMOR_DP,
 			    t_ref_count = round((1-smry$TUMOR_MAF) * smry$TUMOR_DP),
-			    t_alt_count = round(TUMOR_MAF*smry$TUMOR_DP),
+			    t_alt_count = round(smry$TUMOR_MAF*smry$TUMOR_DP),
 			    n_depth = smry$NORMAL_DP,
 			    n_ref_count = round((1-smry$NORMAL_MAF) * smry$NORMAL_DP),
 			    n_alt_count = round(smry$NORMAL_MAF*smry$NORMAL_DP),
