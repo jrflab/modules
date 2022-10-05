@@ -26,7 +26,7 @@ vcf2maf/mutation_summary.maf : vcf2maf/mutation_summary.vcf
 									--species homo_sapiens \
 									--ncbi-build GRCh37 \
 									--maf-center MSKCC && \
-									$(RM) $(TMPDIR)/$(*).vep.vcf")
+									$(RM) $(TMPDIR)/mutation_summary.vep.vcf")
 							
 vcf2maf/mutation_summary.txt : vcf2maf/mutation_summary.maf
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
