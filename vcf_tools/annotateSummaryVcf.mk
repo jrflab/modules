@@ -4,7 +4,8 @@ include modules/genome_inc/b37.inc
 LOGDIR ?= log/annotate_smry_maf.$(NOW)
 
 annotate_smry_maf : vcf2maf/mutation_summary.vcf \
-		    vcf2maf/mutation_summary.maf
+		    vcf2maf/mutation_summary.maf \
+		    vcf2maf/mutation_summary.txt
 		   
 vcf2maf/mutation_summary.vcf : summary/tsv/mutation_summary.tsv
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
@@ -28,9 +29,9 @@ vcf2maf/mutation_summary.maf : vcf2maf/mutation_summary.vcf
 									--maf-center MSKCC && \
 									$(RM) $(TMPDIR)/mutation_summary.vep.vcf")
 							
-vcf2maf/mutation_summary.txt : vcf2maf/mutation_summary.maf
+vcf2maf/mutation_summary.txt : summary/tsv/mutation_summary.tsv vcf2maf/mutation_summary.maf
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/annotateSummaryVcf.R --option 2 --input $$(<) --output $$(@)")
+					  $(RSCRIPT) $(SCRIPTS_DIR)/annotateSummaryVcf.R --option 2 --input $(<) --maf $(<<) --output $(@)")
 							  
 ..DUMMY := $(shell mkdir -p version; \
 	     source $(VCF2MAF_ENV)/bin/activate $(VCF2MAF_ENV) && $(VCF2MAF) --man >> version/annotate_smry_maf.txt)
