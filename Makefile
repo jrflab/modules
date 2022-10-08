@@ -282,6 +282,10 @@ manta :
 TARGETS += mantaTN
 mantaTN :
 	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
+	
+TARGETS += svabaTN
+svabaTN :
+	$(call RUN_MAKE,modules/sv_callers/svabaTN.mk)	
 
 TARGETS += brass
 brass :
