@@ -1,7 +1,0 @@
-host: cpu-6-2
-db: homo_sapiens_core_85_37
-port: 9992
-docker_repo: limr/ensembl-hs-core-85-37-db
-data_dir: /cbio/ski/reis-filho/home/limr/share/usr/ensembl-hs-core-85-37-db/
-user: embl
-password: embl

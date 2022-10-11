@@ -5,34 +5,25 @@ sudo: false
 install:
   - case "$TRAVIS_PYTHON_VERSION" in
     2*)
-      wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+      wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O $HOME/miniconda.sh;
       PYTHON="python"
       ;;
     3*)
-      wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+      wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh;
       PYTHON="python3"
       ;;
     esac
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
+  - bash $HOME/miniconda.sh -b -p $HOME/.miniconda
+  - export PATH="$HOME/.miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
   - conda config --add channels r
   - conda config --add channels bioconda 
-  - conda config --add channels auto
-  - conda config --add channels jrderuiter
-  - conda config --add channels biobuilds
-  - conda create -q -n jrflab --file conda_env/jrflab_modules_env.txt
-  - conda create -q -n r-env --file conda_env/R3.2.2.txt
-script:
-# TODO: copy number heatmap test not working:
-# source activate r-env
-# bash -x test/copy_number/test_copynumber_heatmap.sh
-  - source activate jrflab
-  - bash -x test/vcf_tools/test_common_filter.sh
-  - bash -x test/vcf_tools/test_hotspot.sh
-  - bash -x test/vcf_tools/test_pathogenicity.sh
-  - bash -x test/scripts/test_create_sample_yaml.sh
-  - bash -x test/scripts/test_configure.sh
+  - mkdir $HOME/share $HOME/share/usr $HOME/share/usr/env
+#  - export JRFLAB_ENV_VERSION=0.0.1
+#  - conda create -q -p $HOME/share/usr/env/jrf-lab-$INNOVATION_ENV_VERSION
+#  - git clone https://github.com/ndbrown6/innovation-lab.git
+#script:
+#  - source activate $HOME/share/usr/env/innovation-lab-$INNOVATION_ENV_VERSION

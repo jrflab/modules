@@ -1,7 +1,0 @@
-host: cpu-6-2
-db: CHASM
-port: 9991
-docker_repo: limr/chasm-db
-data_dir: /cbio/ski/reis-filho/home/limr/share/usr/chasm3-db
-user: chasm
-password: chasm

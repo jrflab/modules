@@ -1,7 +1,0 @@
-host: cpu-6-2
-db: fathmm
-port: 9990
-docker_repo: limr/fathmm-db
-data_dir: /cbio/ski/reis-filho/home/limr/share/usr/fathmm-db
-user: fathmm
-password: fathmm
