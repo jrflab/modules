@@ -41,7 +41,7 @@ bwa_wgs :
 #==================================================
 
 TARGETS += split_rg
-splite_rg :
+split_rg :
 	$(call RUN_MAKE,modules/bam_tools/split_rg.mk)
 
 #==================================================
