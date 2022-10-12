@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR = log/split_rg.$(NOW)
 
 splitrg : $(foreach sample,$(SAMPLES),split_rg/$(sample).bam) \
-	   $(foreach sample,$(SAMPLES),split_rg/$(sample).bam.bai)
+	  $(foreach sample,$(SAMPLES),split_rg/$(sample).bam.bai)
 
 define split-rg
 split_rg/$1.bam : bam/WBC-control-A.tube1.cells.bam
