@@ -6,7 +6,7 @@ split_rg : $(foreach sample,$(SAMPLES),split_rg/$(sample).bam) \
 	   $(foreach sample,$(SAMPLES),split_rg/$(sample).bam.bai)
 
 define split-rg
-split_rg/$1.bam : bam/
+split_rg/$1.bam : bam/WBC-control-A.tube1.cells.bam
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
 
