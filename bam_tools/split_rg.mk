@@ -2,7 +2,7 @@ include modules/Makefile.inc
 
 LOGDIR = log/split_rg.$(NOW)
 
-split_rg : $(foreach sample,$(SAMPLES),split_rg/$(sample).bam) \
+splitrg : $(foreach sample,$(SAMPLES),split_rg/$(sample).bam) \
 	   $(foreach sample,$(SAMPLES),split_rg/$(sample).bam.bai)
 
 define split-rg
@@ -23,4 +23,4 @@ $(foreach sample,$(SAMPLES),\
 	     $(SAMTOOLS) --version > version/split_rg.txt;)
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: split_rg
+.PHONY: splitrg
