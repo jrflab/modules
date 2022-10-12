@@ -11,7 +11,6 @@ my $slack_url = "";
 
 my %slack_map = (
     brownd7 => "W013UH0HWUF",
-    parejaf => "W01BLNUF7J8"
 );
 
 sub HELP_MESSAGE {
@@ -46,8 +45,8 @@ getopts('n:smr:l:c:', \%opt);
 my $username = $ENV{LOGNAME} || $ENV{USER} || getpwuid($<);
 my $slackname = $slack_map{$username} || $username;
 my $project_name = $cwd;
-$project_name =~ s:.*/juno/work/bergerm1/Innovation/brownd7/home/::;
-$project_name =~ s:.*/lila/data/reis-filho/data/brownd7/home/::;
+$project_name =~ s:.*/juno/work/reis-filho/data/brownd7/::;
+$project_name =~ s:.*/lila/data/reis-filho/data/brownd7/::;
 $project_name =~ s:/:_:g;
 my $attempts = 1;
 my $name = "qmake";

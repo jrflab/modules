@@ -6,7 +6,7 @@ use Cwd;
 use File::Copy;
 
 my $MAKEFILE = <<ENDL;
-include innovation-lab/Makefile
+include modules/Makefile
 ENDL
 
 unless (-e "Makefile") {
@@ -16,9 +16,9 @@ unless (-e "Makefile") {
 close OUT;
 
 unless (-e "project_config.yaml") {
-    copy("innovation-lab/default_yaml/project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
+    copy("modules/default_yaml/project_config.yaml", "project_config.yaml") or die "Unable to create project_config.yaml: $!";
 }
 
 unless (-e "summary_config.yaml") {
-    copy("innovation-lab/default_yaml/summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
+    copy("modules/default_yaml/summary_config.yaml", "summary_config.yaml") or die "Unable to create summary_config.yaml: $!";
 }
