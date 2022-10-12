@@ -37,6 +37,14 @@ bwa_wgs :
 	$(call RUN_MAKE,modules/fastq_aligners/bwa_wgs.mk)
 	
 #==================================================
+# BAM file utilities
+#==================================================
+
+TARGETS += split_rg
+splite_rg :
+	$(call RUN_MAKE,modules/bam_tools/split_rg.mk)
+
+#==================================================
 # FASTQ file utilities
 #==================================================
 
