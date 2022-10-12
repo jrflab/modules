@@ -56,4 +56,37 @@ if (as.numeric(opt$option)==1) {
 		  dplyr::select(chromosome, position, reference_allele, total_depth, alternate_depth)
 	write_tsv(pile_up, path = paste0("summary/", sample_name, "_ins_del.txt"), na = "NA", append = FALSE, col_names = TRUE)
 
+} else if (as.numeric(opt$option)==3) {
+	sample_name = opt$sample_name
+	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, ".txt.gz"),
+				  col_names = TRUE,
+				  col_types = cols(.default = col_character())) %>%
+		  readr::type_convert() %>%
+		  dplyr::mutate(A = A + a,
+			        T = T + t,
+			        G = G + g,
+			        C = C + c) %>%
+		  dplyr::rename(chromosome = Chrom,
+			        position = Pos,
+			        reference_allele = Ref,
+			        total_depth = TOTAL_depth) %>%
+		  dplyr::select(chromosome, position, reference_allele, total_depth, A, T, G, C) %>%
+		  reshape2::melt(id.vars = c("chromosome", "position", "reference_allele", "total_depth"),
+				 measure.vars = c("A", "T", "G", "C"),
+				 variable.name = "alternate_allele",
+				 value.name = "alternate_depth") %>%
+		  dplyr::select(chromosome, position, reference_allele, alternate_allele, total_depth, alternate_depth) %>%
+		  dplyr::filter(reference_allele != alternate_allele) %>%
+		  dplyr::mutate(numeric_chromosome = gsub(pattern = "chr", replacement = "", x = chromosome, fixed = TRUE)) %>%
+		  dplyr::mutate(numeric_chromosome = case_when(
+			  numeric_chromosome == "X" ~ "23",
+			  numeric_chromosome == "Y" ~ "24",
+			  numeric_chromosome == "MT" ~ "25",
+			  TRUE ~ numeric_chromosome
+		  )) %>%
+		  dplyr::mutate(numeric_chromosome = as.numeric(numeric_chromosome)) %>%
+		  dplyr::arrange(numeric_chromosome, position, reference_allele, alternate_allele) %>%
+		  dplyr::select(chromosome, position, reference_allele, alternate_allele, total_depth, alternate_depth)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "_all_alt.txt"), na = "NA", append = FALSE, col_names = TRUE)
+
 }
