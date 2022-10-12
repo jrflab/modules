@@ -6,7 +6,8 @@ MAPQ := 0
 BAQ := 0
 COV := 0
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz) \
+	       $(foreach sample,$(SAMPLES),summary/$(sample)_sum_alt.txt)
 
 define get-basecount
 gbc/$1.txt.gz : bam/$1.bam vcf/MSKCC_Weigelt_Mission_Bio_11132018.vcf
@@ -26,6 +27,10 @@ gbc/$1.txt.gz : bam/$1.bam vcf/MSKCC_Weigelt_Mission_Bio_11132018.vcf
 				      --filter_qc_failed 1 \
 				      --filter_indel 0 \
 				      --filter_non_primary 1")
+				      
+summary/$1.txt : gbc/$1.txt.gz
+	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
+				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 1 --sample_name $1")
 						    
 endef
 $(foreach sample,$(SAMPLES),\
