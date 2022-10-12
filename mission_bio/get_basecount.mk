@@ -9,7 +9,7 @@ COV := 0
 getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz)
 
 define get-basecount
-gbc/$1.txt.gz : bam/$1.bam vcf/$1.vcf
+gbc/$1.txt.gz : bam/$1.bam vcf/MSKCC_Weigelt_Mission_Bio_11132018.vcf
 	$$(call RUN,-n 6 -s 3G -m 6G,"set -o pipefail && \
 				      $(GBC) --fasta $(REF_FASTA) \
 				      --bam $$(<) \
