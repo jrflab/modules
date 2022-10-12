@@ -1,0 +1,8 @@
+ifndef WALTZ_INC
+WALTZ_MEM_XMS = 2G
+WALTZ_MEM_XMX = 8G
+WALTZ_CMD = $(call WALTZ_OPT,$(WALTZ_MEM_XMS),$(WALTZ_MEM_XMX))
+WALTZ_OPT = $(JAVA8) -server -Xms$(1) -Xmx$(2) -cp $(WALTZ)
+
+endif
+WALTZ_INC = true

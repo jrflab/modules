@@ -12,8 +12,7 @@ import re
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog='run.py',
-                                     description='run jobs')
+    parser = argparse.ArgumentParser(prog='run.py', description='run jobs')
     parser.add_argument('-i', '--input', default=sys.stdin, type=argparse.FileType('r'), help='job script')
     parser.add_argument('-v', '--env', default=None, help='anaconda env')
     parser.add_argument('--default_env', default=None, help='default anaconda env')
@@ -25,15 +24,14 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--check', default=False, action='store_true', help='check for non-zero file size')
     parser.add_argument('-d', '--docker', default=False, action='store_true', help='request docker support')
     parser.add_argument('-I', '--internet', default=False, action='store_true', help='request internet access')
-    parser.add_argument('-g', '--cluster_engine', default='sge', help='cluster engine (sge, lfs, or pbs supported)')
+    parser.add_argument('-g', '--cluster_engine', default='lsf', help='cluster engine (sge, lfs, or pbs supported)')
     parser.add_argument('-l', '--local', default=False, action='store_true', help='run job locally')
     parser.add_argument('-o', '--out_file', default=None, help='output file to check')
     parser.add_argument('-p', '--project_name', default=None, help='project name')
     parser.add_argument('-N', '--job_name', default=None, help='job name')
     parser.add_argument('-e', '--log_file', default=None, help='log file')
     parser.add_argument('-S', '--shell', default='/bin/bash', help='shell')
-    parser.add_argument('--servers', default=None, nargs='*',
-                        help='use these servers for checking non-zero output file size')
+    parser.add_argument('--servers', default=None, nargs='*', help='use these servers for checking non-zero output file size')
     args = parser.parse_args()
 
     cluster_engine = args.cluster_engine.lower()
@@ -63,6 +61,11 @@ if __name__ == '__main__':
             except OSError as e:
                 if e.errno != errno.EEXIST:
                     raise
+
+    users = ["brownd7", "selenicp"]
+    user = os.getlogin()
+    if not user in users:
+	sys.exit()
 
     job_script = args.input.read()
     if env is not None:

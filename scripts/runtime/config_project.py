@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
+from __future__ import print_function
 import yaml
 import argparse
 import collections
-
-""" convert yaml files to make include files
-"""
-
 
 def lowerBool(x):
     if isinstance(x, bool):
@@ -15,9 +11,8 @@ def lowerBool(x):
     else:
         return x
 
-
 def sample_yaml2mk(samples_file, out):
-    samples = yaml.load(open(args.samples_file, 'r'))
+    samples = yaml.full_load(open(args.samples_file, 'r'))
 
     tumors = set()
     normals = set()
@@ -95,15 +90,23 @@ def sample_yaml2mk(samples_file, out):
 
 def sample_attr_yaml2mk(sample_attr_file, out):
     print("\n# sample_attr_file", file=out)
-    sample_attr = yaml.load(open(sample_attr_file, 'r'))
+    sample_attr = yaml.full_load(open(sample_attr_file, 'r'))
     for attr, m in sample_attr.items():
+        for k, v in m.items():
+            print("{}.{} = {}".format(attr, k, v), file=out)
+
+
+def summary_config_yaml2mk(summary_config_file, out):
+    print("\n# summary_config_file", file=out)
+    summary_config = yaml.full_load(open(summary_config_file, 'r'))
+    for attr, m in summary_config.items():
         for k, v in m.items():
             print("{}.{} = {}".format(attr, k, v), file=out)
 
 
 def sample_fastq_yaml2mk(sample_fastq_file, out):
     print("\n# sample_fastq_file", file=out)
-    sample_fastq = yaml.load(open(sample_fastq_file, 'r'))
+    sample_fastq = yaml.full_load(open(sample_fastq_file, 'r'))
     split_samples = set()
     for k, v in sample_fastq.items():
         for idx, fastq in enumerate(v):
@@ -122,19 +125,18 @@ def sample_fastq_yaml2mk(sample_fastq_file, out):
 
 def sample_merge_yaml2mk(sample_merge_file, out):
     print("\n# sample_merge_file", file=out)
-    sample_merge = yaml.load(open(args.sample_merge_file, 'r'))
+    sample_merge = yaml.full_load(open(args.sample_merge_file, 'r'))
     print("MERGE_SAMPLES = {}".format(" ".join(list(sample_merge.keys()))), file=out)
     for k, v in sample_merge.items():
         print("merge.{} = {}".format(k, " ".join(v)), file=out)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(prog='configure',
-                                     description='Convert project YAML file to Make')
-    parser.add_argument('--project_config_file', help='project yaml config file',
-                        default='project_config.yaml')
+    parser = argparse.ArgumentParser(prog='configure', description='Convert project YAML file to Make')
+    parser.add_argument('--project_config_file', help='project yaml config file', default='project_config.yaml')
     parser.add_argument('--samples_file', help='yaml samples file', default='samples.yaml')
     parser.add_argument('--sample_attr_file', help='yaml sample attr file', default='sample_attr.yaml')
+    parser.add_argument('--summary_config_file', help='yaml summary config file', default='summary_config.yaml')
     parser.add_argument('--sample_fastq_file', help='yaml sample fastq file mappings', default='sample.fastq.yaml')
     parser.add_argument('--sample_merge_file', help='yaml sample merge mappings')
     parser.add_argument('--out_file', help='project make include file', nargs='?', default='project_config.inc')
@@ -142,7 +144,7 @@ if __name__ == '__main__':
 
     of = open(args.out_file, 'w')
 
-    config = yaml.load(open(args.project_config_file, 'r'))
+    config = yaml.full_load(open(args.project_config_file, 'r'))
     for k, v in config.items():
         print("{} = {}".format(k.upper(), lowerBool(v)), file=of)
 
@@ -155,6 +157,11 @@ if __name__ == '__main__':
         sample_attr_yaml2mk(args.sample_attr_file, of)
     except:
         print("Error loading {}, skipping".format(args.sample_attr_file))
+	
+    try:
+        summary_config_yaml2mk(args.summary_config_file, of)
+    except:
+        print("Error loading {}, skipping".format(args.summary_config_file))
 
     if args.sample_fastq_file is not None:
         try:

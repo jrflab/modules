@@ -1,11 +1,8 @@
 ---
-# Uncomment if you want to add a sample order to heatmaps
-# sample_order: [AWT, AWX1, AWX2, AWX3, AWX4, AWL, AWM1, AWM2, AWX5]
-# blacklisted genes, don't report these
-gene_blacklist: [TTN]
-# Uncomment if you want to report names of samples differently in the
-# summary/plots
-# sample_rename:
-#    AWM1: AWM1BR
-#    AWM2: AWM2BO
+# READS:
+#    1: 1000000
+#    2: 2000000
+#    3: 3000000
+#    4: 4000000
+#    5: 5000000
 ...

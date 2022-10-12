@@ -17,7 +17,7 @@ SAMPLE_SET_FILE ?= sample_sets.txt
 SAMPLE_FILE ?= samples.txt
 SAMPLE_SPLIT_FILE ?= samples.split.txt
 
-PROJECT_NAME = $(shell pwd | sed 's:.*/projects/::; s:.*/data/::; s:.*kinglab/::; s:/:_:g')
+PROJECT_NAME = $(shell pwd | sed 's:.*/home/::; s:.*/share/::; s:.*/$(USER)/::; s:.*/juno/::; s:.*/work/::; s:.*/reis-filho/::; s:/:_:g')
 
 ifneq ($(wildcard $(SAMPLE_FILE)),)
   SAMPLES ?= $(shell sed '/^\#/d' $(SAMPLE_FILE))
@@ -100,14 +100,14 @@ $(space) +=
 strip-suffix = $(firstword $(subst ., ,$(1)))
 
 LINK = ln -svf $(notdir $1) $(2) && touch $1
-NOW := $(shell date +"%F")
 MKDIR = mkdir -p -m 775
 MKDIRS = $(MKDIR) $(LOGDIR)/$(@D) $(@D)
 LOG = $(PWD)/$(LOGDIR)/$(@).log
+NOW := $(shell date +"%F")
 
 UMASK = 002
 
-export PATH := $(JRFLAB_MODULES_ENV)/bin:$(PATH)
+export PATH := $(INNOVATION_LAB_ENV)/bin:$(PATH)
 ECHO_ACTIVATE_ENV = unset PYTHONPATH; OLDPATH=\$$PATH; tries=0; until [[ \$$tries -gt 10 ]] || source $1/bin/activate $1; do export PATH=\$$OLDPATH; tries=\`expr \$$tries + 1\`; jitter=\`expr \$$RANDOM % 10 + 1\`; sleep \`expr \$$jitter \\* \$$tries\`; done
 ACTIVATE_ENV = unset PYTHONPATH; OLDPATH=$$PATH; tries=0; until [[ $$tries -gt 10 ]] || source $1/bin/activate $1; do export PATH=$$OLDPATH; tries=`expr $$tries + 1`; jitter=`expr $$RANDOM % 10 + 1`; sleep `expr $$jitter \* $$tries`; done
 
@@ -116,17 +116,17 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(MAKE_PID).*$
 JOBS := $(subst -j,,$(JOB_FLAG))
 
 RUN_FIRST = umask $(UMASK); $(if $(and $(findstring true,$(USE_CLUSTER)),$(JOBS)),sleep $$[ ( $$RANDOM % 20 ) + 1 ]s;) $(MKDIRS)
-INIT = $(RUN_FIRST); $(call ACTIVATE_ENV,$(JRFLAB_MODULES_ENV)); umask $(UMASK); set -o pipefail;
+INIT = $(RUN_FIRST); $(call ACTIVATE_ENV,$(INNOVATION_LAB_ENV)); umask $(UMASK); set -o pipefail;
 INIT_ENV = $(RUN_FIRST); $(call ACTIVATE_ENV,$1); umask $(UMASK); set -o pipefail;
 
 USE_CLUSTER ?= true
 CLUSTER_ENGINE ?= LSF
 
 RUN_OPTS = $(if $(findstring false,$(USE_CLUSTER)),-l) -o $@ $(if $(CLUSTER_ENGINE),-g $(CLUSTER_ENGINE)) \
-		   --default_env $(JRFLAB_MODULES_ENV) -S $(SHELL) \
+		   --default_env $(INNOVATION_LAB_ENV) -S $(SHELL) \
 		   --log_file $(LOG) $(if $($(CLUSTER_ENGINE)_NODES),--servers $($(CLUSTER_ENGINE)_NODES)) \
 		   $(if $(PROJECT_NAME),-p $(PROJECT_NAME))
-RUN = echo $2 | python modules/scripts/run.py $(RUN_OPTS) $1
+RUN = echo $2 | python $(SCRIPTS_DIR)/runtime/run.py $(RUN_OPTS) $1
 
 MD5 = md5sum $(@:.md5=) > $@
 CHECK_MD5 = for i in {0..20}; do if md5sum -c $(filter %.md5,$^); then break; fi; sleep 5; done;
@@ -149,10 +149,10 @@ endef
 
 ifeq ($(USE_CLUSTER),true)
 ifeq ($(CLUSTER_ENGINE),SGE)
-export DRMAA_LIBRARY_PATH = /common/sge/lib/lx24-amd64/libdrmaa.so.1.0
+export DRMAA_LIBRARY_PATH = /common/sge/lib/lx24-amd64/libdrmaa.so
 else
 ifeq ($(CLUSTER_ENGINE),LSF)
-export DRMAA_LIBRARY_PATH = /admin/lsf/10.1/linux3.10-glibc2.17-x86_64/lib/libdrmaa.so
+export DRMAA_LIBRARY_PATH = /admin/lsfjuno/lsf/10.1/linux3.10-glibc2.17-x86_64/lib/libdrmaa.so
 endif
 endif
 endif

@@ -13,7 +13,6 @@ SEQ_PLATFORM ?= illumina
 BAM_SUFFIX := $(subst $( ),.,$(strip \
         $(if $(findstring false,$(BAM_NO_SORT)),sorted)\
         $(if $(findstring false,$(BAM_NO_FILTER)),filtered)\
-        $(if $(findstring true,$(PDX)),pdx_filtered)\
         $(if $(findstring true,$(BAM_FIX_RG)),rg)\
         $(if $(findstring false,$(BAM_NO_REALN)),realn)\
         $(if $(findstring rmdup,$(BAM_DUP_TYPE)),rmdup)\

@@ -11,6 +11,7 @@ define merged-bam
 $$(ALIGNER)/bam/$1.$$(ALIGNER).sorted.bam : $$(ALIGNER)/sam/$1.header.sam $$(foreach split,$2,$$(ALIGNER)/bam/$$(split).$$(ALIGNER).sorted.bam)
 	$$(call RUN,-s 12G -m 15G,"$$(SAMTOOLS) merge -f -h $$< $$(@) $$(filter %.bam,$$^) && $$(RM) $$^")
 endef
+
 define rename-bam
 $$(ALIGNER)/bam/$1.$$(ALIGNER).bam : $$(ALIGNER)/bam/$2.$$(ALIGNER).bam
 	mv $$< $$@

@@ -1,0 +1,7 @@
+ifndef GATK_INC
+DEFAULT_GATK_MEM = 16G
+GATK_CMD = $(call GATK_OPT,$(DEFAULT_GATK_MEM))
+GATK_OPT = $(GATK) -Xmx$(1) -S LENIENT
+
+endif
+GATK_INC = true

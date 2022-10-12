@@ -4,22 +4,22 @@ REF ?= b37
 SEQ_PLATFORM ?= illumina
 
 # conda
-JRFLAB_MODULES_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
-INNOVATION_LAB_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
-VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
+INNOVATION_LAB_ENV ?= $(HOME)/share/usr/env/innovation-lab-0.0.1
 SUPERHEAT_ENV = $(HOME)/share/usr/env/r-complexheatmap-2.2.0
 VARIANT_ANNOTATION_ENV = $(HOME)/share/usr/env/r-variantannotation-1.32.0
 ANNOTATION_ENV = $(HOME)/share/usr/env/r-bsgenome.hsapiens.ucsc.hg19-1.4.0
+VCF2MAF_ENV ?= $(HOME)/share/usr/env/vcf2maf-1.6.17
+SEQTK_ENV ?= $(HOME)/share/usr/env/seqtk-1.3
 GATK_ENV ?= $(HOME)/share/usr/env/gatk-3.8-10
-SUFAM_ENV ?= $(HOME)/share/usr/env/sufam-v0.4.2
+FASTQ_SPLITTER_ENV ?= $(HOME)/share/usr/env/fastqsplitter-1.2.0
 SAMBAMBA_ENV ?= $(HOME)/share/usr/env/sambamba-0.8.2
 PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
 
 # aliases
 PYTHON ?= python
 PERL ?= perl
-R ?= R
 RSCRIPT ?= Rscript
+R ?= R
 BWA ?= bwa
 SAMTOOLS ?= samtools
 SAMBAMBA ?= sambamba
@@ -32,6 +32,7 @@ GATK ?= gatk
 BAM2FASTX ?= bam2fastx
 VCF2MAF ?= vcf2maf.pl
 MAF2VCF ?= maf2vcf.pl
+SEQTK ?= seqtk
 PIGZ ?= pigz
 
 # java command lines
@@ -74,6 +75,7 @@ BAM_INDEX = $(PICARD) -Xmx$(PICARD_MEM) BamIndexStats $(PICAD_OPTS)
 # gatk command lines
 GATK_MEM = 16G
 GATK_OPTS = -S LENIENT
+ANALYZE_COV = $(GATK) -Xmx$(GATK_MEM) -T AnalyzeCovariates $(GATK_OPT)
 
 # gbc command line
 GBC ?= $(HOME)/share/usr/GetBaseCounts/GetBaseCounts
@@ -81,7 +83,7 @@ GBC ?= $(HOME)/share/usr/GetBaseCounts/GetBaseCounts
 # waltz command line
 WALTZ ?= $(HOME)/share/usr/marianas-1.8.1/Waltz-3.0.jar
 
-# scripts
+# paths
 SCRIPTS_DIR ?= modules/scripts
 TMPDIR ?= $(HOME)/share/data/$(USER)/tmp
 

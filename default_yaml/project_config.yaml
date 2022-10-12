@@ -1,11 +1,13 @@
 ---
-cluster_engine: LSF ## PBS ## SGE
-
+# job submission
+cluster_engine: LSF
 use_cluster: true
 
+# reference genome
 ref: b37
 
-aligner: bwamem ## tophat ## hisat ## bwa ## bowtie ## tmap
+# bwa mem options
+aligner: bwamem
 bam_chr1_base_recal: true
 bam_dup_type: markdup
 bam_no_filter: false
@@ -16,46 +18,9 @@ bam_fix_rg: false
 bam_phred64: false
 bam_reprocess: false
 
-snv_type: mutect # or mutect_snps
-mutect_split_chr: true
-mutect_use_contest: false
-indel_types: varscan_indels strelka_indels scalpel_indels lancet_indels platypus_indels #pindel mutect_indels to use mutect2
+# splitting options
+bwa_splits: 250
 
-vcf_post_ann_filter_expression: ExAC_AF > 0.01
-
-# vcf annotations
-ann_facets: true
-ann_mut_taste: false
-ann_provean: false
-ann_pathogen: true
-
-# target panels
-targets_file: ~/share/reference/target_panels/
-
-# cnvkit default target panels
-# ontarget_file: ~/share/reference/target_panels/
-# offtarget_file: ~/share/reference/target_panels/
-
-# whole exome sequencing
-# exome: false
-
-# gatk options
-gatk_hard_filter_snps: true
-gatk_pool_snp_recal: false
-
-# facets options
-# pre-processing crit val
-facets_pre_cval: 50
-# crit val for estimating diploid log ratio
-facets_cval1: 150
-# starting crit val for segmentation 
-facets_cval2: 50
-# min number of het snps in a segment used for bivariate t-statistic during clustering of segement
-facets_min_nhet: 25
-# union of gatk and dbsnp for snp-pileup
-facets_union_gatk_dbsnp: false
-
-# slack_channel: 
-
-qsub_priority: 0
+# target bed file
+targets_file: ~/share/lib/bed_files/MSK-IMPACT-v3.bed
 ...
