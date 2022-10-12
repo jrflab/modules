@@ -41,4 +41,19 @@ if (as.numeric(opt$option)==1) {
 				   alternate_depth = sum(alternate_depth)) %>%
 		  dplyr::ungroup()
 	write_tsv(pile_up, path = paste0("summary/", sample_name, "_sum_alt.txt"), na = "NA", append = FALSE, col_names = TRUE)
+	
+} else if (as.numeric(opt$option)==2) {
+	sample_name = opt$sample_name
+	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, ".txt.gz"),
+				  col_names = TRUE,
+				  col_types = cols(.default = col_character())) %>%
+		  readr::type_convert() %>%
+		  dplyr::mutate(alternate_depth = INS + DEL) %>%
+		  dplyr::rename(chromosome = Chrom,
+			        position = Pos,
+			        reference_allele = Ref,
+			        total_depth = TOTAL_depth) %>%
+		  dplyr::select(chromosome, position, reference_allele, total_depth, alternate_depth)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "_indel.txt"), na = "NA", append = FALSE, col_names = TRUE)
+
 }
