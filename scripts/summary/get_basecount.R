@@ -54,6 +54,6 @@ if (as.numeric(opt$option)==1) {
 			        reference_allele = Ref,
 			        total_depth = TOTAL_depth) %>%
 		  dplyr::select(chromosome, position, reference_allele, total_depth, alternate_depth)
-	write_tsv(pile_up, path = paste0("summary/", sample_name, "_indel.txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "_ins_del.txt"), na = "NA", append = FALSE, col_names = TRUE)
 
 }
