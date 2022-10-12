@@ -13,7 +13,7 @@ split_rg/$1.bam : bam/WBC-control-A.tube1.cells.bam
 split_rg/$1.bam.bai : split_rg/$1.bam
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(SAMTOOLS) index $$(<) && \
-				      cp $$(@) split_rg/$$(*).bai")
+				      cp $$(@) split_rg/$1.bai")
 
 endef
 $(foreach sample,$(SAMPLES),\
