@@ -16,7 +16,7 @@ splitrg :  $(foreach sample,$(SAMPLES), \
 define split-rg
 split_rg/$1/$(BARCODES).$2.bam : bam/$1.bam
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
-				      $$(SAMTOOLS) view -b -r ${BARCODES}.$2 $$(<) > $$(@)")
+				      $$(SAMTOOLS) view -b -r $${BARCODES}.$2 $$(<) > $$(@)")
 
 #split_rg/$1/$(BARCODES).$2.bam.bai : split_rg/$1/$(BARCODES).$2.bam
 #	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
