@@ -72,10 +72,6 @@ annotate_maf_vcf :
 # BETA testing
 #==================================================
 
-TARGETS += pileup_metrics
-pileup_metrics :
-	$(call RUN_MAKE,modules/mission_bio/pileup_metrics.mk)
-	
 TARGETS += get_basecount
 get_basecount :
 	$(call RUN_MAKE,modules/mission_bio/get_basecount.mk)

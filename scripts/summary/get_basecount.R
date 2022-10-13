@@ -40,7 +40,7 @@ if (as.numeric(opt$option)==1) {
 				   total_depth = unique(total_depth),
 				   alternate_depth = sum(alternate_depth)) %>%
 		  dplyr::ungroup()
-	write_tsv(pile_up, path = paste0("summary/", sample_name, "_sum_alt.txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/sum_alt/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option)==2) {
 	sample_name = opt$sample_name
@@ -54,7 +54,7 @@ if (as.numeric(opt$option)==1) {
 			        reference_allele = Ref,
 			        total_depth = TOTAL_depth) %>%
 		  dplyr::select(chromosome, position, reference_allele, total_depth, alternate_depth)
-	write_tsv(pile_up, path = paste0("summary/", sample_name, "_ins_del.txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/ins_del/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 
 } else if (as.numeric(opt$option)==3) {
 	sample_name = opt$sample_name
@@ -87,6 +87,6 @@ if (as.numeric(opt$option)==1) {
 		  dplyr::mutate(numeric_chromosome = as.numeric(numeric_chromosome)) %>%
 		  dplyr::arrange(numeric_chromosome, position, reference_allele, alternate_allele) %>%
 		  dplyr::select(chromosome, position, reference_allele, alternate_allele, total_depth, alternate_depth)
-	write_tsv(pile_up, path = paste0("summary/", sample_name, "_all_alt.txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/all_alt/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 
 }
