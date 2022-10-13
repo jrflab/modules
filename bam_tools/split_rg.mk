@@ -10,7 +10,7 @@ splitrg :  $(foreach sample,$(SAMPLES), \
 	   $(foreach sample,$(SAMPLES), \
 		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE)$(n).bam.bai)) \
 	   $(foreach sample,$(SAMPLES), \
-		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE)$(n).bai)
+		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE)$(n).bai))
 
 define split-rg
 split_rg/$1/$2.bam : bam/$1.bam
