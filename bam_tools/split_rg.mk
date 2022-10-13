@@ -20,7 +20,7 @@ split_rg/$1/$2.bam.bai : split_rg/$1/$2.bam
 
 split_rg/$1/$2.bai : split_rg/$1/$2.bam.bai
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
-				      $$(CP) $$(<) $$(@)")
+				      cp $$(<) $$(@)")
 
 endef
 $(foreach sample,$(SAMPLES), \
