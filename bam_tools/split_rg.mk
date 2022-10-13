@@ -6,22 +6,22 @@ NUM_BARCODES = 5
 BARCODE_NUM = $(shell seq 1 $(NUM_BARCODES))
 
 splitrg :  $(foreach sample,$(SAMPLES), \
-		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE).$(n).bam)) \
+		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODES).$(n).bam)) \
 	   $(foreach sample,$(SAMPLES), \
-		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE).$(n).bam.bai)) \
+		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODES).$(n).bam.bai)) \
 	   $(foreach sample,$(SAMPLES), \
-		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODE).$(n).bai))
+		  	$(foreach n,$(BARCODE_NUM),split_rg/$(sample)/$(BARCODES).$(n).bai))
 
 define split-rg
-split_rg/$1/$(BARCODE).$2.bam : bam/$1.bam
+split_rg/$1/$(BARCODES).$2.bam : bam/$1.bam
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(SAMTOOLS) view -b -r $1 $$(<) > $$(@)")
 
-split_rg/$1/$(BARCODE).$2.bam.bai : split_rg/$1/$(BARCODE).$2.bam
+split_rg/$1/$(BARCODES).$2.bam.bai : split_rg/$1/$(BARCODES).$2.bam
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(SAMTOOLS) index $$(<)")
 
-split_rg/$1/$(BARCODE).$2.bai : split_rg/$1/$(BARCODE).$2.bam.bai
+split_rg/$1/$(BARCODES).$2.bai : split_rg/$1/$(BARCODES).$2.bam.bai
 	$$(call RUN,-n 1 -s 2G -m 4G,"set -o pipefail && \
 				      $$(CP) $$(<) $$(@)")
 
