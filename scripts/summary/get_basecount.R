@@ -10,14 +10,16 @@ if (!interactive()) {
 }
 
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
-               make_option("--sample_name", default = NA, type = 'character', help = "sample name"))
+               make_option("--sample_name", default = NA, type = 'character', help = "sample name"),
+	       make_option("--bar_code", default = NA, type = 'character', help = "sample name"))
 parser = OptionParser(usage = "%prog", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
 if (as.numeric(opt$option)==1) {
 	sample_name = opt$sample_name
-	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, ".txt.gz"),
+	bar_code = opt$bar_code
+	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, "/", bar_code, ".txt.gz"),
 				  col_names = TRUE,
 				  col_types = cols(.default = col_character())) %>%
 		  readr::type_convert() %>%
@@ -40,11 +42,11 @@ if (as.numeric(opt$option)==1) {
 				   total_depth = unique(total_depth),
 				   alternate_depth = sum(alternate_depth)) %>%
 		  dplyr::ungroup()
-	write_tsv(pile_up, path = paste0("summary/sum_alt/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "/sum_alt/", bar_code, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option)==2) {
 	sample_name = opt$sample_name
-	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, ".txt.gz"),
+	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, "/", bar_code, ".txt.gz"),
 				  col_names = TRUE,
 				  col_types = cols(.default = col_character())) %>%
 		  readr::type_convert() %>%
@@ -54,11 +56,11 @@ if (as.numeric(opt$option)==1) {
 			        reference_allele = Ref,
 			        total_depth = TOTAL_depth) %>%
 		  dplyr::select(chromosome, position, reference_allele, total_depth, alternate_depth)
-	write_tsv(pile_up, path = paste0("summary/ins_del/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "/ins_del/", bar_code, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 
 } else if (as.numeric(opt$option)==3) {
 	sample_name = opt$sample_name
-	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, ".txt.gz"),
+	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, "/", bar_code, ".txt.gz"),
 				  col_names = TRUE,
 				  col_types = cols(.default = col_character())) %>%
 		  readr::type_convert() %>%
@@ -87,6 +89,6 @@ if (as.numeric(opt$option)==1) {
 		  dplyr::mutate(numeric_chromosome = as.numeric(numeric_chromosome)) %>%
 		  dplyr::arrange(numeric_chromosome, position, reference_allele, alternate_allele) %>%
 		  dplyr::select(chromosome, position, reference_allele, alternate_allele, total_depth, alternate_depth)
-	write_tsv(pile_up, path = paste0("summary/all_alt/", sample_name, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
+	write_tsv(pile_up, path = paste0("summary/", sample_name, "/all_alt/", bar_code, ".txt"), na = "NA", append = FALSE, col_names = TRUE)
 
 }

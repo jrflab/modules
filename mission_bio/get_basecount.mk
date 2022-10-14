@@ -42,17 +42,17 @@ $(foreach sample,$(SAMPLES), \
 define summarize-gbc
 summary/$1/sum_alt/$2.txt.gz : gbc/$1/$2.txt.gz
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
-				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 1 --sample_name $1 && \
+				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 1 --sample_name $1  --bar_code $2 && \
 				      gzip summary/$1/sum_alt/$2.txt")
 
 summary/$1/ins_del/$2.txt.gz : gbc/$1/$2.txt.gz
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
-				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 2 --sample_name $1 && \
+				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 2 --sample_name $1 --bar_code $2 && \
 				      gzip summary/$1/ins_del/$2.txt")
 
 summary/$1/all_alt/$2.txt.gz : gbc/$1.txt.gz
 	$$(call RUN,-n 1 -s 4G -m 8G,"set -o pipefail && \
-				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 3 --sample_name $1 && \
+				      $(RSCRIPT) $(SCRIPTS_DIR)/summary/get_basecount.R --option 3 --sample_name $1 --bar_code $2 && \
 				      gzip summary/$1/all_alt/$2.txt")
 
 endef
