@@ -12,6 +12,7 @@ merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/sample_list_sv.txt) 
 	   
 define merge-sv
 merge_sv/$1_$2/sample_list_sv.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
+	mkdir -p merge_sv/$1_$2
 	echo vcf/$1_$2.svaba_sv.vcf > $$(@)
 	echo vcf/$1_$2.manta_sv.vcf >> $$(@)
 	
