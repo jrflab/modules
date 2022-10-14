@@ -3,9 +3,9 @@ include modules/sv_callers/manta.inc
 
 LOGDIR ?= log/mantaTN.$(NOW)
 
-manta : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).manta_sv.vcf \
-				       vcf/$(pair).manta_indels.vcf \
-				       vcf/$(pair).manta_candidate_sv.vcf)
+manta_tn : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).manta_sv.vcf \
+				          vcf/$(pair).manta_indels.vcf \
+				          vcf/$(pair).manta_candidate_sv.vcf)
 
 define manta-tumor-normal
 manta/$1_$2/runWorkflow.py : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
@@ -40,4 +40,4 @@ $(foreach pair,$(SAMPLE_PAIRS), \
 	     python --version &> version/mantaTN.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: manta
+.PHONY: manta_tn
