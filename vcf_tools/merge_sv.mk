@@ -12,7 +12,7 @@ merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/sample_list.txt)
 	   
 define merge-sv
 merge_sv/$1_$2/sample_list.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
-	$(INIT) for i in $$(SV_CALLERS); do echo vcf/$1_$2.$$i_sv.vcf >> $(@); done
+	$(INIT) for i in $$(SV_CALLERS); do echo vcf/$1_$2.$$i_sv.vcf >> $$(@); done
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
