@@ -12,8 +12,8 @@ merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/sample_list.txt) \
 	   
 define merge-sv
 merge_sv/$1_$2/sample_list_sv.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
-	echo vcf/$1_$2.svaba_sv.vcf > $$(@)
-	echo vcf/$1_$2.manta_sv.vcf >> $$(@)
+	$(INIT) echo vcf/$1_$2.svaba_sv.vcf > $$(@)
+	$(INIT) echo vcf/$1_$2.manta_sv.vcf >> $$(@)
 	
 vcf/$1_$2.merged_sv.vcf : merge_sv/$1_$2/sample_list_sv.txt
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
