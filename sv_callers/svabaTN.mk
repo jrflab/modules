@@ -12,7 +12,7 @@ SVABA ?= svaba
 
 svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
 				       vcf/$(pair).svaba_indels.vcf \
-				       vcf/$(pair).candidate_sv.vcf)
+				       vcf/$(pair).svaba_candidate_sv.vcf)
 
 define svaba-tumor-normal
 svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
