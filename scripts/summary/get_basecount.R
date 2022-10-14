@@ -46,6 +46,7 @@ if (as.numeric(opt$option)==1) {
 	
 } else if (as.numeric(opt$option)==2) {
 	sample_name = opt$sample_name
+	bar_code = opt$bar_code
 	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, "/", bar_code, ".txt.gz"),
 				  col_names = TRUE,
 				  col_types = cols(.default = col_character())) %>%
@@ -60,6 +61,7 @@ if (as.numeric(opt$option)==1) {
 
 } else if (as.numeric(opt$option)==3) {
 	sample_name = opt$sample_name
+	bar_code = opt$bar_code
 	pile_up = readr::read_tsv(file = paste0("gbc/", sample_name, "/", bar_code, ".txt.gz"),
 				  col_names = TRUE,
 				  col_types = cols(.default = col_character())) %>%
