@@ -33,8 +33,7 @@ vcf/$1_$2.manta_candidate_sv.vcf : manta/$1_$2/results/variants/candidateSV.vcf.
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
-	$(eval $(call manta-tumor-normal, \
-		$(tumor.$(pair)),$(normal.$(pair)))))
+	$(eval $(call manta-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
 
 ..DUMMY := $(shell mkdir -p version; \
 	     python --version &> version/mantaTN.txt)
