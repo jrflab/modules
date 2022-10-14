@@ -10,7 +10,9 @@ SVABA_BLACKLIST ?= $(HOME)/share/lib/resource_files/svaba/wgs_blacklist_meres.be
 SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
 SVABA ?= svaba
 
-svaba : $(foreach pair,$(SAMPLE_PAIRS),svaba/$(pair).svaba.somatic.indel.vcf)
+svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
+				       vcf/$(pair).svaba_indels.vcf \
+				       vcf/$(pair).candidate_sv.vcf)
 
 define svaba-tumor-normal
 svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
@@ -27,6 +29,20 @@ svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
 												 -k $$(SVABA_BLACKLIST) \
 												 -a $1_$2 \
 												 -G $$(SVABA_REF)")
+
+svaba/$1_$2.svaba.somatic.sv.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
+
+svaba/$1_$2.svaba.unfiltered.somatic.sv.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
+
+vcf/$1_$2.svaba_sv.vcf : svaba/$1_$2.svaba.somatic.sv.vcf
+	$$(INIT) zcat $$< > $$@
+
+vcf/$1_$2.svaba_indels.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
+	$$(INIT) zcat $$< > $$@
+
+vcf/$1_$2.svaba_candidate_sv.vcf : svaba/$1_$2.svaba.unfiltered.somatic.sv.vcf
+	$$(INIT) zcat $$< > $$@
+
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call svaba-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))

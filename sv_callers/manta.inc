@@ -5,10 +5,10 @@ MANTA_HS_CONFIG = modules/sv_callers/manta_hs_config.py.ini
 MANTA_CONFIG = modules/sv_callers/manta_config.py.ini
 MANTA_HIGH_SENS ?= false
 CONFIG_MANTA_OPTS = --referenceFasta $(REF_FASTA) \
-					--config $(if $(findstring true,$(MANTA_HIGH_SENS)),\
-                            $(MANTA_HS_CONFIG),$(MANTA_CONFIG)) \
-                        $(if $(TARGETS_FILE),--exome) \
-                        $(if $(MANTA_REGION),--region $(MANTA_REGION))
+		    --config $(if $(findstring true,$(MANTA_HIGH_SENS)),\
+		    				    $(MANTA_HS_CONFIG),$(MANTA_CONFIG)) \
+		    $(if $(TARGETS_FILE),--exome) \
+		    $(if $(MANTA_REGION),--region $(MANTA_REGION))
 endif
 MANTA_INC = true
 

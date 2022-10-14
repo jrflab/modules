@@ -3,9 +3,9 @@ include modules/sv_callers/manta.inc
 
 LOGDIR ?= log/mantaTN.$(NOW)
 
-manta : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).manta_sv.eff.vcf \
-				       vcf/$(pair).manta_indels.eff.vcf \
-				       vcf/$(pair).manta_candidate_sv.eff.vcf)
+manta : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).manta_sv.vcf \
+				       vcf/$(pair).manta_indels.vcf \
+				       vcf/$(pair).manta_candidate_sv.vcf)
 
 define manta-tumor-normal
 manta/$1_$2/runWorkflow.py : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
@@ -21,17 +21,23 @@ manta/$1_$2/results/variants/candidateSmallIndels.vcf.gz : manta/$1_$2.manta_tim
 
 manta/$1_$2/results/variants/candidateSV.vcf.gz : manta/$1_$2.manta_timestamp
 
-vcf/$1_$2.manta_indels.vcf : manta/$1_$2/results/variants/candidateSmallIndels.vcf.gz
-	$$(INIT) zcat $$< > $$@
 
 vcf/$1_$2.manta_sv.vcf : manta/$1_$2/results/variants/somaticSV.vcf.gz
 	$$(INIT) zcat $$< > $$@
 
+vcf/$1_$2.manta_indels.vcf : manta/$1_$2/results/variants/candidateSmallIndels.vcf.gz
+	$$(INIT) zcat $$< > $$@
+
 vcf/$1_$2.manta_candidate_sv.vcf : manta/$1_$2/results/variants/candidateSV.vcf.gz
 	$$(INIT) zcat $$< > $$@
+
 endef
-$(foreach pair,$(SAMPLE_PAIRS),$(eval $(call manta-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(eval $(call manta-tumor-normal, \
+		$(tumor.$(pair)),$(normal.$(pair)))))
 
-.PHONY: $(PHONY)
-
-include modules/vcf_tools/vcftools.mk
+..DUMMY := $(shell mkdir -p version; \
+	     python --version &> version/mantaTN.txt)
+.SECONDARY:
+.DELETE_ON_ERROR:
+.PHONY: manta
