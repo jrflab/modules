@@ -16,7 +16,7 @@ svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
 
 define svaba-tumor-normal
 svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
-	$$(call RUN,-c -n $(SVABA_CORES) -s 4G -m $(SVABA_MEM_CORE) -v $(SVABA_ENV) -w 72:00:00,"set -o pipefail && \
+	$$(call RUN,-n $(SVABA_CORES) -s 4G -m $(SVABA_MEM_CORE) -v $(SVABA_ENV) -w 72:00:00,"set -o pipefail && \
 												 mkdir -p svaba && \
 										 		 cd svaba && \
 												 $$(SVABA) run \
