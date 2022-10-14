@@ -19,7 +19,7 @@ merge_sv/$1_$2/sample_list_sv.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(c
 vcf/$1_$2.merged_sv.vcf : merge_sv/$1_$2/sample_list_sv.txt
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
 							    SURVIVOR merge $$(<) \
-							    500 2 1 1 0 30 $$(@)")
+							    500 1 1 1 0 30 $$(@)")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
