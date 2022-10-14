@@ -11,12 +11,13 @@ merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/sample_list.txt)
 #	    $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).merged_candidate_sv.vcf)
 	   
 define merge-sv
-merge_sv/$1_$2/sample_list.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
-	for i in $(SV_CALLERS); do echo vcf/$1_$2.$$i_sv.vcf >> $(@); done
+merge_sv/$1_$2/sample_list.txt : vcf/$1_$2.$3_sv.vcf
+	echo vcf/$1_$2.$3_sv.vcf >> $(@); done
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call merge-sv,$(tumor.$(pair)),$(normal.$(pair)))))
+	$(foreach caller,$(SV_CALLERS), \
+		$(eval $(call merge-sv,$(tumor.$(pair)),$(normal.$(pair)),$(caller)))))
 	
 .DELETE_ON_ERROR:
 .SECONDARY:
