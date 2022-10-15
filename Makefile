@@ -452,6 +452,10 @@ TARGETS += kallisto
 kallisto :
 	$(call RUN_MAKE,modules/rnaseq/kallisto.mk)
 	
+TARGETS += immunedeconv
+immunedeconv :
+	$(call RUN_MAKE,modules/rnaseq/immunedeconv.mk)
+	
 
 #==================================================
 # chip sequencing

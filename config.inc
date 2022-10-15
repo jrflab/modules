@@ -25,6 +25,7 @@ MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 INNOVATION_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
 PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
 KALLISTO_ENV ?= $(HOME)/share/usr/env/kallisto-0.46.2
+IMMUNE_ENV ?= $(HOME)/share/usr/env/r-immunedeconv-2.1.0
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
