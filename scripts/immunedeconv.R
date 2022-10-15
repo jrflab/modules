@@ -18,8 +18,8 @@ parser = OptionParser(usage = "%prog",  option_list=optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-set_cibersort_binary("~/share/usr/lib/resource_files/CIBERSORT/CIBERSORT.R")
-set_cibersort_mat("~/share/usr/lib/resource_files/CIBERSORT/LM22.txt")
+set_cibersort_binary("~/share/lib/resource_files/CIBERSORT/CIBERSORT.R")
+set_cibersort_mat("~/share/lib/resource_files/CIBERSORT/LM22.txt")
 
 if (as.numeric(opt$option)==1) {
 	tpm_by_gene = readr::read_tsv(file = opt$input_file, col_names = TRUE, col_types = cols(.default = col_character())) %>%
