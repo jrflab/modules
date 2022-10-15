@@ -448,6 +448,10 @@ TARGETS += exon_counts
 exon_counts :
 	$(call RUN_MAKE,modules/rnaseq/dexseq.mk)
 	
+TARGETS += kallisto
+kallisto :
+	$(call RUN_MAKE,modules/rnaseq/kallisto.mk)
+	
 
 #==================================================
 # chip sequencing

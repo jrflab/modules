@@ -23,6 +23,8 @@ VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
 ASCAT_ENV = $(HOME)/share/usr/anaconda-envs/ascat
 MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 INNOVATION_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
+PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
+KALLISTO_ENV ?= $(HOME)/share/usr/env/kallisto-0.46.2
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
@@ -37,6 +39,7 @@ SAMTOOLS2 ?= samtools
 VCFUTILS ?= $(HOME)/share/usr/bin/vcfutils.pl
 BCFTOOLS2 ?= bcftools
 BCFTOOLS ?= bcftools
+PIGZ ?= pigz
 BEDTOOLS ?= $(HOME)/share/usr/bin/bedtools
 BGZIP ?= $(HOME)/share/usr/bin/bgzip
 IGVTOOLS ?= $(HOME)/share/usr/IGVTools/igvtools
