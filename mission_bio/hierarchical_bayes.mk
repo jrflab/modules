@@ -12,7 +12,7 @@ hierarchical_bayes/$1/$2.RData : summary/$1/sum_alt/$2.txt.gz vcf/$1.txt vcf/MSK
 								   $(RSCRIPT) $(SCRIPTS_DIR)/mission_bio/hierarchical_bayes.R \
 								   --option 1 \
 								   --snp_file $(<<) \
-								   --context_file $(<<<)
+								   --context_file $(<<<) \
 								   --sample_name $1 \
 								   --bar_code $2")
 
