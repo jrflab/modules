@@ -14,6 +14,7 @@ GATK_ENV ?= $(HOME)/share/usr/env/gatk-3.8-10
 FASTQ_SPLITTER_ENV ?= $(HOME)/share/usr/env/fastqsplitter-1.2.0
 SAMBAMBA_ENV ?= $(HOME)/share/usr/env/sambamba-0.8.2
 PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
+JAGS_ENV ?= $(HOME)/share/usr/env/jags-4.3.0
 
 # aliases
 PYTHON ?= python
