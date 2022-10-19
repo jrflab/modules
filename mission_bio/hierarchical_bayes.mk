@@ -8,7 +8,7 @@ noise_model : $(foreach sample,$(SAMPLES), \
 
 define hierarchical-bayes
 hierarchical_bayes/$1/$2.RData : summary/$1/sum_alt/$2.txt.gz vcf/$1.txt vcf/MSKCC_Weigelt_Mission_Bio_11132018.txt
-	$$(call RUN,-n 1 -s 24G -m 64G -v $(JAGS_ENV) -w 72:00:00,"set -o pipefail && \
+	$$(call RUN,-n 1 -s 24G -m 64G -v $(JAGS_ENV) -w 36:00:00,"set -o pipefail && \
 								   $(RSCRIPT) $(SCRIPTS_DIR)/mission_bio/hierarchical_bayes.R \
 								   --option 1 \
 								   --snp_file $$(<<) \
