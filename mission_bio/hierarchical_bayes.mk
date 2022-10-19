@@ -3,12 +3,12 @@ include modules/Makefile.inc
 LOGDIR ?= log/hierarchical_bayes.$(NOW)
 
 noise_model : $(foreach sample,$(SAMPLES), \
-			$(foreach barcode,$(BARCODES),hierarchical_bayes/$(sample)/$(barcode).RData))
+			$(foreach barcode,$(BARCODES),hbm/$(sample)/mcmc/$(barcode).RData))
 	       
 
 define hierarchical-bayes
-hierarchical_bayes/$1/$2.RData : summary/$1/sum_alt/$2.txt.gz vcf/$1.txt vcf/MSKCC_Weigelt_Mission_Bio_11132018.txt
-	$$(call RUN,-n 1 -s 24G -m 64G -v $(JAGS_ENV) -w 36:00:00,"set -o pipefail && \
+hbm/$1/mcmc/$2.RData : summary/$1/sum_alt/$2.txt.gz vcf/$1.txt vcf/MSKCC_Weigelt_Mission_Bio_11132018.txt
+	$$(call RUN,-n 1 -s 24G -m 96G -v $(JAGS_ENV) -w 24:00:00,"set -o pipefail && \
 								   $(RSCRIPT) $(SCRIPTS_DIR)/mission_bio/hierarchical_bayes.R \
 								   --option 1 \
 								   --snp_file $$(<<) \

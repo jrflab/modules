@@ -57,8 +57,8 @@ if (as.numeric(opt$option)==1) {
 	#################################################
 	nc = 2
 	nd = 1E3
-	nb = 1E4
-	ni = 1E4
+	nb = 1E3
+	ni = 1E3
 	data = list(yp = pile_up %>% .[["alternate_depth"]],	
 		    dp = pile_up %>% .[["total_depth"]],
 	    	    n3 = pile_up %>% .[["levels"]],
@@ -68,8 +68,8 @@ if (as.numeric(opt$option)==1) {
 	params = c('lambda', 'b', 'tau.b')
 	post_mcmc = ZIPR(data = data,
 			 params = params,
-			 target = paste0("hierarchical_bayes/", sample_name, "/", bar_code, ".jags"),
+			 target = paste0("hierarchical_bayes/", sample_name, "/mcmc/", bar_code, ".jags"),
 			 nc = nc, nd = nd, nb = nb, ni = ni)
-	save(list = ls(all = TRUE), paste0("hierarchical_bayes/", sample_name, "/", bar_code, ".RData"))
+	save(list = ls(all = TRUE), paste0("hierarchical_bayes/", sample_name, "/mcmc/", bar_code, ".RData"))
 		   
 }
