@@ -23,7 +23,7 @@ $(foreach sample,$(SAMPLES), \
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     ${GBC} &> version/get_basecount.txt;)
+	     $(JAGS_ENV)/bin/R --version > version/hierarchical_bayes.txt;)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: noise_model
