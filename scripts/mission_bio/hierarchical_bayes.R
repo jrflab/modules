@@ -65,7 +65,7 @@ if (as.numeric(opt$option)==1) {
 	    	    N = nrow(pile_up),
 	    	    L = max(pile_up %>% .[["levels"]]))
 
-	params = c('lambda', 'mu', 'a', 'b', 'alpha', 'psi', 'tau', 'tau.b')
+	params = c('lambda', 'b', 'tau.b')
 	post_mcmc = ZIPR(data = data,
 			 params = params,
 			 target = paste0("hierarchical_bayes/", sample_name, "/", bar_code, ".jags"),
