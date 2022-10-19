@@ -68,8 +68,8 @@ if (as.numeric(opt$option)==1) {
 	params = c('lambda', 'b', 'tau.b')
 	post_mcmc = ZIPR(data = data,
 			 params = params,
-			 target = paste0("hierarchical_bayes/", sample_name, "/mcmc/", bar_code, ".jags"),
+			 target = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".jags"),
 			 nc = nc, nd = nd, nb = nb, ni = ni)
-	save(list = ls(all = TRUE), paste0("hierarchical_bayes/", sample_name, "/mcmc/", bar_code, ".RData"))
+	save(list = ls(all = TRUE), paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
 		   
 }
