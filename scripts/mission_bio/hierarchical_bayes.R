@@ -70,6 +70,6 @@ if (as.numeric(opt$option)==1) {
 			 params = params,
 			 target = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".jags"),
 			 nc = nc, nd = nd, nb = nb, ni = ni)
-	save(list = ls(all = TRUE), paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
+	save(list = ls(all=TRUE), file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
 		   
 }
