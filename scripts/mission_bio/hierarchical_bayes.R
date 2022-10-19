@@ -59,8 +59,8 @@ if (as.numeric(opt$option)==1) {
 	nd = 1E3
 	nb = 1E3
 	ni = 1E3
-	data = list(yp = pile_up %>% .[["alternate_depth"]],	
-		    dp = pile_up %>% .[["total_depth"]],
+	data = list(yp = pile_up %>% .[["alternate_depth"]],
+		    dp = pile_up %>% dplyr::mutate(total_depth = log(total_depth)) %>% .[["total_depth"]],
 	    	    n3 = pile_up %>% .[["levels"]],
 	    	    N = nrow(pile_up),
 	    	    L = max(pile_up %>% .[["levels"]]))
