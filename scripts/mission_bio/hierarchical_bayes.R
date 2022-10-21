@@ -72,4 +72,51 @@ if (as.numeric(opt$option)==1) {
 			 nc = nc, nd = nd, nb = nb, ni = ni)
 	save(list = ls(all = TRUE), file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
 
+} else if (as.numeric(opt$option)==2) {
+	sample_name = opt$sample_name
+	bar_code = opt$bar_code
+	
+	load(file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
+	
+	post_est = apply(do.call(rbind, post_mcmc), 2, median)
+	index_lambda = grep("lambda[", names(post_est), fixed = TRUE)
+	index_alpha = which(names(post_est) == "alpha")
+	index_a = grep("^a\\[", names(post_est), perl = TRUE)
+	index_b = grep("^b\\[", names(post_est), perl = TRUE)
+	index_tau = which(names(post_est) == "tau")
+	index_tau.b = which(names(post_est) == "tau.b")
+	index_psi = which(names(post_est) == "psi")
+	
+	lambda_p = post_est[index_lambda]
+	alpha = post_est[index_alpha]
+	a = post_est[index_a]
+	b = post_est[index_b]
+	tau = post_est[index_tau]
+	tau_b = post_est[index_tau.b]
+	psi = post_est[index_psi]
+	
+	nucleotide_context = pile_up %>%
+			     dplyr::group_by(context_3) %>%
+			     dplyr::summarize(level = unique(levels)) %>%
+			     dplyr::ungroup() %>%
+			     dplyr::arrange(level) %>%
+			     dplyr::mutate(a = as.vector(a)) %>%
+			     dplyr::select(-level) %>%
+			     dplyr::rename(context = context_3)
+	
+	a = nucleotide_context %>% .[["a"]]
+	names(a) = nucleotide_context %>% .[["context"]]
+	
+	data = pile_up %>%
+	       dplyr::select(chromosome, position) %>%
+	       dplyr::mutate(y_p = data$yp, d_p = data$dp) %>%
+	       dplyr::mutate(d_p = round(exp(d_p))) %>%
+	       dplyr::mutate(lambda_p = lambda_p, b_p = b)
+	params = list(alpha = alpha,
+		      a = a,
+		      tau = tau,
+		      tau_b = tau_b,
+		      psi = psi)
+	save(c("data", "params"), file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
+	
 }
