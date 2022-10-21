@@ -57,7 +57,7 @@ if (as.numeric(opt$option)==1) {
 	#################################################
 	nc = 2
 	nd = 1E3
-	nb = 1E3
+	nb = 5E3
 	ni = 1E3
 	data = list(yp = pile_up %>% .[["alternate_depth"]],
 		    dp = pile_up %>% dplyr::mutate(total_depth = log(total_depth)) %>% .[["total_depth"]],
@@ -65,29 +65,11 @@ if (as.numeric(opt$option)==1) {
 	    	    N = nrow(pile_up),
 	    	    L = max(pile_up %>% .[["levels"]]))
 
-	params = c('lambda', 'b', 'tau.b')
+	params = c('lambda', 'alpha', 'a', 'b', 'tau', 'tau.b', 'psi')
 	post_mcmc = ZIPR(data = data,
 			 params = params,
 			 target = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".jags"),
 			 nc = nc, nd = nd, nb = nb, ni = ni)
-	save(list = ls(all=TRUE), file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
+	save(list = ls(all = TRUE), file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
 
-} else if (as.numeric(opt$option)==2) {
-	sample_name = opt$sample_name
-	bar_code = opt$bar_code
-	
-	load(file = paste0("hbm/", sample_name, "/mcmc/", bar_code, ".RData"))
-	
-	post_q2 = apply(do.call(rbind, post_mcmc), 2, median)
-	index_lambda = grep("lambda[", names(post_q2), fixed = TRUE)
-	index_b = grep("^b\\[", names(post_q2), perl = TRUE)
-	index_tau.b = which(names(post_q2) == "tau.b")
-	
-	y_p = data$yp
-	d_p = data$dp
-	lambda_p = post_q2[index_lambda]
-	b_p = post_q2[index_b]
-	tau_b = post_q2[index_tau.b]
-	save(list = c("y_p", "d_p", "lambda_p", "b_p", "tau_b"), file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
-
-} 
+}
