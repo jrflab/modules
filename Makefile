@@ -260,7 +260,7 @@ cnv_kit :
 
 
 #==================================================
-# structural variant callers
+# RNAseq structural variant callers
 #==================================================
 
 TARGETS += star_fusion
@@ -274,6 +274,31 @@ tophat_fusion :
 TARGETS += manta_rnaseq
 manta_rnaseq :
 	$(call RUN_MAKE,modules/sv_callers/mantaRnaseq.mk)
+	
+TARGETS += integrate_rnaseq
+integrate_rnaseq :
+	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
+
+TARGETS += soapfuse
+soapfuse :
+	$(call RUN_MAKE,modules/sv_callers/soapFuse.mk)
+
+TARGETS += mapsplice
+mapsplice :
+	$(call RUN_MAKE,modules/sv_callers/mapsplice.mk)
+
+TARGETS += fusioncatcher
+fusioncatcher :
+	$(call RUN_MAKE,modules/sv_callers/fusioncatcher.mk)
+	
+TARGETS += oncofuse
+oncofuse :
+	$(call RUN_MAKE,modules/sv_callers/oncofuse.mk)
+
+
+#==================================================
+# RNAseq structural variant callers
+#==================================================	
 
 TARGETS += manta
 manta :
@@ -291,10 +316,6 @@ TARGETS += brass
 brass :
 	$(call RUN_MAKE,modules/sv_callers/brass.mk)
 
-TARGETS += integrate_rnaseq
-integrate_rnaseq :
-	$(call RUN_MAKE,modules/sv_callers/integrateRnaseq.mk)
-
 TARGETS += integrate
 integrate :
 	$(call RUN_MAKE,modules/sv_callers/integrate.mk)
@@ -308,10 +329,6 @@ TARGETS += chimscan
 chimscan :
 	$(call RUN_MAKE_J,modules/sv_callers/chimerascan.mk,$(NUM_CHIMSCAN_JOBS))
 
-TARGETS += oncofuse
-oncofuse :
-	$(call RUN_MAKE,modules/sv_callers/oncofuse.mk)
-
 TARGETS += lumpy
 lumpy :
 	$(call RUN_MAKE,modules/sv_callers/lumpy.mk)
@@ -323,18 +340,6 @@ hydra :
 TARGETS += nfuse_wgss_wtss
 nfuse_wgss_wtss :
 	$(call RUN_MAKE,modules/sv_callers/nfuseWGSSWTSS.mk)
-
-TARGETS += soapfuse
-soapfuse :
-	$(call RUN_MAKE,modules/sv_callers/soapFuse.mk)
-
-TARGETS += mapsplice
-mapsplice :
-	$(call RUN_MAKE,modules/sv_callers/mapsplice.mk)
-
-TARGETS += fusioncatcher
-fusioncatcher :
-	$(call RUN_MAKE,modules/sv_callers/fusioncatcher.mk)
 
 TARGETS += crest
 crest :
