@@ -297,7 +297,7 @@ oncofuse :
 
 
 #==================================================
-# RNAseq structural variant callers
+# DNA structural variant callers
 #==================================================	
 
 TARGETS += manta
