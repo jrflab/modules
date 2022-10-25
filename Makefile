@@ -300,10 +300,6 @@ oncofuse :
 # DNA structural variant callers
 #==================================================	
 
-TARGETS += manta
-manta :
-	$(call RUN_MAKE,modules/sv_callers/manta.mk)
-
 TARGETS += mantaTN
 mantaTN :
 	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
@@ -311,6 +307,10 @@ mantaTN :
 TARGETS += svabaTN
 svabaTN :
 	$(call RUN_MAKE,modules/sv_callers/svabaTN.mk)	
+
+TARGETS += manta
+manta :
+	$(call RUN_MAKE,modules/sv_callers/manta.mk)
 
 TARGETS += brass
 brass :
@@ -348,23 +348,40 @@ crest :
 TARGETS += delly
 delly :
 	$(call RUN_MAKE,modules/sv_callers/delly.mk)
+	
+
+#==================================================
+# BAM tools
+#==================================================
+
+TARGETS += fix_bam
+fix_bam :
+	$(call RUN_MAKE,modules/bam_tools/fix_bam.mk)
+
+TARGETS += fix_rg
+fix_rg :
+	$(call RUN_MAKE,modules/bam_tools/fix_rg.mk)
+
+TARGETS += fix_mate
+fix_mate :
+	$(call RUN_MAKE,modules/bam_tools/fix_mate.mk)
+
+TARGETS += merge_bam
+merge_bam :
+	$(call RUN_MAKE,modules/bam_tools/merge_bam.mk)
+	
+TARGETS += process_bam
+process_bam : 
+	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
 
 
 #==================================================
-# pre-processing
+# FASTQ tools
 #==================================================
 
 TARGETS += merge_fastq
 merge_fastq : 
 	$(call RUN_MAKE,modules/fastq_tools/mergeFastq.mk)
-
-TARGETS += fix_bam
-fix_bam :
-	$(call RUN_MAKE,modules/bam_tools/fixBam.mk)
-
-TARGETS += fix_rg
-fix_rg :
-	$(call RUN_MAKE,modules/bam_tools/fixRG.mk)
 
 TARGETS += merge_split_fastq
 merge_split_fastq :
@@ -385,19 +402,6 @@ extract_unmapped_pairs :
 TARGETS += bam_to_fasta
 bam_to_fasta :
 	$(call RUN_MAKE,modules/fastq_tools/bamtoFasta.mk)
-	
-TARGETS += process_bam
-process_bam : 
-	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
-
-TARGETS += merge_bam
-merge_bam :
-	$(call RUN_MAKE,modules/bam_tools/mergeBam.mk)
-	
-TARGETS += split_rg
-split_rg :
-	$(call RUN_MAKE,modules/bam_tools/splitRG.mk)
-
 
 
 #==================================================

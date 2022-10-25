@@ -2,10 +2,6 @@ include modules/Makefile.inc
 
 LOGDIR = log/merge.$(NOW)
 
-.SECONDARY:
-.DELETE_ON_ERROR: 
-.PHONY : merged_bam
-
 merged_bam : $(foreach sample,$(MERGE_SAMPLES),bam/$(sample).bam bam/$(sample).bam.bai)
 
 define merged-bam
@@ -31,5 +27,9 @@ $(foreach sample,$(MERGE_SAMPLES),\
 
 bam/%.bam : merged_bam/%.rg.bam
 	$(INIT) ln -f $< $@
+
+.SECONDARY:
+.DELETE_ON_ERROR: 
+.PHONY : merged_bam
 
 include modules/bam_tools/processBam.mk
