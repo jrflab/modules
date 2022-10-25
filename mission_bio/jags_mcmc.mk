@@ -32,7 +32,7 @@ $(foreach sample,$(SAMPLES), \
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(JAGS_ENV)/bin/R --version > version/hierarchical_bayes.txt;)
+	     $(JAGS_ENV)/bin/R --version > version/jags_mcmc.txt;)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: noise_model
