@@ -26,6 +26,7 @@ INNOVATION_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
 PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
 KALLISTO_ENV ?= $(HOME)/share/usr/env/kallisto-0.46.2
 IMMUNE_ENV ?= $(HOME)/share/usr/env/r-immunedeconv-2.1.0
+SUMREADS_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
@@ -73,6 +74,10 @@ INTRON_POSN_LOOKUP ?= $(SCRIPTS_DIR)/posnGeneLookup.pl
 RBIND ?= $(SCRIPTS_DIR)/rbind.R
 NORMAL_FILTER ?= $(PERL) $(SCRIPTS_DIR)/normalFilterVCF.pl
 SOMATIC_FILTER_VCF ?= $(PERL) $(SCRIPTS_DIR)/somaticFilterVCF.pl
+SUM_READS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads.R
+SUM_EXONS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads_byexon.R
+SUM_INTRONS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads_byintron.R
+
 
 JAVA_BIN ?=  $(JAVA8_BIN)
 JAVA6_BIN ?= $(HOME)/share/usr/jdk1.6.0_45/bin/java

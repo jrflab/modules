@@ -5,7 +5,7 @@ LOGDIR = log/kallisto.$(NOW)
 kallisto : $(foreach sample,$(SAMPLES),kallisto/$(sample)/$(sample)_R1.fastq.gz) \
 	   $(foreach sample,$(SAMPLES),kallisto/$(sample)/$(sample)_R2.fastq.gz) \
 	   $(foreach sample,$(SAMPLES),kallisto/$(sample)/abundance.tsv) \
-	   kallisto/tpm_bygene.txt
+	   kallisto/tpm_by_gene.txt
 
 SLEUTH_ANNOT ?= $(HOME)/share/lib/resource_files/Hugo_ENST_ensembl75_fixed.txt
 KALLISTO_INDEX ?= $(HOME)/share/lib/ref_files/b37/ensembl_v75-0.43.0_kallisto_index
@@ -35,7 +35,7 @@ endef
 $(foreach sample,$(SAMPLES),\
 		$(eval $(call fastq-to-kallisto,$(sample))))
 		
-kallisto/tpm_bygene.txt : $(foreach sample,$(SAMPLES),kallisto/$(sample)/abundance.tsv)
+kallisto/tpm_by_gene.txt : $(foreach sample,$(SAMPLES),kallisto/$(sample)/abundance.tsv)
 	$(call RUN, -c -n 24 -s 1G -m 2G -v $(KALLISTO_ENV),"set -o pipefail && \
 							     $(RSCRIPT) $(SCRIPTS_DIR)/summarize_sleuth.R --annotation $(SLEUTH_ANNOT) --samples '$(SAMPLES)'")
 

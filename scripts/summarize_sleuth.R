@@ -31,4 +31,4 @@ data = sleuth::sleuth_prep(sample_to_covariates = manifest,
 res = as.data.frame(sleuth_to_matrix(data, "obs_norm", "tpm"))
 tpm_bygene = dplyr::tibble(gene_symbol = rownames(res)) %>%
 	     dplyr::bind_cols(dplyr::as_tibble(res))
-write_tsv(x=tpm_bygene, path="kallisto/tpm_bygene.txt", append=FALSE, col_names=TRUE, quote_escape=FALSE)
+write_tsv(x=tpm_bygene, path="kallisto/tpm_by_gene.txt", append=FALSE, col_names=TRUE, quote_escape=FALSE)

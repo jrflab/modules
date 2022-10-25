@@ -438,38 +438,21 @@ bam_stats :
 
 
 #==================================================
-# rna sequencing
+# RNA sequencing
 #==================================================
-
-TARGETS += cufflinks
-cufflinks : 
-	$(call RUN_MAKE,modules/rnaseq/cufflinks.mk)
 
 TARGETS += sum_reads
 sum_reads :
-	$(call RUN_MAKE,modules/rnaseq/sumRNASeqReads.mk)
+	$(call RUN_MAKE,modules/rnaseq/sumreads.mk)
 
-TARGETS += exon_counts
-exon_counts :
-	$(call RUN_MAKE,modules/rnaseq/dexseq.mk)
-	
 TARGETS += kallisto
 kallisto :
 	$(call RUN_MAKE,modules/rnaseq/kallisto.mk)
 	
-TARGETS += immunedeconv
-immunedeconv :
+TARGETS += immune_deconv
+immune_deconv :
 	$(call RUN_MAKE,modules/rnaseq/immunedeconv.mk)
 	
-
-#==================================================
-# chip sequencing
-#==================================================
-	
-TARGETS += macs2TN
-macs2TN:
-	$(call RUN_MAKE,modules/variant_callers/somatic/macs2TN.mk)
-
 
 #==================================================
 # ploidy
