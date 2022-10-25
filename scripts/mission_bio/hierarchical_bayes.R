@@ -117,6 +117,6 @@ if (as.numeric(opt$option)==1) {
 		      tau = tau,
 		      tau_b = tau_b,
 		      psi = psi)
-	save(c("data", "params"), file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
+	save(data, params, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
 	
 }
