@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/hierarchical_bayes.$(NOW)
+LOGDIR ?= log/jags_mcmc.$(NOW)
 
 noise_model : $(foreach sample,$(SAMPLES), \
 			$(foreach barcode,$(BARCODES),hbm/$(sample)/mcmc/$(barcode).RData)) \

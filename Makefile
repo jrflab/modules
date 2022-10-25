@@ -76,9 +76,9 @@ TARGETS += get_basecount
 get_basecount :
 	$(call RUN_MAKE,modules/mission_bio/get_basecount.mk)
 	
-TARGETS += hierarchical_bayes
-hierarchical_bayes :
-	$(call RUN_MAKE,modules/mission_bio/hierarchical_bayes.mk)
+TARGETS += jags_mcmc
+jags_mcmc :
+	$(call RUN_MAKE,modules/mission_bio/jags_mcmc.mk)
 	
 
 .PHONY : $(TARGETS)
