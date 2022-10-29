@@ -78,4 +78,25 @@ if (as.numeric(opt$option)==1) {
 	      dplyr::filter(t_ref_count > 0)
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
+} else if (as.numeric(opt$option)==4) {
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
+	maf = list()
+	for (i in 1:length(sample_set)) {
+		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		      	   readr::type_convert()
+	}
+	maf = do.call(bind_rows, maf)
+	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
+
+} else if (as.numeric(opt$option)==5) {
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
+	maf = list()
+	for (i in 1:length(sample_set)) {
+		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], "_ft.maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		      	   readr::type_convert()
+	}
+	maf = do.call(bind_rows, maf)
+	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
+
 }
+
