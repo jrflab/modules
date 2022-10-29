@@ -10,7 +10,6 @@ if (!interactive()) {
 }
 
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
-	       make_option("--sample", default = NA, type = 'character', help = "sample"),
                make_option("--sample_set", default = NA, type = 'character', help = "sample set"),
 	       make_option("--normal_sample", default = NA, type = 'character', help = "normal sample"),
 	       make_option("--input_file", default = NA, type = 'character', help = "input file"),
@@ -48,4 +47,10 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::select(-chr_n)
 	cat("##fileformat=VCFv4.2\n", file = as.character(opt$output_file), append=FALSE)
 	readr::write_tsv(x = smry, path = as.character(opt$output_file), append = TRUE, col_names = TRUE)
+
+} else if (as.numeric(opt$option)==2) {
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
+	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
+	sample_set = setdiff(sample_set, normal_sample)
+	
 }
