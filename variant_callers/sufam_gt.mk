@@ -21,7 +21,9 @@ sufam/$1.vcf : summary/tsv/all.tsv
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call sufam-gt,$(sample))))
-		
+
+..DUMMY := $(shell mkdir -p version; \
+	     R --version > version/sufam_gt.txt)
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY:
