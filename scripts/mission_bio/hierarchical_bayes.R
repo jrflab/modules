@@ -129,10 +129,11 @@ if (as.numeric(opt$option)==1) {
 #		print(i)
 #		load(file_names[i])
 #		data = data %>%
-#		       dplyr::mutate(d_p = ifelse(d_p == 0, 1, d_p)) %>%
-#	       	       dplyr::mutate(lambdap_dp = 100*(lambda_p + params$tau_b*b_p)/d_p) %>%
-#	       	       dplyr::mutate(lambdap_dp = abs(lambdap_dp)) %>%
-#	       	       dplyr::select(lambdap_dp)
+#		       dplyr::mutate(lambdap_dp = case_when(
+#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
+#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
+#		       )) %>%
+#		       dplyr::select(lambdap_dp)
 #		P_AF[[i]] = data$lambdap_dp
 #	}
 #	P_AF = do.call(cbind, P_AF) %>%
@@ -149,10 +150,11 @@ if (as.numeric(opt$option)==1) {
 #		print(i)
 #		load(file_names[i])
 #		data = data %>%
-#		       dplyr::mutate(d_p = ifelse(d_p == 0, 1, d_p)) %>%
-#	       	       dplyr::mutate(lambdap_dp = 100*(lambda_p + params$tau_b*b_p)/d_p) %>%
-#	       	       dplyr::mutate(lambdap_dp = abs(lambdap_dp)) %>%
-#	       	       dplyr::select(lambdap_dp)
+#		       dplyr::mutate(lambdap_dp = case_when(
+#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
+#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
+#		       )) %>%
+#		       dplyr::select(lambdap_dp)
 #		P_AF[[i]] = data$lambdap_dp
 #	}
 #	P_AF = do.call(cbind, P_AF) %>%
@@ -169,10 +171,11 @@ if (as.numeric(opt$option)==1) {
 #		print(i)
 #		load(file_names[i])
 #		data = data %>%
-#		       dplyr::mutate(d_p = ifelse(d_p == 0, 1, d_p)) %>%
-#	       	       dplyr::mutate(lambdap_dp = 100*(lambda_p + params$tau_b*b_p)/d_p) %>%
-#	       	       dplyr::mutate(lambdap_dp = abs(lambdap_dp)) %>%
-#	       	       dplyr::select(lambdap_dp)
+#		       dplyr::mutate(lambdap_dp = case_when(
+#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
+#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
+#		       )) %>%
+#		       dplyr::select(lambdap_dp)
 #		P_AF[[i]] = data$lambdap_dp
 #	}
 #	P_AF = do.call(cbind, P_AF) %>%
