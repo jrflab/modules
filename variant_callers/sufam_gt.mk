@@ -56,6 +56,14 @@ sufam/$1.maf : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) $(foreach 
 					 --normal_sample '$(normal.$1)' \
 					 --output_file $$(@)")
 					 
+sufam/$1_ft.maf : sufam/$1.maf
+	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
+					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+					 --option 3 \
+					 --input_file $$(<) \
+					 --output_file $$(@)")
+
+					 
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call combine-maf,$(set))))
