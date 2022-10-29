@@ -5,7 +5,8 @@ LOGDIR ?= log/sufam_gt.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
-sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf)
+sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt)
 
 define sufam-gt
 sufam/$1.vcf : summary/tsv/all.tsv
@@ -17,6 +18,16 @@ sufam/$1.vcf : summary/tsv/all.tsv
 					 --normal_sample '$(normal.$1)' \
 					 --input_file $$(<) \
 					 --output_file $$(@)")
+					 
+sufam/$1.txt : sufam/$1.vcf bam/$1.bam
+	$$(call RUN,-c -n 1 -s 2G -m 3G -v $(SUFAM_ENV),"set -o pipefail && \
+					 		 sufam \
+							 --sample_name $1 \
+							 $$(SUFAM_OPTS) \
+							 $$(REF_FASTA) \
+							 $$(<) \
+							 $$(<<) \
+							 > $$(@)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
