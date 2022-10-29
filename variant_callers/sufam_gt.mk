@@ -5,7 +5,7 @@ LOGDIR ?= log/sufam_gt.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
-sufam_gt : $(foreach set,$(SAMPLE_SETS),sufam/$(set).vcf)
+sufam_gt : $(foreach set,$(SAMPLE_SETS),sufam/$(set).vcf) \
 	   $(foreach sample,$(SAMPLES),sufam/$(sample).txt)
 
 define tsv-2-vcf
