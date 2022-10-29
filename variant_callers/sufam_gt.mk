@@ -7,7 +7,7 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
 sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf)
 
-define tsv-2-vcf
+define sufam-gt
 sufam/$1.vcf : summary/tsv/all.tsv
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
@@ -20,7 +20,7 @@ sufam/$1.vcf : summary/tsv/all.tsv
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call tsv-2-vcf,$(sample))))
+		$(eval $(call sufam-gt,$(sample))))
 		
 .DELETE_ON_ERROR:
 .SECONDARY:
