@@ -5,8 +5,7 @@ LOGDIR ?= log/sufam_gt.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
-sufam_gt : $(foreach set,$(SAMPLE_SETS),sufam/$(set).vcf) \
-	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).taskcomplete)
+sufam_gt : $(foreach set,$(SAMPLE_SETS),sufam/$(set).vcf)
 
 define tsv-2-vcf
 sufam/$1.vcf : summary/tsv/all.tsv
@@ -21,17 +20,6 @@ sufam/$1.vcf : summary/tsv/all.tsv
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call tsv-2-vcf,$(set))))
-
-define sufam-genotype
-sufam/$1.taskcomplete : sufam/$1.vcf
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 ")
-
-endef
-$(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call sufam-genotype,$(set),$(set.$(sample)))))
-
-
 
 .DELETE_ON_ERROR:
 .SECONDARY:
