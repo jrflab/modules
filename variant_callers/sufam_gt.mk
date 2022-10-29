@@ -58,7 +58,7 @@ sufam/$1.maf : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) $(foreach 
 					 
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call combine-maf,$(sample))))
+		$(eval $(call combine-maf,$(set))))
 
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version > version/sufam_gt.txt)
