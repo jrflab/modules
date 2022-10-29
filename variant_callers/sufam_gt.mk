@@ -25,12 +25,7 @@ $(foreach set,$(SAMPLE_SETS),\
 define sufam-genotype
 sufam/$1.txt : $$(foreach sample,$2,$$(word 1, $$(set.$$(sample))))
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					 --option 1 \
-					 --sample_set $1 \
-					 --normal_samples '$(NORMAL_SAMPLES)' \
-					 --input_file $$(<) \
-					 --output_file $$(@)")
+					 ")
 
 endef
 $(foreach sample,$(SAMPLES),\
