@@ -74,7 +74,7 @@ $(foreach set,$(SAMPLE_SETS),\
 
 sufam/mutation_summary.maf : $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/summary/sufam_gt.R \
+					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					  --option 4 \
 					  --sample_set '$(SAMPLE_SETS)' \
 					  --output_file $(@)")
@@ -82,7 +82,7 @@ sufam/mutation_summary.maf : $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
 
 sufam/mutation_summary_ft.maf : $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf)
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/summary/sufam_gt.R \
+					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					  --option 5 \
 					  --sample_set '$(SAMPLE_SETS)' \
 					  --output_file $(@)")
