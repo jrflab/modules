@@ -8,7 +8,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf) \
-	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
+	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
+	   $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf)
 
 define sufam-gt
 sufam/$1.vcf : summary/tsv/all.tsv
