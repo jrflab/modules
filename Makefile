@@ -173,14 +173,6 @@ TARGETS += hotspot
 hotspot: 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 	
-TARGETS += genotype_hotspot
-genotype_hotspot:
-	$(call RUN_MAKE,modules/variant_callers/genotypehotspots.mk)
-	
-TARGETS += genotype_pdx
-genotype_pdx:
-	$(call RUN_MAKE,modules/variant_callers/genotypepdx.mk)
-	
 TARGETS += jsm
 jsm :
 	$(call RUN_MAKE,modules/variant_callers/somatic/jsm.mk)
@@ -188,7 +180,11 @@ jsm :
 TARGETS += sufam
 sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamsampleset.mk)
-	
+
+TARGETS += sufam_gt
+sufam_gt:
+	$(call RUN_MAKE,modules/variant_callers/sufam_gt.mk)
+
 TARGETS += get_basecount
 get_basecount:
 	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
