@@ -6,7 +6,7 @@ SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000'
 
 sufam_gt : $(foreach set,$(SAMPLE_SETS),sufam/$(set).vcf) \
-	   $(foreach sample,$(SAMPLES),sufam/$(sample).txt)
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt)
 
 define tsv-2-vcf
 sufam/$1.vcf : summary/tsv/all.tsv
@@ -23,13 +23,13 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call tsv-2-vcf,$(set))))
 
 define sufam-genotype
-sufam/$1.txt : $$(foreach sample,$2,$$(word 1, $$(set.$$(sample))))
+sufam/$2.txt : sufam/$1.vcf
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 ")
 
 endef
-$(foreach sample,$(SAMPLES),\
-		$(eval $(call sufam-genotype,$(sample),$(set.$(sample)))))
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call sufam-genotype,$(set),$(set.$(sample)))))
 
 
 
