@@ -31,16 +31,16 @@ sufam/$1.txt : sufam/$1.vcf bam/$1.bam
 							 > $$(@)")
 
 sufam/$1.maf : sufam/$1.vcf
-	$$(call RUN,-c -n 12 -s 1G -m 2G,"set -o pipefail && \
-					  $$(VCF2MAF) \
-					  --input-vcf $$< \
-					  --tumor-id $1 \
-					  --filter-vcf $$(EXAC_NONTCGA) \
-					  --ref-fasta $$(REF_FASTA) \
-					  --vep-path $$(VEP_PATH) \
-					  --vep-data $$(VEP_DATA) \
-					  --tmp-dir `mktemp -d` \
-					  --output-maf $$(@)")
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(VEP_ENV),"set -o pipefail && \
+							$$(VCF2MAF) \
+							--input-vcf $$< \
+							--tumor-id $1 \
+							--filter-vcf $$(EXAC_NONTCGA) \
+							--ref-fasta $$(REF_FASTA) \
+							--vep-path $$(VEP_PATH) \
+							--vep-data $$(VEP_DATA) \
+							--tmp-dir `mktemp -d` \
+							--output-maf $$(@)")
 
 
 endef
