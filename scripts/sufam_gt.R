@@ -10,8 +10,9 @@ if (!interactive()) {
 }
 
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
+	       make_option("--sample", default = NA, type = 'character', help = "sample"),
                make_option("--sample_set", default = NA, type = 'character', help = "sample set"),
-	       make_option("--normal_samples", default = NA, type = 'character', help = "normal samples"),
+	       make_option("--normal_sample", default = NA, type = 'character', help = "normal sample"),
 	       make_option("--input_file", default = NA, type = 'character', help = "input file"),
 	       make_option("--output_file", default = NA, type = 'character', help = "output file"))
 parser = OptionParser(usage = "%prog", option_list = optList)
@@ -19,12 +20,12 @@ arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
 if (as.numeric(opt$option)==1) {
-	sample_names = unlist(strsplit(x = as.character(opt$sample_set), split="_", fixed=TRUE))
-	normal_sample = intersect(sample_names, unlist(strsplit(x = as.character(opt$normal_samples), split=" ", fixed=TRUE)))
-	sample_names = setdiff(sample_names, normal_sample)
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
+	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
+	sample_set = setdiff(sample_set, normal_sample)
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       readr::type_convert() %>%
-	       dplyr::filter(TUMOR_SAMPLE %in% sample_names) %>%
+	       dplyr::filter(TUMOR_SAMPLE %in% sample_set) %>%
 	       dplyr::filter(NORMAL_SAMPLE == normal_sample) %>%
 	       dplyr::mutate(UUID = paste0(CHROM, ":", POS, "_", REF, ">", ALT)) %>%
 	       dplyr::filter(!duplicated(UUID)) %>%
@@ -45,7 +46,6 @@ if (as.numeric(opt$option)==1) {
 	       readr::type_convert() %>%
 	       dplyr::arrange(chr_n) %>%
 	       dplyr::select(-chr_n)
-	
 	cat("##fileformat=VCFv4.2\n", file = as.character(opt$output_file), append=FALSE)
 	readr::write_tsv(x = smry, path = as.character(opt$output_file), append = TRUE, col_names = TRUE)
 }
