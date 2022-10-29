@@ -13,7 +13,7 @@ sufam/$1.vcf : summary/tsv/all.tsv
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					 --option 1 \
 					 --sample_set $1 \
-					 --normal_sample '$(NORMAL_SAMPLES)' \
+					 --normal_samples '$(NORMAL_SAMPLES)' \
 					 --input_file $$(<) \
 					 --output_file $$(@)")
 
