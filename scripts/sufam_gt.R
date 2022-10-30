@@ -87,9 +87,29 @@ if (as.numeric(opt$option)==1) {
 	}
 	maf = do.call(bind_rows, maf)
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	       readr::type_convert() %>%
+	       dplyr::mutate(HOTSPOT = case_when(
+		       is.na(HOTSPOT) ~ FALSE,
+		       HOTSPOT == "True" ~ TRUE,
+		       HOTSPOT == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
+		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
+		       HOTSPOT_INTERNAL == "True" ~ TRUE,
+		       HOTSPOT_INTERNAL == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(cmo_hotspot = case_when(
+		       is.na(cmo_hotspot) ~ FALSE,
+		       cmo_hotspot == "True" ~ TRUE,
+		       cmo_hotspot == "False" ~ FALSE
+	       )) %>%
 	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
-	       dplyr::mutate(is_loh = facetsLOHCall)
+	       dplyr::mutate(facetsLOHCall = case_when(
+		       is.na(facetsLOHCall) ~ FALSE,
+		       facetsLOHCall == "True" ~ TRUE,
+		       facetsLOHCall == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(is_loh = facetsLOHCall) %>%
+	       readr::type_convert()
 	maf = maf %>%
 	      dplyr::left_join(smry %>%
 			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
@@ -110,9 +130,29 @@ if (as.numeric(opt$option)==1) {
 	}
 	maf = do.call(bind_rows, maf)
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	       readr::type_convert() %>%
+	       dplyr::mutate(HOTSPOT = case_when(
+		       is.na(HOTSPOT) ~ FALSE,
+		       HOTSPOT == "True" ~ TRUE,
+		       HOTSPOT == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
+		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
+		       HOTSPOT_INTERNAL == "True" ~ TRUE,
+		       HOTSPOT_INTERNAL == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(cmo_hotspot = case_when(
+		       is.na(cmo_hotspot) ~ FALSE,
+		       cmo_hotspot == "True" ~ TRUE,
+		       cmo_hotspot == "False" ~ FALSE
+	       )) %>%
 	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
-	       dplyr::mutate(is_loh = facetsLOHCall)
+	       dplyr::mutate(facetsLOHCall = case_when(
+		       is.na(facetsLOHCall) ~ FALSE,
+		       facetsLOHCall == "True" ~ TRUE,
+		       facetsLOHCall == "False" ~ FALSE
+	       )) %>%
+	       dplyr::mutate(is_loh = facetsLOHCall) %>%
+	       readr::type_convert()
 	maf = maf %>%
 	      dplyr::left_join(smry %>%
 			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
