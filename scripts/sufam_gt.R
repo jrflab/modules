@@ -85,7 +85,8 @@ if (as.numeric(opt$option)==1) {
 	for (i in 1:length(sample_set)) {
 		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
 	}
-	maf = do.call(bind_rows, maf)
+	maf = do.call(bind_rows, maf) %>%
+	readr::type_convert()
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       dplyr::mutate(HOTSPOT = case_when(
 		       is.na(HOTSPOT) ~ FALSE,
@@ -128,7 +129,8 @@ if (as.numeric(opt$option)==1) {
 	for (i in 1:length(sample_set)) {
 		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], "_ft.maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
 	}
-	maf = do.call(bind_rows, maf)
+	maf = do.call(bind_rows, maf) %>%
+	readr::type_convert()
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       dplyr::mutate(HOTSPOT = case_when(
 		       is.na(HOTSPOT) ~ FALSE,
