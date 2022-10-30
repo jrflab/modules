@@ -56,9 +56,9 @@ if (as.numeric(opt$option)==1) {
 	for (i in 1:length(sample_set)) {
 		sufam = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			readr::type_convert() %>%
-			dplyr::select(Chromosome = chrom,
-				      Start_Position = pos,
-				      Reference_Allele = ref,
+			dplyr::select(CHROM = chrom,
+				      POS = pos,
+				      REF = ref,
 				      t_depth = cov,
 				      t_alt_count = val_al_count) %>%
 		 	dplyr::mutate(t_ref_count = t_depth - t_alt_count)
