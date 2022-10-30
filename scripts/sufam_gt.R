@@ -58,7 +58,7 @@ if (as.numeric(opt$option)==1) {
 			readr::type_convert() %>%
 			dplyr::select(CHROM = chrom,
 				      POS = pos,
-				      REF = ref,
+				      REF = val_ref,
 				      ALT = val_alt,
 				      t_depth = cov,
 				      t_alt_count = val_al_count) %>%
