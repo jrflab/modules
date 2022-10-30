@@ -59,6 +59,7 @@ if (as.numeric(opt$option)==1) {
 			dplyr::select(CHROM = chrom,
 				      POS = pos,
 				      REF = ref,
+				      ALT = val_alt,
 				      t_depth = cov,
 				      t_alt_count = val_al_count) %>%
 		 	dplyr::mutate(t_ref_count = t_depth - t_alt_count)
@@ -85,6 +86,20 @@ if (as.numeric(opt$option)==1) {
 		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
 	}
 	maf = do.call(bind_rows, maf)
+	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert() %>%
+	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
+	       dplyr::mutate(is_loh = facetsLOHCall)
+	maf = maf %>%
+	      dplyr::left_join(smry %>%
+			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
+	       		       dplyr::summarize(is_hotspot = unique(is_hotspot)) %>%
+			       dplyr::ungroup(),
+			       by = c("CHROM", "POS", "REF", "ALT"))
+	maf = maf %>%
+	      dplyr::left_join(smry %>%
+			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_loh),
+			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
 } else if (as.numeric(opt$option)==5) {
@@ -94,6 +109,20 @@ if (as.numeric(opt$option)==1) {
 		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], "_ft.maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
 	}
 	maf = do.call(bind_rows, maf)
+	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert() %>%
+	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
+	       dplyr::mutate(is_loh = facetsLOHCall)
+	maf = maf %>%
+	      dplyr::left_join(smry %>%
+			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
+	       		       dplyr::summarize(is_hotspot = unique(is_hotspot)) %>%
+			       dplyr::ungroup(),
+			       by = c("CHROM", "POS", "REF", "ALT"))
+	maf = maf %>%
+	      dplyr::left_join(smry %>%
+			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_loh),
+			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
 }
