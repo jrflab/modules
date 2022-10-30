@@ -77,7 +77,7 @@ sufam/mutation_summary.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),su
 					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					  --option 4 \
 					  --sample_set '$(SAMPLE_SETS)' \
-					  --input_file $$(<) \
+					  --input_file $(<) \
 					  --output_file $(@)")
 
 
@@ -86,7 +86,7 @@ sufam/mutation_summary_ft.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS)
 					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					  --option 5 \
 					  --sample_set '$(SAMPLE_SETS)' \
-					  --input_file $$(<) \
+					  --input_file $(<) \
 					  --output_file $(@)")
 
 ..DUMMY := $(shell mkdir -p version; \
