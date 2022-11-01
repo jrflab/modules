@@ -11,7 +11,7 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
 
 
 define sufam-gt
-pyclone/$1.vcf : pyclone/tsv/all.tsv
+pyclone/$1.vcf : summary/tsv/all.tsv
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					 --option 1 \
