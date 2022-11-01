@@ -93,4 +93,4 @@ sufam/mutation_summary_ft.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS)
 	     R --version > version/sufam_gt.txt)
 .DELETE_ON_ERROR:
 .SECONDARY:
-.PHONY:
+.PHONY: sufam_gt

@@ -401,7 +401,7 @@ bam_to_fasta :
 
 
 #==================================================
-# quality control
+# QC
 #==================================================
 
 TARGETS += bam_metrics
@@ -455,17 +455,12 @@ immune_deconv :
 	
 
 #==================================================
-# ploidy
+# Ploidy/ Clonality
 #==================================================
 
 TARGETS += pyloh
 pyloh :
 	$(call RUN_MAKE,modules/ploidy/pyloh.mk)
-
-
-#==================================================
-# clonality
-#==================================================
 
 TARGETS += clonehd
 clonehd :
@@ -475,13 +470,13 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
-TARGETS += ms_pyclone
-ms_pyclone :
-	$(call RUN_MAKE,modules/test/workflows/mspyclone.mk)
+TARGETS += pyclone_single_sample
+pyclone_single_sample :
+	$(call RUN_MAKE,modules/ploidy/pyclone_single_sample.mk)
 	
-TARGETS += ss_pyclone
-ss_pyclone :
-	$(call RUN_MAKE,modules/test/workflows/pyclone.mk)
+TARGETS += pyclone_multi_sample
+pyclone_multi_sample :
+	$(call RUN_MAKE,modules/ploidy/pyclone_multi_sample.mk)
 	
 
 #==================================================
