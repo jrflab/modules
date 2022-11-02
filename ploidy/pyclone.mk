@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR ?= log/pyclone_multi_sample.$(NOW)
+LOGDIR ?= log/pyclone.$(NOW)
 
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
@@ -48,7 +48,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call sufam-gt,$(sample))))
 		
 ..DUMMY := $(shell mkdir -p version; \
-	     R --version > version/pyclone_multi_sample.txt)
+	     R --version > version/pyclone.txt)
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: pyclone

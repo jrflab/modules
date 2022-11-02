@@ -470,14 +470,9 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
-TARGETS += pyclone_single_sample
-pyclone_single_sample :
-	$(call RUN_MAKE,modules/ploidy/pyclone_single_sample.mk)
-	
-TARGETS += pyclone_multi_sample
-pyclone_multi_sample :
-	$(call RUN_MAKE,modules/ploidy/pyclone_multi_sample.mk)
-	
+TARGETS += pyclone
+pyclone :
+	$(call RUN_MAKE,modules/ploidy/pyclone.mk)
 
 #==================================================
 # mutational signatures
