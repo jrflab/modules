@@ -35,7 +35,7 @@ define summarize-mcmc
 hbm/$1/__LambdaP__.RData : $(foreach barcode,$(BARCODES),hbm/$1/params/$(barcode).RData)
 	$$(call RUN,-n 1 -s 24G -m 48G -v $(JAGS_ENV),"set -o pipefail && \
 						       $(RSCRIPT) $(SCRIPTS_DIR)/mission_bio/hierarchical_bayes.R \
-						       --option 2 \
+						       --option 3 \
 						       --sample_name $1 \
 						       --bar_code '$(BARCODES)'")
 

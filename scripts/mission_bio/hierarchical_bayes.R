@@ -118,8 +118,8 @@ if (as.numeric(opt$option)==1) {
 	save(data, params, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
 	
 } else if (as.numeric(opt$option)==3) {
-	sample_name = opt$sample_name
-	bar_code = unlist(strsplit(x = opt$bar_code, split = " ", fixed = TRUE))
+	sample_name = as.character(opt$sample_name)
+	bar_code = unlist(strsplit(x = as.character(opt$bar_code), split = " ", fixed = TRUE))
 
 	LambdaP = list()
 	for (i in 1:length(bar_code)) {
