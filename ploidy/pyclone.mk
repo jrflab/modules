@@ -60,7 +60,7 @@ pyclone/$1.hd5 : pyclone/$1.tsv
 									 
 pyclone/$1.txt : pyclone/$1.hd5
 	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV),"set -o pipefail && \
-							     write-results-file \
+							     pyclone-vi write-results-file \
 							     --in-file $$(<) \
 							     --out-file $$(@)")
 
