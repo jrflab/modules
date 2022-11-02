@@ -7,6 +7,7 @@ suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("reshape2"))
+suppressPackageStartupMessages(library("superheat"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -137,4 +138,55 @@ if (as.numeric(opt$option) == 1) {
 	print(plot_)
 	dev.off()
 	
+} else if (as.numeric(opt$option) == 3) {
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " "))
+	pyclone = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		  readr::type_convert() %>%
+		  dplyr::mutate(sample_id = paste0(sample_id, "     "))
+	
+	pyclone_mt = pyclone %>%
+		     reshape2::dcast(formula = mutation_id~sample_id, value.var = "cellular_prevalence") %>%
+		     dplyr::left_join(pyclone %>%
+				      dplyr::select(mutation_id, cluster_id), by = "mutation_id")
+	
+	smry_cl = pyclone %>%
+		  dplyr::group_by(cluster_id) %>%
+		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
+		  dplyr::ungroup() %>%
+		  dplyr::arrange(desc(mean)) %>%
+		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
+	
+	pyclone_mt = pyclone_mt %>%
+		     dplyr::left_join(smry_cl, by = "cluster_id")
+	
+	index = order(apply(pyclone_mt %>% dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered), 1, mean), decreasing = TRUE)
+	pyclone_mt = pyclone_mt[index,,drop=FALSE]
+	pyclone_mt = pyclone_mt %>%
+		     dplyr::arrange(cluster_id_ordered)
+		
+	
+	pdf(file = as.character(opt$output_file), width = 10, height = 21)
+	superheat(X = pyclone_mt %>%
+		      dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered, -mean),
+		  membership.rows = pyclone_mt %>% .[["cluster_id_ordered"]],
+		  pretty.order.rows = FALSE,
+		  pretty.order.cols = TRUE,
+		  row.dendrogram = FALSE,
+		  col.dendrogram = FALSE,
+		  smooth.heat = FALSE,
+		  scale = FALSE,
+		  heat.pal = c("#d9d9d9", "#d9d9d9", "#d9d9d9", "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
+		  legend = FALSE,
+		  grid.hline = TRUE,
+		  grid.vline = TRUE,
+		  force.grid.hline = TRUE,
+		  force.grid.vline = TRUE,
+		  grid.hline.col = "white",
+		  grid.vline.col = "white",
+		  grid.hline.size = .1,
+		  grid.vline.size = 1,
+		  bottom.label.text.angle = 90,
+		  bottom.label.text.alignment = "right")
+	dev.off()
+
 }

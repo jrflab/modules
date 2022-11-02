@@ -11,8 +11,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).vcf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).tsv) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).hd5) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__PS__.pdf)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__HM__.pdf)
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__PS__.pdf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__HM__.pdf)
 
 
 define r-sufam
@@ -83,6 +83,14 @@ pyclone/$1/$1__PS__.pdf : pyclone/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
 							   --option 2 \
+							   --sample_set '$(tumors.$1)' \
+							   --input_file $$(<) \
+							   --output_file $$(@)")
+							   
+pyclone/$1/$1__HM__.pdf : pyclone/$1/$1.txt
+	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
+							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
+							   --option 3 \
 							   --sample_set '$(tumors.$1)' \
 							   --input_file $$(<) \
 							   --output_file $$(@)")
