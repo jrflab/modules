@@ -128,7 +128,7 @@ if (as.numeric(opt$option)==1) {
 		       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p + exp(a)*d_p) %>%
 		       dplyr::mutate(lambdap_dp = case_when(
 			       d_p == 0 ~ lambdap_dp,
-			       d_p > 0 ~ lambdap_dp/d_p
+			       d_p > 0 ~ 100*(lambdap_dp+2)/(d_p+4)
 		       )) %>%
 		       dplyr::select(lambdap_dp)
 		LambdaP[[i]] = data$lambdap_dp
