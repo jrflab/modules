@@ -72,7 +72,7 @@ if (as.numeric(opt$option) == 1) {
 			 .[["X1"]]
 		
 		pyclone[[i]] = pyclone[[i]] %>%
-			       dplyr::mutate(tumour_content = params)
+			       dplyr::mutate(tumour_content = params/1.5)
 	}
 	pyclone = do.call(rbind, pyclone) %>%
 		  dplyr::filter(!is.na(ref_counts)) %>%

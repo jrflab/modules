@@ -7,6 +7,7 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt) \
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).maf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).txt) \
@@ -32,6 +33,18 @@ pyclone/$1.txt : pyclone/$1.vcf bam/$1.bam
 							 $$(<) \
 							 $$(<<) \
 							 > $$(@)")
+							 
+sufam/$1.maf : sufam/$1.vcf
+	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(VEP_ENV),"set -o pipefail && \
+							$$(VCF2MAF) \
+							--input-vcf $$< \
+							--tumor-id $1 \
+							--filter-vcf $$(EXAC_NONTCGA) \
+							--ref-fasta $$(REF_FASTA) \
+							--vep-path $$(VEP_PATH) \
+							--vep-data $$(VEP_DATA) \
+							--tmp-dir `mktemp -d` \
+							--output-maf $$(@)")
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
