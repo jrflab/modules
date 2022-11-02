@@ -60,7 +60,7 @@ pyclone/$1.hd5 : pyclone/$1.tsv
 									 --num-restarts 100")
 									 
 pyclone/$1.txt : pyclone/$1.hd5
-	$$(call RUN,-c -n 1 -s 8 -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
+	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   pyclone-vi write-results-file \
 							   --in-file $$(<) \
 							   --out-file $$(@)")
