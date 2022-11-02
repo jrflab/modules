@@ -113,9 +113,17 @@ if (as.numeric(opt$option) == 1) {
 		 dplyr::ungroup() %>%
 		 dplyr::group_by(cluster_id) %>%
 		 dplyr::summarize(n = n())
-	pyclone_ft = pyclone_ft %>%
-		     dplyr::left_join(smry_c, by = "cluster_id")
+	smry_p = pyclone %>%
+		 dplyr::group_by(cluster_id, sample_id) %>%
+		 dplyr::summarize(mean_cellular_prevalence = mean(cellular_prevalence)) %>%
+		 dplyr::ungroup() %>%
+		 dplyr::group_by(cluster_id) %>%
+		 dplyr::summarize(is_clonal = max(mean_cellular_prevalence))
 	
+	pyclone_ft = pyclone_ft %>%
+		     dplyr::left_join(smry_c, by = "cluster_id") %>%
+		     dplyr::left_join(smry_p, by = "cluster_id")
+		
 	plot_ = pyclone_ft %>%
 		ggplot(aes(x = 100*cellular_prevalence_x, y = 100*cellular_prevalence_y, color = factor(cluster_id), size = n)) +
 		geom_point(stat = "identity", alpha = .75, shape = 21) +
@@ -128,8 +136,5 @@ if (as.numeric(opt$option) == 1) {
 	pdf(file = as.character(opt$output_file), width = 21, height = 21)
 	print(plot_)
 	dev.off()
-		
-		
-	
 	
 }
