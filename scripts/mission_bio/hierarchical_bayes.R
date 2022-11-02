@@ -108,15 +108,13 @@ if (as.numeric(opt$option)==1) {
 	names(a) = nucleotide_context %>% .[["context"]]
 	
 	data = pile_up %>%
-	       dplyr::select(chromosome, position) %>%
+	       dplyr::select(chromosome, position, context_3) %>%
 	       dplyr::mutate(y_p = data$yp, d_p = data$dp) %>%
 	       dplyr::mutate(d_p = round(exp(d_p))) %>%
-	       dplyr::mutate(lambda_p = lambda_p, b_p = b)
-	params = list(alpha = alpha,
-		      a = a,
-		      tau = tau,
-		      tau_b = tau_b,
-		      psi = psi)
+	       dplyr::mutate(lambda_p = lambda_p, b_p = b) %>%
+	       dplyr::mutate(alpha = alpha, tau = tau, tau_b = tau_b, psi = psi) %>%
+	       dplyr::mutate(a = a[context_3])
+	
 	save(data, params, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
 	
 }
@@ -129,8 +127,9 @@ if (as.numeric(opt$option)==1) {
 #		print(i)
 #		load(file_names[i])
 #		data = data %>%
-#		       dplyr::mutate(lambdap_dp = case_when(
-#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
+#		       dplyr::mutate(lambdap_dp = 
+#				post_q2[index_lambda] + post_q2[index_tau.b]*post_q2[index_b] + exp(post_q2[index_a])[data$n3]*exp(data$dp)
+#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p + exp(params$a)[data$n3])   /(1),
 #			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
 #		       )) %>%
 #		       dplyr::select(lambdap_dp)
