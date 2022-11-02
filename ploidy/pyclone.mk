@@ -8,7 +8,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).maf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv)
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5)
 
 
 define run-sufam
@@ -56,6 +57,18 @@ pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
 							   --sample_set $1 \
 							   --normal_sample '$(normal.$1)' \
 							   --output_file $$(@)")
+							   
+pyclone/pyclone/$1.hd5 : pyclone/$1.tsv
+	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV) -w 72:00:00,"set -o pipefail && \
+							   		 pyclone-vi fit \
+									 --in-file $$(<) \
+									 --out-file $$(@) \
+									 --num-clusters 10 \
+									 --density beta-binomial \
+									 --num-grid-points 100 \
+									 --max-iters 10000 \
+									 --mix-weight-prior 1 \
+									 --precision 200")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
