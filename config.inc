@@ -27,6 +27,7 @@ PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
 KALLISTO_ENV ?= $(HOME)/share/usr/env/kallisto-0.46.2
 IMMUNE_ENV ?= $(HOME)/share/usr/env/r-immunedeconv-2.1.0
 SUMREADS_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
+PYCLONE_ENV = $(HOME)/share/usr/env/pyclone-vi-0.1.2
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 

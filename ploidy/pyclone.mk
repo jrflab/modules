@@ -50,12 +50,12 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		
 define run-pyclone
 pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
-					 --option 1 \
-					 --sample_set $1 \
-					 --normal_sample '$(normal.$1)' \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
+							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
+							   --option 1 \
+							   --sample_set $1 \
+							   --normal_sample '$(normal.$1)' \
+							   --output_file $$(@)")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
