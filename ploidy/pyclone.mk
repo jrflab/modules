@@ -49,9 +49,9 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call run-sufam,$(sample))))
 		
 define run-pyclone
-pyclone/$1.tsv : 
+pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+					 $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
 					 --option 1 \
 					 --sample_set $1 \
 					 --normal_sample '$(normal.$1)' \
