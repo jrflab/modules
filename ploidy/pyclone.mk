@@ -8,7 +8,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5)
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).txt)
 
 
 define r-sufam
@@ -54,7 +55,14 @@ pyclone/$1.hd5 : pyclone/$1.tsv
 									 --num-grid-points 100 \
 									 --max-iters 1000000 \
 									 --mix-weight-prior 1 \
-									 --precision 200")
+									 --precision 200 \
+									 --num-restarts 100")
+									 
+pyclone/$1.txt : pyclone/$1.hd5
+	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV),"set -o pipefail && \
+							     write-results-file \
+							     --in-file $$(<) \
+							     --out-file $$(@)")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
