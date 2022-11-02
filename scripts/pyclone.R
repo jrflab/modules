@@ -73,13 +73,13 @@ if (as.numeric(opt$option) == 1) {
 			 .[["X1"]]
 		
 		pyclone[[i]] = pyclone[[i]] %>%
-			       dplyr::mutate(tumour_content = params/1.5)
+			       dplyr::mutate(tumour_content = params)
 	}
 	pyclone = do.call(rbind, pyclone) %>%
 		  dplyr::filter(!is.na(ref_counts)) %>%
 		  dplyr::filter(!is.na(alt_counts)) %>%
-		  dplyr::filter(!is.na(major_cn)) %>%
-		  dplyr::filter(!is.na(minor_cn))
+		  dplyr::mutate(major_cn = ifelse(is.na(major_cn), 2, major_cn)) %>%
+		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
 	
 	readr::write_tsv(x = pyclone, file = opt$output_file, append = FALSE, col_names = TRUE)
 	
@@ -147,7 +147,8 @@ if (as.numeric(opt$option) == 1) {
 	pyclone_mt = pyclone %>%
 		     reshape2::dcast(formula = mutation_id~sample_id, value.var = "cellular_prevalence") %>%
 		     dplyr::left_join(pyclone %>%
-				      dplyr::select(mutation_id, cluster_id), by = "mutation_id")
+				      dplyr::select(mutation_id, cluster_id) %>%
+				      dplyr::filter(!duplicated(mutation_id)), by = "mutation_id")
 	
 	smry_cl = pyclone %>%
 		  dplyr::group_by(cluster_id) %>%
@@ -177,13 +178,13 @@ if (as.numeric(opt$option) == 1) {
 		  scale = FALSE,
 		  heat.pal = c("#d9d9d9", "#d9d9d9", "#d9d9d9", "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
 		  legend = FALSE,
-		  grid.hline = TRUE,
+		  grid.hline = FALSE,
 		  grid.vline = TRUE,
 		  force.grid.hline = TRUE,
 		  force.grid.vline = TRUE,
 		  grid.hline.col = "white",
 		  grid.vline.col = "white",
-		  grid.hline.size = .1,
+		  grid.hline.size = .05,
 		  grid.vline.size = 1,
 		  bottom.label.text.angle = 90,
 		  bottom.label.text.alignment = "right")
