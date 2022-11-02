@@ -7,11 +7,12 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).maf)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).txt) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).pdf)
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).maf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).tsv) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).hd5) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).txt)
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)_CCF_PSP.pdf) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)_CCF_HM.pdf)
 
 
 define r-sufam
@@ -51,7 +52,7 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call r-sufam,$(sample))))
 		
 define r-pyclone
-pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
+pyclone/$1/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
 							   --option 1 \
@@ -59,7 +60,7 @@ pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
 							   --normal_sample '$(normal.$1)' \
 							   --output_file $$(@)")
 							   
-pyclone/$1.hd5 : pyclone/$1.tsv
+pyclone/$1/$1.hd5 : pyclone/$1/$1.tsv
 	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV) -w 72:00:00,"set -o pipefail && \
 							   		 pyclone-vi fit \
 									 --in-file $$(<) \
@@ -69,16 +70,16 @@ pyclone/$1.hd5 : pyclone/$1.tsv
 									 --num-grid-points 100 \
 									 --max-iters 1000000 \
 									 --mix-weight-prior 1 \
-									 --precision 200 \
+									 --precision 500 \
 									 --num-restarts 100")
 									 
-pyclone/$1.txt : pyclone/$1.hd5
+pyclone/$1/$1.txt : pyclone/$1/$1.hd5
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   pyclone-vi write-results-file \
 							   --in-file $$(<) \
 							   --out-file $$(@)")
 							     
-pyclone/$1.pdf : pyclone/$1.txt
+pyclone/$1/$1_CCF_PSP.pdf : pyclone/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
 							   --option 2 \
