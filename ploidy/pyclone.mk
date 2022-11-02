@@ -5,17 +5,17 @@ LOGDIR ?= log/pyclone.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
-pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).maf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).pdf)
+pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).vcf) \
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).txt) \
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).maf)
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).hd5) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).txt) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).pdf)
 
 
 define r-sufam
-pyclone/$1.vcf : summary/tsv/all.tsv
+pyclone/$1/$1.vcf : summary/tsv/all.tsv
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					 --option 1 \
@@ -24,7 +24,7 @@ pyclone/$1.vcf : summary/tsv/all.tsv
 					 --input_file $$(<) \
 					 --output_file $$(@)")
 					 
-pyclone/$1.txt : pyclone/$1.vcf bam/$1.bam
+pyclone/$1/$1.txt : pyclone/$1/$1.vcf bam/$1.bam
 	$$(call RUN,-c -n 1 -s 2G -m 3G -v $(SUFAM_ENV),"set -o pipefail && \
 					 		 sufam \
 							 --sample_name $1 \
@@ -34,7 +34,7 @@ pyclone/$1.txt : pyclone/$1.vcf bam/$1.bam
 							 $$(<<) \
 							 > $$(@)")
 							 
-sufam/$1.maf : sufam/$1.vcf
+pyclone/$1/$1.maf : pyclone/$1/$1.vcf
 	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(VEP_ENV),"set -o pipefail && \
 							$$(VCF2MAF) \
 							--input-vcf $$< \
