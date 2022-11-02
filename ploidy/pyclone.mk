@@ -7,10 +7,11 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).maf)
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).maf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set).tsv)
 
 
-define sufam-gt
+define run-sufam
 pyclone/$1.vcf : summary/tsv/all.tsv
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
@@ -45,7 +46,20 @@ pyclone/$1.maf : pyclone/$1.vcf
 
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call sufam-gt,$(sample))))
+		$(eval $(call run-sufam,$(sample))))
+		
+define run-pyclone
+pyclone/$1.tsv : 
+	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
+					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+					 --option 1 \
+					 --sample_set $1 \
+					 --normal_sample '$(normal.$1)' \
+					 --output_file $$(@)")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call run-pyclone,$(set))))
 		
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version > version/pyclone.txt)

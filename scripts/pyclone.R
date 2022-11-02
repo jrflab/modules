@@ -4,6 +4,7 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("fuzzyjoin"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -19,153 +20,63 @@ arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
 if (as.numeric(opt$option)==1) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
-	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = "_"))
+	normal_sample = as.character(opt$normal_sample)
 	sample_set = setdiff(sample_set, normal_sample)
-	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	       readr::type_convert() %>%
-	       dplyr::filter(TUMOR_SAMPLE %in% sample_set) %>%
-	       dplyr::filter(NORMAL_SAMPLE == normal_sample) %>%
-	       dplyr::mutate(UUID = paste0(CHROM, ":", POS, "_", REF, ">", ALT)) %>%
-	       dplyr::filter(!duplicated(UUID)) %>%
-	       dplyr::mutate(`#CHROM` = CHROM,
-			     POS = POS,
-			     ID = ".",
-			     REF = REF,
-			     ALT = ALT,
-			     QUAL = 100,
-			     FILTER = "PASS",
-			     INFO = ".") %>%
-	       dplyr::select(`#CHROM`, POS, ID, REF, ALT, QUAL, INFO) %>%
-	       dplyr::mutate(chr_n = case_when(
-		       `#CHROM` == "X" ~ "23",
-		       `#CHROM` == "Y" ~ "24",
-		       TRUE ~ `#CHROM`
-	       )) %>%
-	       readr::type_convert() %>%
-	       dplyr::arrange(chr_n) %>%
-	       dplyr::select(-chr_n)
-	cat("##fileformat=VCFv4.2\n", file = as.character(opt$output_file), append=FALSE)
-	readr::write_tsv(x = smry, path = as.character(opt$output_file), append = TRUE, col_names = TRUE)
-
-} else if (as.numeric(opt$option)==2) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
-	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
-	sample_set = setdiff(sample_set, normal_sample)
-	maf = list()
+	pyclone = list()
 	for (i in 1:length(sample_set)) {
-		sufam = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		sufam = readr::read_tsv(file = paste0("pyclone/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			readr::type_convert() %>%
-			dplyr::select(CHROM = chrom,
-				      POS = pos,
-				      REF = val_ref,
-				      ALT = val_alt,
+			dplyr::select(Chromosome = chrom,
+				      Position = pos,
+				      Reference_Allele = val_ref,
+				      Alternate_Allele = val_alt,
 				      t_depth = cov,
 				      t_alt_count = val_al_count) %>%
-		 	dplyr::mutate(t_ref_count = t_depth - t_alt_count)
-			
-		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		      	   readr::type_convert() %>%
-		      	   dplyr::select(-t_depth, -t_alt_count, -t_ref_count) %>%
-		      	   dplyr::bind_cols(sufam)
+		 	dplyr::mutate(t_ref_count = t_depth - t_alt_count) %>%
+			dplyr::mutate(mutation_id = paste0(Chromosome, ":", Position, ":", Reference_Allele, ":", Alternate_Allele),
+				      ref_counts = t_ref_count,
+				      alt_counts = t_alt_count,
+				      normal_cn = 2)
+		
+		facets = readr::read_tsv(file = paste0("facets/cncf/", sample_set[i], "_", normal_sample, ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			 dplyr::mutate(chrom = ifelse(chrom == "23", "X", chrom)) %>%
+			 dplyr::mutate(Chromosome = chrom,
+				       Start_Position = loc.start,
+				       End_Position = loc.end,
+				       minor_cn = ifelse(is.na(lcn.em), "0", lcn.em),
+				       major_cn = tcn.em) %>%
+		 readr::type_convert() %>%
+		 dplyr::mutate(major_cn = major_cn - minor_cn) %>%
+		 dplyr::select(Chromosome, Start_Position, End_Position, minor_cn, major_cn)
+		 
+		pyclone[[i]] = sufam %>%
+		  	       dplyr::mutate(Chromosome = ifelse(Chromosome == "X", "23", Chromosome)) %>%
+			       dplyr::mutate(Start_Position = Position,
+					     End_Position = Position +1) %>%
+			       readr::type_convert() %>%
+			       fuzzyjoin::genome_left_join(facets %>%
+							   dplyr::mutate(Chromosome = ifelse(Chromosome == "X", "23", Chromosome)) %>%
+							   readr::type_convert(),
+							   by = c("Chromosome", "Start_Position", "End_Position")) %>%
+			       dplyr::mutate(sample_id = sample_set[i]) %>%
+			       dplyr::select(mutation_id, sample_id, ref_counts, alt_counts, normal_cn, major_cn, minor_cn)
+	
+		params = readr::read_tsv(file = paste0("facets/cncf/", sample_set[i], "_", normal_sample, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+			 readr::type_convert() %>%
+			 dplyr::filter(grepl("# Purity", X1)) %>%
+			 dplyr::mutate(X1 = gsub("# Purity = ", "", X1)) %>%
+			 readr::type_convert() %>%
+			 .[["X1"]]
+		
+		pyclone[[i]] = pyclone[[i]] %>%
+			       dplyr::mutate(tumour_content = params)
 	}
-	maf = do.call(bind_rows, maf)
-	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-
-} else if (as.numeric(opt$option)==3) {
-	maf = readr::read_tsv(file = as.character(opt$input_file), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	      readr::type_convert() %>%
-	      dplyr::filter(t_alt_count > 0) %>%
-	      dplyr::filter(t_ref_count > 0)
-	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-
-} else if (as.numeric(opt$option)==4) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
-	maf = list()
-	for (i in 1:length(sample_set)) {
-		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
-	}
-	maf = do.call(bind_rows, maf) %>%
-	readr::type_convert()
-	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	       dplyr::mutate(HOTSPOT = case_when(
-		       is.na(HOTSPOT) ~ FALSE,
-		       HOTSPOT == "True" ~ TRUE,
-		       HOTSPOT == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
-		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
-		       HOTSPOT_INTERNAL == "True" ~ TRUE,
-		       HOTSPOT_INTERNAL == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(cmo_hotspot = case_when(
-		       is.na(cmo_hotspot) ~ FALSE,
-		       cmo_hotspot == "True" ~ TRUE,
-		       cmo_hotspot == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
-	       dplyr::mutate(facetsLOHCall = case_when(
-		       is.na(facetsLOHCall) ~ FALSE,
-		       facetsLOHCall == "True" ~ TRUE,
-		       facetsLOHCall == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(is_loh = facetsLOHCall) %>%
-	       readr::type_convert()
-	maf = maf %>%
-	      dplyr::left_join(smry %>%
-			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
-	       		       dplyr::summarize(is_hotspot = unique(is_hotspot)) %>%
-			       dplyr::ungroup(),
-			       by = c("CHROM", "POS", "REF", "ALT"))
-	maf = maf %>%
-	      dplyr::left_join(smry %>%
-			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_loh),
-			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
-	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-
-} else if (as.numeric(opt$option)==5) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
-	maf = list()
-	for (i in 1:length(sample_set)) {
-		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], "_ft.maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
-	}
-	maf = do.call(bind_rows, maf) %>%
-	readr::type_convert()
-	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	       dplyr::mutate(HOTSPOT = case_when(
-		       is.na(HOTSPOT) ~ FALSE,
-		       HOTSPOT == "True" ~ TRUE,
-		       HOTSPOT == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
-		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
-		       HOTSPOT_INTERNAL == "True" ~ TRUE,
-		       HOTSPOT_INTERNAL == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(cmo_hotspot = case_when(
-		       is.na(cmo_hotspot) ~ FALSE,
-		       cmo_hotspot == "True" ~ TRUE,
-		       cmo_hotspot == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
-	       dplyr::mutate(facetsLOHCall = case_when(
-		       is.na(facetsLOHCall) ~ FALSE,
-		       facetsLOHCall == "True" ~ TRUE,
-		       facetsLOHCall == "False" ~ FALSE
-	       )) %>%
-	       dplyr::mutate(is_loh = facetsLOHCall) %>%
-	       readr::type_convert()
-	maf = maf %>%
-	      dplyr::left_join(smry %>%
-			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
-	       		       dplyr::summarize(is_hotspot = unique(is_hotspot)) %>%
-			       dplyr::ungroup(),
-			       by = c("CHROM", "POS", "REF", "ALT"))
-	maf = maf %>%
-	      dplyr::left_join(smry %>%
-			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_loh),
-			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
-	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-
+	pyclone = do.call(rbind, pyclone) %>%
+		  dplyr::filter(!is.na(ref_counts)) %>%
+		  dplyr::filter(!is.na(alt_counts)) %>%
+		  dplyr::filter(!is.na(major_cn)) %>%
+		  dplyr::filter(!is.na(minor_cn))
+	
+	readr::write_tsv(x = pyclone, file = opt$output_file, append = FALSE, col_names = TRUE)
 }
-
