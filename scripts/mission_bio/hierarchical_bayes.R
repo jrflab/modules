@@ -117,69 +117,28 @@ if (as.numeric(opt$option)==1) {
 	
 	save(data, params, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
 	
+} else if (as.numeric(opt$option)==3) {
+	sample_name = opt$sample_name
+	bar_code = unlist(strsplit(x = opt$bar_code, split = " ", fixed = TRUE))
+
+	LambdaP = list()
+	for (i in 1:length(bar_code)) {
+		load(file = paste0("hbm/", sample_name, "/params/", bar_code[i], ".RData"))
+		data = data %>%
+		       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p + exp(a)*d_p) %>%
+		       dplyr::mutate(lambdap_dp = case_when(
+			       d_p == 0 ~ lambdap_dp,
+			       d_p > 0 ~ lambdap_dp/d_p
+		       )) %>%
+		       dplyr::select(lambdap_dp)
+		LambdaP[[i]] = data$lambdap_dp
+	}
+	LambdaP = do.call(bind_cols, LambdaP) %>%
+		  dplyr::as_tibble()
+	colnames(LambdaP) = bar_code
+	
+	load(file = paste0("hbm/", sample_name, "/params/", bar_code[i], ".RData"))
+	LambdaP = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), LambdaP)
+	save(LambdaP, file = paste0("hbm/", sample_name, "/__LambdaP__.RData"))
+
 }
-
-
-#	file_names = dir(path = "hbm/WBC-control-A.tube1.cells/params", pattern = ".RData", full.names = TRUE)[1:2000]
-#	barcodes = gsub(pattern = ".RData", replacement = "", x = dir(path = "hbm/WBC-control-A.tube1.cells/params", pattern = ".RData", full.names = FALSE)[1:2000], fixed = TRUE)
-#	P_AF = list()
-#	for (i in 1:length(file_names)) {
-#		print(i)
-#		load(file_names[i])
-#		data = data %>%
-#		       dplyr::mutate(lambdap_dp = 
-#				post_q2[index_lambda] + post_q2[index_tau.b]*post_q2[index_b] + exp(post_q2[index_a])[data$n3]*exp(data$dp)
-#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p + exp(params$a)[data$n3])   /(1),
-#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
-#		       )) %>%
-#		       dplyr::select(lambdap_dp)
-#		P_AF[[i]] = data$lambdap_dp
-#	}
-#	P_AF = do.call(cbind, P_AF) %>%
-#	       dplyr::as_tibble()
-#	colnames(P_AF) = barcodes
-#	load(file_names[i])
-#	P_AF = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), P_AF)
-#	save(P_AF, file = "hbm/WBC-control-A.tube1.cells/params/P_AF.RData")
-#
-#	file_names = dir(path = "hbm/WBC-D.tube1.cells/params", pattern = ".RData", full.names = TRUE)[1:2000]
-#	barcodes = gsub(pattern = ".RData", replacement = "", x = dir(path = "hbm/WBC-D.tube1.cells/params", pattern = ".RData", full.names = FALSE)[1:2000], fixed = TRUE)
-#	P_AF = list()
-#	for (i in 1:length(file_names)) {
-#		print(i)
-#		load(file_names[i])
-#		data = data %>%
-#		       dplyr::mutate(lambdap_dp = case_when(
-#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
-#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
-#		       )) %>%
-#		       dplyr::select(lambdap_dp)
-#		P_AF[[i]] = data$lambdap_dp
-#	}
-#	P_AF = do.call(cbind, P_AF) %>%
-#	       dplyr::as_tibble()
-#	colnames(P_AF) = barcodes
-#	load(file_names[i])
-#	P_AF = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), P_AF)
-#	save(P_AF, file = "hbm/WBC-D.tube1.cells/params/P_AF.RData")
-#
-#	file_names = dir(path = "hbm/PBMC-control.tube1.cells/params", pattern = ".RData", full.names = TRUE)[1:2000]
-#	barcodes = gsub(pattern = ".RData", replacement = "", x = dir(path = "hbm/PBMC-control.tube1.cells/params", pattern = ".RData", full.names = FALSE)[1:2000], fixed = TRUE)
-#	P_AF = list()
-#	for (i in 1:length(file_names)) {
-#		print(i)
-#		load(file_names[i])
-#		data = data %>%
-#		       dplyr::mutate(lambdap_dp = case_when(
-#			       d_p == 0 ~ 100*((lambda_p + params$tau_b*b_p))/(1),
-#			       d_p > 0 ~ 100*((lambda_p + params$tau_b*b_p)+2)/(d_p+4)
-#		       )) %>%
-#		       dplyr::select(lambdap_dp)
-#		P_AF[[i]] = data$lambdap_dp
-#	}
-#	P_AF = do.call(cbind, P_AF) %>%
-#	       dplyr::as_tibble()
-#	colnames(P_AF) = barcodes
-#	load(file_names[i])
-#	P_AF = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), P_AF)
-#	save(P_AF, file = "hbm/PBMC-control.tube1.cells/params/P_AF.RData")
