@@ -10,8 +10,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample)/$(sample).maf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).tsv) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).hd5) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).txt)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__PS__.pdf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set).txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__PS__.pdf)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone/$(set)/$(set)__HM__.pdf)
 
 
@@ -79,7 +79,7 @@ pyclone/$1/$1.txt : pyclone/$1/$1.hd5
 							   --in-file $$(<) \
 							   --out-file $$(@)")
 							     
-pyclone/$1/$1__CCF__.pdf : pyclone/$1/$1.txt
+pyclone/$1/$1__PS__.pdf : pyclone/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone.R \
 							   --option 2 \
