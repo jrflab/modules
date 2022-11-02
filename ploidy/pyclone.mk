@@ -58,7 +58,7 @@ pyclone/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone/$(sample).txt)
 							   --normal_sample '$(normal.$1)' \
 							   --output_file $$(@)")
 							   
-pyclone/pyclone/$1.hd5 : pyclone/$1.tsv
+pyclone/$1.hd5 : pyclone/$1.tsv
 	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV) -w 72:00:00,"set -o pipefail && \
 							   		 pyclone-vi fit \
 									 --in-file $$(<) \
