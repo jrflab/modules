@@ -85,7 +85,7 @@ if (as.numeric(opt$option) == 1) {
 	
 	pyclone = pyclone %>%
 		  dplyr::left_join(smry, by = "mutation_id") %>%
-		  dplyr::filter(n != length(sample_set))
+		  dplyr::filter(n == length(sample_set))
 	
 	for (i in 1:length(sample_set)) {
 		pyclone_ft = pyclone %>%
