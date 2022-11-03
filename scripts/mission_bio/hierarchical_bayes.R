@@ -115,7 +115,7 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::mutate(alpha = alpha, tau = tau, tau_b = tau_b, psi = psi) %>%
 	       dplyr::mutate(a = a[context_3])
 	
-	save(data, params, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
+	save(data, file = paste0("hbm/", sample_name, "/params/", bar_code, ".RData"))
 	
 } else if (as.numeric(opt$option)==3) {
 	sample_name = as.character(opt$sample_name)
@@ -125,9 +125,9 @@ if (as.numeric(opt$option)==1) {
 	for (i in 1:length(bar_code)) {
 		load(file = paste0("hbm/", sample_name, "/params/", bar_code[i], ".RData"))
 		data = data %>%
-		       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p + exp(a)*d_p) %>%
+		       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p) %>%
 		       dplyr::mutate(lambdap_dp = case_when(
-			       d_p == 0 ~ lambdap_dp,
+			       d_p == 0 ~ 100*lambdap_dp,
 			       d_p > 0 ~ 100*(lambdap_dp+2)/(d_p+4)
 		       )) %>%
 		       dplyr::select(lambdap_dp)
