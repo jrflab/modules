@@ -51,7 +51,7 @@ endef
 $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call r-sufam,$(sample))))
 		
-define r-pyclone
+define r-pyclone-input
 pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
@@ -62,8 +62,22 @@ pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(s
 							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call r-pyclone,$(set))))
+		$(eval $(call r-pyclone-input,$(set))))
 		
+define r-pyclone-process
+pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_13_ENV),"set -o pipefail && \
+							      PyClone build_mutations_file \
+							      --in_file pyclone_13/$1/$2.tsv \
+							      --out_file $(@) \
+							      --prior total_copy_number")
+							   
+endef
+$(foreach set,$(SAMPLE_SETS),\
+	$(foreach sample,$(tumor.$(set)),\
+		$(eval $(call r-pyclone-process,$(set),$(sample)))))
+		
+
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version > version/pyclone_13.txt)
 .DELETE_ON_ERROR:

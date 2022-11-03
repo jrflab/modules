@@ -4,8 +4,8 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
-suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("ggplot2"))
+suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("reshape2"))
 suppressPackageStartupMessages(library("superheat"))
 
@@ -91,7 +91,7 @@ if (as.numeric(opt$option) == 1) {
 		pyclone_ft = pyclone %>%
 			     dplyr::filter(sample_id == sample_set[i]) %>%
 			     dplyr::select(mutation_id, ref_counts, var_counts, normal_cn, minor_cn, major_cn)
-		readr::write_tsv(x = pyclone_ft, file = paste0("pyclone_13/", opt$sample_set, "/", sample_set[i]), append = FALSE, col_names = TRUE)
+		readr::write_tsv(x = pyclone_ft, file = paste0("pyclone_13/", opt$sample_set, "/", sample_set[i], ".tsv"), append = FALSE, col_names = TRUE)
 	}
 	
 } else if (as.numeric(opt$option) == 2) {
