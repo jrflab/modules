@@ -66,7 +66,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone-input,$(set))))
 		
 define r-pyclone-process
-pyclone_13/$1/$2.yaml : #pyclone_13/$1/$1.taskcomplete
+pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_13_ENV),"set -o pipefail && \
 							      PyClone build_mutations_file \
 							      --in_file pyclone_13/$1/$2.tsv \
@@ -75,8 +75,8 @@ pyclone_13/$1/$2.yaml : #pyclone_13/$1/$1.taskcomplete
 							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
-	$(foreach sample,$$(tumors.$$(set)),\
-		$(eval $(call r-pyclone-process,$$(set),$$(sample)))))
+	$(foreach sample,$(tumors.$(set)),\
+		$(eval $(call r-pyclone-process,$(set),$(sample)))))
 		
 
 ..DUMMY := $(shell mkdir -p version; \
