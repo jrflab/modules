@@ -76,7 +76,7 @@ pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete
 endef
 $(foreach set,$(SAMPLE_SETS),\
 	$(foreach sample,$(tumors.$(set)),\
-		$(eval $(call r-pyclone-process,$(set),$(sample)))))
+		$(eval $(call r-pyclone-process,$$(set),$$(sample)))))
 		
 
 ..DUMMY := $(shell mkdir -p version; \
