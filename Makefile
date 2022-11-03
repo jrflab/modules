@@ -470,6 +470,10 @@ TARGETS += absolute_seq
 absolute_seq :
 	$(call RUN_MAKE,modules/clonality/absoluteSeq.mk)
 	
+TARGETS += pyclone_13
+pyclone_13 :
+	$(call RUN_MAKE,modules/ploidy/pyclone_13.mk)
+	
 TARGETS += pyclone_vi
 pyclone_vi :
 	$(call RUN_MAKE,modules/ploidy/pyclone_vi.mk)
