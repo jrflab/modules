@@ -63,7 +63,7 @@ if (as.numeric(opt$option) == 1) {
 							   readr::type_convert(),
 							   by = c("Chromosome", "Start_Position", "End_Position")) %>%
 			       dplyr::mutate(sample_id = sample_set[i]) %>%
-			       dplyr::select(mutation_id, sample_id, ref_counts, alt_counts, normal_cn, major_cn, minor_cn)
+			       dplyr::select(mutation_id, sample_id, ref_counts, var_counts, normal_cn, major_cn, minor_cn)
 	
 		params[[i]] = readr::read_tsv(file = paste0("facets/cncf/", sample_set[i], "_", normal_sample, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
 			      readr::type_convert() %>%
