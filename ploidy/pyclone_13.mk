@@ -9,6 +9,7 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
 	  $(foreach set,$(SAMPLE_SETS), \
 	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml))
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
@@ -61,12 +62,20 @@ pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(s
 							   --normal_sample '$(normal.$1)' && \
 							   echo 'taskcomplete' > $$(@)")
 							   
+pyclone_13/$1/config.yaml : pyclone_13/$1/$1.taskcomplete
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
+							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
+							   --option 2 \
+							   --sample_set $1 \
+							   --normal_sample '$(normal.$1)' \
+							   --output_file $$(@)")
+							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone-input,$(set))))
 		
 define r-pyclone-process
-pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete
+pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete pyclone_13/$1/config.yaml
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_13_ENV),"set -o pipefail && \
 							      PyClone build_mutations_file \
 							      --in_file pyclone_13/$1/$2.tsv \

@@ -26,7 +26,7 @@ if (as.numeric(opt$option) == 1) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = "_"))
 	normal_sample = as.character(opt$normal_sample)
 	sample_set = setdiff(sample_set, normal_sample)
-	pyclone = params = list()
+	pyclone = list()
 	for (i in 1:length(sample_set)) {
 		sufam = readr::read_tsv(file = paste0("pyclone_13/", sample_set[i], "/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			readr::type_convert() %>%
@@ -64,13 +64,7 @@ if (as.numeric(opt$option) == 1) {
 							   by = c("Chromosome", "Start_Position", "End_Position")) %>%
 			       dplyr::mutate(sample_id = sample_set[i]) %>%
 			       dplyr::select(mutation_id, sample_id, ref_counts, var_counts, normal_cn, major_cn, minor_cn)
-	
-		params[[i]] = readr::read_tsv(file = paste0("facets/cncf/", sample_set[i], "_", normal_sample, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
-			      readr::type_convert() %>%
-			      dplyr::filter(grepl("# Purity", X1)) %>%
-			      dplyr::mutate(X1 = gsub("# Purity = ", "", X1)) %>%
-			      readr::type_convert() %>%
-			      .[["X1"]]
+		
 	}
 	pyclone = do.call(rbind, pyclone) %>%
 		  dplyr::filter(!is.na(ref_counts)) %>%
@@ -95,110 +89,56 @@ if (as.numeric(opt$option) == 1) {
 	}
 	
 } else if (as.numeric(opt$option) == 2) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " "))
-	pyclone = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		  readr::type_convert()
-	
-	pyclone_ft = list()
-	index = 1
-	for (i in 1:(length(sample_set)-1)) {
-		for (j in (i+1):length(sample_set)) {
-			pyclone_ft[[index]] = pyclone %>%
-					      dplyr::filter(sample_id == sample_set[i]) %>%
-					      dplyr::rename(sample_id_x = sample_id,
-							    cellular_prevalence_x = cellular_prevalence,
-							    cellular_prevalence_std_x = cellular_prevalence_std) %>%
-					      dplyr::full_join(pyclone %>%
-							       dplyr::filter(sample_id == sample_set[j]) %>%
-							       dplyr::rename(sample_id_y = sample_id,
-									     cellular_prevalence_y = cellular_prevalence,
-									     cellular_prevalence_std_y = cellular_prevalence_std)) %>%
-					      readr::type_convert()
-			index = index + 1
-		}
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = "_"))
+	normal_sample = as.character(opt$normal_sample)
+	sample_set = setdiff(sample_set, normal_sample)
+	params = list()
+	for (i in 1:length(sample_set)) {
+		params[[i]] = readr::read_tsv(file = paste0("facets/cncf/", sample_set[i], "_", normal_sample, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+			      readr::type_convert() %>%
+			      dplyr::filter(grepl("# Purity", X1)) %>%
+			      dplyr::mutate(X1 = gsub("# Purity = ", "", X1)) %>%
+			      readr::type_convert() %>%
+			      .[["X1"]]
 	}
-	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
-		     dplyr::filter(cellular_prevalence_x > 0 & cellular_prevalence_y > 0)
-	smry_c = pyclone_ft %>%
-		 dplyr::group_by(mutation_id) %>%
-		 dplyr::summarize(cluster_id = unique(cluster_id)) %>%
-		 dplyr::ungroup() %>%
-		 dplyr::group_by(cluster_id) %>%
-		 dplyr::summarize(n = n())
-	smry_p = pyclone %>%
-		 dplyr::group_by(cluster_id, sample_id) %>%
-		 dplyr::summarize(mean_cellular_prevalence = mean(cellular_prevalence)) %>%
-		 dplyr::ungroup() %>%
-		 dplyr::group_by(cluster_id) %>%
-		 dplyr::summarize(is_clonal = max(mean_cellular_prevalence))
-	
-	pyclone_ft = pyclone_ft %>%
-		     dplyr::left_join(smry_c, by = "cluster_id") %>%
-		     dplyr::left_join(smry_p, by = "cluster_id")
-		
-	plot_ = pyclone_ft %>%
-		ggplot(aes(x = 100*cellular_prevalence_x, y = 100*cellular_prevalence_y, color = factor(cluster_id), size = n)) +
-		geom_point(stat = "identity", alpha = .75, shape = 21) +
-		scale_color_brewer(type = "qual", palette = 6) +
-		xlab("\n\nCCF (%)\n") +
-		ylab("\nCCF (%)\n\n") +
-		guides(color = guide_legend(title = "Cluster"),
-		       size = guide_legend(title = "N")) +
-		facet_wrap(sample_id_x~sample_id_y)
-	pdf(file = as.character(opt$output_file), width = 21, height = 21)
-	print(plot_)
-	dev.off()
-	
-} else if (as.numeric(opt$option) == 3) {
-	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " "))
-	pyclone = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		  readr::type_convert() %>%
-		  dplyr::mutate(sample_id = paste0(sample_id, "     "))
-	
-	pyclone_mt = pyclone %>%
-		     reshape2::dcast(formula = mutation_id~sample_id, value.var = "cellular_prevalence") %>%
-		     dplyr::left_join(pyclone %>%
-				      dplyr::select(mutation_id, cluster_id) %>%
-				      dplyr::filter(!duplicated(mutation_id)), by = "mutation_id")
-	
-	smry_cl = pyclone %>%
-		  dplyr::group_by(cluster_id) %>%
-		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
-		  dplyr::ungroup() %>%
-		  dplyr::arrange(desc(mean)) %>%
-		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
-	
-	pyclone_mt = pyclone_mt %>%
-		     dplyr::left_join(smry_cl, by = "cluster_id")
-	
-	index = order(apply(pyclone_mt %>% dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered), 1, mean), decreasing = TRUE)
-	pyclone_mt = pyclone_mt[index,,drop=FALSE]
-	pyclone_mt = pyclone_mt %>%
-		     dplyr::arrange(cluster_id_ordered)
-		
-	
-	pdf(file = as.character(opt$output_file), width = 10, height = 21)
-	superheat(X = pyclone_mt %>%
-		      dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered, -mean),
-		  membership.rows = pyclone_mt %>% .[["cluster_id_ordered"]],
-		  pretty.order.rows = FALSE,
-		  pretty.order.cols = TRUE,
-		  row.dendrogram = FALSE,
-		  col.dendrogram = FALSE,
-		  smooth.heat = FALSE,
-		  scale = FALSE,
-		  heat.pal = c("#d9d9d9", "#d9d9d9", "#d9d9d9", "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
-		  legend = FALSE,
-		  grid.hline = FALSE,
-		  grid.vline = TRUE,
-		  force.grid.hline = TRUE,
-		  force.grid.vline = TRUE,
-		  grid.hline.col = "white",
-		  grid.vline.col = "white",
-		  grid.hline.size = .05,
-		  grid.vline.size = 1,
-		  bottom.label.text.angle = 90,
-		  bottom.label.text.alignment = "right")
-	dev.off()
-
+	cat("num_iters: 10000\n\n", file = as.character(opt$output_file), append = FALSE)
+	cat("base_measure_params:\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  alpha: 1\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  beta: 1\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("concentration:\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  value: 1.0\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  prior:\n", file = as.character(opt$output_file), append = TRUE)
+	cat("    shape: 1.0\n", file = as.character(opt$output_file), append = TRUE)
+	cat("    rate: 0.001\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+    	cat("density: pyclone_beta_binomial\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("beta_binomial_precision_params:\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  value: 1000\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  prior:\n", file = as.character(opt$output_file), append = TRUE)
+  	cat("    shape: 1.0\n", file = as.character(opt$output_file), append = TRUE)
+	cat("    rate: 0.0001\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("  proposal:\n", file = as.character(opt$output_file), append = TRUE)
+	cat("    precision: 0.1\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("working_dir: pyclone/", file = as.character(opt$output_file), append = TRUE)
+	cat(as.character(opt$sample_set), file = as.character(opt$output_file), append = TRUE)
+	cat("\n\n", file = as.character(opt$output_file), append = TRUE)
+	cat("trace_dir: trace\n", file = as.character(opt$output_file), append = TRUE)
+	cat("init_method: connected\n", file = as.character(opt$output_file), append = TRUE)
+	cat("\n", file = as.character(opt$output_file), append = TRUE)
+	cat("samples:\n", file = as.character(opt$output_file), append = TRUE)
+	for (i in 1:length(sample_set)) {
+		cat(paste0("  ", sample_set[i], ":\n"), file = as.character(opt$output_file), append = TRUE)
+		cat(paste0("    mutations_file: ", sample_set[i], ".yaml\n\n"), file = as.character(opt$output_file), append = TRUE)
+		cat("    tumour_content:\n", file = as.character(opt$output_file), append = TRUE)
+		cat(paste0("      value: ", params[[i]], "\n"), file = as.character(opt$output_file), append = TRUE)
+		cat("\n", file = as.character(opt$output_file), append = TRUE)
+		cat("    error_rate: 0.01\n", file = as.character(opt$output_file), append = TRUE)
+		cat("\n", file = as.character(opt$output_file), append = TRUE)
+	}
 }
