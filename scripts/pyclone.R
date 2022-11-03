@@ -91,7 +91,7 @@ if (as.numeric(opt$option) == 1) {
 	pyclone_ft = list()
 	index = 1
 	for (i in 1:(length(sample_set)-1)) {
-		for (j in 2:length(sample_set)) {
+		for (j in (i+1):length(sample_set)) {
 			pyclone_ft[[index]] = pyclone %>%
 					      dplyr::filter(sample_id == sample_set[i]) %>%
 					      dplyr::rename(sample_id_x = sample_id,
