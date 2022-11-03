@@ -100,7 +100,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone,$(set))))
 		
 ..DUMMY := $(shell mkdir -p version; \
-	     R --version > version/pyclone_vi.txt)
+	     R --version > version/pyclone_13.txt)
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: pyclone
