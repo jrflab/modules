@@ -8,8 +8,9 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
+	  $(foreach set,$(SAMPLE_SETS), \
+	  		$(foreach sample,$(tumor.$(set)),pyclone/$(set)/$(sample).yaml))
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
