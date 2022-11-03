@@ -10,7 +10,7 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
 	  $(foreach set,$(SAMPLE_SETS), \
-	  		$(foreach sample,$(tumor.$(set)),pyclone/$(set)/$(sample).yaml))
+	  		$(foreach sample,$(tumors.$(set)),pyclone/$(set)/$(sample).yaml))
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
@@ -75,7 +75,7 @@ pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete
 							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
-	$(foreach sample,$(tumor.$(set)),\
+	$(foreach sample,$(tumors.$(set)),\
 		$(eval $(call r-pyclone-process,$(set),$(sample)))))
 		
 
