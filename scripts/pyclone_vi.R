@@ -28,7 +28,7 @@ if (as.numeric(opt$option) == 1) {
 	sample_set = setdiff(sample_set, normal_sample)
 	pyclone = list()
 	for (i in 1:length(sample_set)) {
-		sufam = readr::read_tsv(file = paste0("pyclone/", sample_set[i], "/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		sufam = readr::read_tsv(file = paste0("pyclone_vi/", sample_set[i], "/", sample_set[i], ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			readr::type_convert() %>%
 			dplyr::select(Chromosome = chrom,
 				      Position = pos,
