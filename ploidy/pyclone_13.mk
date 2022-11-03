@@ -7,8 +7,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).tsv) \
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
@@ -52,49 +52,14 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call r-sufam,$(sample))))
 		
 define r-pyclone
-pyclone_vi/$1/$1.tsv : $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).txt)
+pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
-							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
+							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 1 \
 							   --sample_set $1 \
-							   --normal_sample '$(normal.$1)' \
-							   --output_file $$(@)")
+							   --normal_sample '$(normal.$1)' && \
+							   echo 'taskcomplete' > $$(@)")
 							   
-pyclone_vi/$1/$1.hd5 : pyclone_vi/$1/$1.tsv
-	$$(call RUN,-c -n 1 -s 12G -m 24G -v $(PYCLONE_ENV) -w 72:00:00,"set -o pipefail && \
-							   		 pyclone-vi fit \
-									 --in-file $$(<) \
-									 --out-file $$(@) \
-									 --num-clusters 10 \
-									 --density beta-binomial \
-									 --num-grid-points 100 \
-									 --max-iters 1000000 \
-									 --mix-weight-prior 1 \
-									 --precision 500 \
-									 --num-restarts 100")
-									 
-pyclone_vi/$1/$1.txt : pyclone_vi/$1/$1.hd5
-	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
-							   pyclone-vi write-results-file \
-							   --in-file $$(<) \
-							   --out-file $$(@)")
-							     
-pyclone_vi/$1/$1__PS__.pdf : pyclone_vi/$1/$1.txt
-	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
-							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
-							   --option 2 \
-							   --sample_set '$(tumors.$1)' \
-							   --input_file $$(<) \
-							   --output_file $$(@)")
-							   
-pyclone_vi/$1/$1__HM__.pdf : pyclone_vi/$1/$1.txt
-	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
-							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
-							   --option 3 \
-							   --sample_set '$(tumors.$1)' \
-							   --input_file $$(<) \
-							   --output_file $$(@)")
-
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone,$(set))))
