@@ -110,7 +110,7 @@ pyclone_13/$1/$1.txt : pyclone_13/$1/trace/alpha.tsv.bz2
 							       --config_file pyclone_13/$1/config.yaml \
 							       --out_file pyclone_13/$1/$1.txt \
 							       --table_type loci \
-							       --burnin 50 \
+							       --burnin 2000 \
 							       --thin 1")
 							       
 pyclone_13/$1/$1__PS__.pdf : pyclone_13/$1/$1.txt
