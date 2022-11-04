@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR = log/svabaTN.$(NOW)
+LOGDIR = log/svaba_tumor_normal.$(NOW)
 
 SVABA_CORES ?= 8
 SVABA_MEM_CORE ?= 6G
@@ -10,9 +10,9 @@ SVABA_BLACKLIST ?= $(HOME)/share/lib/resource_files/svaba/wgs_blacklist_meres.be
 SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
 SVABA ?= svaba
 
-svaba_tn : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
-				          vcf/$(pair).svaba_indels.vcf \
-				          vcf/$(pair).svaba_candidate_sv.vcf)
+svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
+				       vcf/$(pair).svaba_indels.vcf \
+				       vcf/$(pair).svaba_candidate_sv.vcf)
 
 define svaba-tumor-normal
 svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
@@ -49,7 +49,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(SVABA) --help &> version/svabaTN.txt)
+	     $(SVABA) --help &> version/svaba_tumor_normal.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
-.PHONY: svaba_tn
+.PHONY: svaba

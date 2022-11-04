@@ -296,13 +296,13 @@ oncofuse :
 # DNA structural variant callers
 #==================================================	
 
-TARGETS += mantaTN
-mantaTN :
-	$(call RUN_MAKE,modules/sv_callers/mantaTN.mk)
+TARGETS += manta_tumor_normal
+manta_tumor_normal :
+	$(call RUN_MAKE,modules/sv_callers/manta_tumor_normal.mk)
 	
-TARGETS += svabaTN
-svabaTN :
-	$(call RUN_MAKE,modules/sv_callers/svabaTN.mk)	
+TARGETS += svaba_tumor_normal
+svaba_tumor_normal :
+	$(call RUN_MAKE,modules/sv_callers/svaba_tumor_normal.mk)
 
 TARGETS += manta
 manta :
