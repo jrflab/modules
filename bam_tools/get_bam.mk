@@ -4,6 +4,7 @@ LOGDIR = log/get_bam.$(NOW)
 
 get_bam : $(foreach sample,$(SAMPLES),bam/$(sample).bam)
 
+define get-bam
 bam/$1.bam :
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
 					  I=`$(echo "$1" | cut -c 1-1)`; \
