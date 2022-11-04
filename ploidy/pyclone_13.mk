@@ -12,7 +12,9 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
 	  $(foreach set,$(SAMPLE_SETS), \
 	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2)
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/by_clusters.txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/by_loci.txt)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
 
@@ -92,6 +94,25 @@ pyclone_13/$1/trace/alpha.tsv.bz2 : $(foreach sample,$(tumors.$1),pyclone_13/$1/
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV) -w 72:00:00,"set -o pipefail && \
 									   PyClone run_analysis \
 									   --config_file pyclone_13/$1/config.yaml")
+									   
+pyclone_13/$1/by_clusters.txt : pyclone_13/$1/trace/alpha.tsv.bz2
+	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV),"set -o pipefail && \
+							       PyClone build_table \
+							       --config_file pyclone_13/$1/config.yaml \
+							       --out_file pyclone_13/$1/by_clusters.txt \
+							       --table_type cluster \
+							       --burnin 50 \
+							       --thin 1")
+							       
+pyclone_13/$1/by_loci.txt : pyclone_13/$1/trace/alpha.tsv.bz2
+	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV),"set -o pipefail && \
+							       PyClone build_table \
+							       --config_file pyclone_13/$1/config.yaml \
+							       --out_file pyclone_13/$1/by_loci.txt \
+							       --table_type loci \
+							       --burnin 50 \
+							       --thin 1")
+
 							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
