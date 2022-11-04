@@ -110,7 +110,7 @@ if (as.numeric(opt$option) == 1) {
 			index = index + 1
 		}
 	}
-	pyclone_ft = do.call(bind_rows, pyclone_ft)
+	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
 		     readr::type_convert()
 	
 	smry_c = pyclone_ft %>%
