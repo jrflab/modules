@@ -15,7 +15,7 @@ endef
 		$(eval $(call get-bam,$(sample))))
 
 ..DUMMY := $(shell mkdir -p version; \
-             scp > version/get_bam.txt)
+             which scp > version/get_bam.txt)
 .SECONDARY: 
 .DELETE_ON_ERROR:
 .PHONY: get_bam
