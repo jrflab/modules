@@ -13,8 +13,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS), \
 	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/by_clusters.txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/by_loci.txt)
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/clusters.txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).txt)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
 
