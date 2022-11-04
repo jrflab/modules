@@ -42,7 +42,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(SVABA) --help &> version/gridss_tumor_normal.txt)
+	     echo 'gridss' > version/gridss_tumor_normal.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: gridss

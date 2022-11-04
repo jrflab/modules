@@ -373,7 +373,23 @@ merge_bam :
 TARGETS += process_bam
 process_bam : 
 	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
+	
+TARGETS += get_bam
+get_bam : 
+	$(call RUN_MAKE,modules/bam_tools/get_bam.mk)
+	
+#==================================================
+# VCF tools
+#==================================================
 
+TARGETS += merge_sv
+merge_sv : 
+	$(call RUN_MAKE,modules/vcf_tools/merge_sv.mk)
+	
+TARGETS += annot_sv
+annot_sv : 
+	$(call RUN_MAKE,modules/vcf_tools/annot_sv.mk)
+	
 
 #==================================================
 # FASTQ tools
@@ -459,7 +475,7 @@ immune_deconv :
 	
 
 #==================================================
-# Ploidy/ Clonality
+# Ploidy / Clonality
 #==================================================
 
 TARGETS += pyloh
@@ -476,11 +492,11 @@ absolute_seq :
 	
 TARGETS += pyclone_13
 pyclone_13 :
-	$(call RUN_MAKE,modules/ploidy/pyclone_13.mk)
+	$(call RUN_MAKE,modules/clonality/pyclone_13.mk)
 	
 TARGETS += pyclone_vi
 pyclone_vi :
-	$(call RUN_MAKE,modules/ploidy/pyclone_vi.mk)
+	$(call RUN_MAKE,modules/clonality/pyclone_vi.mk)
 
 #==================================================
 # mutational signatures
@@ -587,12 +603,5 @@ hotspot_summary :
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
-TARGETS += merge_sv
-merge_sv : 
-	$(call RUN_MAKE,modules/vcf_tools/merge_sv.mk)
 	
-TARGETS += get_bam
-get_bam : 
-	$(call RUN_MAKE,modules/bam_tools/get_bam.mk)
-
 .PHONY : $(TARGETS)
