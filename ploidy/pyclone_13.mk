@@ -88,7 +88,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone-build-mutations,$(set),$(sample)))))
 		
 define r-pyclone-run-analysis
-pyclone_13/$1/trace/alpha.tsv.bz2 : $(foreach sample,$(tumors.$1),pyclone_13/$1/$(sample).yaml)
+pyclone_13/$1/trace/alpha.tsv.bz2 : $(foreach sample,$(tumors.$1),pyclone_13/$1/$(sample).yaml) pyclone_13/$1/config.yaml
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV) -w 72:00:00,"set -o pipefail && \
 									   PyClone run_analysis \
 									   --config_file pyclone_13/$1/config.yaml")
