@@ -101,7 +101,8 @@ if (as.numeric(opt$option) == 1) {
 							       dplyr::filter(sample_id == sample_set[j]) %>%
 							       dplyr::rename(sample_id_y = sample_id,
 									     cellular_prevalence_y = cellular_prevalence,
-									     cellular_prevalence_std_y = cellular_prevalence_std)) %>%
+									     cellular_prevalence_std_y = cellular_prevalence_std),
+							       by = "mutation_id") %>%
 					      readr::type_convert()
 			index = index + 1
 		}

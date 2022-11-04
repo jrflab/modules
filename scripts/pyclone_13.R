@@ -160,13 +160,15 @@ if (as.numeric(opt$option) == 1) {
 							       dplyr::filter(sample_id == sample_set[j]) %>%
 							       dplyr::rename(sample_id_y = sample_id,
 									     cellular_prevalence_y = cellular_prevalence,
-									     cellular_prevalence_std_y = cellular_prevalence_std)) %>%
+									     cellular_prevalence_std_y = cellular_prevalence_std),
+							       by = "mutation_id") %>%
 					      readr::type_convert()
 			index = index + 1
 		}
 	}
 	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
-		     dplyr::filter(cellular_prevalence_x > 0 & cellular_prevalence_y > 0)
+		     readr::type_convert()
+	
 	smry_c = pyclone_ft %>%
 		 dplyr::group_by(mutation_id) %>%
 		 dplyr::summarize(cluster_id = unique(cluster_id)) %>%
