@@ -101,7 +101,7 @@ if (as.numeric(opt$option) == 1) {
 			      readr::type_convert() %>%
 			      .[["X1"]]
 	}
-	cat("num_iters: 10000\n\n", file = as.character(opt$output_file), append = FALSE)
+	cat("num_iters: 100\n\n", file = as.character(opt$output_file), append = FALSE)
 	cat("base_measure_params:\n", file = as.character(opt$output_file), append = TRUE)
 	cat("  alpha: 1\n", file = as.character(opt$output_file), append = TRUE)
 	cat("  beta: 1\n", file = as.character(opt$output_file), append = TRUE)

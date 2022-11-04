@@ -11,8 +11,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
 	  $(foreach set,$(SAMPLE_SETS), \
-	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml))
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
+	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
 
@@ -74,7 +74,7 @@ endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone-input,$(set))))
 		
-define r-pyclone-process
+define r-pyclone-build-mutations
 pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete pyclone_13/$1/config.yaml
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_13_ENV),"set -o pipefail && \
 							      PyClone build_mutations_file \
@@ -85,7 +85,17 @@ pyclone_13/$1/$2.yaml : pyclone_13/$1/$1.taskcomplete pyclone_13/$1/config.yaml
 endef
 $(foreach set,$(SAMPLE_SETS),\
 	$(foreach sample,$(tumors.$(set)),\
-		$(eval $(call r-pyclone-process,$(set),$(sample)))))
+		$(eval $(call r-pyclone-build-mutations,$(set),$(sample)))))
+		
+define r-pyclone-run-analysis
+pyclone_13/$1/trace/alpha.tsv.bz2 : $(foreach sample,$(tumors.$1),pyclone_13/$1/$(sample).yaml)
+	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV) -w 72:00:00,"set -o pipefail && \
+									   PyClone run_analysis \
+									   --config_file pyclone_13/$1/config.yaml")
+							   
+endef
+$(foreach set,$(SAMPLE_SETS),\
+	$(eval $(call r-pyclone-run-analysis,$(set))))
 		
 
 ..DUMMY := $(shell mkdir -p version; \
