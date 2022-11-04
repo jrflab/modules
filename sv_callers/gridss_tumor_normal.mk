@@ -5,7 +5,7 @@ LOGDIR = log/gridss_tumor_normal.$(NOW)
 GRIDSS_CORES ?= 8
 GRIDSS_MEM_CORE ?= 6G
 GRIDSS_REF ?= $(REF_FASTA)
-GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/ENCFF001TDO.bed
+GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/example/ENCFF001TDO.bed
 GRIDSS ?= gridss
 
 gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf)

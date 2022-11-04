@@ -9,9 +9,7 @@ SVABA_DBSNP ?= $(HOME)/share/lib/resource_files/svaba/dbsnp_indel.vcf
 SVABA_BLACKLIST ?= $(HOME)/share/lib/resource_files/svaba/wgs_blacklist_meres.bed
 SVABA ?= svaba
 
-svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
-				       vcf/$(pair).svaba_indels.vcf \
-				       vcf/$(pair).svaba_candidate_sv.vcf)
+svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf)
 
 define svaba-tumor-normal
 svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
@@ -31,15 +29,7 @@ svaba/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
 
 svaba/$1_$2.svaba.somatic.sv.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
 
-svaba/$1_$2.svaba.unfiltered.somatic.sv.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
-
 vcf/$1_$2.svaba_sv.vcf : svaba/$1_$2.svaba.somatic.sv.vcf
-	$$(INIT) cat $$< > $$@
-
-vcf/$1_$2.svaba_indels.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
-	$$(INIT) cat $$< > $$@
-
-vcf/$1_$2.svaba_candidate_sv.vcf : svaba/$1_$2.svaba.unfiltered.somatic.sv.vcf
 	$$(INIT) cat $$< > $$@
 
 endef
