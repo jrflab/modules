@@ -303,7 +303,11 @@ manta_tumor_normal :
 TARGETS += svaba_tumor_normal
 svaba_tumor_normal :
 	$(call RUN_MAKE,modules/sv_callers/svaba_tumor_normal.mk)
-
+	
+TARGETS += gridss_tumor_normal
+gridss_tumor_normal :
+	$(call RUN_MAKE,modules/sv_callers/gridss_tumor_normal.mk)
+	
 TARGETS += manta
 manta :
 	$(call RUN_MAKE,modules/sv_callers/manta.mk)

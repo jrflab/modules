@@ -29,6 +29,8 @@ IMMUNE_ENV ?= $(HOME)/share/usr/env/r-immunedeconv-2.1.0
 SUMREADS_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.6
 PYCLONE_ENV = $(HOME)/share/usr/env/pyclone-vi-0.1.2
 PYCLONE_13_ENV = $(HOME)/share/usr/env/pyclone-0.13.1
+GRIDSS_ENV = $(HOME)/share/usr/env/gridss-2.13.2
+SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 

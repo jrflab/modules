@@ -7,7 +7,6 @@ SVABA_MEM_CORE ?= 6G
 SVABA_REF ?= $(REF_FASTA)
 SVABA_DBSNP ?= $(HOME)/share/lib/resource_files/svaba/dbsnp_indel.vcf
 SVABA_BLACKLIST ?= $(HOME)/share/lib/resource_files/svaba/wgs_blacklist_meres.bed
-SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
 SVABA ?= svaba
 
 svaba : $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).svaba_sv.vcf \
