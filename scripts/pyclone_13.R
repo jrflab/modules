@@ -125,7 +125,7 @@ if (as.numeric(opt$option) == 1) {
 	cat("  proposal:\n", file = as.character(opt$output_file), append = TRUE)
 	cat("    precision: 0.1\n", file = as.character(opt$output_file), append = TRUE)
 	cat("\n", file = as.character(opt$output_file), append = TRUE)
-	cat("working_dir: pyclone/", file = as.character(opt$output_file), append = TRUE)
+	cat("working_dir: pyclone_13/", file = as.character(opt$output_file), append = TRUE)
 	cat(as.character(opt$sample_set), file = as.character(opt$output_file), append = TRUE)
 	cat("\n\n", file = as.character(opt$output_file), append = TRUE)
 	cat("trace_dir: trace\n", file = as.character(opt$output_file), append = TRUE)
