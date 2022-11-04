@@ -3,7 +3,8 @@ include modules/Makefile.inc
 LOGDIR = log/get_bam.$(NOW)
 
 get_bam : $(foreach sample,$(SAMPLES),bam/$(sample).bam) \
-	  $(foreach sample,$(SAMPLES),bam/$(sample).bam.bai)
+	  $(foreach sample,$(SAMPLES),bam/$(sample).bam.bai) \
+	  $(foreach sample,$(SAMPLES),bam/$(sample).bai)
 
 define get-bam
 bam/$1.bam :
@@ -15,7 +16,7 @@ bam/$1.bam.bai : bam/$1.bam
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
 					  $(SAMTOOLS) index $$(<)")
 					  
-bam/$1.bai : bam/$1.bam bam/$1/bam.bai
+bam/$1.bai : bam/$1.bam bam/$1.bam.bai
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
 					  cp $$(<<) $$(@)")
 
