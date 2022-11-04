@@ -158,10 +158,10 @@ if (as.numeric(opt$option) == 1) {
 							    cellular_prevalence_std_x = cellular_prevalence_std) %>%
 					      dplyr::full_join(pyclone %>%
 							       dplyr::filter(sample_id == sample_set[j]) %>%
-							       dplyr::rename(sample_id_y = sample_id,
+							       dplyr::select(sample_id_y = sample_id,
 									     cellular_prevalence_y = cellular_prevalence,
 									     cellular_prevalence_std_y = cellular_prevalence_std),
-							       by = "mutation_id") %>%
+							       by = c("mutation_id", "cluster_id")) %>%
 					      readr::type_convert()
 			index = index + 1
 		}
