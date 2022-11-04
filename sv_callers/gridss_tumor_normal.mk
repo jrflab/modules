@@ -16,6 +16,7 @@ gridss/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
 												    mkdir -p gridss/$1_$2 && \
 												    cd gridss/$1_$2 && \
 												    $$(GRIDSS) \
+												    -t $$(GRIDSS_CORES) \
 												    -r $$(GRIDSS_REF) \
 												    -o $1_$2.gridss_sv.vcf \
 												    -b $$(GRIDSS_BLACKLIST) \
