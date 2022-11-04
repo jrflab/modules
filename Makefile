@@ -29,11 +29,11 @@ RUN_MAKE = $(if $(findstring false,$(USE_CLUSTER))$(findstring n,$(MAKEFLAGS)),+
 #==================================================
 
 TARGETS += somatic_indels
-somatic_indels:
+somatic_indels :
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticIndels.mk)
 	
 TARGETS += somatic_variants
-somatic_variants:
+somatic_variants :
 	$(call RUN_MAKE,modules/variant_callers/somatic/somaticVariants.mk)
 	
 
@@ -69,11 +69,11 @@ tophat :
 	$(call RUN_MAKE,modules/aligners/tophatAligner.mk)
 
 TARGETS += star
-star:
+star :
 	$(call RUN_MAKE,modules/aligners/starAligner.mk)
 
 TARGETS += star_fusion_aligner
-star_fusion_aligner:
+star_fusion_aligner :
 	$(call RUN_MAKE,modules/aligners/starFusionAligner.mk)
 	
 TARGETS += blast_reads
@@ -102,11 +102,11 @@ snvmix :
 	$(call RUN_MAKE,modules/variant_callers/snvmix.mk)
 	
 TARGETS += tvcTN
-tvcTN:
+tvcTN :
 	$(call RUN_MAKE,modules/variant_callers/somatic/tvcTN.mk)
 
 TARGETS += tvc
-tvc:
+tvc :
 	$(call RUN_MAKE,modules/variant_callers/tvc.mk)
 
 TARGETS += varscanTN
@@ -150,7 +150,7 @@ samtools_het :
 	$(call RUN_MAKE,modules/variant_callers/samtoolsHet.mk)
 
 TARGETS += platypus
-platypus:
+platypus :
 	$(call RUN_MAKE,modules/variant_callers/somatic/platypus.mk)
 	
 TARGETS += msisensor
@@ -170,7 +170,7 @@ museqTN :
 	$(call RUN_MAKE,modules/variant_callers/somatic/museqTN.mk)
 	
 TARGETS += hotspot
-hotspot: 
+hotspot : 
 	$(call RUN_MAKE,modules/variant_callers/hotspot.mk)
 	
 TARGETS += jsm
@@ -182,15 +182,15 @@ sufam:
 	$(call RUN_MAKE,modules/variant_callers/sufamsampleset.mk)
 
 TARGETS += sufam_gt
-sufam_gt:
+sufam_gt :
 	$(call RUN_MAKE,modules/variant_callers/sufam_gt.mk)
 
 TARGETS += get_basecount
-get_basecount:
+get_basecount :
 	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
 	
 TARGETS += strelka_varscan_indels
-strelka_varscan_indels:
+strelka_varscan_indels :
 	$(call RUN_MAKE,modules/variant_callers/somatic/strelkaVarscanIndels.mk)
 
 
@@ -260,7 +260,7 @@ cnv_kit :
 #==================================================
 
 TARGETS += star_fusion
-star_fusion:
+star_fusion :
 	$(call RUN_MAKE,modules/sv_callers/starFusion.mk)
 
 TARGETS += tophat_fusion
@@ -512,7 +512,7 @@ virus_detection_bowtie2 :
 	$(call RUN_MAKE,modules/virus/virus_detection_bowtie2.mk)
 	
 TARGETS += viral_detection
-viral_detection:
+viral_detection :
 	$(call RUN_MAKE,modules/test/workflows/viral_detection.mk)
 	
 TARGETS += krona_classify
@@ -550,15 +550,15 @@ delmh_summary :
 #==================================================
 
 TARGETS += ann_ext_vcf
-ann_ext_vcf: 
+ann_ext_vcf : 
 	$(call RUN_MAKE,modules/vcf_tools/annotateExtVcf.mk)
 
 TARGETS += ann_somatic_vcf
-ann_somatic_vcf: 
+ann_somatic_vcf : 
 	$(call RUN_MAKE,modules/vcf_tools/annotateSomaticVcf.mk)
 
 TARGETS += ann_vcf
-ann_vcf: 
+ann_vcf : 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
 TARGETS += cravat_annotation
@@ -570,7 +570,7 @@ cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
 	
 TARGETS += ann_summary_vcf
-ann_summary_vcf: 
+ann_summary_vcf : 
 	$(call RUN_MAKE,modules/vcf_tools/annotateSummaryVcf.mk)
 
 
@@ -579,12 +579,16 @@ ann_summary_vcf:
 #==================================================
 
 TARGETS += hotspot_summary
-hotspot_summary:
+hotspot_summary :
 	$(MAKE) -f modules/variant_callers/genotypehotspots.mk -j $(NUM_JOBS)
 	$(call RUN_MAKE,modules/summary/hotspotsummary.mk)
 	
 TARGETS += merge_sv
-merge_sv: 
+merge_sv : 
 	$(call RUN_MAKE,modules/vcf_tools/merge_sv.mk)
+	
+TARGETS += get_bam
+get_bam : 
+	$(call RUN_MAKE,modules/bam_tools/get_bam.mk)
 
 .PHONY : $(TARGETS)
