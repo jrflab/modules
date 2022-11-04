@@ -113,7 +113,7 @@ pyclone_13/$1/$1.txt : pyclone_13/$1/trace/alpha.tsv.bz2
 							       --burnin 50 \
 							       --thin 1")
 							       
-pyclone_vi/$1/$1__PS__.pdf : pyclone_vi/$1/$1.txt
+pyclone_13/$1/$1__PS__.pdf : pyclone_13/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 3 \
@@ -121,7 +121,7 @@ pyclone_vi/$1/$1__PS__.pdf : pyclone_vi/$1/$1.txt
 							   --input_file $$(<) \
 							   --output_file $$(@)")
 							   
-pyclone_vi/$1/$1__HM__.pdf : pyclone_vi/$1/$1.txt
+pyclone_13/$1/$1__HM__.pdf : pyclone_13/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 4 \
