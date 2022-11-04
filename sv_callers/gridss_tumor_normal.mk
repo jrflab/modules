@@ -11,7 +11,7 @@ GRIDSS ?= gridss
 gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair).gridss_sv.vcf)
 
 define gridss-tumor-normal
-gridss/$1_$2.svaba.somatic.indel.vcf : bam/$1.bam bam/$2.bam
+gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -n $(GRIDSS_CORES) -s 4G -m $(GRIDSS_MEM_CORE) -v $(GRIDSS_ENV) -w 72:00:00,"set -o pipefail && \
 												    mkdir -p gridss/$1_$2 && \
 												    cd gridss/$1_$2 && \
