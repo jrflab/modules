@@ -78,8 +78,11 @@ if (as.numeric(opt$option) == 1) {
 	}
 	pyclone = do.call(rbind, pyclone) %>%
 		  dplyr::filter(!is.na(ref_counts)) %>%
+		  dplyr::filter(ref_counts>0) %>%
 		  dplyr::filter(!is.na(alt_counts)) %>%
-		  dplyr::mutate(major_cn = ifelse(is.na(major_cn), 2, major_cn)) %>%
+		  dplyr::mutate(var_coalt_countsunts = ifelse(alt_counts<=2, 0, alt_counts)) %>%
+		  dplyr::filter(!is.na(major_cn)) %>%
+		  dplyr::filter(major_cn != 0) %>%
 		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
 	
 	readr::write_tsv(x = pyclone, file = opt$output_file, append = FALSE, col_names = TRUE)
