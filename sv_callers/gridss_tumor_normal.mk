@@ -8,7 +8,7 @@ GRIDSS_REF ?= $(REF_FASTA)
 GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/ENCFF001TDO.bed
 GRIDSS ?= gridss
 
-gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair).gridss_sv.vcf)
+gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf)
 
 define gridss-tumor-normal
 gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
