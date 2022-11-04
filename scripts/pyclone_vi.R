@@ -85,6 +85,15 @@ if (as.numeric(opt$option) == 1) {
 		  dplyr::filter(major_cn != 0) %>%
 		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
 	
+	smry = pyclone %>%
+	       dplyr::group_by(mutation_id) %>%
+	       dplyr::summarize(n = n()) %>%
+	       dplyr::ungroup()
+	
+	pyclone = pyclone %>%
+		  dplyr::left_join(smry, by = "mutation_id") %>%
+		  dplyr::filter(n == length(sample_set))
+	
 	readr::write_tsv(x = pyclone, file = opt$output_file, append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option) == 2) {

@@ -64,7 +64,7 @@ pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(s
 							   --normal_sample '$(normal.$1)' && \
 							   echo 'taskcomplete' > $$(@)")
 							   
-pyclone_13/$1/config.yaml : pyclone_13/$1/$1.taskcomplete
+pyclone_13/$1/config.yaml : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 2 \
