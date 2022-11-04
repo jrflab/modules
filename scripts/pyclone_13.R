@@ -8,6 +8,7 @@ suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("reshape2"))
 suppressPackageStartupMessages(library("superheat"))
+suppressPackageStartupMessages(library("RColorBrewer"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -188,16 +189,19 @@ if (as.numeric(opt$option) == 1) {
 	pyclone_ft = pyclone_ft %>%
 		     dplyr::left_join(smry_c, by = "cluster_id") %>%
 		     dplyr::left_join(smry_p, by = "cluster_id")
+	
+	colourCount = length(unique(pyclone_ft$cluster_id))
+	getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 		
 	plot_ = pyclone_ft %>%
 		ggplot(aes(x = 100*cellular_prevalence_x, y = 100*cellular_prevalence_y, color = factor(cluster_id), size = n)) +
 		geom_point(stat = "identity", alpha = .75, shape = 21) +
-		scale_color_brewer(type = "qual", palette = 6) +
+		scale_color_manual(values = getPalette(colourCount)) +
 		xlab("\n\nCCF (%)\n") +
 		ylab("\nCCF (%)\n\n") +
 		guides(color = guide_legend(title = "Cluster"),
 		       size = guide_legend(title = "N")) +
-		facet_wrap(sample_id_x~sample_id_y)
+		facet_wrap(~sample_id_x+sample_id_y)
 	pdf(file = as.character(opt$output_file), width = 21, height = 21)
 	print(plot_)
 	dev.off()
