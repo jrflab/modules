@@ -4,7 +4,7 @@ LOGDIR = log/gridss_tumor_normal.$(NOW)
 
 GRIDSS_CORES ?= 8
 GRIDSS_MEM_CORE ?= 6G
-GRIDSS_REF ?= $(REF_FASTA)
+GRIDSS_REF ?= $(HOME)/share/lib/ref_files/b37/human_g1k_v37.fasta
 GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/example/ENCFF001TDO.bed
 GRIDSS ?= gridss
 
