@@ -134,7 +134,7 @@ if (as.numeric(opt$option) == 1) {
 	cat("samples:\n", file = as.character(opt$output_file), append = TRUE)
 	for (i in 1:length(sample_set)) {
 		cat(paste0("  ", sample_set[i], ":\n"), file = as.character(opt$output_file), append = TRUE)
-		cat(paste0("    mutations_file: ", sample_set[i], ".yaml\n\n"), file = as.character(opt$output_file), append = TRUE)
+		cat(paste0("    mutations_file: pyclone_13/", as.character(opt$sample_set), "/", sample_set[i], ".yaml\n\n"), file = as.character(opt$output_file), append = TRUE)
 		cat("    tumour_content:\n", file = as.character(opt$output_file), append = TRUE)
 		cat(paste0("      value: ", params[[i]], "\n"), file = as.character(opt$output_file), append = TRUE)
 		cat("\n", file = as.character(opt$output_file), append = TRUE)
