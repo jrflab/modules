@@ -7,6 +7,8 @@ GRIDSS_MEM_CORE ?= 6G
 GRIDSS_REF ?= $(HOME)/share/lib/ref_files/b37/human_g1k_v37.fasta
 GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/example/ENCFF001TDO.bed
 GRIDSS ?= gridss
+GRIDSS_FILTER ?= gridss_somatic_filter
+GRIDSS_PON_DIR ?= $(HOME)/share/lib/resource_files/gridss/pon
 
 gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf)
 
@@ -22,6 +24,21 @@ gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
 												    -b $$(GRIDSS_BLACKLIST) \
 												    ../../bam/$2.bam \
 												    ../../bam/$1.bam")
+												    
+gridss/$1_$2/$1_$2.gridss_sv_ft.vcf : gridss/$1_$2/$1_$2.gridss_sv.vcf
+	$$(call RUN,-c -n $(GRIDSS_CORES) -s 4G -m $(GRIDSS_MEM_CORE) -v $(GRIDSS_ENV) -w 72:00:00,"set -o pipefail && \
+												    cd gridss/$1_$2 && \
+												    $$(GRIDSS_FILTER) \
+												    --pondir  $$(GRIDSS_PON_DIR) \
+												    --ref $$(GRIDSS_REF) \
+												    --input $1_$2.gridss.sv.vcf \
+												    --output $1_$2.gridss_sv_ft.vcf.gz \
+												    --fulloutput $1_$2.gridss_sv_high_and_low_confidence_somatic.vcf.gz \
+												    --scriptdir $$(GRIDSS_ENV)/bin \
+												    -n 1 \
+												    -t 2")
+												    
+
 
 #svaba/$1_$2.svaba.somatic.sv.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
 
