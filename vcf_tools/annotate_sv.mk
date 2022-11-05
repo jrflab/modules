@@ -6,7 +6,7 @@ SV_CALLERS = svaba manta gridss merged
 ANNOTATE_SV ?= $(HOME)/share/usr/env/annot_sv-3.1.3/opt/AnnotSV/bin/AnnotSV
 
 annotate_sv :  $(foreach pair,$(SAMPLE_PAIRS), \
-			$(foreach caller,$(SV_CALLERS),annotate_sv/$(pair)/$(pair).$(caller)_sv.tsv))
+			$(foreach caller,$(SV_CALLERS),annotate_sv/$(pair)/$(pair).$(caller)_sv.tsv)) \
 	       $(foreach pair,$(SAMPLE_PAIRS), \
 			$(foreach caller,$(SV_CALLERS),annotate_sv/$(pair)/$(pair).$(caller)_sv.maf))
 			
