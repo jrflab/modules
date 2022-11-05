@@ -8,7 +8,7 @@ GRIDSS_REF ?= $(HOME)/share/lib/ref_files/b37/human_g1k_v37.fasta
 GRIDSS_BLACKLIST ?= $(HOME)/share/lib/resource_files/gridss/example/ENCFF001TDO.bed
 GRIDSS ?= gridss
 GRIDSS_FILTER ?= gridss_somatic_filter
-GRIDSS_PON_DIR ?= $(HOME)/share/lib/resource_files/gridss/pon
+GRIDSS_PON_DIR ?= $(HOME)/share/lib/resource_files/gridss/pon/
 
 gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf) \
 	 $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv_ft.vcf)
