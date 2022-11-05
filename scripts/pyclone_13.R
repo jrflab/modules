@@ -151,7 +151,8 @@ if (as.numeric(opt$option) == 1) {
 } else if (as.numeric(opt$option) == 3) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " "))
 	pyclone = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		  readr::type_convert()
+		  readr::type_convert() %>%
+		  dplyr::arrange(mutation_id)
 	
 	pyclone_ft = list()
 	index = 1
@@ -162,14 +163,12 @@ if (as.numeric(opt$option) == 1) {
 					      dplyr::select(mutation_id,
 							    cluster_id,
 							    sample_id_x = sample_id,
-							    cellular_prevalence_x = cellular_prevalence,
-							    cellular_prevalence_std_x = cellular_prevalence_std) %>%
-					      dplyr::full_join(pyclone %>%
+							    cellular_prevalence_x = cellular_prevalence) %>%
+					      dplyr::bind_cols(pyclone %>%
 							       dplyr::filter(sample_id == sample_set[j]) %>%
 							       dplyr::select(mutation_id,
 									     sample_id_y = sample_id,
-									     cellular_prevalence_y = cellular_prevalence,
-									     cellular_prevalence_std_y = cellular_prevalence_std),
+									     cellular_prevalence_y = cellular_prevalence),
 							       by = "mutation_id") %>%
 					      readr::type_convert()
 			index = index + 1
@@ -178,32 +177,25 @@ if (as.numeric(opt$option) == 1) {
 	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
 		     readr::type_convert()
 	
-	smry_c = pyclone_ft %>%
+	smry_x = pyclone_ft %>%
 		 dplyr::group_by(mutation_id) %>%
 		 dplyr::summarize(cluster_id = unique(cluster_id)) %>%
 		 dplyr::ungroup() %>%
 		 dplyr::group_by(cluster_id) %>%
 		 dplyr::summarize(n = n())
-	smry_p = pyclone %>%
-		 dplyr::group_by(cluster_id, sample_id) %>%
-		 dplyr::summarize(mean_cellular_prevalence = mean(cellular_prevalence)) %>%
-		 dplyr::ungroup() %>%
+	
+	pyclone_ft = pyclone_ft %>%
+		     dplyr::left_join(smry_x, by = "cluster_id")
+	
+	smry_y = pyclone %>%
 		 dplyr::group_by(cluster_id) %>%
-		 dplyr::summarize(is_clonal = max(mean_cellular_prevalence))
+		 dplyr::summarize(mean = mean(cellular_prevalence)) %>%
+		 dplyr::ungroup() %>%
+		 dplyr::arrange(desc(mean)) %>%
+		 dplyr::mutate(cluster_id_ordered = nrow(.):1)
 	
 	pyclone_ft = pyclone_ft %>%
-		     dplyr::left_join(smry_c, by = "cluster_id") %>%
-		     dplyr::left_join(smry_p, by = "cluster_id")
-	
-	smry_cl = pyclone %>%
-		  dplyr::group_by(cluster_id) %>%
-		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
-		  dplyr::ungroup() %>%
-		  dplyr::arrange(desc(mean)) %>%
-		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
-	
-	pyclone_ft = pyclone_ft %>%
-		     dplyr::left_join(smry_cl, by = "cluster_id")
+		     dplyr::left_join(smry_y, by = "cluster_id")
 	
 	colourCount = length(unique(pyclone_ft$cluster_id_ordered))
 	getPalette = colorRampPalette(brewer.pal(9, "Set1"))
