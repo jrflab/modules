@@ -5,6 +5,10 @@ LOGDIR ?= log/pyclone_13.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
+MCMC_ITER = 1000
+MCMC_BURNIN = 200
+MCMC_THIN = 1
+
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
@@ -70,7 +74,8 @@ pyclone_13/$1/config.yaml : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sampl
 							   --option 2 \
 							   --sample_set $1 \
 							   --normal_sample '$(normal.$1)' \
-							   --output_file $$(@)")
+							   --output_file $$(@) \
+							   --num_iter $$(MCMC_ITER)")
 							   
 endef
 $(foreach set,$(SAMPLE_SETS),\
@@ -101,8 +106,8 @@ pyclone_13/$1/clusters.txt : pyclone_13/$1/trace/alpha.tsv.bz2
 							       --config_file pyclone_13/$1/config.yaml \
 							       --out_file pyclone_13/$1/clusters.txt \
 							       --table_type cluster \
-							       --burnin 200 \
-							       --thin 1")
+							       --burnin $$(MCMC_BURNIN) \
+							       --thin $$(MCMC_THIN)")
 							       
 pyclone_13/$1/$1.txt : pyclone_13/$1/trace/alpha.tsv.bz2
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV),"set -o pipefail && \
@@ -110,8 +115,8 @@ pyclone_13/$1/$1.txt : pyclone_13/$1/trace/alpha.tsv.bz2
 							       --config_file pyclone_13/$1/config.yaml \
 							       --out_file pyclone_13/$1/$1.txt \
 							       --table_type loci \
-							       --burnin 200 \
-							       --thin 1")
+							       --burnin $$(MCMC_BURNIN) \
+							       --thin $$(MCMC_THIN)")
 							       
 pyclone_13/$1/$1__PS__.pdf : pyclone_13/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \

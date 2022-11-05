@@ -18,7 +18,8 @@ optList = list(make_option("--option", default = NA, type = 'character', help = 
                make_option("--sample_set", default = NA, type = 'character', help = "sample set"),
 	       make_option("--normal_sample", default = NA, type = 'character', help = "normal sample"),
 	       make_option("--input_file", default = NA, type = 'character', help = "input file"),
-	       make_option("--output_file", default = NA, type = 'character', help = "output file"))
+	       make_option("--output_file", default = NA, type = 'character', help = "output file"),
+	       make_option("--num_iter", default = NA, type = 'character', help = "mcmc iterations"))
 parser = OptionParser(usage = "%prog", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
@@ -105,7 +106,7 @@ if (as.numeric(opt$option) == 1) {
 			      readr::type_convert() %>%
 			      .[["X1"]]
 	}
-	cat("num_iters: 1000\n\n", file = as.character(opt$output_file), append = FALSE)
+	cat(paste0("num_iters: ", as.numeric(opt$num_iter), "\n\n", file = as.character(opt$output_file), append = FALSE)
 	cat("base_measure_params:\n", file = as.character(opt$output_file), append = TRUE)
 	cat("  alpha: 1\n", file = as.character(opt$output_file), append = TRUE)
 	cat("  beta: 1\n", file = as.character(opt$output_file), append = TRUE)
