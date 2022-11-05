@@ -257,7 +257,7 @@ if (as.numeric(opt$option) == 1) {
 		  col.dendrogram = FALSE,
 		  smooth.heat = FALSE,
 		  scale = FALSE,
-		  heat.pal = c("#d9d9d9", "#d9d9d9", "#d9d9d9", "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
+		  heat.pal = c(rep("#d9d9d9", 10), "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
 		  legend = FALSE,
 		  grid.hline = FALSE,
 		  grid.vline = TRUE,
