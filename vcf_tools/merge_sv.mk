@@ -2,7 +2,7 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/merge_sv.$(NOW)
 
-SV_CALLERS = svaba manta
+SV_CALLERS = svaba manta gridss
 MAX_DIST = 500
 NUM_CALLERS = 2
 TYPE = 1
