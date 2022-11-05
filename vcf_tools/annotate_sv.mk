@@ -10,12 +10,12 @@ annotate_sv :  $(foreach pair,$(SAMPLE_PAIRS), \
 			
 define annotate-sv
 annotate_sv/$1/$1.$2_sv.tsv : vcf/$1.$2_sv.vcf
-	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
-							    mkdir -p annotate_sv/$1 && \
-							    $$(ANNOTATE_SV) \
-							    -SVinputFile $$(<) \
-							    -outputFile ./$$(@) \
-							    -genomeBuild GRCh37")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(ANNOTATE_SV_ENV),"set -o pipefail && \
+							       mkdir -p annotate_sv/$1 && \
+							       $$(ANNOTATE_SV) \
+							       -SVinputFile $$(<) \
+							       -outputFile ./$$(@) \
+							       -genomeBuild GRCh37")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
