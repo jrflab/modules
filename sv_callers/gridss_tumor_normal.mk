@@ -30,12 +30,6 @@ gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
 #vcf/$1_$2.svaba_sv.vcf : svaba/$1_$2.svaba.somatic.sv.vcf
 #	$$(INIT) cat $$< > $$@
 
-#vcf/$1_$2.svaba_indels.vcf : svaba/$1_$2.svaba.somatic.indel.vcf
-#	$$(INIT) cat $$< > $$@
-
-#vcf/$1_$2.svaba_candidate_sv.vcf : svaba/$1_$2.svaba.unfiltered.somatic.sv.vcf
-#	$$(INIT) cat $$< > $$@
-
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call gridss-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
