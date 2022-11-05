@@ -10,7 +10,8 @@ GRIDSS ?= gridss
 GRIDSS_FILTER ?= gridss_somatic_filter
 GRIDSS_PON_DIR ?= $(HOME)/share/lib/resource_files/gridss/pon
 
-gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf)
+gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf) \
+	 $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv_ft.vcf)
 
 define gridss-tumor-normal
 gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
