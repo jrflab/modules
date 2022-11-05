@@ -13,7 +13,7 @@ annotate_sv/$1/$1.$2_sv.txt : vcf/$1.$2_sv.vcf
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
-	$(foreach caller,$(SV_CALLER), \
+	$(foreach caller,$(SV_CALLERS), \
 		$(eval $(call annotate-sv,$(pair),$(caller)))))
 		
 .DELETE_ON_ERROR:
