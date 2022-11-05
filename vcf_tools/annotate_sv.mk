@@ -35,10 +35,6 @@ annotate_sv/$1/$1.$2_sv.maf : vcf/$1.$2_sv.vcf
 							--output-maf $$(@)")
 
 endef
-$(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call r-sufam,$(sample))))
-
-endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 	$(foreach caller,$(SV_CALLERS), \
 		$(eval $(call annotate-sv,$(pair),$(caller)))))
