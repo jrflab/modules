@@ -9,7 +9,7 @@ TYPE = 1
 STRAND = 1
 MIN_SIZE = 30
 
-merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/samples.txt)
+merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/samples.txt) \
 	    $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/$(pair).merged_sv.vcf)
 	   
 define merge-sv
