@@ -5,14 +5,14 @@ LOGDIR ?= log/pyclone_13.$(NOW)
 SUFAM_ENV = $(HOME)/share/usr/anaconda-envs/sufam-dev
 SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
-MCMC_ITER = 1000
-MCMC_BURNIN = 200
+MCMC_ITER = 100
+MCMC_BURNIN = 20
 MCMC_THIN = 1
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/taskcomplete)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/taskcomplete) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml)
 #	  $(foreach set,$(SAMPLE_SETS), \
 #	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
