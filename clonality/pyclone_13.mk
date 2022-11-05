@@ -12,9 +12,9 @@ MCMC_THIN = 1
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/taskcomplete) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml)
-#	  $(foreach set,$(SAMPLE_SETS), \
-#	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
+	  $(foreach set,$(SAMPLE_SETS), \
+	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml))
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/clusters.txt) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).txt) \
