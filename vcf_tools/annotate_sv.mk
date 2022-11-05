@@ -3,13 +3,19 @@ include modules/Makefile.inc
 LOGDIR ?= log/anotate_sv.$(NOW)
 
 SV_CALLERS = svaba manta gridss merged
+ANNOTATE_SV ?= $(HOME)/share/usr/env/annot_sv-3.1.3/opt/AnnotSV/bin/AnnotSV
 
 annotate_sv :  $(foreach pair,$(SAMPLE_PAIRS), \
-			$(foreach caller,$(SV_CALLERS),annotate_sv/$(pair)/$(pair).$(caller)_sv.txt))
+			$(foreach caller,$(SV_CALLERS),annotate_sv/$(pair)/$(pair).$(caller)_sv.tsv))
 			
 define annotate-sv
-annotate_sv/$1/$1.$2_sv.txt : vcf/$1.$2_sv.vcf
-	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail")
+annotate_sv/$1/$1.$2_sv.tsv : vcf/$1.$2_sv.vcf
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
+							    mkdir -p annotate_sv/$1 && \
+							    $$(ANNOTATE_SV) \
+							    -SVinputFile $$(<) \
+							    -outputFile ./$$(@) \
+							    -genomeBuild GRCh37")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
