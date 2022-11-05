@@ -16,7 +16,7 @@ define merge-sv
 merge_sv/$1_$2/samples.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
 	mkdir -p merge_sv/$1_$2 && \
 	for caller in $(SV_CALLERS); do \
-		echo vcf/$1_$2.$$(caller)_sv.vcf > $$(@); \
+		echo \"vcf/$1_$2.$$(caller)_sv.vcf\" > $$(@); \
 	done
 
 #merge_sv/$1_$2/samples.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
