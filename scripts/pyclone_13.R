@@ -233,7 +233,7 @@ if (as.numeric(opt$option) == 1) {
 	
 	smry_cl = pyclone %>%
 		  dplyr::group_by(cluster_id) %>%
-		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
+		  dplyr::summarize(mean = sum(cellular_prevalence)) %>%
 		  dplyr::ungroup() %>%
 		  dplyr::arrange(desc(mean)) %>%
 		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
