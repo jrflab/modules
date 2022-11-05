@@ -10,8 +10,8 @@ MCMC_BURNIN = 200
 MCMC_THIN = 1
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/taskcomplete)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
 #	  $(foreach set,$(SAMPLE_SETS), \
 #	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
@@ -47,13 +47,13 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call r-sufam,$(sample))))
 		
 define r-pyclone-input
-pyclone_13/$1/$1.taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
+pyclone_13/$1/taskcomplete : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 1 \
 							   --sample_set $1 \
 							   --normal_sample '$(normal.$1)' && \
-							   echo 'taskcomplete' > $$(@)")
+							   touch $$(@)")
 							   
 pyclone_13/$1/config.yaml : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(PYCLONE_ENV),"set -o pipefail && \
