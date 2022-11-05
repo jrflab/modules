@@ -35,7 +35,7 @@ gridss/$1_$2/$1_$2.gridss_sv_ft.vcf : gridss/$1_$2/$1_$2.gridss_sv.vcf
 											--input $1_$2.gridss_sv.vcf \
 											--output $1_$2.gridss_sv_ft.vcf.gz \
 											--fulloutput $1_$2.gridss_sv_high_and_low_confidence_somatic.vcf.gz \
-											--scriptdir '$$(GRIDSS_ENV)/bin' \
+											--scriptdir '$(GRIDSS_ENV)/bin' \
 											-n 1 \
 											-t 2")
 												    
