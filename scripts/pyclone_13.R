@@ -166,8 +166,7 @@ if (as.numeric(opt$option) == 1) {
 							    cellular_prevalence_x = cellular_prevalence) %>%
 					      dplyr::bind_cols(pyclone %>%
 							       dplyr::filter(sample_id == sample_set[j]) %>%
-							       dplyr::select(mutation_id,
-									     sample_id_y = sample_id,
+							       dplyr::select(sample_id_y = sample_id,
 									     cellular_prevalence_y = cellular_prevalence),
 							       by = "mutation_id") %>%
 					      readr::type_convert()
