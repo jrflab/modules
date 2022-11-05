@@ -164,9 +164,10 @@ if (as.numeric(opt$option) == 1) {
 							    cluster_id,
 							    sample_id_x = sample_id,
 							    cellular_prevalence_x = cellular_prevalence) %>%
-					      dplyr::bind_cols(pyclone %>%
+					      dplyr::full_join(pyclone %>%
 							       dplyr::filter(sample_id == sample_set[j]) %>%
-							       dplyr::select(sample_id_y = sample_id,
+							       dplyr::select(mutation_id,
+									     sample_id_y = sample_id,
 									     cellular_prevalence_y = cellular_prevalence),
 							       by = "mutation_id") %>%
 					      readr::type_convert()
@@ -174,7 +175,9 @@ if (as.numeric(opt$option) == 1) {
 		}
 	}
 	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
-		     readr::type_convert()
+		     readr::type_convert() %>%
+		     dplyr::filter(!is.na(cellular_prevalence_x)) %>%
+		     dplyr::filter(!is.na(cellular_prevalence_y))	   
 	
 	smry_x = pyclone_ft %>%
 		 dplyr::group_by(mutation_id) %>%
