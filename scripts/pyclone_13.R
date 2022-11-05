@@ -193,11 +193,21 @@ if (as.numeric(opt$option) == 1) {
 		     dplyr::left_join(smry_c, by = "cluster_id") %>%
 		     dplyr::left_join(smry_p, by = "cluster_id")
 	
-	colourCount = length(unique(pyclone_ft$cluster_id))
+	smry_cl = pyclone %>%
+		  dplyr::group_by(cluster_id) %>%
+		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
+		  dplyr::ungroup() %>%
+		  dplyr::arrange(desc(mean)) %>%
+		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
+	
+	pyclone_ft = pyclone_ft %>%
+		     dplyr::left_join(smry_cl, by = "cluster_id")
+	
+	colourCount = length(unique(pyclone_ft$cluster_id_ordered))
 	getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 		
 	plot_ = pyclone_ft %>%
-		ggplot(aes(x = 100*cellular_prevalence_x, y = 100*cellular_prevalence_y, color = factor(cluster_id), size = n)) +
+		ggplot(aes(x = 100*cellular_prevalence_x, y = 100*cellular_prevalence_y, color = factor(cluster_id_ordered), size = n)) +
 		geom_point(stat = "identity", alpha = .75, shape = 21) +
 		scale_color_manual(values = getPalette(colourCount)) +
 		xlab("\n\nCCF (%)\n") +
