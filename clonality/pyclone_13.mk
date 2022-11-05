@@ -18,8 +18,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_clusters.txt) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_loci.txt)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__PS__.pdf) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__HM__.pdf)
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/scatter_by_sample.pdf) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/heatmap_by_sample.pdf)
 
 
 define r-sufam
@@ -105,7 +105,7 @@ pyclone_13/$1/summary/by_loci.txt : pyclone_13/$1/trace/alpha.tsv.bz2 pyclone_13
 							       --burnin $$(MCMC_BURNIN) \
 							       --thin $$(MCMC_THIN)")
 							       
-pyclone_13/$1/$1__PS__.pdf : pyclone_13/$1/$1.txt
+pyclone_13/$1/summary/scatter_by_sample.pdf : pyclone_13/$1/summary/by_loci.txt pyclone_13/$1/summary/by_clusters.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 3 \
@@ -113,7 +113,7 @@ pyclone_13/$1/$1__PS__.pdf : pyclone_13/$1/$1.txt
 							   --input_file $$(<) \
 							   --output_file $$(@)")
 							   
-pyclone_13/$1/$1__HM__.pdf : pyclone_13/$1/$1.txt
+pyclone_13/$1/summary/heatmap_by_sample.pdf : pyclone_13/$1/summary/by_loci.txt pyclone_13/$1/summary/by_clusters.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_13.R \
 							   --option 4 \
