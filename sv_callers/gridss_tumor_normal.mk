@@ -33,8 +33,8 @@ gridss/$1_$2/$1_$2.gridss_sv_ft.vcf.bgz : gridss/$1_$2/$1_$2.gridss_sv.vcf
 							    $$(GRIDSS_FILTER) \
 							    --pondir $$(GRIDSS_PON_DIR) \
 							    --input $1_$2.gridss_sv.vcf \
-							    --output $1_$2.gridss_sv_ft.vcf.bgz \
-							    --fulloutput $1_$2.gridss_sv_high_and_low_confidence_somatic.vcf.bgz \
+							    --output $1_$2.gridss_sv_ft.vcf \
+							    --fulloutput $1_$2.gridss_sv_high_and_low_confidence_somatic.vcf \
 							    -n 1 \
 							    -t 2")
 

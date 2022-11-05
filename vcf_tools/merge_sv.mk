@@ -2,7 +2,6 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/merge_sv.$(NOW)
 
-SURVIVOR_ENV ?= $(HOME)/share/usr/env/survivor-1.0.7
 SV_CALLERS = svaba manta
 MAX_DIST = 500
 NUM_CALLERS = 1

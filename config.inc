@@ -31,6 +31,7 @@ PYCLONE_ENV = $(HOME)/share/usr/env/pyclone-vi-0.1.2
 PYCLONE_13_ENV = $(HOME)/share/usr/env/pyclone-0.13.1
 GRIDSS_ENV = $(HOME)/share/usr/env/gridss-2.13.2
 SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
+SURVIVOR_ENV ?= $(HOME)/share/usr/env/survivor-1.0.7
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
