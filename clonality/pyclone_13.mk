@@ -15,9 +15,9 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
 	  $(foreach set,$(SAMPLE_SETS), \
 	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/clusters.txt) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_clusters.txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_loci.txt)
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__PS__.pdf) \
 #	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__HM__.pdf)
 
@@ -87,20 +87,20 @@ pyclone_13/$1/trace/alpha.tsv.bz2 : $(foreach sample,$(tumors.$1),pyclone_13/$1/
 									   PyClone run_analysis \
 									   --config_file pyclone_13/$1/config.yaml")
 									   
-pyclone_13/$1/clusters.txt : pyclone_13/$1/trace/alpha.tsv.bz2
+pyclone_13/$1/summary/by_clusters.txt : pyclone_13/$1/trace/alpha.tsv.bz2 pyclone_13/$1/config.yaml
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV),"set -o pipefail && \
 							       PyClone build_table \
-							       --config_file pyclone_13/$1/config.yaml \
-							       --out_file pyclone_13/$1/clusters.txt \
+							       --config_file $$(<<) \
+							       --out_file $$(@) \
 							       --table_type cluster \
 							       --burnin $$(MCMC_BURNIN) \
 							       --thin $$(MCMC_THIN)")
 							       
-pyclone_13/$1/$1.txt : pyclone_13/$1/trace/alpha.tsv.bz2
+pyclone_13/$1/summary/by_loci.txt : pyclone_13/$1/trace/alpha.tsv.bz2 pyclone_13/$1/config.yaml
 	$$(call RUN,-c -n 1 -s 8G -m 16G -v $(PYCLONE_13_ENV),"set -o pipefail && \
 							       PyClone build_table \
-							       --config_file pyclone_13/$1/config.yaml \
-							       --out_file pyclone_13/$1/$1.txt \
+							       --config_file $$(<<) \
+							       --out_file $$(@) \
 							       --table_type loci \
 							       --burnin $$(MCMC_BURNIN) \
 							       --thin $$(MCMC_THIN)")
