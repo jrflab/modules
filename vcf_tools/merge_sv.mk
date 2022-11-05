@@ -10,7 +10,8 @@ STRAND = 1
 MIN_SIZE = 30
 
 merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/samples.txt) \
-	    $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/$(pair).merged_sv.vcf)
+	    $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/$(pair).merged_sv.vcf) \
+	    $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).merged_sv.vcf)
 	   
 define merge-sv
 merge_sv/$1_$2/samples.txt : $(foreach caller,$(SV_CALLERS),vcf/$1_$2.$(caller)_sv.vcf)
@@ -22,6 +23,9 @@ merge_sv/$1_$2/$1_$2.merged_sv.vcf : merge_sv/$1_$2/samples.txt
 							    SURVIVOR merge $$(<) \
 							    $(MAX_DIST) $(NUM_CALLERS) $(TYPE) $(STRAND) 0 $(MIN_SIZE) $$(@)")
 
+vcf/$1_$2.merged_sv.vcf : merge_sv/$1_$2/$1_$2.merged_sv.vcf
+	$$(INIT) cat $$(<) > $$(@)
+	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call merge-sv,$(tumor.$(pair)),$(normal.$(pair)))))
