@@ -378,6 +378,7 @@ TARGETS += get_bam
 get_bam : 
 	$(call RUN_MAKE,modules/bam_tools/get_bam.mk)
 	
+
 #==================================================
 # VCF tools
 #==================================================
@@ -386,9 +387,9 @@ TARGETS += merge_sv
 merge_sv : 
 	$(call RUN_MAKE,modules/vcf_tools/merge_sv.mk)
 	
-TARGETS += annot_sv
-annot_sv : 
-	$(call RUN_MAKE,modules/vcf_tools/annot_sv.mk)
+TARGETS += annotate_sv
+annotate_sv : 
+	$(call RUN_MAKE,modules/vcf_tools/annotate_sv.mk)
 	
 
 #==================================================
