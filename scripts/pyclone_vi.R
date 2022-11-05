@@ -87,12 +87,14 @@ if (as.numeric(opt$option) == 1) {
 	
 	smry = pyclone %>%
 	       dplyr::group_by(mutation_id) %>%
-	       dplyr::summarize(n = n()) %>%
+	       dplyr::summarize(n_x = n(),
+			        n_y = sum(var_counts)) %>%
 	       dplyr::ungroup()
 	
 	pyclone = pyclone %>%
 		  dplyr::left_join(smry, by = "mutation_id") %>%
-		  dplyr::filter(n == length(sample_set))
+		  dplyr::filter(n_x == length(sample_set)) %>%
+		  dplyr::filter(n_y > 0)
 	
 	readr::write_tsv(x = pyclone, file = opt$output_file, append = FALSE, col_names = TRUE)
 	
