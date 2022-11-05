@@ -10,17 +10,16 @@ MCMC_BURNIN = 200
 MCMC_THIN = 1
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).maf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
-	  $(foreach set,$(SAMPLE_SETS), \
-	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/clusters.txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__PS__.pdf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__HM__.pdf)
+	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).txt)
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).taskcomplete) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/config.yaml) \
+#	  $(foreach set,$(SAMPLE_SETS), \
+#	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/clusters.txt) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set).txt) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__PS__.pdf) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/$(set)__HM__.pdf)
 
 
 define r-sufam
@@ -43,18 +42,6 @@ pyclone_13/$1/$1.txt : pyclone_13/$1/$1.vcf bam/$1.bam
 							 $$(<<) \
 							 > $$(@)")
 							 
-pyclone_13/$1/$1.maf : pyclone_13/$1/$1.vcf
-	$$(call RUN,-c -n 12 -s 1G -m 2G -v $(VEP_ENV),"set -o pipefail && \
-							$$(VCF2MAF) \
-							--input-vcf $$< \
-							--tumor-id $1 \
-							--filter-vcf $$(EXAC_NONTCGA) \
-							--ref-fasta $$(REF_FASTA) \
-							--vep-path $$(VEP_PATH) \
-							--vep-data $$(VEP_DATA) \
-							--tmp-dir `mktemp -d` \
-							--output-maf $$(@)")
-
 endef
 $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call r-sufam,$(sample))))

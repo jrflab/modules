@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("reshape2"))
-suppressPackageStartupMessages(library("superheat"))
+suppressPackageStartupMessages(library("ComplexHeatmap"))
 suppressPackageStartupMessages(library("RColorBrewer"))
 
 if (!interactive()) {
