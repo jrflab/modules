@@ -17,9 +17,9 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_13/$(sample)/$(sample).vcf) 
 	  		$(foreach sample,$(tumors.$(set)),pyclone_13/$(set)/$(sample).yaml)) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/trace/alpha.tsv.bz2) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_clusters.txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_loci.txt)
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/scatter_by_sample.pdf) \
-#	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/heatmap_by_sample.pdf)
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/by_loci.txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/scatter_by_sample.pdf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_13/$(set)/summary/heatmap_by_sample.pdf)
 
 
 define r-sufam
