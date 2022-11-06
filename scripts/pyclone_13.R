@@ -246,7 +246,7 @@ if (as.numeric(opt$option) == 1) {
 	)
 	
 	pdf(file = as.character(opt$output_file), width = 12, height = 18)
-	Heatmap(matrix = pyclone_mt %>%
+	draw(Heatmap(matrix = pyclone_mt %>%
 		         dplyr::select(-mutation_id, -cluster_id, -cluster_mean, -index),
 		col = cp,
 		name = "CCF",
@@ -262,7 +262,7 @@ if (as.numeric(opt$option) == 1) {
 	        left_annotation = ha,
 	        row_split = pyclone_mt %>% .[["cluster_id"]],
 	        width = unit(20, "cm"),
-	        height = unit(40, "cm"))
+	        height = unit(40, "cm")))
 	dev.off()
 
 }
