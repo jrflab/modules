@@ -187,7 +187,7 @@ sufam_gt :
 
 TARGETS += get_basecount
 get_basecount :
-	$(call RUN_MAKE,modules/variant_callers/getBaseCount.mk)
+	$(call RUN_MAKE,modules/variant_callers/get_basecounts.mk)
 	
 TARGETS += strelka_varscan_indels
 strelka_varscan_indels :

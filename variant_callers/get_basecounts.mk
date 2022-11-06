@@ -2,15 +2,14 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/get_basecount.$(NOW)
 
-GBC_ENV = $(HOME)/share/data/common/eec_sc_split/etc/conda
-GBC_EXE = $(HOME)/share/data/common/eec_sc_split/etc/GetBaseCounts/GetBaseCounts
-MAPQ := 10
-BAQ := 15
+MAPQ := 0
+BAQ := 0
+COV := 0
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/MFE296/$(sample).tsv)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz)
 
 define get-basecount
-gbc/MFE296/$1.txt : bam/MFE296/$1.bam
+gbc/$1.txt.gz : bam/$1.bam
 	$$(call RUN,-n 6 -s 3G -m 6G -v $(GBC_ENV),"set -o pipefail && \
 				      		    mkdir -p gbc/MFE296 && \
 						    $(GBC_EXE) --fasta ~/share/reference/ucsc_gatk_bundle_2.8/ucsc.hg19.fasta \
