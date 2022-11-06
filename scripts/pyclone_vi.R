@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("fuzzyjoin"))
 suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("reshape2"))
-suppressPackageStartupMessages(library("superheat"))
+suppressPackageStartupMessages(library("ComplexHeatmap"))
 suppressPackageStartupMessages(library("RColorBrewer"))
 
 if (!interactive()) {
@@ -79,8 +79,7 @@ if (as.numeric(opt$option) == 1) {
 	pyclone = do.call(rbind, pyclone) %>%
 		  dplyr::filter(!is.na(ref_counts)) %>%
 		  dplyr::filter(!is.na(alt_counts)) %>%
-		  dplyr::mutate(var_coalt_countsunts = ifelse(alt_counts<=3, 0, alt_counts)) %>%
-		  dplyr::filter((ref_counts+alt_counts)>10) %>%
+		  dplyr::mutate(alt_counts = ifelse(alt_counts<=1, 0, alt_counts)) %>%
 		  dplyr::filter(!is.na(major_cn)) %>%
 		  dplyr::filter(major_cn != 0) %>%
 		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
@@ -88,7 +87,7 @@ if (as.numeric(opt$option) == 1) {
 	smry = pyclone %>%
 	       dplyr::group_by(mutation_id) %>%
 	       dplyr::summarize(n_x = n(),
-			        n_y = sum(var_counts)) %>%
+			        n_y = sum(alt_counts)) %>%
 	       dplyr::ungroup()
 	
 	pyclone = pyclone %>%
@@ -112,40 +111,35 @@ if (as.numeric(opt$option) == 1) {
 					      dplyr::select(mutation_id,
 							    cluster_id,
 							    sample_id_x = sample_id,
-							    cellular_prevalence_x = cellular_prevalence,
-							    cellular_prevalence_std_x = cellular_prevalence_std) %>%
+							    cellular_prevalence_x = cellular_prevalence) %>%
 					      dplyr::full_join(pyclone %>%
 							       dplyr::filter(sample_id == sample_set[j]) %>%
 							       dplyr::select(mutation_id,
 									     sample_id_y = sample_id,
-									     cellular_prevalence_y = cellular_prevalence,
-									     cellular_prevalence_std_y = cellular_prevalence_std),
+									     cellular_prevalence_y = cellular_prevalence),
 							       by = "mutation_id") %>%
 					      readr::type_convert()
 			index = index + 1
 		}
 	}
 	pyclone_ft = do.call(bind_rows, pyclone_ft) %>%
-		     readr::type_convert()
+		     readr::type_convert() %>%
+		     dplyr::filter(!is.na(cellular_prevalence_x)) %>%
+		     dplyr::filter(!is.na(cellular_prevalence_y)) %>%
+		     dplyr::mutate(sample_id_x = factor(sample_id_x, levels = sample_set, ordered = TRUE)) %>%
+		     dplyr::mutate(sample_id_y = factor(sample_id_y, levels = sample_set, ordered = TRUE))
 	
-	smry_c = pyclone_ft %>%
-		 dplyr::group_by(mutation_id) %>%
-		 dplyr::summarize(cluster_id = unique(cluster_id)) %>%
-		 dplyr::ungroup() %>%
-		 dplyr::group_by(cluster_id) %>%
-		 dplyr::summarize(n = n())
-	smry_p = pyclone %>%
-		 dplyr::group_by(cluster_id, sample_id) %>%
-		 dplyr::summarize(mean_cellular_prevalence = mean(cellular_prevalence)) %>%
-		 dplyr::ungroup() %>%
-		 dplyr::group_by(cluster_id) %>%
-		 dplyr::summarize(is_clonal = max(mean_cellular_prevalence))
+	smry_ = pyclone_ft %>%
+		dplyr::group_by(mutation_id) %>%
+		dplyr::summarize(cluster_id = unique(cluster_id)) %>%
+		dplyr::ungroup() %>%
+		dplyr::group_by(cluster_id) %>%
+		dplyr::summarize(n = n())
 	
 	pyclone_ft = pyclone_ft %>%
-		     dplyr::left_join(smry_c, by = "cluster_id") %>%
-		     dplyr::left_join(smry_p, by = "cluster_id")
+		     dplyr::left_join(smry_, by = "cluster_id")
 	
-	colourCount = length(unique(pyclone_ft$cluster_id))
+	colourCount = nrow(smry_)
 	getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 		
 	plot_ = pyclone_ft %>%
@@ -157,7 +151,8 @@ if (as.numeric(opt$option) == 1) {
 		guides(color = guide_legend(title = "Cluster"),
 		       size = guide_legend(title = "N")) +
 		facet_wrap(~sample_id_x+sample_id_y)
-	pdf(file = as.character(opt$output_file), width = 21, height = 21)
+	
+	pdf(file = as.character(opt$output_file), width = 18, height = 18)
 	print(plot_)
 	dev.off()
 	
@@ -173,44 +168,50 @@ if (as.numeric(opt$option) == 1) {
 				      dplyr::select(mutation_id, cluster_id) %>%
 				      dplyr::filter(!duplicated(mutation_id)), by = "mutation_id")
 	
-	smry_cl = pyclone %>%
-		  dplyr::group_by(cluster_id) %>%
-		  dplyr::summarize(mean = mean(cellular_prevalence)) %>%
-		  dplyr::ungroup() %>%
-		  dplyr::arrange(desc(mean)) %>%
-		  dplyr::mutate(cluster_id_ordered = nrow(.):1)
+	smry_ = pyclone %>%
+		dplyr::group_by(cluster_id) %>%
+		dplyr::summarize(cluster_mean = mean(cellular_prevalence)) %>%
+		dplyr::ungroup()
 	
 	pyclone_mt = pyclone_mt %>%
-		     dplyr::left_join(smry_cl, by = "cluster_id")
+		     dplyr::left_join(smry_, by = "cluster_id")
 	
-	index = order(apply(pyclone_mt %>% dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered), 1, mean), decreasing = TRUE)
-	pyclone_mt = pyclone_mt[index,,drop=FALSE]
+	index = pyclone_mt %>%
+		dplyr::select(-mutation_id, -cluster_id, -cluster_mean) %>%
+		apply(., 1, mean)
+	
 	pyclone_mt = pyclone_mt %>%
-		     dplyr::arrange(cluster_id_ordered)
-		
+		     dplyr::mutate(index = index) %>%
+		     dplyr::arrange(desc(cluster_mean), desc(cluster_id), desc(index))
 	
-	pdf(file = as.character(opt$output_file), width = 10, height = 21)
-	superheat(X = pyclone_mt %>%
-		      dplyr::select(-mutation_id, -cluster_id, -cluster_id_ordered, -mean),
-		  membership.rows = pyclone_mt %>% .[["cluster_id_ordered"]],
-		  pretty.order.rows = FALSE,
-		  pretty.order.cols = TRUE,
-		  row.dendrogram = FALSE,
-		  col.dendrogram = FALSE,
-		  smooth.heat = FALSE,
-		  scale = FALSE,
-		  heat.pal = c("#d9d9d9", "#d9d9d9", "#d9d9d9", "#9ecae1", "#4292c6", "#2171b5", "#08519c", "#08306b"),
-		  legend = FALSE,
-		  grid.hline = FALSE,
-		  grid.vline = TRUE,
-		  force.grid.hline = TRUE,
-		  force.grid.vline = TRUE,
-		  grid.hline.col = "white",
-		  grid.vline.col = "white",
-		  grid.hline.size = .05,
-		  grid.vline.size = 1,
-		  bottom.label.text.angle = 90,
-		  bottom.label.text.alignment = "right")
+	cp = c("#f0f0f0","#c6dbef","#9ecae1","#6baed6","#4292c6","#2171b5","#08519c","#08519c","#08306b","#08306b","#08306b")
+	ca = colorRampPalette(brewer.pal(9, "Set1"))(nrow(smry_))
+	names(ca) = smry_ %>% .[["cluster_id"]]
+	
+	ha = rowAnnotation(
+		`Cluster ID` = pyclone_mt %>% .[["cluster_id"]],
+		col = list(`Cluster ID` = ca),
+		annotation_width = unit(3, "cm")
+	)
+	
+	pdf(file = as.character(opt$output_file), width = 12, height = 18)
+	draw(Heatmap(matrix = pyclone_mt %>%
+		         dplyr::select(-mutation_id, -cluster_id, -cluster_mean, -index),
+		col = cp,
+		name = "CCF",
+		na_col = "#f0f0f0",
+		border = "white",
+		border_gp = gpar(lwd = 0),
+		cluster_rows = TRUE,
+		show_row_dend = FALSE,
+		cluster_row_slices = FALSE,
+		cluster_columns = TRUE,
+		show_column_dend = FALSE,
+		use_raster = FALSE,
+	        left_annotation = ha,
+	        row_split = pyclone_mt %>% .[["cluster_id"]],
+	        width = unit(20, "cm"),
+	        height = unit(40, "cm")))
 	dev.off()
 
 }

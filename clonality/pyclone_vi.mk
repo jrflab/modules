@@ -7,12 +7,11 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).txt) \
-	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).maf) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).tsv) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__PS__.pdf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set)__HM__.pdf)
+	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/by_loci.txt) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/scatter_by_sample.pdf) \
+	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/heatmap_by_sample.pdf)
 
 
 define r-sufam
@@ -73,13 +72,13 @@ pyclone_vi/$1/$1.hd5 : pyclone_vi/$1/$1.tsv
 									 --precision 500 \
 									 --num-restarts 100")
 									 
-pyclone_vi/$1/$1.txt : pyclone_vi/$1/$1.hd5
+pyclone_vi/$1/summary/by_loci.txt : pyclone_vi/$1/$1.hd5
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   pyclone-vi write-results-file \
 							   --in-file $$(<) \
 							   --out-file $$(@)")
 							     
-pyclone_vi/$1/$1__PS__.pdf : pyclone_vi/$1/$1.txt
+pyclone_vi/$1/summary/scatter_by_sample.pdf : pyclone_vi/$1/sumary/by_loci.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
 							   --option 2 \
@@ -87,7 +86,7 @@ pyclone_vi/$1/$1__PS__.pdf : pyclone_vi/$1/$1.txt
 							   --input_file $$(<) \
 							   --output_file $$(@)")
 							   
-pyclone_vi/$1/$1__HM__.pdf : pyclone_vi/$1/$1.txt
+pyclone_vi/$1/summary/heatmap_by_sample.pdf : pyclone_vi/$1/sumary/by_loci.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
 							   --option 3 \
