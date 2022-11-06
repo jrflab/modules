@@ -191,7 +191,7 @@ if (as.numeric(opt$option) == 1) {
 	ha = rowAnnotation(
 		`Cluster ID` = pyclone_mt %>% .[["cluster_id"]],
 		col = list(`Cluster ID` = ca),
-		annotation_width = unit(3, "cm")
+		simple_anno_size = unit(7, "mm")
 	)
 	
 	pdf(file = as.character(opt$output_file), width = 12, height = 18)
@@ -202,7 +202,7 @@ if (as.numeric(opt$option) == 1) {
 		na_col = "#f0f0f0",
 		border = "white",
 		border_gp = gpar(lwd = 0),
-		cluster_rows = FALSE,
+		cluster_rows = TRUE,
 		show_row_dend = FALSE,
 		cluster_row_slices = TRUE,
 		cluster_columns = TRUE,
