@@ -78,7 +78,7 @@ pyclone_vi/$1/summary/by_loci.txt : pyclone_vi/$1/$1.hd5
 							   --in-file $$(<) \
 							   --out-file $$(@)")
 							     
-pyclone_vi/$1/summary/scatter_by_sample.pdf : pyclone_vi/$1/sumary/by_loci.txt
+pyclone_vi/$1/summary/scatter_by_sample.pdf : pyclone_vi/$1/summary/by_loci.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
 							   --option 2 \
@@ -86,7 +86,7 @@ pyclone_vi/$1/summary/scatter_by_sample.pdf : pyclone_vi/$1/sumary/by_loci.txt
 							   --input_file $$(<) \
 							   --output_file $$(@)")
 							   
-pyclone_vi/$1/summary/heatmap_by_sample.pdf : pyclone_vi/$1/sumary/by_loci.txt
+pyclone_vi/$1/summary/heatmap_by_sample.pdf : pyclone_vi/$1/summary/by_loci.txt
 	$$(call RUN,-c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
 							   $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
 							   --option 3 \
