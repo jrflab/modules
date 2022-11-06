@@ -84,7 +84,6 @@ SUM_READS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads.R
 SUM_EXONS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads_byexon.R
 SUM_INTRONS_RSCRIPT = $(RSCRIPT) $(SCRIPTS_DIR)/summarize_rnaseqreads_byintron.R
 
-
 JAVA_BIN ?=  $(JAVA8_BIN)
 JAVA6_BIN ?= $(HOME)/share/usr/jdk1.6.0_45/bin/java
 JAVA7_BIN ?= $(HOME)/share/usr/jdk1.7.0_45/bin/java
@@ -148,8 +147,8 @@ SNP_FILTER_VCF = python modules/vcf_tools/snp_filter_vcf.py
 
 MERGE_VCF = python modules/vcf_tools/merge_vcf.py
 
-MEDICC_VAR = $(MEDICC_ENV)/PROFILE
-MEDICC_BIN = $(MEDICC_ENV)/opt/medicc
+# gbc command line
+GBC ?= $(HOME)/share/usr/GetBaseCounts/GetBaseCounts
 
 endif
 CONFIG_INC = true
