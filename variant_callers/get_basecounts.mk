@@ -16,8 +16,7 @@ gbc/$1.txt.gz : bam/$1.bam vcf/dataSilentNoPoleNotTertPromot.vcf
 				      --vcf $$(<<) \
 				      --output $$(@) \
 				      --thread 6 \
-				      --maq $(MAPQ) \
-				      -sort_output \
+				      --sort_output \
 				      --compress_output \
 				      --maq $(MAPQ) \
 				      --baq $(BAQ) \
