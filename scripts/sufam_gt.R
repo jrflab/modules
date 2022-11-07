@@ -75,8 +75,7 @@ if (as.numeric(opt$option)==1) {
 } else if (as.numeric(opt$option)==3) {
 	maf = readr::read_tsv(file = as.character(opt$input_file), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	      readr::type_convert() %>%
-	      dplyr::filter(t_alt_count > 1) %>%
-	      dplyr::filter(t_ref_count > 0)
+	      dplyr::filter(t_alt_count > 1)
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
 } else if (as.numeric(opt$option)==4) {
