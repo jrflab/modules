@@ -98,7 +98,7 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
 		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
 		       HOTSPOT_INTERNAL == "True" ~ TRUE,
-		       HOTSPOT_INTERNAL == "False" ~ FALSE
+		       HOTSPOT_INTERNAL == "False" ~ FALSE,
 		       HOTSPOT_INTERNAL == "TRUE" ~ TRUE,
 		       HOTSPOT_INTERNAL == "FALSE" ~ FALSE
 	       )) %>%
@@ -150,7 +150,7 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
 		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
 		       HOTSPOT_INTERNAL == "True" ~ TRUE,
-		       HOTSPOT_INTERNAL == "False" ~ FALSE
+		       HOTSPOT_INTERNAL == "False" ~ FALSE,
 		       HOTSPOT_INTERNAL == "TRUE" ~ TRUE,
 		       HOTSPOT_INTERNAL == "FALSE" ~ FALSE
 	       )) %>%
