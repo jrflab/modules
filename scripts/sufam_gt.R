@@ -91,23 +91,31 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::mutate(HOTSPOT = case_when(
 		       is.na(HOTSPOT) ~ FALSE,
 		       HOTSPOT == "True" ~ TRUE,
-		       HOTSPOT == "False" ~ FALSE
+		       HOTSPOT == "False" ~ FALSE,
+		       HOTSPOT == "TRUE" ~ TRUE,
+		       HOTSPOT == "FALSE" ~ FALSE
 	       )) %>%
 	       dplyr::mutate(HOTSPOT_INTERNAL = case_when(
 		       is.na(HOTSPOT_INTERNAL) ~ FALSE,
 		       HOTSPOT_INTERNAL == "True" ~ TRUE,
 		       HOTSPOT_INTERNAL == "False" ~ FALSE
+		       HOTSPOT_INTERNAL == "TRUE" ~ TRUE,
+		       HOTSPOT_INTERNAL == "FALSE" ~ FALSE
 	       )) %>%
 	       dplyr::mutate(cmo_hotspot = case_when(
 		       is.na(cmo_hotspot) ~ FALSE,
 		       cmo_hotspot == "True" ~ TRUE,
-		       cmo_hotspot == "False" ~ FALSE
+		       cmo_hotspot == "False" ~ FALSE,
+		       cmo_hotspot == "TRUE" ~ TRUE,
+		       cmo_hotspot == "FALSE" ~ FALSE
 	       )) %>%
 	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
 	       dplyr::mutate(facetsLOHCall = case_when(
 		       is.na(facetsLOHCall) ~ FALSE,
 		       facetsLOHCall == "True" ~ TRUE,
-		       facetsLOHCall == "False" ~ FALSE
+		       facetsLOHCall == "False" ~ FALSE,
+		       facetsLOHCall == "TRUE" ~ TRUE,
+		       facetsLOHCall == "FALSE" ~ FALSE
 	       )) %>%
 	       dplyr::mutate(is_loh = facetsLOHCall) %>%
 	       readr::type_convert()
