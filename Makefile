@@ -503,17 +503,14 @@ pyclone_vi :
 # mutational signatures
 #==================================================
 
-TARGETS += emu
-emu :
-	$(call RUN_MAKE,modules/signatures/emu.mk)
-	
-TARGETS += mut_sig
-mut_sig :
-	$(call RUN_MAKE,modules/signatures/mut_sig.mk)
-	
 TARGETS += deconstruct_sigs
 deconstruct_sigs :
 	$(call RUN_MAKE,modules/signatures/deconstruct_sigs.mk)
+	
+
+TARGETS += sv_signature
+sv_signature :
+	$(call RUN_MAKE,modules/signatures/sv_signature.mk)
 
 
 #==================================================
