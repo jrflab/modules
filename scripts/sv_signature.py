@@ -13,11 +13,11 @@ import sys
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='sv_signature.py',
                                      description='SV feature extraction')
-    parser.add_argument('--bedpe_infile', required=True, help='Sample input bedpe file')
-    parser.add_argument('--fragile_bed', required=True, type=argparse.FileType('r'))
-    parser.add_argument('--timing_bedgraph', required=True, type=argparse.FileType('r'))
-    parser.add_argument('--sv_definitions', required=True, type=argparse.FileType('r'))
-    parser.add_argument('--text_outfile', required=True, type=argparse.FileType('w'))
+    parser.add_argument('--bedpe_infile', required=True)
+    parser.add_argument('--fragile_bed', required=True)
+    parser.add_argument('--timing_bedgraph', required=True)
+    parser.add_argument('--sv_definitions', required=True)
+    parser.add_argument('--text_outfile', required=True)
 
     args = parser.parse_args()
 
