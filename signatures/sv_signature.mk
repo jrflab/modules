@@ -19,7 +19,7 @@ sv_signature/$1_$2/$1_$2.manta.bed : vcf/$1_$2.manta_sv.vcf
 							    
 sv_signature/$1_$2/$1_$2.manta.bedpe : sv_signature/$1_$2/$1_$2.manta.bed
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 echo \"chrom1\\tstart1\tend1\tchrom2\tstart2\tend2\tsv_id\tpe_support\tstrand1\tstrand2\tsvclass\n\" > \
+					 echo \"chrom1	start1	end1	chrom2	start2	end2	sv_id	pe_support	strand1	strand2	svclass\" > \
 					 $$(@) && \
 					 cat $$(<) >> $$(@)")
 
