@@ -29,9 +29,9 @@ sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
 							 python $(SCRIPTS_DIR)/sv_signature.py \
 							 --bedpe_infile $$(<) \
-							 --fragile_bed $(HOME)/share/lib/resource_files/viola/annotation/fragile_site.hg19.bed \
-							 --timing_bedgraph $(HOME)/share/lib/resource_files/viola/annotation/replication_timing.bedgraph \
-							 --sv_definitions $(HOME)/share/lib/resource_files/viola/definitions/sv_class_default.txt \
+							 --fragile_bed /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.hg19.bed \
+							 --timing_bedgraph /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.bedgraph \
+							 --sv_definitions /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt \
 							 --text_outfile $$(@)")
 
 endef

@@ -29,6 +29,6 @@ if __name__ == "__main__":
     sample_bedpe.annotate_bed(bed=bedgraph_timing, annotation='timing', how='value')
     sample_bedpe.calculate_info('(${timingleft} + ${timingright}) / 2', 'timing')
     
-    feature_matrix = sample_bedpe.classify_manual_svtype(definitions=args.sv_definitions, return_data_frame=True)
-    feature_matrix.drop('others', axis=1, inplace=True)
-    feature_matrix.to_csv(args.text_outfile, index=False, sep='\t')
+    feature_matrix = sample_bedpe.classify_manual_svtype(definitions=args.sv_definitions)
+    feature_matrix.drop('others', inplace=True)
+    feature_matrix.to_csv(args.text_outfile, index=True, sep='\t')
