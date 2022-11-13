@@ -8,7 +8,7 @@ MAX_SIZE = 10000000000000000
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).manta.bed)
 	   
 define signature-sv
-signature_sv/$1_$2/$1_$2.manta.bed : vcf/$1_$2.manta_sv.vcf
+sv_signature/$1_$2/$1_$2.manta.bed : vcf/$1_$2.manta_sv.vcf
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
 							    SURVIVOR vcftobed \
 							    $$(<) \
