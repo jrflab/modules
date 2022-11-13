@@ -1,21 +1,25 @@
 include modules/Makefile.inc
 
-LOGDIR = log/sv_signature.$(NOW)
+LOGDIR ?= log/sv_signature.$(NOW)
 
-svsignature : $(foreach sample,$(TUMOR_SAMPLES),sv_signature/$(sample)/)
+MIN_SIZE = 1
+MAX_SIZE = 10000000000000000
 
-define extract-signatures
-sv_signature/$1/ : 
-	$$(call RUN,-s 4G -m 6G -v $(DECONSTRUCTSIGS_ENV),"set -o pipefial && \
-							   $(RSCRIPT) modules/signatures/extract_signatures.R \
-							   --sample_name $$()")
-	
+signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/samples.bed)
+	   
+define signature-sv
+signature_sv/$1_$2/$1_$2.manta.bed : vcf/$1_$2.manta_sv.vcf
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
+							    SURVIVOR vcftobed \
+							    $$(<) \
+							    $(MIN_SIZE) \
+							    $(MAX_SIZE) \
+							    $$(@)")
+
 endef
-$(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call extract-signatures,$(sample))))
-
-..DUMMY := $(shell mkdir -p version; \
-	     $(DECONSTRUCTSIGS_ENV)/bin/R --version > version/deconstruct_sigs.txt)
-.SECONDARY:
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call signature-sv,$(tumor.$(pair)),$(normal.$(pair)))))
+	
 .DELETE_ON_ERROR:
-.PHONY: deconstructsigs
+.SECONDARY:
+.PHONY: signature_sv
