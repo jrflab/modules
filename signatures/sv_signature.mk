@@ -4,11 +4,14 @@ LOGDIR ?= log/sv_signature.$(NOW)
 
 MIN_SIZE = 1
 MAX_SIZE = 10000000000000000
-VIOLA_ENV = $(HOME)/share/usr/env/viola-sv-1.0.2
+FRAGILE_SITES = /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.hg19.bed
+REPLICATION_TIMING = /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.bedgraph
+SV_DEFINITIONS = /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
-		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt)
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
+		sv_signature/feature_matrix.txt
 		
 define signature-sv
 sv_signature/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
@@ -29,18 +32,22 @@ sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
 							 python $(SCRIPTS_DIR)/sv_signature.py \
 							 --bedpe_infile $$(<) \
-							 --fragile_bed /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.hg19.bed \
-							 --timing_bedgraph /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.bedgraph \
-							 --sv_definitions /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt \
+							 --fragile_bed $(FRAGILE_SITES) \
+							 --timing_bedgraph $(REPLICATION_TIMING) \
+							 --sv_definitions $(SV_DEFINITIONS) \
 							 --text_outfile $$(@)")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call signature-sv,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+sv_signature/feature_matrix.txt : $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt)
+	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
+					  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 1 --sample_names '$(SAMPLE_PAIRS)' --output_file $(@)")
+
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(SURVIVOR_ENV)/bin/SURVIVOR --version &> version/sv_signature.txt; \
-	     )
+	     $(SURVIVOR_ENV)/bin/SURVIVOR --version &> version/sv_signature.txt;)
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: signature_sv
