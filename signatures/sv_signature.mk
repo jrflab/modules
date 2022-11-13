@@ -4,8 +4,8 @@ LOGDIR ?= log/sv_signature.$(NOW)
 
 MIN_SIZE = 1
 MAX_SIZE = 10000000000000000
-FRAGILE_SITES = /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.hg19.bed
-REPLICATION_TIMING = /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.bedgraph
+FRAGILE_SITES = /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.b37.bed
+REPLICATION_TIMING = /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.b37.bedgraph
 SV_DEFINITIONS = /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
