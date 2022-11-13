@@ -22,11 +22,16 @@ sv_signature/$1_$2/$1_$2.merged.bedpe : sv_signature/$1_$2/$1_$2.merged.bed
 					 echo \"chrom1	start1	end1	chrom2	start2	end2	sv_id	pe_support	strand1	strand2	svclass\" > \
 					 $$(@) && \
 					 cat $$(<) >> $$(@)")
+					 
+
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call signature-sv,$(tumor.$(pair)),$(normal.$(pair)))))
-	
+
+..DUMMY := $(shell mkdir -p version; \
+	     $(SURVIVOR_ENV)/bin/SURVIVOR --version &> version/sv_signature.txt; \
+	     )
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: signature_sv

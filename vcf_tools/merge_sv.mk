@@ -29,7 +29,9 @@ vcf/$1_$2.merged_sv.vcf : merge_sv/$1_$2/$1_$2.merged_sv.vcf
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call merge-sv,$(tumor.$(pair)),$(normal.$(pair)))))
-	
+
+..DUMMY := $(shell mkdir -p version; \
+	     $(SURVIVOR_ENV)/bin/SURVIVOR --version &> version/merge_sv.txt;)
 .DELETE_ON_ERROR:
 .SECONDARY:
 .PHONY: merge_sv
