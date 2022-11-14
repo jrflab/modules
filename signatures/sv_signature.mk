@@ -7,9 +7,13 @@ MAX_SIZE = 10000000000000000
 FRAGILE_SITES = /data/reis-filho/lib/resource_files/viola/annotation/fragile_site.b37.bed
 REPLICATION_TIMING = /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.b37.bedgraph
 SV_DEFINITIONS = /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt
+CLUSTER_SV = $(VIOLA_ENV)/opt/ClusterSV/R
+CHROM_SIZES = $(VIOLA_ENV)/opt/ClusterSV/references/hs37d5.chrom_sizes
+CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hs37d5_centromere_and_telomere_coords.txt
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.tsv) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
 		sv_signature/feature_matrix.txt
 		
@@ -27,7 +31,17 @@ sv_signature/$1_$2/$1_$2.merged.bedpe : sv_signature/$1_$2/$1_$2.merged.bed
 					 echo \"chrom1	start1	end1	chrom2	start2	end2	sv_id	pe_support	strand1	strand2	svclass\" > \
 					 $$(@) && \
 					 cat $$(<) >> $$(@)")
-					 
+
+sv_signature/$1_$2/$1_$2.merged.tsv : sv_signature/$1_$2/$1_$2.merged.bedpe
+	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(VIOLA_ENV),"set -o pipefail && \
+							 $(RSCRIPT) $(CLUSTER_SV)/run_cluster_sv.R \
+							 -bedpe $$(<) \
+							 -chr $(CHROM_SIZES) \
+							 -cen_telo $(CENTROMERE_TELOMERE) \
+							 -out sv_signature/$1_$2/ \
+							 -n 4 \
+							 > $$(@)")
+
 sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
 							 python $(SCRIPTS_DIR)/sv_signature.py \
