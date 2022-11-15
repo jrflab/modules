@@ -14,6 +14,7 @@ CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hg19_centromere_and_
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.taskcomplete) \
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.bedpe) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
 		sv_signature/feature_matrix.txt
 		
@@ -42,6 +43,13 @@ sv_signature/$1_$2/$1_$2.merged.taskcomplete : sv_signature/$1_$2/$1_$2.merged.b
 							 -n 4 \
 							 > sv_signature/$1_$2/$1_$2.merged.log && \
 							 echo 'task completed' > $$(@)")
+							 
+sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/$1_$2/$1_$2.merged.bedpe sv_signature/$1_$2/$1_$2.merged.taskcomplete
+	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
+					 $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
+					 --option 1 \
+					 --sample_names $1_$2 \
+					 --output_file $$(@)")
 
 sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
@@ -58,7 +66,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 sv_signature/feature_matrix.txt : $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 1 --sample_names '$(SAMPLE_PAIRS)' --output_file $(@)")
+					  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 2 --sample_names '$(SAMPLE_PAIRS)' --output_file $(@)")
 
 
 ..DUMMY := $(shell mkdir -p version; \
