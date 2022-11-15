@@ -8,8 +8,8 @@ FRAGILE_SITES = /data/reis-filho/lib/resource_files/viola/annotation/fragile_sit
 REPLICATION_TIMING = /data/reis-filho/lib/resource_files/viola/annotation/replication_timing.b37.bedgraph
 SV_DEFINITIONS = /data/reis-filho/lib/resource_files/viola/definitions/sv_class_default.txt
 CLUSTER_SV = $(VIOLA_ENV)/opt/ClusterSV/R
-CHROM_SIZES = $(VIOLA_ENV)/opt/ClusterSV/references/hs37d5.chrom_sizes
-CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hs37d5_centromere_and_telomere_coords.txt
+CHROM_SIZES = $(VIOLA_ENV)/opt/ClusterSV/references/hg19.chrom_sizes
+CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hg19_centromere_and_telomere_coords.txt
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
