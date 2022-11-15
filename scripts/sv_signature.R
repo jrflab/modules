@@ -12,14 +12,13 @@ if (!interactive()) {
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
                make_option("--sample_names", default = NA, type = 'character', help = "sample names"),
 	       make_option("--output_file", default = NA, type = 'character', help = "output file"),
-	       make_option("--p_value", default = NA, type = 'character', help = "cluster sv p-value"),
-	       make_option("--n_sv", default = NA, type = 'character', help = "number of sv"))
+	       make_option("--p_value", default = "0.05", type = 'character', help = "cluster sv p-value"),
+	       make_option("--n_sv", default = "50", type = 'character', help = "number of sv"))
 parser = OptionParser(usage = "%prog", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
-
-else if (as.numeric(opt$option)==2) {
+if (as.numeric(opt$option)==2) {
 	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		    readr::type_convert()
 	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%

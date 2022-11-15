@@ -49,7 +49,9 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
 					 --option 1 \
 					 --sample_names $1_$2 \
-					 --output_file $$(@)")
+					 --output_file $$(@) \
+					 --p_value 0.05 \
+					 --n_sv 50")
 
 sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
