@@ -13,7 +13,7 @@ CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hg19_centromere_and_
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
-		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.tsv) \
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.tsv) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
 		sv_signature/feature_matrix.txt
 		
@@ -32,15 +32,15 @@ sv_signature/$1_$2/$1_$2.merged.bedpe : sv_signature/$1_$2/$1_$2.merged.bed
 					 $$(@) && \
 					 cat $$(<) >> $$(@)")
 
-sv_signature/$1_$2/$1_$2.merged.tsv : sv_signature/$1_$2/$1_$2.merged.bedpe
+sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.tsv : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(VIOLA_ENV),"set -o pipefail && \
 							 $(RSCRIPT) $(CLUSTER_SV)/run_cluster_sv.R \
 							 -bedpe $$(<) \
 							 -chr $(CHROM_SIZES) \
 							 -cen_telo $(CENTROMERE_TELOMERE) \
-							 -out sv_signature/$1_$2/ \
+							 -out sv_signature/$1_$2/$1_$2 \
 							 -n 4 \
-							 > $$(@)")
+							 > sv_signature/$1_$2/$1_$2.merged.log")
 
 sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
