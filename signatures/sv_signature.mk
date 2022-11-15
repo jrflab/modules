@@ -55,7 +55,7 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/
 					 --p_value $(P_VALUE) \
 					 --n_sv $(N_SV)")
 
-sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
+sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
 							 python $(SCRIPTS_DIR)/sv_signature.py \
 							 --bedpe_infile $$(<) \
