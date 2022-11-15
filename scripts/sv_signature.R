@@ -19,6 +19,7 @@ arguments = parse_args(parser, positional_arguments = T)
 opt = arguments$options
 
 if (as.numeric(opt$option)==2) {
+	sample_names = unlist(strsplit(x = as.character(opt$sample_names), split = " ", fixed=TRUE))
 	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		    readr::type_convert()
 	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
