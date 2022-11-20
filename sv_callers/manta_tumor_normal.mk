@@ -16,7 +16,7 @@ manta/$1_$2.manta_timestamp : manta/$1_$2/runWorkflow.py
 manta/$1_$2/results/variants/somaticSV.vcf.gz : manta/$1_$2.manta_timestamp
 
 vcf/$1_$2.manta_sv.vcf : manta/$1_$2/results/variants/somaticSV.vcf.gz
-	$$(INIT) zcat $$< > $$@
+	$$(INIT) zcat $$(<) > $$(@)
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
