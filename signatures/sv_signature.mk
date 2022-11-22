@@ -44,7 +44,7 @@ sv_signature/$1_$2/$1_$2.merged_exposures.txt : sv_signature/$1_$2/$1_$2.merged.
 								  --input_file $$(<) \
 								  --output_file sv_signature/$1_$2/$1_$2.merged")
 
-sv_signature/$1_$2/$1_$2.merged.bedpe.sv_clusters_and_footprints.tsv : sv_signature/$1_$2/$1_$2.merged.bedpe
+sv_signature/$1_$2/$1_$2.sv_clusters_and_footprints.tsv : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(VIOLA_ENV),"set -o pipefail && \
 							 $(RSCRIPT) $(CLUSTER_SV)/run_cluster_sv.R \
 							 -bedpe $$(<) \
@@ -54,7 +54,7 @@ sv_signature/$1_$2/$1_$2.merged.bedpe.sv_clusters_and_footprints.tsv : sv_signat
 							 -n 4 \
 							 > sv_signature/$1_$2/$1_$2.merged.log")
 							 
-#sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/$1_$2/$1_$2.merged.bedpe sv_signature/$1_$2/$1_$2.merged.taskcomplete
+#sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/$1_$2/$1_$2.merged.bedpe sv_signature/$1_$2/$1_$2.merged.bedpe.sv_clusters_and_footprints.tsv
 #	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 #					 $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
 #					 --option 1 \
