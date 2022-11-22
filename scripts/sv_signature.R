@@ -59,12 +59,12 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 	
 } else if (as.numeric(opt$option)==2) {
-	sample_names = as.character(opt$sample_names)
-	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	sample_name = as.character(opt$sample_name)
+	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		    dplyr::filter(chrom1 != "Y") %>%
 	    	    dplyr::filter(chrom2 != "Y") %>%
 		    readr::type_convert()
-	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
 		    readr::type_convert() %>%
 		    dplyr::select(chrom1 = X1,
 				  start1 = X2,
