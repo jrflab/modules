@@ -34,6 +34,7 @@ SVABA_ENV ?= $(HOME)/share/usr/env/svaba-1.1.0
 SURVIVOR_ENV ?= $(HOME)/share/usr/env/survivor-1.0.7
 ANNOTATE_SV_ENV ?= $(HOME)/share/usr/env/annot_sv-3.1.3
 VIOLA_ENV = $(HOME)/share/usr/env/viola-sv-1.0.2
+SIGNATURE_TOOLS_ENV = $(HOME)/share/usr/env/r-signature.tools.lib-2.2.0
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
