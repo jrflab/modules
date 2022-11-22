@@ -53,11 +53,11 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.tsv : sv_signature/$1
 							 > sv_signature/$1_$2/$1_$2.merged.log")
 							 
 sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/$1_$2/$1_$2.merged.bedpe sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.tsv
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
-					 --option 2 \
-					 --sample_name $1_$2 \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+								$(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
+								--option 2 \
+								--sample_name $1_$2 \
+								--output_file $$(@)")
 
 #sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe
 #	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
