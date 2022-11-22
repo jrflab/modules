@@ -10,8 +10,6 @@ SV_DEFINITIONS = /data/reis-filho/lib/resource_files/viola/definitions/sv_class_
 CLUSTER_SV = $(VIOLA_ENV)/opt/ClusterSV/R
 CHROM_SIZES = $(VIOLA_ENV)/opt/ClusterSV/references/hg19.chrom_sizes
 CENTROMERE_TELOMERE = $(VIOLA_ENV)/opt/ClusterSV/references/hg19_centromere_and_telomere_coords.txt
-P_VALUE = 0.05
-N_SV = 50
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
@@ -57,11 +55,9 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.tsv : sv_signature/$1
 sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/$1_$2/$1_$2.merged.bedpe sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.tsv
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
-					 --option 1 \
-					 --sample_names $1_$2 \
-					 --output_file $$(@) \
-					 --p_value $(P_VALUE) \
-					 --n_sv $(N_SV)")
+					 --option 2 \
+					 --sample_name $1_$2 \
+					 --output_file $$(@)")
 
 #sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe
 #	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \

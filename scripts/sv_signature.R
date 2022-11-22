@@ -58,48 +58,47 @@ if (as.numeric(opt$option)==1) {
 	    dplyr::mutate(sample_name = sample_name)
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 	
+} else if (as.numeric(opt$option)==2) {
+	sample_names = as.character(opt$sample_names)
+	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		    dplyr::filter(chrom1 != "Y") %>%
+	    	    dplyr::filter(chrom2 != "Y") %>%
+		    readr::type_convert()
+	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+		    readr::type_convert() %>%
+		    dplyr::select(chrom1 = X1,
+				  start1 = X2,
+				  end1 = X3,
+				  chrom2 = X4,
+				  start2 = X5,
+				  end2 = X6,
+				  n_svs = X12,
+				  p_value = X17) %>%
+		    dplyr::mutate(p_value = as.numeric(p_value)) %>%
+		    dplyr::mutate(p_value = case_when(
+			  is.na(p_value) ~ 1,
+			  TRUE ~ p_value))
+	bedpe_org = bedpe_org %>%
+		    dplyr::left_join(bedpe_cli, by = c("chrom1", "start1", "end1", "chrom2", "start2", "end2")) %>%
+	    	    dplyr::mutate(is_clustered = case_when(
+		    	p_value<.05 & n_svs>=15 ~ "c1",
+		    	TRUE ~ "non_clustered"
+	    	    )) %>%
+		    dplyr::mutate(is_clustered = case_when(
+		    	p_value<.05 & n_svs>=50 ~ "c2",
+		    	TRUE ~ is_clustered
+		    )) %>%
+		    dplyr::mutate(svclass = case_when(
+		    	svclass == "TRA" & is_clustered == "c1" ~ "c1TRA",
+		    	svclass == "TRA" & is_clustered == "c2" ~ "c2TRA",
+		    	svclass == "INV" & (is_clustered == "c1" | is_clustered == "c2") ~ "cINV",
+		    	TRUE ~ svclass
+		    )) %>%
+		    dplyr::select(chrom1, start1, end1, chrom2, start2, end2, sv_id, pe_support, strand1, strand2, svclass)
+	write_tsv(x = bedpe_org, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 }
 
-#if (as.numeric(opt$option)==1) {
-#	sample_names = as.character(opt$sample_names)
-#	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-#		    readr::type_convert()
-#	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_names, "/", sample_names, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
-#		    readr::type_convert() %>%
-#		    dplyr::select(chrom1 = X1,
-#				  start1 = X2,
-#				  end1 = X3,
-#				  chrom2 = X4,
-#				  start2 = X5,
-#				  end2 = X6,
-#				  sv_id = X7,
-#				  pe_support = X8,
-#				  strand1 = X9,
-#				  strand2 = X10,
-#				  n_svs = X12,
-#				  p_value = X17) %>%
-#		    dplyr::mutate(p_value = case_when(
-#			    is.na(p_value) ~ 1,
-#			    TRUE ~ p_value
-#		    )) %>%
-#		    dplyr::left_join(bedpe_org %>%
-#				     dplyr::select(chrom1, start1, end1, chrom2, start2, end2, svclass),
-#				     by = c("chrom1", "start1", "end1", "chrom2", "start2", "end2")) %>%
-#		    dplyr::filter(!is.na(svclass)) %>%
-#		    dplyr::mutate(is_clustered = case_when(
-#			    p_value < as.numeric(opt$p_value) & n_svs > 2*as.numeric(opt$n_sv) ~ "Cplx2",
-#			    p_value < as.numeric(opt$p_value) & n_svs > as.numeric(opt$n_sv) ~ "Cplx1",
-#			    TRUE ~ ""
-#		    )) %>%
-#		    dplyr::mutate(svclass = case_when(
-#			    svclass == "TRA" & is_clustered != "" ~ paste0(is_clustered, svclass),
-#			    TRUE ~ svclass
-#		    )) %>%
-#		    dplyr::select(chrom1, start1, end1, chrom2, start2, end2, sv_id, pe_support, strand1, strand2, svclass)
-#	
-#	write_tsv(x = bedpe_cli, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-#	
-#} else if (as.numeric(opt$option)==2) {
+#else if (as.numeric(opt$option)==2) {
 #	sample_names = unlist(strsplit(x = as.character(opt$sample_names), split = " ", fixed=TRUE))
 #	feature_counts = list()
 #	for (i in 1:length(sample_names)) {
