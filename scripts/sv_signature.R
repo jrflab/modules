@@ -48,8 +48,15 @@ if (as.numeric(opt$option)==1) {
 		  nparallel = nparallel,
 		  randomSeed = randomSeed,
 		  verbose = TRUE)
-	readr::write_tsv(x = fit$catalogues, file = paste0(opt$output_file, "_features.txt"), col_names = TRUE, append = FALSE)
-	readr::write_tsv(x = fit$catalogues, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
+	x = dplyr::tibble(feature_name = rownames(fit$catalogues)
+			  feature_count = as.vector(fit$catalogues[,1])) %>%
+	    dplyr::mutate(sample_name = sample_name)
+	readr::write_tsv(x = x, file = paste0(opt$output_file, "_features.txt"), col_names = TRUE, append = FALSE)
+	
+	x = dplyr::tibble(signature_name = colnames(fit$exposures),
+			  signature_exposure = as.vector(fit$exposures[1,])) %>%
+	    dplyr::mutate(sample_name = sample_name)
+	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 	
 }
 
