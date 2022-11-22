@@ -39,8 +39,9 @@ sv_signature/$1_$2/$1_$2.merged.bedpe : sv_signature/$1_$2/$1_$2.merged.bed
 sv_signature/$1_$2/$1_$2.merged_exposures.txt : sv_signature/$1_$2/$1_$2.merged.bedpe
 	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
 								  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
-								  --sample_name $1_$2\
-								  --input_file $$(<)\
+								  --option 1 \
+								  --sample_name $1_$2 \
+								  --input_file $$(<) \
 								  --output_file sv_signature/$1_$2/$1_$2.merged")
 
 #sv_signature/$1_$2/$1_$2.merged.taskcomplete : sv_signature/$1_$2/$1_$2.merged.bedpe
