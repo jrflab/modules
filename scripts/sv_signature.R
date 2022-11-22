@@ -12,7 +12,7 @@ if (!interactive()) {
 
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
                make_option("--sample_name", default = NA, type = 'character', help = "sample name"),
-	       make_option("--input_file", default = NA, type = 'character', help = "input file")
+	       make_option("--input_file", default = NA, type = 'character', help = "input file"),
 	       make_option("--output_file", default = NA, type = 'character', help = "output file"))
 parser = OptionParser(usage = "%prog", option_list = optList)
 arguments = parse_args(parser, positional_arguments = T)
