@@ -64,7 +64,7 @@ if (as.numeric(opt$option)==1) {
 		    dplyr::filter(chrom1 != "Y") %>%
 	    	    dplyr::filter(chrom2 != "Y") %>%
 		    readr::type_convert()
-	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".merged.sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
 		    readr::type_convert() %>%
 		    dplyr::select(chrom1 = X1,
 				  start1 = X2,
