@@ -16,7 +16,8 @@ signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merg
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.tsv) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.bedpe) \
-		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.txt)
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.txt) \
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints_exposures.txt)
 #		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
 #		sv_signature/feature_matrix.txt
 		
@@ -68,6 +69,14 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.txt : sv_signature/$1
 							 --timing_bedgraph $(REPLICATION_TIMING) \
 							 --sv_definitions $(SV_DEFINITIONS) \
 							 --text_outfile $$(@)")
+							 
+sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints_exposures.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.txt
+	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+								  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R \
+								  --option 3 \
+								  --sample_name $1_$2 \
+								  --input_file $$(<) \
+								  --output_file sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\

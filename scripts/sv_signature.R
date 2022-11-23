@@ -96,19 +96,47 @@ if (as.numeric(opt$option)==1) {
 		    )) %>%
 		    dplyr::select(chrom1, start1, end1, chrom2, start2, end2, sv_id, pe_support, strand1, strand2, svclass)
 	write_tsv(x = bedpe_org, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-}
+	
+} else if (as.numeric(opt$option)==3) {
+	sample_name = as.character(opt$sample_name)
+	catalogues = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		     readr::type_convert()
+	catalogues_mutations = data.frame(catalogues %>% dplyr::select(manual_sv_type))
+	colnames(catalogues_mutations) = sample_name
+	rownames(catalogues_mutations) = catalogues %>% .[["...1"]]
+	
+	signatures = readr::read_tsv(file = "~/share/lib/resource_files/viola/NMF/signature_matrix.txt", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		     readr::type_convert()
+	signatures_mutations = data.frame(signatures %>% dplyr::select(-`SV Type`))
+	colnames(signatures_mutations) = colnames(signatures)[-1]
+	rownames(signatures_mutations) = signatures %>% .[["SV Type"]]
+	exposureFilterType = "fixedThreshold"
+	threshold_percent = 5
+	optimisation_method = "KLD"
+	useBootstrap = FALSE
+	nboot = 1000
+	threshold_p.value = 0.05
+	nparallel = 4
+	randomSeed = 1
+	fit = Fit(catalogues = catalogues_mutations,
+		  signatures = signatures_mutations,
+		  exposureFilterType = exposureFilterType,
+		  threshold_percent = threshold_percent,
+		  method = optimisation_method,
+		  useBootstrap = useBootstrap,
+		  nboot = nboot,
+		  threshold_p.value = threshold_p.value,
+		  nparallel = nparallel,
+		  randomSeed = randomSeed,
+		  verbose = TRUE)
+	x = dplyr::tibble(feature_name = rownames(fit$catalogues),
+			  feature_count = as.vector(fit$catalogues[,1])) %>%
+	    dplyr::mutate(sample_name = sample_name)
+	readr::write_tsv(x = x, file = paste0(opt$output_file, "_features.txt"), col_names = TRUE, append = FALSE)
+	
+	x = dplyr::tibble(signature_name = colnames(fit$exposures),
+			  signature_exposure = as.vector(fit$exposures[1,])/sum(as.vector(fit$exposures[1,])) * 100) %>%
+	    dplyr::mutate(sample_name = sample_name)
+	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 
-#else if (as.numeric(opt$option)==2) {
-#	sample_names = unlist(strsplit(x = as.character(opt$sample_names), split = " ", fixed=TRUE))
-#	feature_counts = list()
-#	for (i in 1:length(sample_names)) {
-#		feature_counts[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_names[i], "/", sample_names[i], ".merged.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-#				      readr::type_convert() %>%
-#				      dplyr::rename(sv_class = X1,
-#					            sv_count = manual_sv_type) %>%
-#				      dplyr::mutate(sample_name = sample_names[i])
-#	}
-#	feature_counts = do.call(bind_rows, feature_counts)
-#	write_tsv(x = feature_counts, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-#	
-#}
+}
