@@ -85,7 +85,7 @@ if (as.numeric(opt$option)==1) {
 		    	TRUE ~ "non_clustered"
 	    	    )) %>%
 		    dplyr::mutate(is_clustered = case_when(
-		    	p_value<.05 & n_svs>=50 ~ "c2",
+		    	p_value<.05 & n_svs>=100 ~ "c2",
 		    	TRUE ~ is_clustered
 		    )) %>%
 		    dplyr::mutate(svclass = case_when(
