@@ -54,7 +54,7 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_features.txt"), col_names = TRUE, append = FALSE)
 	
 	x = dplyr::tibble(signature_name = colnames(fit$exposures),
-			  signature_exposure = as.vector(fit$exposures[1,])) %>%
+			  as.vector(fit$exposures[1,])/sum(as.vector(fit$exposures[1,])) * 100) %>%
 	    dplyr::mutate(sample_name = sample_name)
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 	
