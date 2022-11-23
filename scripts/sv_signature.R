@@ -140,5 +140,21 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 
 } else if (as.numeric(opt$option)==4) {
-	
+	sample_name = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
+	signature_x = list()
+	for (i in 1:length(sample_name)) {
+		signature_x[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged_exposures.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+				   readr::type_convert() %>%
+				   dplyr::mutate(method = "signature.tools.lib")
+	}
+	signature_x = do.call(bind_rows, signature_x)
+	signature_y = list()
+	for (i in 1:length(sample_name)) {
+		signature_y[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged.sv_clusters_and_footprints_exposures.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+				   readr::type_convert() %>%
+				   dplyr::mutate(method = "viola")
+	}
+	signature_y = do.call(bind_rows, signature_y)
+	signature_df = dplyr::bind_rows(signature_x, signature_y)
+	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 }
