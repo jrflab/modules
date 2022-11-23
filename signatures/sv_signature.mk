@@ -15,7 +15,8 @@ signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merg
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.tsv) \
-		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.bedpe)
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.bedpe) \
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints.txt)
 #		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.txt) \
 #		sv_signature/feature_matrix.txt
 		
@@ -59,14 +60,14 @@ sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe : sv_signature/
 								   --sample_name $1_$2 \
 								   --output_file $$(@)")
 
-#sv_signature/$1_$2/$1_$2.merged.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe
-#	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
-#							 python $(SCRIPTS_DIR)/sv_signature.py \
-#							 --bedpe_infile $$(<) \
-#							 --fragile_bed $(FRAGILE_SITES) \
-#							 --timing_bedgraph $(REPLICATION_TIMING) \
-#							 --sv_definitions $(SV_DEFINITIONS) \
-#							 --text_outfile $$(@)")
+sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.txt : sv_signature/$1_$2/$1_$2.merged.sv_clusters_and_footprints.bedpe
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(VIOLA_ENV),"set -o pipefail && \
+							 python $(SCRIPTS_DIR)/sv_signature.py \
+							 --bedpe_infile $$(<) \
+							 --fragile_bed $(FRAGILE_SITES) \
+							 --timing_bedgraph $(REPLICATION_TIMING) \
+							 --sv_definitions $(SV_DEFINITIONS) \
+							 --text_outfile $$(@)")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
