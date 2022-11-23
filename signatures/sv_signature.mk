@@ -82,8 +82,8 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call signature-sv,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 sv_signature/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.sv_clusters_and_footprints_exposures.txt) $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt)
-	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 4 --sample_name '$(SAMPLE_PAIRS)' --output_file $(@)")
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+					  			    $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 4 --sample_name '$(SAMPLE_PAIRS)' --output_file $(@)")
 
 
 ..DUMMY := $(shell mkdir -p version; \
