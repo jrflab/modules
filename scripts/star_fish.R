@@ -23,7 +23,7 @@ if (as.numeric(opt$option)==1) {
 	sample_name = as.character(opt$sample_name)
 	bed = readr::read_tsv(file = as.character(opt$input_file), col_names = FALSE, col_types = cols(.default = col_character())) %>%
 	      readr::type_convert() %>%
-	      dplyr::rename(chrom1 = X1
+	      dplyr::rename(chrom1 = X1,
 			    start1 = X2,
 			    end1 = X3,
 			    chrom2 = X4,
