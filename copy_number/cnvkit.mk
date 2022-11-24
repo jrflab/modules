@@ -61,7 +61,7 @@ cnvkit/plots/segmented/$1.pdf : cnvkit/cnr/$1.cnr
 	
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call cnvkit-tumor-cnr,$(sample))))
+		$(eval $(call cnvkit-plot,$(sample))))
 
 
 ..DUMMY := $(shell mkdir -p version; \
