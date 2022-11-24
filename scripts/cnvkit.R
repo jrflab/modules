@@ -27,7 +27,7 @@ opt <- arguments$options
 	    dplyr::mutate(chromosome = factor(chromosome, levels = c(1:22, "X"), ordered = TRUE)) %>%
 	    dplyr::arrange(chromosome)
 	
-	axis(1, at = c(y$start, y$end[nrow(y)]), labels = rep(" ", nrow(y)+1), cex.axis = 0.85, las = 1, lwd = 0, tck = .5)
+	axis(1, at = c(y$start, y$end[nrow(y)]), labels = rep(" ", nrow(y)+1), cex.axis = 0.85, las = 1, tck = .5)
 	axis(1, at = .5*(y$start + y$end), labels = y$chromosome, cex.axis = 0.85, las = 1)
 	axis(2, at = c(-4, -2, 0, 2, 4), labels = c(-4, -2, 0, 2, 4), cex.axis = 1, las = 1)
 	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
@@ -63,7 +63,7 @@ if (as.numeric(opt$option) == 1) {
 		       TRUE ~ log2
 	       ))
 	
-	pdf(file = paste0("cnvkit/plots/segmented/", opt$sample_name, ".pdf"), width = 7, height = 4.25)
+	pdf(file = paste0("cnvkit/plots/log2/", opt$sample_name, ".pdf"), width = 8, height = 3.75)
 	plot_log2_ratio(x = data)
 	dev.off()
 

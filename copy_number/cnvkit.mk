@@ -9,7 +9,7 @@ cnv_kit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).targetcov
 	  $(foreach sample,$(NORMAL_SAMPLES),cnvkit/cnn/normal/$(sample).antitargetcoverage.cnn) \
 	  cnvkit/reference/combined_reference.cnr \
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnr/$(sample).cnr) \
-	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/segmented/$(sample).pdf)
+	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/log2/$(sample).pdf)
 	  
 ONTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v3_cnvkit_ontarget.bed
 OFFTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v4_cnvkit_offtarget.bed
@@ -53,7 +53,7 @@ endef
 		$(eval $(call cnvkit-tumor-cnr,$(sample))))
 		
 define cnvkit-plot
-cnvkit/plots/segmented/$1.pdf : cnvkit/cnr/$1.cnr
+cnvkit/plots/log2/$1.pdf : cnvkit/cnr/$1.cnr
 	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
 						     $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 						     --option 1 \
