@@ -53,5 +53,31 @@ if (as.numeric(opt$option)==1) {
 	       dplyr::mutate(sample = sample_name)
 	readr::write_tsv(x = data, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
-}
+} else if (as.numeric(opt$option)==3) {
+	sample_name = as.character(opt$sample_name)
+	sv_df = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_sv.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		readr::type_convert()
+	cn_df = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		readr::type_convert()
+	gd_df = dplyr::tibble(sample = sample_name, gender = "unknown") %>%
+		readr::type_convert()
+	
+	starfish_link_out = starfish_link(sv_file = sv_df, prefix = paste0("star_fish/", sample_name, "/", sample_name))
+	if (length(starfish_link_out)==1) {
+		cat(starfish_link_out, file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
+	} else {
+		starfish_feature_out = starfish_feature(cgr = starfish_link_out$starfish_call, complex_sv = starfish_link_out$interleave_tra_complex_sv,
+							cnv_file = cn_df, gender_file = gd_df, prefix = paste0("star_fish/", sample_name, "/", sample_name),
+							genome_v = "hg19", cnv_factor = "auto", arm_del_rm = TRUE)
+		starfish_sig_out = starfish_sig(cluster_feature = starfish_feature_out$cluster_feature,
+					        prefix = paste0("star_fish/", sample_name, "/", sample_name),
+					        cmethod = "class")
+		wd = getwd()
+		setwd(paste0("star_fish/", sample_name, "/"))
+		starfish_plot(sv_file = sv_df, cnv_file = cn_df, cgr = starfish_link_out$starfish_call, genome_v = "hg19")
+		setwd(wd)
+		cat("taskcomplete!!", file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
+		
+	}
+	
 
