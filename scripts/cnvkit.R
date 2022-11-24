@@ -62,7 +62,7 @@ if (as.numeric(opt$option) == 1) {
 		       TRUE ~ log2
 	       ))
 	
-	pdf(file = paste0("cnvkit/segmented/", opt$sample_name, ".pdf"), width = 10, height = 4.25)
+	pdf(file = paste0("cnvkit/plots/segmented/", opt$sample_name, ".pdf"), width = 10, height = 4.25)
 	plot_log2_ratio(x = data)
 	dev.off()
 
