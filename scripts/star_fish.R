@@ -38,6 +38,7 @@ if (as.numeric(opt$option)==1) {
 	      dplyr::mutate(svtype = case_when(
 		      svtype == "INV" & strand1 == "+" & strand2 == "+" ~ "h2hINV",
 		      svtype == "INV" & strand1 == "-" & strand2 == "-" ~ "t2tINV",
+		      TRUE ~ svtype
 	      )) %>%
 	      dplyr::mutate(sample = sample_name)
 	readr::write_tsv(x = bed, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
