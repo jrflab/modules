@@ -58,7 +58,7 @@ if (as.numeric(opt$option) == 1) {
 			     end = end + start_chr) %>%
 	       dplyr::mutate(position = .5*(start + end)) %>%
 	       dplyr::mutate(log2 = case_when(
-		       log2 > 5 ~ 0,
+		       log2 > 6 ~ 0,
 		       log2 < (-4) ~ 0,
 		       TRUE ~ log2
 	       ))
