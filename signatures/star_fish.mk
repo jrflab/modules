@@ -18,12 +18,12 @@ star_fish/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
 							    $$(@)")
 							    
 star_fish/$1_$2/$1_$2.merged.bedpe : star_fish/$1_$2/$1_$2.merged.bed
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
-					 --option 1 \
-					 --sample_name $1_$2 \
-					 --input_file $$(<) \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(STARFISH_ENV),"set -o pipefail && \
+							    $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
+							    --option 1 \
+							    --sample_name $1_$2 \
+							    --input_file $$(<) \
+							    --output_file $$(@)")
 							    
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
