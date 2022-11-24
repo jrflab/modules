@@ -79,5 +79,4 @@ if (as.numeric(opt$option)==1) {
 		cat("taskcomplete!!", file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
 		
 	}
-	
-
+}
