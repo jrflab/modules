@@ -511,6 +511,10 @@ deconstruct_sigs :
 TARGETS += sv_signature
 sv_signature :
 	$(call RUN_MAKE,modules/signatures/sv_signature.mk)
+	
+TARGETS += star_fish
+star_fish :
+	$(call RUN_MAKE,modules/signatures/star_fish.mk)
 
 
 #==================================================
