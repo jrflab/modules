@@ -43,4 +43,15 @@ if (as.numeric(opt$option)==1) {
 	      dplyr::mutate(sample = sample_name)
 	readr::write_tsv(x = bed, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
+} else if (as.numeric(opt$option)==2) {
+	sample_name = as.character(opt$sample_name)
+	data = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       dplyr::select(chromosome = chrom,
+			     start = loc.start,
+			     end = loc.end,
+			     total_cn = tcn.em) %>%
+	       dplyr::mutate(sample = sample_name)
+	readr::write_tsv(x = data, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	
 }
+
