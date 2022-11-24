@@ -19,7 +19,7 @@ opt <- arguments$options
 'plot_log2_ratio' <- function(x)
 {
    	par(mar=c(5, 5, 4, 2)+.1)
-	plot(x = x$position, y = x$log2, type = "p", pch = ".", cex = 1, col = "grey75", axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-4,5))
+	plot(x = x$position, y = x$log2, type = "p", pch = ".", cex = 1, col = "grey75", axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-4.5,5))
 	y = x %>%
 	    dplyr::group_by(chromosome) %>%
 	    dplyr::summarize(start = min(start_chr),
