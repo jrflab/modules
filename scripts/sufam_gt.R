@@ -37,6 +37,7 @@ if (as.numeric(opt$option)==1) {
 			     FILTER = "PASS",
 			     INFO = ".") %>%
 	       dplyr::select(`#CHROM`, POS, ID, REF, ALT, QUAL, INFO) %>%
+	       dplyr::mutate(`#CHROM` = as.character(`#CHROM`)) %>%
 	       dplyr::mutate(chr_n = case_when(
 		       `#CHROM` == "X" ~ "23",
 		       `#CHROM` == "Y" ~ "24",
