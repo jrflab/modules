@@ -80,7 +80,7 @@ if (as.numeric(opt$option) == 1) {
 	       dplyr::filter(weight>.1) %>%
 	       dplyr::filter(chromosome != "Y")
 	smoothed = winsorize(data = data %>% dplyr::select(chromosome, start, log2) %>% data.frame(), method = "mad")
-	segmented = pcf(data = smoothed, kmin = 25, gamma = 100, normalize = TRUE, fast = FALSE) %>%
+	segmented = pcf(data = smoothed, kmin = 25, gamma = 125, normalize = FALSE, fast = FALSE) %>%
 		    dplyr::as_tibble() %>%
 		    dplyr::select(Sample_Name = sampleID, Chromosome = chrom, Arm = arm,
 				  Start_Position = start.pos, End_Position = end.pos,
@@ -94,7 +94,7 @@ if (as.numeric(opt$option) == 1) {
 	       dplyr::filter(weight>.1) %>%
 	       dplyr::filter(chromosome != "Y")
 	smoothed = winsorize(data = data %>% dplyr::select(chromosome, start, log2) %>% data.frame(), method = "mad")
-	segmented = pcf(data = smoothed, kmin = 25, gamma = 100, normalize = TRUE, fast = FALSE) %>%
+	segmented = pcf(data = smoothed, kmin = 25, gamma = 125, normalize = FALSE, fast = FALSE) %>%
 		    dplyr::as_tibble() %>%
 		    dplyr::select(Sample_Name = sampleID, Chromosome = chrom, Arm = arm,
 				  Start_Position = start.pos, End_Position = end.pos,
