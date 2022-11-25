@@ -33,6 +33,13 @@ opt <- arguments$options
 	mtext(side = 2, text = expression(Log[2]~"Ratio   "), line = 3.15, cex = 1)
 }
 
+'add_segmented' <- function(x)
+{
+	for (i in 1:nrow(x)) {
+		points(x = c(x$Start_Position[i], x$End_Position[i]), y = rep(x$Log2_Ratio[i], 2), type = "l", col = "#e41a1c", lwd = 2.75)
+	}
+}
+
 if (as.numeric(opt$option) == 1) {
 	data = readr::read_tsv(file = paste0("cnvkit/cnr/", opt$sample_name, ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       readr::type_convert() %>%
@@ -67,4 +74,66 @@ if (as.numeric(opt$option) == 1) {
 	plot_log2_ratio(x = data)
 	dev.off()
 
+} else if (as.numeric(opt$option) == 2) {
+	data = readr::read_tsv(file = paste0("cnvkit/cnr/", opt$sample_name, ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert() %>%
+	       dplyr::filter(weight>.1) %>%
+	       dplyr::filter(chromosome != "Y")
+	smoothed = winsorize(data = data %>% dplyr::select(chromosome, start, log2) %>% data.frame(), method = "mad")
+	segmented = pcf(data = smoothed, kmin = 10, gamma = 40, normalize = TRUE, fast = FALSE) %>%
+		    dplyr::as_tibble() %>%
+		    dplyr::select(Sample_Name = sampleID, Chromosome = chrom, Arm = arm,
+				  Start_Position = start.pos, End_Position = end.pos,
+				  N = n.probes, Log2_Ratio = mean) %>%
+		    dplyr::mutate(Sample_Name = opt$sample_name)
+	readr::write_tsv(x = segmented, file = paste0("cnvkit/segmented/", opt$sample_name, ".txt"), col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option) == 3) {
+	data = readr::read_tsv(file = paste0("cnvkit/cnr/", opt$sample_name, ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert() %>%
+	       dplyr::filter(weight>.1) %>%
+	       dplyr::filter(chromosome != "Y")
+	smoothed = winsorize(data = data %>% dplyr::select(chromosome, start, log2) %>% data.frame(), method = "mad")
+	segmented = pcf(data = smoothed, kmin = 10, gamma = 40, normalize = TRUE, fast = FALSE) %>%
+		    dplyr::as_tibble() %>%
+		    dplyr::select(Sample_Name = sampleID, Chromosome = chrom, Arm = arm,
+				  Start_Position = start.pos, End_Position = end.pos,
+				  N = n.probes, Log2_Ratio = mean) %>%
+		    dplyr::mutate(Sample_Name = opt$sample_name)
+	cytoband = data %>%
+		   dplyr::group_by(chromosome) %>%
+		   dplyr::summarize(start = min(start),
+				    end = max(end)) %>%
+		   dplyr::mutate(chromosome = factor(chromosome, levels = c(1:22, "X"), ordered = TRUE)) %>%
+		   dplyr::arrange(chromosome) %>%
+		   dplyr::mutate(end = cumsum(end))
+	start = rep(0, nrow(cytoband))
+	start[2:nrow(cytoband)] = cytoband$end[1:(nrow(cytoband)-1)] + cytoband$start[2:nrow(cytoband)]
+	cytoband$start = start
+	data = data %>%
+	       dplyr::left_join(cytoband %>%
+				dplyr::rename(start_chr = start,
+					      end_chr = end),
+			        by = "chromosome") %>%
+	       dplyr::mutate(start = start + start_chr,
+			     end = end + start_chr) %>%
+	       dplyr::mutate(position = start) %>%
+	       dplyr::mutate(log2 = case_when(
+		       log2 > 6 ~ 0,
+		       log2 < (-4) ~ 0,
+		       TRUE ~ log2
+	       ))
+	segmented = segmented %>%
+		    dplyr::left_join(cytoband %>%
+				     dplyr::rename(Chromosome = chromosome,
+						   start_chr = start,
+					      	   end_chr = end),
+			             by = "Chromosome") %>%
+	       	    dplyr::mutate(Start_Position = Start_Position + start_chr,
+				  End_Position = End_Position + start_chr)
+	
+	pdf(file = paste0("cnvkit/plots/segmented/", opt$sample_name, ".pdf"), width = 8, height = 3.75)
+	plot_log2_ratio(x = data)
+	add_segmented(x = segmented)
+	dev.off()
 }

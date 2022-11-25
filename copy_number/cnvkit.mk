@@ -47,6 +47,12 @@ define cnvkit-tumor-cnr
 cnvkit/cnr/$1.cnr : cnvkit/cnn/tumor/$1.targetcoverage.cnn cnvkit/cnn/tumor/$1.antitargetcoverage.cnn cnvkit/reference/combined_reference.cnr
 	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
 						     cnvkit.py fix $$(<) $$(<<) $$(<<<) -o cnvkit/cnr/$1.cnr")
+						     
+cnvkit/segmented/$1.txt : cnvkit/cnr/$1.cnr
+	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
+						     $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
+						     --option 2 \
+						     --sample_name $1")
 	
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
