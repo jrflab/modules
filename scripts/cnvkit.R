@@ -30,7 +30,7 @@ opt <- arguments$options
 	axis(1, at = c(y$start, y$end[nrow(y)]), labels = rep(" ", nrow(y)+1), cex.axis = 0.85, las = 1, tck = .035)
 	axis(1, at = .5*(y$start + y$end), labels = y$chromosome, cex.axis = 0.85, las = 1)
 	axis(2, at = c(-2, -1, 0, 1, 2), labels = c(-2, -1, 0, 1, 2), cex.axis = 1, las = 1)
-	mtext(side = 2, text = expression(Log[2]~"Ratio"), line = 3.15, cex = 1.25)
+	mtext(side = 2, text = expression(Log[2]~"Ratio   "), line = 3.15, cex = 1)
 }
 
 if (as.numeric(opt$option) == 1) {
