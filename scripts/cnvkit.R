@@ -19,14 +19,14 @@ opt <- arguments$options
 'plot_log2_ratio' <- function(x)
 {
    	par(mar=c(5, 5, 4, 2)+.1)
-	plot(x = x$position, y = x$log2, type = "p", pch = ".", cex = 1, col = "grey75", axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-3,5))
+	plot(x = x$position, y = x$log2, type = "p", pch = ".", cex = 1, col = "grey75", axes = FALSE, frame = FALSE, xlab = "", ylab = "", main = "", ylim = c(-4,5))
 	y = x %>%
 	    dplyr::group_by(chromosome) %>%
 	    dplyr::summarize(start = min(start_chr),
 			     end = max(end_chr)) %>%
 	    dplyr::mutate(chromosome = factor(chromosome, levels = c(1:22, "X"), ordered = TRUE)) %>%
 	    dplyr::arrange(chromosome)
-	
+	abline(h = 0, col = "black")
 	axis(1, at = c(y$start, y$end[nrow(y)]), labels = rep(" ", nrow(y)+1), cex.axis = 0.85, las = 1, tck = .035)
 	axis(1, at = .5*(y$start + y$end), labels = y$chromosome, cex.axis = 0.85, las = 1)
 	axis(2, at = c(-2, -1, 0, 1, 2), labels = c(-2, -1, 0, 1, 2), cex.axis = 1, las = 1)
