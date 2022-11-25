@@ -26,7 +26,7 @@ opt <- arguments$options
 			     end = max(end_chr)) %>%
 	    dplyr::mutate(chromosome = factor(chromosome, levels = c(1:22, "X"), ordered = TRUE)) %>%
 	    dplyr::arrange(chromosome)
-	points(x = c(y$start[1]-1E8, y$end[nrow(y)]), y = c(0, 0), type = "l", col = "grey20", lwd = 1.5)
+	points(x = c(y$start[1]-1E9, y$end[nrow(y)]), y = c(0, 0), type = "l", col = "grey20", lwd = 1.15)
 	axis(1, at = c(y$start, y$end[nrow(y)]), labels = rep(" ", nrow(y)+1), cex.axis = 0.85, las = 1, tck = .035)
 	axis(1, at = .5*(y$start + y$end), labels = y$chromosome, cex.axis = 0.85, las = 1)
 	axis(2, at = c(-2, -1, 0, 1, 2), labels = c(-2, -1, 0, 1, 2), cex.axis = 1, las = 1)
