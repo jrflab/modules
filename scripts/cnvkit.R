@@ -207,7 +207,7 @@ if (as.numeric(opt$option) == 1) {
 	pdf(file = paste0("cnvkit/plots/totalcopy/", tumor_name, ".pdf"), width = 8, height = 3.75)
 	plot_log2_ratio(x = data)
 	add_segmented(x = segmented)
-	add_totalcopies(purity, ploidy, cytoband[1,"start"]-1E9, cytoband[nrow(cyoband),"end"])
+	add_totalcopies(purity, ploidy, cytoband[1,"start"]-1E9, cytoband[nrow(cytoband),"end"])
 	dev.off()
 	
 }
