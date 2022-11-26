@@ -44,7 +44,7 @@ opt <- arguments$options
 {
 	for (i in c(1, 2, 4, 6, 10)) {
 		y = log2(((purity*i) + (1-purity)*2)/((purity*ploidy) + (1-purity)*2))
-		if (y<2) {
+		if (!is.na(y) & y<2) {
 			points(x = c(xmin, xmax), y = rep(y, 2), type = "l", col = "goldenrod3", lty = 3, lwd = 1)
 		}
 	}
