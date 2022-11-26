@@ -82,7 +82,7 @@ cnvkit/totalcopy/$1.txt : cnvkit/segmented/$1.txt facets/cncf/$1_$2.out
 						    --option 4 \
 						    --sample_name $1_$2")
 						    
-cnvkit/totalcopy/$1.txt : cnvkit/cnr/$1.cnr cnvkit/totalcopy/$1.txt facets/cncf/$1_$2.out
+cnvkit/plots/totalcopy/$1.pdf : cnvkit/cnr/$1.cnr cnvkit/totalcopy/$1.txt facets/cncf/$1_$2.out
 	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
 						    $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 						    --option 5 \
