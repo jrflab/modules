@@ -136,6 +136,7 @@ if (as.numeric(opt$option) == 1) {
 	plot_log2_ratio(x = data)
 	add_segmented(x = segmented)
 	dev.off()
+
 } else if (as.numeric(opt$option) == 4) {
 	tumor_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[1]
 	normal_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[2]

@@ -80,6 +80,7 @@ cnvkit/totalcopy/$1.txt : cnvkit/segmented/$1.txt facets/cncf/$1_$2.out
 						    $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 						    --option 4 \
 						    --sample_name $1_$2")
+
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
