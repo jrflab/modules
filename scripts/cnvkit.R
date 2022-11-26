@@ -136,4 +136,16 @@ if (as.numeric(opt$option) == 1) {
 	plot_log2_ratio(x = data)
 	add_segmented(x = segmented)
 	dev.off()
+} else if (as.numeric(opt$option) == 4) {
+	tumor_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[1]
+	normal_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[2]
+	data = readr::read_tsv(file = paste0("cnvkit/segmented/", tumor_name, ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert()
+	facets = readr::read_tsv(file = paste0("facets/cncf/", tumor_name, "_", normal_name, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+	         readr::type_convert()
+	purity = as.numeric(gsub(pattern = "# Purity = ", replacement = "", x = facets %>% dplyr::slice(10) %>% .[["X1"]], fixed = TRUE))
+	ploidy = as.numeric(gsub(pattern = "# Ploidy = ", replacement = "", x = facets %>% dplyr::slice(11) %>% .[["X1"]], fixed = TRUE))
+	data = data %>%
+	       dplyr::mutate(Total_Copy = ((2^(Log2_Ratio))*(purity*ploidy + (1-purity)*2) - (1-purity)*2)/purity)
+	readr::write_tsv(x = data, file = paste0("cnvkit/totalcopy/", tumor_name, ".txt"), col_names = TRUE, append = FALSE)
 }
