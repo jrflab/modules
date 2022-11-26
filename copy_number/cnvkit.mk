@@ -11,7 +11,8 @@ cnv_kit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).targetcov
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnr/$(sample).cnr) \
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/segmented/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/log2/$(sample).pdf) \
-	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/segmented/$(sample).pdf)
+	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/segmented/$(sample).pdf) \
+	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).txt)
 	  
 ONTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v3_cnvkit_ontarget.bed
 OFFTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v4_cnvkit_offtarget.bed
@@ -49,22 +50,17 @@ define cnvkit-tumor-cnr
 cnvkit/cnr/$1.cnr : cnvkit/cnn/tumor/$1.targetcoverage.cnn cnvkit/cnn/tumor/$1.antitargetcoverage.cnn cnvkit/reference/combined_reference.cnr
 	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
 						     cnvkit.py fix $$(<) $$(<<) $$(<<<) -o cnvkit/cnr/$1.cnr")
-						     
-cnvkit/segmented/$1.txt : cnvkit/cnr/$1.cnr
-	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
-						     $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
-						     --option 2 \
-						     --sample_name $1")
-	
-endef
- $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call cnvkit-tumor-cnr,$(sample))))
-		
-define cnvkit-plot
+
 cnvkit/plots/log2/$1.pdf : cnvkit/cnr/$1.cnr
 	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
 						     $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 						     --option 1 \
+						     --sample_name $1")
+
+cnvkit/segmented/$1.txt : cnvkit/cnr/$1.cnr
+	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
+						     $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
+						     --option 2 \
 						     --sample_name $1")
 						     
 cnvkit/plots/segmented/$1.pdf : cnvkit/cnr/$1.cnr
@@ -75,7 +71,19 @@ cnvkit/plots/segmented/$1.pdf : cnvkit/cnr/$1.cnr
 	
 endef
  $(foreach sample,$(TUMOR_SAMPLES),\
-		$(eval $(call cnvkit-plot,$(sample))))
+		$(eval $(call cnvkit-tumor-cnr,$(sample))))
+
+
+define cnvkit-total-copy
+cnvkit/totalcopy/$1.txt : cnvkit/segmented/$1.txt facets/cncf/$1_$2.out
+	$$(call RUN,-c -s 6G -m 8G -v $(CNVKIT_ENV),"set -o pipefail && \
+						    $(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
+						    --option 4 \
+						    --sample_name $1_$2")
+	
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call cnvkit-total-copy,$(tumor.$(pair)),$(normal.$(pair)))))
 
 
 ..DUMMY := $(shell mkdir -p version; \
