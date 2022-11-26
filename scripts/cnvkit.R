@@ -40,6 +40,14 @@ opt <- arguments$options
 	}
 }
 
+'add_totalcopies' <- function(purity, ploidy, xmin, xmax)
+{
+	for (i in c(1, 2, 4, 6, 10)) {
+		y = log2(((purity*i) + (1-purity)*2)/((purity*ploidy) + (1-purity)*2))
+		points(x = c(xmin, xmax), y = rep(y, 2), type = "l", col = "goldenrod3", lty = 3, lwd = 1)
+	}
+}
+
 if (as.numeric(opt$option) == 1) {
 	data = readr::read_tsv(file = paste0("cnvkit/cnr/", opt$sample_name, ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       readr::type_convert() %>%
@@ -149,4 +157,57 @@ if (as.numeric(opt$option) == 1) {
 	data = data %>%
 	       dplyr::mutate(Total_Copy = ((2^(Log2_Ratio))*(purity*ploidy + (1-purity)*2) - (1-purity)*2)/purity)
 	readr::write_tsv(x = data, file = paste0("cnvkit/totalcopy/", tumor_name, ".txt"), col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option) == 5) {
+	tumor_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[1]
+	normal_name = unlist(strsplit(x = opt$sample_name, split = "_", fixed = TRUE))[2]
+	data = readr::read_tsv(file = paste0("cnvkit/cnr/", tumor_name, ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       readr::type_convert() %>%
+	       dplyr::filter(weight>.1) %>%
+	       dplyr::filter(chromosome != "Y")
+	segmented = readr::read_tsv(file = paste0("cnvkit/totalcopy/", tumor_name, ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       	    readr::type_convert()
+	cytoband = data %>%
+		   dplyr::group_by(chromosome) %>%
+		   dplyr::summarize(start = min(start),
+				    end = max(end)) %>%
+		   dplyr::mutate(chromosome = factor(chromosome, levels = c(1:22, "X"), ordered = TRUE)) %>%
+		   dplyr::arrange(chromosome) %>%
+		   dplyr::mutate(end = cumsum(end))
+	start = rep(0, nrow(cytoband))
+	start[2:nrow(cytoband)] = cytoband$end[1:(nrow(cytoband)-1)] + cytoband$start[2:nrow(cytoband)]
+	cytoband$start = start
+	data = data %>%
+	       dplyr::left_join(cytoband %>%
+				dplyr::rename(start_chr = start,
+					      end_chr = end),
+			        by = "chromosome") %>%
+	       dplyr::mutate(start = start + start_chr,
+			     end = end + start_chr) %>%
+	       dplyr::mutate(position = start) %>%
+	       dplyr::mutate(log2 = case_when(
+		       log2 > 6 ~ 0,
+		       log2 < (-4) ~ 0,
+		       TRUE ~ log2
+	       ))
+	segmented = segmented %>%
+		    dplyr::left_join(cytoband %>%
+				     dplyr::rename(Chromosome = chromosome,
+						   start_chr = start,
+					      	   end_chr = end),
+			             by = "Chromosome") %>%
+	       	    dplyr::mutate(Start_Position = Start_Position + start_chr,
+				  End_Position = End_Position + start_chr)
+	
+	facets = readr::read_tsv(file = paste0("facets/cncf/", tumor_name, "_", normal_name, ".out"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
+	         readr::type_convert()
+	purity = as.numeric(gsub(pattern = "# Purity = ", replacement = "", x = facets %>% dplyr::slice(10) %>% .[["X1"]], fixed = TRUE))
+	ploidy = as.numeric(gsub(pattern = "# Ploidy = ", replacement = "", x = facets %>% dplyr::slice(11) %>% .[["X1"]], fixed = TRUE))
+	
+	pdf(file = paste0("cnvkit/plots/totalcopy/", tumor_name, ".pdf"), width = 8, height = 3.75)
+	plot_log2_ratio(x = data)
+	add_segmented(x = segmented)
+	add_totalcopies(purity, ploidy, cytoband[1,"start"]-1E9, cytoband[nrow(cyoband),"end"])
+	dev.off()
+	
 }
