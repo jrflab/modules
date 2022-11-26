@@ -220,6 +220,18 @@ if (as.numeric(opt$option) == 1) {
 	       		    readr::type_convert()
 	}
 	data = do.call(bind_rows, data)
-	readr::write_tsv(x = data, file = "cnvkit/summary/totalcopy.txt", col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = data, file = "cnvkit/summary/total_copy.txt", col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option) == 7) {
+	sample_names = unlist(strsplit(x = opt$sample_name, split = " ", fixed = TRUE))
+	data = list()
+	for (i in 1:length(sample_names)) {
+		data[[i]] = readr::read_tsv(file = paste0("cnvkit/cnr/", sample_names[i], ".cnr"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       		    readr::type_convert() %>%
+			    dplyr::select(chromosome, start, end, log2, weight) %>%
+			    dplyr::mutate(sample_name = sample_names[i])
+	}
+	data = do.call(bind_rows, data)
+	readr::write_tsv(x = data, file = "cnvkit/summary/log2_ratio.txt", col_names = TRUE, append = FALSE)
 	
 }

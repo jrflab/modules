@@ -14,7 +14,8 @@ cnv_kit : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnn/tumor/$(sample).targetcov
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/segmented/$(sample).pdf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).txt) \
 	  $(foreach sample,$(TUMOR_SAMPLES),cnvkit/plots/totalcopy/$(sample).pdf) \
-	  cnvkit/summary/totalcopy.txt
+	  cnvkit/summary/total_copy.txt \
+	  cnvkit/summary/log2_ratio.txt
 	  
 ONTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v3_cnvkit_ontarget.bed
 OFFTARGET_FILE = $(HOME)/share/lib/bed_files/MSK-IMPACT-v4_cnvkit_offtarget.bed
@@ -93,10 +94,16 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call cnvkit-total-copy,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-cnvkit/summary/totalcopy.txt : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).txt)
+cnvkit/summary/total_copy.txt : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).txt)
 	$(call RUN,-n 1 -s 24G -m 32G -v $(CNVKIT_ENV),"set -o pipefail && \
 							$(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 							--option 6 \
+							--sample_name '$(TUMOR_SAMPLES)'")
+							
+cnvkit/summary/log2_ratio.txt : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/cnr/$(sample).cnr)
+	$(call RUN,-n 1 -s 24G -m 32G -v $(CNVKIT_ENV),"set -o pipefail && \
+							$(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
+							--option 7 \
 							--sample_name '$(TUMOR_SAMPLES)'")
 
 
