@@ -95,6 +95,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		
 cnvkit/summary/totalcopy.txt : $(foreach sample,$(TUMOR_SAMPLES),cnvkit/totalcopy/$(sample).txt)
 	$(call RUN,-n 1 -s 24G -m 32G -v $(CNVKIT_ENV),"set -o pipefail && \
+							$(RSCRIPT) $(SCRIPTS_DIR)/cnvkit.R \
 							--option 6 \
 							--sample_name '$(TUMOR_SAMPLES)'")
 
