@@ -214,4 +214,13 @@ if (as.numeric(opt$option) == 1) {
 	        height = unit(40, "cm")))
 	dev.off()
 
+} else if (as.numeric(opt$option) == 4) {
+	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " "))
+	pyclone = list()
+	for (i in 1:length(sample_set)) {
+		pyclone[[i]] = readr::read_tsv(file = paste0("pyclone_vi/", sample_set[i], "/summary/by_loci.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		  	       readr::type_convert()
+	}
+	pyclone = do.call(bind_rows, pyclone)
+	readr::write_tsv(x = pyclone, file = "pyclone_vi/summary.txt", append = FALSE, col_names = TRUE)
 }

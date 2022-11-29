@@ -11,7 +11,8 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).vcf) 
 	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/by_loci.txt) \
 	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/scatter_by_sample.pdf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/heatmap_by_sample.pdf)
+	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/heatmap_by_sample.pdf) \
+	  pyclone_vi/summary.txt
 
 
 define r-sufam
@@ -97,6 +98,14 @@ pyclone_vi/$1/summary/heatmap_by_sample.pdf : pyclone_vi/$1/summary/by_loci.txt
 endef
 $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call r-pyclone,$(set))))
+		
+
+pyclone_vi/summary.txt : $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/by_loci.txt)
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(PYCLONE_ENV),"set -o pipefail && \
+							    $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
+							    --option 4 \
+							    --sample_set '$(SAMPLE_SETS)'")
+
 		
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version > version/pyclone_vi.txt)
