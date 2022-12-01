@@ -38,7 +38,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call lst-score,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define ntai-score
-genome_summary/ntai/$1_$2.ntai : facets/cncf/$1_$2.txt
+genome_summary/ntai/$1_$2.txt : facets/cncf/$1_$2.txt
 	$$(call RUN,-n 1 -s 3G -m 6G,"set -o pipefail && \
 				      $(RSCRIPT) modules/summary/genomesummary.R \
 				      --option 3 \
