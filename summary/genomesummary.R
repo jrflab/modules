@@ -333,7 +333,7 @@ if (as.numeric(opt$option) == 1) {
 	chromInfo = GetChrominfo()
 	ntai = score_ntAI(segs, chromInfo)
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
-			  ntai = nati$score)
+			  ntai = ntai$score)
 	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
 	
 } else if (as.numeric(opt$option) == 4) {
