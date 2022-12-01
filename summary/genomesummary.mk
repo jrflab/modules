@@ -3,24 +3,23 @@ include modules/Makefile.inc
 LOGDIR ?= log/genome_summary.$(NOW)
 
 
-genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).fga) \
-		 genome_stats/genome_altered.tsv \
-		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).lst) \
-		 genome_stats/lst_score.tsv \
-		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).ntai) \
-		 genome_stats/ntai_score.tsv \
-		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
-		 genome_stats/myriad_score.tsv \
-		 summary/tsv/genome_summary.tsv \
-		 summary/genome_summary.xlsx
+genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt) \
+		 genome_summary/genome_altered/summary.txt
+#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).lst) \
+#		 genome_stats/lst_score.tsv \
+#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).ntai) \
+#		 genome_stats/ntai_score.tsv \
+#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
+#		 genome_stats/myriad_score.tsv \
+#		 summary/tsv/genome_summary.tsv \
+#		 summary/genome_summary.xlsx
 
-GENOME_ALTERED = $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).fga)
 LST_SCORE = $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).lst)
 NTAI_SCORE = $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).ntai)
 MYRIAD_SCORE = $(foreach set,$(SAMPLE_PAIRS),genome_stats/$(set).mrs)
 		 
 define fraction-genome-altered
-genome_stats/$1_$2.fga : facets/cncf/$1_$2.Rdata
+genome_summary/genome_altered/$1_$2.txt : facets/cncf/$1_$2.Rdata
 	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/summary/genomesummary.R --option 1 --file_in $$(<) --file_out $$(@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
@@ -47,7 +46,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call myriad-score,$(tumor.$(pair)),$(normal.$(pair)))))
 
-genome_stats/genome_altered.tsv : $(GENOME_ALTERED)
+genome_summary/genome_altered/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt)
 	$(call RUN,-n 1 -s 4G -m 4G,"set -o pipefail && \
 				     mkdir -p genome_stats && \
 				     cat $(GENOME_ALTERED) > $(@)")
