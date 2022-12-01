@@ -510,12 +510,42 @@ if (as.numeric(opt$option) == 1) {
 } else if (as.numeric(opt$option)==5) {
 	
 	sample_names = unlist(strsplit(opt$sample_name, split = " ", fixed = TRUE))
-	data = list()
+	x1 = list()
 	for (i in 1:length(sample_names)) {
-		data[[i]] = readr::read_tsv(file = paste0("genome_summary/genome_altered/", sample_names[i], ".txt"),
+		x1[[i]] = readr::read_tsv(file = paste0("genome_summary/genome_altered/", sample_names[i], ".txt"),
 					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			    readr::type_convert()
 	}
-	data = do.call(bind_rows, data)
+	x1 = do.call(bind_rows, x1)
+	
+	x2 = list()
+	for (i in 1:length(sample_names)) {
+		x2[[i]] = readr::read_tsv(file = paste0("genome_summary/lst/", sample_names[i], ".txt"),
+					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			    readr::type_convert()
+	}
+	x2 = do.call(bind_rows, x2)
+	
+	x3 = list()
+	for (i in 1:length(sample_names)) {
+		x3[[i]] = readr::read_tsv(file = paste0("genome_summary/ntai/", sample_names[i], ".txt"),
+					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			    readr::type_convert()
+	}
+	x3 = do.call(bind_rows, x3)
+	
+	x4 = list()
+	for (i in 1:length(sample_names)) {
+		x4[[i]] = readr::read_tsv(file = paste0("genome_summary/myriad_score/", sample_names[i], ".txt"),
+					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			    readr::type_convert()
+	}
+	x4 = do.call(bind_rows, x4)
+	
+	data = x1 %>%
+	       dplyr::full_join(x2, by = "sample_name") %>%
+	       dplyr::full_join(x3, by = "sample_name") %>%
+	       dplyr::full_join(x4, by = "sample_name")
+	
 	readr::write_tsv(x = data, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 }
