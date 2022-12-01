@@ -1,12 +1,16 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library("optparse"))
+suppressPackageStartupMessages(library("dplyr"))
+suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("readr"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
 }
 
 args_list <- list(make_option("--option", default = NA, type = 'character', help = "which analysis to do"),
+		  make_option("--sample_name", default = NA, type = 'character', help = "sample name"),
 		  make_option("--file_in", default = NA, type = 'character', help = "input file name"),
 		  make_option("--file_out", default = NA, type = 'character', help = "output file name"))
 parser <- OptionParser(usage = "%prog", option_list = args_list)
@@ -29,8 +33,9 @@ if (as.numeric(opt$option) == 1) {
 	} else {
 		genome_altered = 0
 	}
-	cat(paste0(gsub("facets/cncf/","", gsub(".Rdata", "", opt$file_in)), "\t", genome_altered), file = opt$file_out, append=FALSE)
-	cat("\n", file = opt$file_out, append=TRUE)
+	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
+			  genome_altered = genome_altered)
+	readr::write_stv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
 
 } else if (as.numeric(opt$option) == 2) {
 	
