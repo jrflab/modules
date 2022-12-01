@@ -198,7 +198,7 @@ if (as.numeric(opt$option) == 1) {
 	chromInfo = GetChrominfo()
 	lst = score_LST(segs, chromInfo)
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
-			  lst = lst)
+			  lst = lst$score)
 	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
 	
 } else if (as.numeric(opt$option) == 3) {
