@@ -35,7 +35,7 @@ if (as.numeric(opt$option) == 1) {
 	}
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
 			  genome_altered = genome_altered)
-	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 
 } else if (as.numeric(opt$option) == 2) {
 	
@@ -199,7 +199,7 @@ if (as.numeric(opt$option) == 1) {
 	lst = score_LST(segs, chromInfo)
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
 			  lst = lst$score)
-	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option) == 3) {
 	
@@ -334,7 +334,7 @@ if (as.numeric(opt$option) == 1) {
 	ntai = score_ntAI(segs, chromInfo)
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
 			  ntai = ntai$score)
-	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option) == 4) {
 	
@@ -505,18 +505,17 @@ if (as.numeric(opt$option) == 1) {
 	mrs = score_myriad_HRD(segs)
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
 			  mrs = mrs$score)
-	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option)==5) {
 	
-	file_names = c("genome_altered.tsv", "lst_score.tsv", "myriad_score.tsv", "ntai_score.tsv")
-	summary_scores = NULL
-	for (i in 1:length(file_names)) {
-	  data = read.csv(file=paste0("genome_stats/", file_names[i]), header=FALSE, sep="\t", stringsAsFactors=FALSE)
-	  summary_scores = cbind(summary_scores, data[,2])
+	sample_names = unlist(strsplit(opt$sample_name, split = " ", fixed = TRUE))
+	data = list()
+	for (i in 1:length(sample_names)) {
+		data[[i]] = readr::read_tsv(file = paste0("genome_summary/genome_altered/", sample_names, ".txt"),
+					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			    readr::type_convert()
 	}
-	summary_scores = cbind(data[,1], summary_scores)
-	colnames(summary_scores) = c("sample_names", gsub(".tsv", "", file_names))
-	write.table(summary_scores, file="summary/tsv/genome_summary.tsv", col.names=TRUE, row.names=FALSE, sep="\t", quote=FALSE)
-	
+	data = do.call(bind_rows, data)
+	readr::write_tsv(x = data, file = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 }
