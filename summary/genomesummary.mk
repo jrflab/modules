@@ -5,9 +5,9 @@ LOGDIR ?= log/genome_summary.$(NOW)
 
 genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt) \
 		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/lst/$(pair).txt) \
-		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/ntai/$(pair).txt)
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/ntai/$(pair).txt) \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/myriad_score/$(pair).txt)
 
-#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
 #		 genome_summary/genome_altered/summary.txt
 #		 genome_stats/myriad_score.tsv \
 #		 summary/tsv/genome_summary.tsv \
@@ -50,8 +50,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ntai-score,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define myriad-score
-genome_stats/$1_$2.mrs : facets/cncf/$1_$2.txt
-	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/summary/genomesummary.R --option 4 --file_in $$< --file_out $$(@)")
+genome_summary/myriad_score/$1_$2.txt : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"set -o pipefail && \
+				      $(RSCRIPT) modules/summary/genomesummary.R \
+				      --option 4 \
+				      --sample_name $1_$2 \
+				      --file_in $$(<) \
+				      --file_out $$(@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call myriad-score,$(tumor.$(pair)),$(normal.$(pair)))))
