@@ -4,9 +4,9 @@ LOGDIR ?= log/genome_summary.$(NOW)
 
 
 genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt) \
-		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/lst/$(pair).txt)
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/lst/$(pair).txt) \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/ntai/$(pair).txt)
 
-#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).ntai) \
 #		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
 #		 genome_summary/genome_altered/summary.txt
 #		 genome_stats/myriad_score.tsv \
@@ -38,8 +38,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call lst-score,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define ntai-score
-genome_stats/$1_$2.ntai : facets/cncf/$1_$2.txt
-	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/summary/genomesummary.R --option 3 --file_in $$< --file_out $$(@)")
+genome_summary/ntai/$1_$2.ntai : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"set -o pipefail && \
+				      $(RSCRIPT) modules/summary/genomesummary.R \
+				      --option 3 \
+				      --sample_name $1_$2 \
+				      --file_in $$(<) \
+				      --file_out $$(@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call ntai-score,$(tumor.$(pair)),$(normal.$(pair)))))
