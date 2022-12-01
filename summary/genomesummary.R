@@ -35,7 +35,7 @@ if (as.numeric(opt$option) == 1) {
 	}
 	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
 			  genome_altered = genome_altered)
-	readr::write_stv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
 
 } else if (as.numeric(opt$option) == 2) {
 	
