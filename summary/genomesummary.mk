@@ -62,7 +62,7 @@ genome_summary/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genom
 				     $(RSCRIPT) modules/summary/genomesummary.R \
 				      --option 5 \
 				      --sample_name '$(SAMPLE_PAIRS)' \
-				      --file_out $$(@)")
+				      --file_out $(@)")
 							 
 .DELETE_ON_ERROR:
 .SECONDARY:

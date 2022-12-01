@@ -517,5 +517,5 @@ if (as.numeric(opt$option) == 1) {
 			    readr::type_convert()
 	}
 	data = do.call(bind_rows, data)
-	readr::write_tsv(x = data, file = as.character(opt$file_out), append = FALSE, col_names = TRUE)
+	readr::write_tsv(x = data, path = as.character(opt$file_out), append = FALSE, col_names = TRUE)
 }
