@@ -3,13 +3,12 @@ include modules/Makefile.inc
 LOGDIR ?= log/genome_summary.$(NOW)
 
 
-genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt)
-#		 genome_summary/genome_altered/summary.txt
-#		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).lst) \
-#		 genome_stats/lst_score.tsv \
+genome_summary : $(foreach pair,$(SAMPLE_PAIRS),genome_summary/genome_altered/$(pair).txt) \
+		 $(foreach pair,$(SAMPLE_PAIRS),genome_summary/lst/$(pair).txt)
+
 #		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).ntai) \
-#		 genome_stats/ntai_score.tsv \
 #		 $(foreach pair,$(SAMPLE_PAIRS),genome_stats/$(pair).mrs) \
+#		 genome_summary/genome_altered/summary.txt
 #		 genome_stats/myriad_score.tsv \
 #		 summary/tsv/genome_summary.tsv \
 #		 summary/genome_summary.xlsx
@@ -27,8 +26,13 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call fraction-genome-altered,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 define lst-score
-genome_stats/$1_$2.lst : facets/cncf/$1_$2.txt
-	$$(call RUN,-n 1 -s 3G -m 6G,"$(RSCRIPT) modules/summary/genomesummary.R --option 2 --file_in $$< --file_out $$(@)")
+genome_summary/lst/$1_$2.txt : facets/cncf/$1_$2.txt
+	$$(call RUN,-n 1 -s 3G -m 6G,"set -o pipefail && \
+				      $(RSCRIPT) modules/summary/genomesummary.R \
+				      --option 2 \
+				      --sample_name $1_$2 \
+				      --file_in $$(<) \
+				      --file_out $$(@)")
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call lst-score,$(tumor.$(pair)),$(normal.$(pair)))))

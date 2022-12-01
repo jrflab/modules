@@ -197,8 +197,9 @@ if (as.numeric(opt$option) == 1) {
 	segs = fix_facet_segs(dat)
 	chromInfo = GetChrominfo()
 	lst = score_LST(segs, chromInfo)
-	cat(paste0(gsub("facets/cncf/","", gsub(".cncf.txt", "", opt$file_in)), "\t", lst$score), file = opt$file_out, append=FALSE)
-	cat("\n", file = opt$file_out, append=TRUE)
+	x = dplyr::tibble(sample_name = as.character(opt$sample_name),
+			  lst = lst)
+	readr::write_tsv(x = x, path = as.character(opt$file_out), append = FALSE, col_names = FALSE)
 	
 } else if (as.numeric(opt$option) == 3) {
 	
