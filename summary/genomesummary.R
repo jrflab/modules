@@ -512,7 +512,7 @@ if (as.numeric(opt$option) == 1) {
 	sample_names = unlist(strsplit(opt$sample_name, split = " ", fixed = TRUE))
 	data = list()
 	for (i in 1:length(sample_names)) {
-		data[[i]] = readr::read_tsv(file = paste0("genome_summary/genome_altered/", sample_names, ".txt"),
+		data[[i]] = readr::read_tsv(file = paste0("genome_summary/genome_altered/", sample_names[i], ".txt"),
 					    col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			    readr::type_convert()
 	}
