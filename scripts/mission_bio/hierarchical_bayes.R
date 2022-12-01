@@ -121,24 +121,30 @@ if (as.numeric(opt$option)==1) {
 	sample_name = as.character(opt$sample_name)
 	bar_code = unlist(strsplit(x = as.character(opt$bar_code), split = " ", fixed = TRUE))
 
-	LambdaP = list()
+	lambda_p = d_p = list()
 	for (i in 1:length(bar_code)) {
 		load(file = paste0("hbm/", sample_name, "/params/", bar_code[i], ".RData"))
+		#data = data %>%
+		#       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p) %>%
+		#       dplyr::mutate(lambdap_dp = case_when(
+		#	       d_p == 0 ~ 100*lambdap_dp,
+		#	       d_p > 0 ~ 100*(lambdap_dp+2)/(d_p+4)
+		#       )) %>%
+		#       dplyr::select(lambdap_dp)
 		data = data %>%
-		       dplyr::mutate(lambdap_dp = lambda_p + tau_b*b_p) %>%
-		       dplyr::mutate(lambdap_dp = case_when(
-			       d_p == 0 ~ 100*lambdap_dp,
-			       d_p > 0 ~ 100*(lambdap_dp+2)/(d_p+4)
-		       )) %>%
-		       dplyr::select(lambdap_dp)
-		LambdaP[[i]] = data$lambdap_dp
+		       dplyr::mutate(lambda_p = lambda_p + tau_b*b_p)
+		lambda_p[[i]] = data$lambda_p
+		d_p[[i]] = data$d_p
 	}
-	LambdaP = do.call(bind_cols, LambdaP) %>%
-		  dplyr::as_tibble()
-	colnames(LambdaP) = bar_code
+	lambda_p = do.call(bind_cols, lambda_p) %>%
+		   dplyr::as_tibble()
+	d_p = do.call(bind_cols, d_p) %>%
+	      dplyr::as_tibble()
+	colnames(lambda_p) = colnames(d_p) = bar_code
 	
 	load(file = paste0("hbm/", sample_name, "/params/", bar_code[i], ".RData"))
-	LambdaP = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), LambdaP)
-	save(LambdaP, file = paste0("hbm/", sample_name, "/__LambdaP__.RData"))
+	lambda_p = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), lambda_p)
+	d_p = dplyr::bind_cols(data %>% dplyr::select(chromosome, position), d_p)
+	save(lambda_p, d_p, file = paste0("hbm/", sample_name, "/__LambdaP_dP__.RData"))
 
 }

@@ -6,7 +6,7 @@ noise_model : $(foreach sample,$(SAMPLES), \
 			$(foreach barcode,$(BARCODES),hbm/$(sample)/mcmc/$(barcode).RData)) \
 	      $(foreach sample,$(SAMPLES), \
 			$(foreach barcode,$(BARCODES),hbm/$(sample)/params/$(barcode).RData)) \
-	      $(foreach sample,$(SAMPLES),hbm/$(sample)/__LambdaP__.RData)
+	      $(foreach sample,$(SAMPLES),hbm/$(sample)/__LambdaP_dP__.RData)
 	       
 
 define jags-mcmc
@@ -32,7 +32,7 @@ $(foreach sample,$(SAMPLES), \
 		$(eval $(call jags-mcmc,$(sample),$(barcode)))))
 		
 define summarize-mcmc
-hbm/$1/__LambdaP__.RData : $(foreach barcode,$(BARCODES),hbm/$1/params/$(barcode).RData)
+hbm/$1/__LambdaP_dP__.RData : $(foreach barcode,$(BARCODES),hbm/$1/params/$(barcode).RData)
 	$$(call RUN,-n 1 -s 24G -m 48G -v $(JAGS_ENV),"set -o pipefail && \
 						       $(RSCRIPT) $(SCRIPTS_DIR)/mission_bio/hierarchical_bayes.R \
 						       --option 3 \
