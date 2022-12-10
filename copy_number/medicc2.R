@@ -49,7 +49,7 @@ if (as.numeric(opt$option) == 1) {
 		reshape2::dcast(Chromosome + Position ~ variable, value.var = "value", fill = 0)
 	readr::write_tsv(x = cn_df, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 	
-} else if (as.numeric(opt$option) == 2) {
+} else if (as.numeric(opt$option) == 3) {
 	tumor_sample_names = unlist(strsplit(x = as.character(opt$tumor_sample_name), split = " ", fixed = TRUE))
 	normal_sample_name = unlist(strsplit(x = as.character(opt$normal_sample_name), split = " ", fixed = TRUE))
 	cn_df = readr::read_tsv(file = as.character(opt$file_in), col_names = TRUE, col_types = cols(.default = col_character())) %>%
