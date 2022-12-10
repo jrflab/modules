@@ -70,7 +70,7 @@ if (as.numeric(opt$option) == 1) {
 					by = "sample_id") %>%
 		       readr::type_convert() %>%
 		       dplyr::mutate(nAB = ((2^nAB)*((purity*ploidy) + (2*(1-purity))) - 2*(1-purity))/purity) %>%
-		       dplyr::mutate(nAB = floor(nAB)) %>%
+		       dplyr::mutate(nAB = round(nAB)) %>%
 		       dplyr::select(-purity, -ploidy)
 	
 	readr::write_tsv(x = total_copies, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
