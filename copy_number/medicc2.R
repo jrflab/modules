@@ -97,5 +97,5 @@ if (as.numeric(opt$option) == 1) {
 				     cn_b = ifelse(cn_a < 0, 0, cn_b)) %>%
 		       dplyr::select(-purity, -ploidy, -nAB, -nB)
 	
-	readr::write_tsv(x = major_copies, file = as.charcater(opt$file_out), col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = major_copies, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 }
