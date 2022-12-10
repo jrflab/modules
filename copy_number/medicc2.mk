@@ -4,7 +4,7 @@ LOGDIR ?= log/medicc2.$(NOW)
 
 medicc : $(foreach sample,$(TUMOR_SAMPLES),medicc2/$(sample)/$(sample).txt)
 
-define aggregate-copynumber
+define aggregate-copy-number
 medicc2/$1/$1.txt : facets/cncf/$1_$2.Rdata
 	$$(call RUN,-c -s 1G -m 2G -v $(MEDICC_ENV),"set -o pipefail && \
 						    $(RSCRIPT) modules/copy_number/medicc.R \
@@ -16,7 +16,8 @@ medicc2/$1/$1.txt : facets/cncf/$1_$2.Rdata
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
-		$(eval $(call aggregate-copynumber,$(tumor),$(normal))))
+		$(eval $(call aggregate-copy-number,$(tumor.$(pair)),$(normal.$(pair)))))
+
 
 
 ..DUMMY := $(shell mkdir -p version; \
