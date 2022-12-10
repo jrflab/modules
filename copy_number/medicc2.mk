@@ -30,7 +30,7 @@ medicc2/$1/$1.txt : $(foreach sample,$(TUMOR_SAMPLES),medicc2/$(sample)/$(sample
 							  --normal_sample_name '$(normal.$1)' \
 							  --file_out $$(@)")
 
-medicc2/$1/$1.tsv : medicc2/$1/$1.txt $(foreach sample,$(TUMOR_SAMPLES),facets/$(sample)/$(sample).txt)
+medicc2/$1/$1.tsv : medicc2/$1/$1.txt
 	$$(call RUN,-c -n 1 -s 2G -m 4G -v $(MEDICC_ENV),"set -o pipefail && \
 							  $(RSCRIPT) modules/copy_number/medicc2.R \
 							  --option 3 \
