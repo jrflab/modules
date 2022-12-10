@@ -57,6 +57,8 @@ medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
 							  --input-allele-columns 'nAB' \
 							  --plot both \
 							  --maxcn 8 \
+							  --bootstrap-method 'segment-wise' \
+							  --bootstrap-nr 100 \
 							  --n-cores 4")
 
 endef
