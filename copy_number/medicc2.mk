@@ -54,7 +54,7 @@ medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
 							  --input-type tsv \
 							  --normal-name diploid \
 							  --plot both \
-							  --maxcn 10 \
+							  --maxcn 8 \
 							  --n-cores 4")
 
 endef
