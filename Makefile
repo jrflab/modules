@@ -541,6 +541,10 @@ TARGETS += krona_classify
 krona_classify :
 	$(call RUN_MAKE,modules/virus/krona_classify.mk)
 	
+TARGETS += medicc2
+medicc2 :
+	$(call RUN_MAKE,modules/copy_number/medicc2.mk)
+	
 
 #==================================================
 # reports

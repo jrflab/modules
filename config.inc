@@ -21,7 +21,6 @@ JRFLAB_MODULES_ENV = $(HOME)/share/usr/anaconda-envs/jrflab-modules-0.1.4
 ONCOTATOR_ENV = $(HOME)/share/usr/venv/oncotator-1.9.2.0
 VEP_ENV = $(HOME)/share/usr/anaconda-envs/variant-effect-predictor-86
 ASCAT_ENV = $(HOME)/share/usr/anaconda-envs/ascat
-MEDICC_ENV = $(HOME)/share/usr/anaconda-envs/medicc
 INNOVATION_ENV = $(HOME)/share/usr/env/innovation-lab-0.0.1
 PIGZ_ENV ?= $(HOME)/share/usr/env/pigz-2.6
 KALLISTO_ENV ?= $(HOME)/share/usr/env/kallisto-0.46.2
@@ -37,6 +36,7 @@ VIOLA_ENV = $(HOME)/share/usr/env/viola-sv-1.0.2
 SIGNATURE_TOOLS_ENV = $(HOME)/share/usr/env/r-signature.tools.lib-2.2.0
 CNVKIT_ENV ?= $(HOME)/share/usr/env/cnvkit-0.9.9
 STARFISH_ENV ?= $(HOME)/share/usr/env/r-starfish-0.11
+MEDICC_ENV = $(HOME)/share/usr/env/medicc2-0.8.1
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
@@ -57,20 +57,18 @@ BGZIP ?= $(HOME)/share/usr/bin/bgzip
 IGVTOOLS ?= $(HOME)/share/usr/IGVTools/igvtools
 VCFTOOLS ?= $(HOME)/share/usr/bin/vcftools-0.1.10
 VCF_SORT ?= $(PERL) $(HOME)/share/usr/bin/vcfsorter.pl
-
 SNP_EFF_JAR ?= $(JARDIR)/snpEff-4.3.jar
 SNP_SIFT_JAR ?= $(JARDIR)/SnpSift-4.3.jar
 SNP_EFF_CONFIG ?= modules/config/snpEff.conf
 DB_NSFP ?= $(HOME)/share/reference/snpEff-4.1/dbNSFP3.0b1a.hg19.txt.gz
 NSFP_FIELDS ?= Uniprot_acc_Polyphen2 Uniprot_id_Polyphen2 Polyphen2_HVAR_score Polyphen2_HVAR_pred 1000Gp3_AF ESP6500_AA_AF ESP6500_EA_AF MutationAssessor_pred MutationAssessor_score MutationTaster_pred MutationTaster_score PROVEAN_pred ExAC_Adj_AF clinvar_rs clinvar_clnsig Interpro_domain
-
 CUFFLINKS ?= cufflinks
 CUFFCMP ?= cuffcompare
 TOPHAT ?= tophat
 DEFUSE ?= $(PERL) $(HOME)/share/usr/defuse-0.6.1/scripts/defuse.pl
-
 ONCOFUSE_JAR ?= $(HOME)/share/usr/oncofuse-1.0.9b2/Oncofuse.jar
 VARSCAN_JAR ?= $(JARDIR)/VarScan.v2.3.9.jar
+MDEICC ?= medicc2
 
 ## PICARD tools
 PICARD_DIR ?= $(JARDIR)/picard-1.92
