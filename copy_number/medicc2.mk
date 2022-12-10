@@ -7,7 +7,7 @@ medicc : $(foreach sample,$(TUMOR_SAMPLES),medicc2/$(sample)/$(sample).txt)
 define aggregate-copy-number
 medicc2/$1/$1.txt : facets/cncf/$1_$2.Rdata
 	$$(call RUN,-c -s 1G -m 2G -v $(MEDICC_ENV),"set -o pipefail && \
-						    $(RSCRIPT) modules/copy_number/medicc.R \
+						    $(RSCRIPT) modules/copy_number/medicc2.R \
 						    --option 1 \
 						    --tumor_sample $1 \
 						    --normal_sample $2 \
