@@ -11,8 +11,8 @@ if (!interactive()) {
 }
 
 args_list <- list(make_option("--option", default = NA, type = 'character', help = "Which option?"),
-		  make_option("--tumor_name", default = NA, type = 'character', help = "Tumor sample name"),
-		  make_option("--normal_name", default = NA, type = 'character', help = "Normal sample name"),
+		  make_option("--tumor_sample_name", default = NA, type = 'character', help = "Tumor sample name"),
+		  make_option("--normal_sample_name", default = NA, type = 'character', help = "Normal sample name"),
 		  make_option("--file_in", default = NA, type = 'character', help = "Input file name including path"),
 		  make_option("--file_out", default = NA, type = 'character', help = "Output file name including path"))
 				  
