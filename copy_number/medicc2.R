@@ -29,6 +29,6 @@ if (as.numeric(opt$option) == 1) {
 			      Position = maploc,
 			      Log2_Ratio = cnlr,
 			      B_Allele_Frequency = vafT)
-	readr::write_tsv(x = cn_df, file = as.character(opt$_file_out), col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = cn_df, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 
 }
