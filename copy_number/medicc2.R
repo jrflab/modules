@@ -5,6 +5,7 @@ suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("magrittr"))
 suppressPackageStartupMessages(library("reshape2"))
+suppressPackageStartupMessages(library("copynumber"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -48,4 +49,53 @@ if (as.numeric(opt$option) == 1) {
 		reshape2::dcast(Chromosome + Position ~ variable, value.var = "value", fill = 0)
 	readr::write_tsv(x = cn_df, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 	
+} else if (as.numeric(opt$option) == 2) {
+	tumor_sample_names = unlist(strsplit(x = as.character(opt$tumor_sample_name), split = " ", fixed = TRUE))
+	normal_sample_name = unlist(strsplit(x = as.character(opt$normal_sample_name), split = " ", fixed = TRUE))
+	cn_df = readr::read_tsv(file = as.character(opt$file_in), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		readr::type_convert() %>%
+		as.data.frame()
+	cn_smooth = copynumber::winsorize(data = cn_df, method = "mad", k = 40, verbose = FALSE)
+	cn_segmented = copynumber::multipcf(data = cn_smooth, gamma = 25, normalize = TRUE, fast = FALSE, verbose = FALSE)
+	
+	total_copies = cn_segmented %>%
+		       dplyr::select(c("chrom", "start.pos", "end.pos", contains("Log2_Ratio"))) %>%
+		       dplyr::rename(start = start.pos, end = end.pos) %>%
+		       reshape2::melt(id.vars = c("chrom", "start", "end")) %>%
+		       dplyr::select(sample_id = variable,
+				     chrom, start, end, nAB = value) %>%
+		       dplyr::mutate(sample_id = gsub(pattern = "_Log2_Ratio", replacement = "", x = sample_id, fixed = TRUE)) %>%
+		       dplyr::left_join(readr::read_tsv(file = "facets/summary/summary.tsv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       				dplyr::select(sample_id = tumorName, purity, ploidy),
+					by = "sample_id") %>%
+		       readr::type_convert() %>%
+		       dplyr::mutate(nAB = ((2^nAB)*((purity*ploidy) + (2*(1-purity))) - 2*(1-purity))/purity) %>%
+		       dplyr::select(-purity, -ploidy)
+	
+	major_copies = cn_segmented %>%
+		       dplyr::select(c("chrom", "start.pos", "end.pos", contains("B_Allele_F"))) %>%
+		       dplyr::rename(start = start.pos, end = end.pos) %>%
+		       reshape2::melt(id.vars = c("chrom", "start", "end")) %>%
+		       dplyr::select(sample_id = variable,
+				     chrom, start, end, nB = value) %>%
+		       dplyr::mutate(sample_id = gsub(pattern = "_B_Allele_F", replacement = "", x = sample_id, fixed = TRUE)) %>%
+		       dplyr::left_join(readr::read_tsv(file = "facets/summary/summary.tsv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	       				dplyr::select(sample_id = tumorName, purity, ploidy),
+					by = "sample_id") %>%
+		       dplyr::left_join(total_copies, by = c("sample_id", "chrom", "start", "end")) %>%
+		       readr::type_convert() %>%
+		       dplyr::mutate(nB = (nB*(2 - 2*purity + purity*nAB) - 1 + purity)/purity) %>%
+		       dplyr::mutate(nAB = round(nAB),
+				     nB = round(nB)) %>%
+		       dplyr::mutate(nAB = ifelse(is.na(nAB), 0, nAB),
+				     nB = ifelse(is.na(nB), 0, nB)) %>%
+		       dplyr::mutate(nAB = ifelse(nAB<0, 0, nAB),
+				     nB = ifelse(nB<0, 0, nB)) %>%
+		       dplyr::mutate(cn_a = nAB - nB) %>%
+		       dplyr::mutate(cn_b = nB) %>%
+		       dplyr::mutate(cn_a = ifelse(cn_a < 0, 0, cn_a),
+				     cn_b = ifelse(cn_a < 0, 0, cn_b)) %>%
+		       dplyr::select(-purity, -ploidy, -nAB, -nB)
+	
+	readr::write_tsv(x = major_copies, file = as.charcater(opt$file_out), col_names = TRUE, append = FALSE)
 }
