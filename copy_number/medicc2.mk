@@ -54,6 +54,7 @@ medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
 							  --input-type tsv \
 							  --normal-name diploid \
 							  --total-copy-numbers \
+							  --input-allele-columns 'cn_t' \
 							  --plot both \
 							  --maxcn 8 \
 							  --n-cores 4")

@@ -94,7 +94,8 @@ if (as.numeric(opt$option) == 1) {
 		       dplyr::mutate(cn_a = nAB - nB) %>%
 		       dplyr::mutate(cn_b = nB) %>%
 		       dplyr::mutate(cn_a = ifelse(cn_a < 0, 0, cn_a),
-				     cn_b = ifelse(cn_a < 0, 0, cn_b)) %>%
+				     cn_b = ifelse(cn_a < 0, 0, cn_b),
+				     cn_t = nAB) %>%
 		       dplyr::select(-purity, -ploidy, -nAB, -nB)
 	
 	readr::write_tsv(x = major_copies, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
