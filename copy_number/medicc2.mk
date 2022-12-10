@@ -45,7 +45,7 @@ $(foreach set,$(SAMPLE_SETS),\
 		$(eval $(call aggregate-copy-number,$(set))))
 		
 		
-define r-medicc-2
+define r-medicc2
 medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
 	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(MEDICC_ENV),"set -o pipefail && \
 							  $$(MEDICC) \
@@ -59,7 +59,7 @@ medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
-		$(eval $(call aggregate-copy-number,$(set))))
+		$(eval $(call r-medicc2,$(set))))
 
 
 ..DUMMY := $(shell mkdir -p version; \
