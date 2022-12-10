@@ -23,7 +23,7 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 define aggregate-copy-number
 medicc2/$1/$1.txt : $(foreach sample,$(TUMOR_SAMPLES),medicc2/$(sample)/$(sample).txt)
 	$$(call RUN,-c -n 1 -s 2G -m 4G -v $(MEDICC_ENV),"set -o pipefail && \
-							  $(RSCRIPT) $(SCRIPTS_DIR)/pyclone_vi.R \
+							  $(RSCRIPT) modules/copy_number/medicc2.R \
 							  --option 2 \
 							  --tumor_sample_name '$(tumors.$1)' \
 							  --normal_sample_name '$(normal.$1)' \
