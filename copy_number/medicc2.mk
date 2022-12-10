@@ -4,7 +4,8 @@ LOGDIR ?= log/medicc2.$(NOW)
 
 medicc : $(foreach sample,$(TUMOR_SAMPLES),medicc2/$(sample)/$(sample).txt) \
 	 $(foreach set,$(SAMPLE_SETS),medicc2/$(set)/$(set).txt) \
-	 $(foreach set,$(SAMPLE_SETS),medicc2/$(set)/$(set).tsv)
+	 $(foreach set,$(SAMPLE_SETS),medicc2/$(set)/$(set).tsv) \
+	 $(foreach set,$(SAMPLE_SETS),medicc2/$(set)/$(set)_summary.tsv)
 
 define collect-copy-number
 medicc2/$1/$1.txt : facets/cncf/$1_$2.Rdata
@@ -38,6 +39,23 @@ medicc2/$1/$1.tsv : medicc2/$1/$1.txt
 							  --normal_sample_name '$(normal.$1)' \
 							  --file_in $$(<) \
 							  --file_out $$(@)")
+
+endef
+$(foreach set,$(SAMPLE_SETS),\
+		$(eval $(call aggregate-copy-number,$(set))))
+		
+		
+define r-medicc-2
+medicc2/$1/$1_summary.tsv : medicc2/$1/$1.tsv
+	$$(call RUN,-c -n 4 -s 2G -m 4G -v $(MEDICC_ENV),"set -o pipefail && \
+							  $$(MEDICC) \
+							  $$(<) \
+							  medicc2/$1/ \
+							  --input-type tsv \
+							  --normal-name diploid \
+							  --plot both \
+							  --maxcn 10 \
+							  --n-cores 4")
 
 endef
 $(foreach set,$(SAMPLE_SETS),\
