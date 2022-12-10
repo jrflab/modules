@@ -25,10 +25,11 @@ if (as.numeric(opt$option) == 1) {
 	cn_df = out2$jointseg %>%
 		dplyr::as_tibble() %>%
 		dplyr::filter(het == 1) %>%
+		dplyr::mutate(vafT = 1 - vafT) %>%
 		dplyr::select(Chromosome = chrom,
 			      Position = maploc,
 			      Log2_Ratio = cnlr,
-			      B_Allele_F = 1 - vafT)
+			      B_Allele_F = vafT)
 	readr::write_tsv(x = cn_df, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 
 } else if (as.numeric(opt$option) == 2) {
