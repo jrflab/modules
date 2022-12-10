@@ -56,7 +56,7 @@ if (as.numeric(opt$option) == 1) {
 		readr::type_convert() %>%
 		as.data.frame()
 	cn_smooth = copynumber::winsorize(data = cn_df, method = "mad", tau = 2.5, k = 25, verbose = FALSE)
-	cn_segmented = copynumber::multipcf(data = cn_smooth, gamma = 10, normalize = FALSE, fast = FALSE, verbose = FALSE)
+	cn_segmented = copynumber::multipcf(data = cn_smooth, gamma = 40, normalize = FALSE, fast = FALSE, verbose = FALSE)
 	
 	total_copies = cn_segmented %>%
 		       dplyr::select(c("chrom", "start.pos", "end.pos", contains("Log2_Ratio"))) %>%
