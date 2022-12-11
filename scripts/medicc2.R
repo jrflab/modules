@@ -25,12 +25,9 @@ if (as.numeric(opt$option) == 1) {
 	load(as.character(opt$file_in))
 	cn_df = out2$jointseg %>%
 		dplyr::as_tibble() %>%
-		dplyr::filter(het == 1) %>%
-		dplyr::mutate(vafT = 1 - vafT) %>%
 		dplyr::select(Chromosome = chrom,
 			      Position = maploc,
-			      Log2_Ratio = cnlr,
-			      B_Allele_F = vafT)
+			      Log2_Ratio = cnlr)
 	readr::write_tsv(x = cn_df, file = as.character(opt$file_out), col_names = TRUE, append = FALSE)
 
 } else if (as.numeric(opt$option) == 2) {
@@ -41,7 +38,7 @@ if (as.numeric(opt$option) == 1) {
 		data_ = readr::read_tsv(file = paste0("medicc2/", tumor_sample_names[i], "/", tumor_sample_names[i], ".txt"),
 					col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			readr::type_convert()
-		colnames(data_) = c("Chromosome", "Position", paste0(tumor_sample_names[i], "_Log2_Ratio"), paste0(tumor_sample_names[i], "_B_Allele_F"))
+		colnames(data_) = c("Chromosome", "Position", paste0(tumor_sample_names[i], "_Log2_Ratio"))
 		cn_df[[i]] = data_ %>%
 			     reshape2::melt(id.vars = c("Chromosome", "Position"))
 	}
