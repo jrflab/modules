@@ -52,7 +52,7 @@ if (as.numeric(opt$option) == 1) {
 	cn_df = readr::read_tsv(file = as.character(opt$file_in), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		readr::type_convert() %>%
 		as.data.frame()
-	cn_smooth = copynumber::winsorize(data = cn_df, method = "mad", tau = 2.5, k = 25, verbose = FALSE)
+	cn_smooth = copynumber::winsorize(data = cn_df, method = "mad", tau = 2.5, k = 40, verbose = FALSE)
 	cn_segmented = copynumber::multipcf(data = cn_smooth, gamma = 40, normalize = FALSE, fast = FALSE, verbose = FALSE)
 	
 	total_copies = cn_segmented %>%
