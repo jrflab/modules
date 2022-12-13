@@ -7,7 +7,7 @@ BAQ := 0
 COV := 0
 
 getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz) \
-	       summary.txt
+	       gbc/summary.txt
 
 define get-basecount
 gbc/$1.txt.gz : bam/$1.bam vcf/dataSilentNoPoleNotTertPromot.vcf
