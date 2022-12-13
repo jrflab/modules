@@ -18,9 +18,10 @@ VARSCAN_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --sourc
 VPATH ?= bam
 VARSCAN_VARIANT_TYPES = varscan_indels varscan_snps
 
-varscan : $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).varscan_timestamp)) \
-	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).snp.txt)) \
-	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).indel.txt))
+varscan : $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).varscan_timestamp))
+
+#	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).snp.txt)) \
+#	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).indel.txt))
 	  
 #	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).txt) \
 #	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).txt) \
