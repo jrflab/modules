@@ -16,7 +16,7 @@ arguments <- parse_args(parser, positional_arguments = T)
 opt <- arguments$options
 
 if (as.numeric(opt$option) == 1) {
-	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
 	data = list()
 	for (i in 1:length(sample_names)) {
 		data[[i]] = readr::read_tsv(file = paste0("gbc/", sample_names[i], ".txt.gz"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
