@@ -6,7 +6,8 @@ MAPQ := 0
 BAQ := 0
 COV := 0
 
-getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz)
+getbasecount : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz) \
+	       summary.txt
 
 define get-basecount
 gbc/$1.txt.gz : bam/$1.bam vcf/dataSilentNoPoleNotTertPromot.vcf
@@ -30,6 +31,14 @@ gbc/$1.txt.gz : bam/$1.bam vcf/dataSilentNoPoleNotTertPromot.vcf
 endef
 $(foreach sample,$(SAMPLES),\
 		$(eval $(call get-basecount,$(sample))))
+		
+
+gbc/summary.txt : $(foreach sample,$(SAMPLES),gbc/$(sample).txt.gz)
+	$(call RUN,-n 1 -s 24G -m 32G,"set -o pipefail && \
+				       $(RSCRIPT) $(SCRIPTS_DIR)/get_basecounts.R \
+				       --option 1 \
+				       --sample_name '$(SAMPLES)'")
+		
 
 ..DUMMY := $(shell mkdir -p version; \
 	     ${GBC} &> version/get_basecount.txt;)
