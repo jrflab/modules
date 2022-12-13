@@ -2,7 +2,6 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/varscanTN.$(NOW)
 
-
 IGNORE_FP_FILTER ?= true
 VALIDATION ?= false
 FP_FILTER = $(PERL) $(HOME)/share/usr/bin/fpfilter.pl
@@ -18,28 +17,24 @@ VARSCAN_SOURCE_ANN_VCF = python modules/vcf_tools/annotate_source_vcf.py --sourc
 VPATH ?= bam
 VARSCAN_VARIANT_TYPES = varscan_indels varscan_snps
 
-varscan : $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).varscan_timestamp))
-
-#	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).snp.txt)) \
-#	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).indel.txt))
-	  
-#	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).txt) \
-#	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).txt) \
-#	  $(foreach type,$(VARSCAN_VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
-
-%.Somatic.txt : %.txt
-	$(call RUN,-s 5G -m 8G,"set -o pipefail && \
-				$(call VARSCAN_MEM,4G) somaticFilter $< && \
-				$(call VARSCAN_MEM,4G) processSomatic $< && \
-				rename .txt.Somatic .Somatic.txt $** && \
-				rename .txt.Germline .Germline.txt $** && \
-				rename .txt.LOH .LOH.txt $** && \
-				rename .txt.hc .hc.txt $**")
+varscan : $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).varscan_timestamp)) \
+	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).snp.txt)) \
+	  $(foreach chr,$(CHROMOSOMES),$(foreach pair,$(SAMPLE_PAIRS),varscan/chr_tables/$(pair).$(chr).indel.txt)) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).snp.txt) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).indel.txt) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).snp.Somatic.txt) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/tables/$(pair).indel.Somatic.txt) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/vcf/$(pair).snp.Somatic.vcf) \
+	  $(foreach pair,$(SAMPLE_PAIRS),varscan/vcf/$(pair).indel.Somatic.vcf) \
+	  $(foreach type,$(VARSCAN_VARIANT_TYPES),$(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).$(type).vcf))
 
 define varscan-somatic-tumor-normal-chr
 varscan/chr_tables/$1_$2.$3.varscan_timestamp : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
 	if [[ $$$$($$(SAMTOOLS) view $$< $3 | head -1 | wc -l) -gt 0 ]]; then \
-		$$(call RUN,-s 9G -m 12G,"$$(VARSCAN) somatic \
+		$$(call RUN,-s 9G -m 12G -w 72:00:00,"set -o pipefail && \
+		rm -rf varscan/chr_tables/$1_$2.$3.snp.txt && \
+		rm -rf varscan/chr_tables/$1_$2.$3.indel.txt && \
+		$$(VARSCAN) somatic \
 		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$(word 2,$$^)) \
 		<($$(SAMTOOLS) mpileup -A -r $3 -q $$(MIN_MAP_QUAL) -f $$(REF_FASTA) $$<) \
 		$$(VARSCAN_OPTS) \
@@ -61,7 +56,7 @@ varscan/chr_tables/$1_$2.$3.%.fp_pass.txt : varscan/chr_tables/$1_$2.$3.%.txt ba
 endef
 $(foreach chr,$(CHROMOSOMES), \
 	$(foreach pair,$(SAMPLE_PAIRS), \
-	$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
+		$(eval $(call varscan-somatic-tumor-normal-chr,$(tumor.$(pair)),$(normal.$(pair)),$(chr)))))
 
 define merge-varscan-pair-type
 varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),\
@@ -72,16 +67,38 @@ varscan/tables/$1.$2.txt : $$(foreach chr,$$(CHROMOSOMES),\
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
-	$(foreach type,snp indel,$(eval $(call merge-varscan-pair-type,$(pair),$(type)))))
-
-define convert-varscan-tumor-normal
-varscan/vcf/$1_$2.%.vcf : varscan/tables/$1_$2.%.txt
-	$$(call RUN,-s 4G -m 8G,"set -o pipefail && \
-				 $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$< | $$(VCF_SORT) $$(REF_DICT) - > $$@")
+	$(foreach type,snp indel, \
+		$(eval $(call merge-varscan-pair-type,$(pair),$(type)))))
+	
+define filter-varscan-pair-type
+varscan/tables/$1.$2.Somatic.txt : varscan/tables/$1.$2.txt
+	$$(call RUN,-s 5G -m 8G,"set -o pipefail && \
+				$$(VARSCAN) somaticFilter $$(<) && \
+				$$(VARSCAN) processSomatic $$(<) && \
+				cp varscan/tables/$1.$2.txt.Somatic varscan/tables/$1.$2.Somatic.txt && \
+				rm varscan/tables/$1.$2.txt.Somatic && \
+				cp varscan/tables/$1.$2.txt.Germline varscan/tables/$1.$2.Germline.txt && \
+				rm varscan/tables/$1.$2.txt.Germline && \
+				cp varscan/tables/$1.$2.txt.LOH varscan/tables/$1.$2.LOH.txt && \
+				rm varscan/tables/$1.$2.txt.LOH && \
+				cp varscan/tables/$1.$2.txt.hc varscan/tables/$1.$2.hc.txt && \
+				rm varscan/tables/$1.$2.txt.hc")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
-	$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)))))
+	$(foreach type,snp indel, \
+		$(eval $(call filter-varscan-pair-type,$(pair),$(type)))))
+
+define convert-varscan-tumor-normal
+varscan/vcf/$1_$2.$3.Somatic.vcf : varscan/tables/$1_$2.$3.Somatic.txt
+	$$(call RUN,-s 4G -m 8G,"set -o pipefail && \
+				 $$(VARSCAN_TO_VCF) -f $$(REF_FASTA) -t $1 -n $2 $$(<) | $$(VCF_SORT) $$(REF_DICT) - > $$(@)")
+
+
+endef
+$(foreach pair,$(SAMPLE_PAIRS), \
+	$(foreach type,snp indel, \
+		$(eval $(call convert-varscan-tumor-normal,$(tumor.$(pair)),$(normal.$(pair)),$(type)))))
 
 vcf/%.varscan_indels.vcf : varscan/vcf/%.indel.Somatic.vcf
 	$(INIT) $(VARSCAN_SOURCE_ANN_VCF) < $< > $@
@@ -94,4 +111,3 @@ include modules/variant_callers/gatk.mk
 .DELETE_ON_ERROR:
 .SECONDARY: 
 .PHONY: varscan
-
