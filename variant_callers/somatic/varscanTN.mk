@@ -75,14 +75,7 @@ varscan/tables/$1.$2.Somatic.txt : varscan/tables/$1.$2.txt
 	$$(call RUN,-s 5G -m 8G,"set -o pipefail && \
 				$$(VARSCAN) somaticFilter $$(<) && \
 				$$(VARSCAN) processSomatic $$(<) && \
-				cp varscan/tables/$1.$2.txt.Somatic varscan/tables/$1.$2.Somatic.txt && \
-				rm varscan/tables/$1.$2.txt.Somatic && \
-				cp varscan/tables/$1.$2.txt.Germline varscan/tables/$1.$2.Germline.txt && \
-				rm varscan/tables/$1.$2.txt.Germline && \
-				cp varscan/tables/$1.$2.txt.LOH varscan/tables/$1.$2.LOH.txt && \
-				rm varscan/tables/$1.$2.txt.LOH && \
-				cp varscan/tables/$1.$2.txt.hc varscan/tables/$1.$2.hc.txt && \
-				rm varscan/tables/$1.$2.txt.hc")
+				cp varscan/tables/$1.$2.txt.Somatic.hc varscan/tables/$1.$2.Somatic.txt")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS), \
