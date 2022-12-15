@@ -77,6 +77,41 @@ if (as.numeric(opt$option)==1) {
 		starfish_plot(sv_file = sv_df, cnv_file = cn_df, cgr = starfish_link_out$starfish_call, genome_v = "hg19")
 		setwd(wd)
 		cat("taskcomplete!!", file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
-		
+	}
+	
+} else if (as.numeric(opt$option)==4) {
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
+	sv_df = cn_df = gd_df = list()
+	for (i in 1:length(sample_names)) {
+		sv_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_names[i], "/", sample_name, ".merged_sv.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			     readr::type_convert()
+		cn_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		     	     readr::type_convert()
+		gd_df[[i]] = dplyr::tibble(sample = sample_name, gender = "unknown") %>%
+		     	     readr::type_convert()
+	}
+	sv_df = do.call(bind_rows, sv_df)
+	cn_df = do.call(bind_rows, sn_df)
+	gd_df = do.call(bind_rows, gd_df)
+	starfish_link_out = starfish_link(sv_file = sv_df, prefix = "star_fish/summary/")
+	if (length(starfish_link_out)==1) {
+		cat(starfish_link_out, file = "star_fish/summary/taskcomplete", append = FALSE)
+	} else {
+		starfish_feature_out = starfish_feature(cgr = starfish_link_out$starfish_call,
+							complex_sv = starfish_link_out$interleave_tra_complex_sv,
+							cnv_file = cn_df,
+							gender_file = gd_df,
+							prefix = "star_fish/summary/",
+							genome_v = "hg19",
+							cnv_factor = "auto",
+							arm_del_rm = TRUE)
+		starfish_sig_out = starfish_sig(cluster_feature = starfish_feature_out$cluster_feature,
+					        prefix = "star_fish/summary/",
+					        cmethod = "class")
+		wd = getwd()
+		setwd("star_fish/summary/")
+		starfish_plot(sv_file = sv_df, cnv_file = cn_df, cgr = starfish_link_out$starfish_call, genome_v = "hg19")
+		setwd(wd)
+		cat("taskcomplete!!", file = "star_fish/summary/taskcomplete", append = FALSE)
 	}
 }
