@@ -91,7 +91,7 @@ if (as.numeric(opt$option)==1) {
 		     	     readr::type_convert()
 	}
 	sv_df = do.call(bind_rows, sv_df)
-	cn_df = do.call(bind_rows, sn_df)
+	cn_df = do.call(bind_rows, cn_df)
 	gd_df = do.call(bind_rows, gd_df)
 	starfish_link_out = starfish_link(sv_file = sv_df, prefix = "star_fish/summary/")
 	if (length(starfish_link_out)==1) {
