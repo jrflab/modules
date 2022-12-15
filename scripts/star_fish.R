@@ -85,9 +85,9 @@ if (as.numeric(opt$option)==1) {
 	for (i in 1:length(sample_names)) {
 		sv_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_names[i], "/", sample_name, ".merged_sv.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			     readr::type_convert()
-		cn_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		cn_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_names[i], "/", sample_name, ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		     	     readr::type_convert()
-		gd_df[[i]] = dplyr::tibble(sample = sample_name, gender = "unknown") %>%
+		gd_df[[i]] = dplyr::tibble(sample = sample_names[i], gender = "unknown") %>%
 		     	     readr::type_convert()
 	}
 	sv_df = do.call(bind_rows, sv_df)
