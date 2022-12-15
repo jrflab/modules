@@ -47,8 +47,10 @@ $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call starfish-sv,$(tumor.$(pair)),$(normal.$(pair)))))
 		
 star_fish/summary/taskcomplete : $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_cn.txt)
-	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R --option 4 --sample_name '$(SAMPLE_PAIRS)'")
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(STARFISH_ENV),"set -o pipefail && \
+							     $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
+							     --option 4 \
+							     --sample_name '$(SAMPLE_PAIRS)'")
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(STARFISH_ENV)/bin/R --version &> version/star_fish.txt;)
