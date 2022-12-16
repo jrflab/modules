@@ -7,12 +7,12 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 50000'
 
 pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).vcf) \
 	  $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).tsv) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/by_loci.txt) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/scatter_by_sample.pdf) \
-	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/heatmap_by_sample.pdf) \
-	  pyclone_vi/summary.txt
+	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).tsv)
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/$(set).hd5) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/by_loci.txt) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/scatter_by_sample.pdf) \
+#	  $(foreach set,$(SAMPLE_SETS),pyclone_vi/$(set)/summary/heatmap_by_sample.pdf) \
+#	  pyclone_vi/summary.txt
 
 
 define r-sufam
