@@ -81,7 +81,7 @@ if (as.numeric(opt$option) == 1) {
 		  dplyr::filter(!is.na(alt_counts)) %>%
 		  dplyr::mutate(alt_counts = ifelse(alt_counts<=1, 0, alt_counts)) %>%
 		  dplyr::mutate(major_cn = ifelse(is.na(major_cn), 1, major_cn)) %>%
-		  dplyr::filter(major_cn != 0) %>%
+		  dplyr::mutate(major_cn = ifelse(major_cn==0, 1, major_cn)) %>%
 		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
 	
 	smry = pyclone %>%
