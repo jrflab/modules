@@ -50,9 +50,9 @@ if (as.numeric(opt$option) == 1) {
 				       End_Position = loc.end,
 				       minor_cn = ifelse(is.na(lcn.em), "0", lcn.em),
 				       major_cn = tcn.em) %>%
-		 readr::type_convert() %>%
-		 dplyr::mutate(major_cn = major_cn - minor_cn) %>%
-		 dplyr::select(Chromosome, Start_Position, End_Position, minor_cn, major_cn)
+		 	 readr::type_convert() %>%
+		 	 dplyr::mutate(major_cn = major_cn - minor_cn) %>%
+			 dplyr::select(Chromosome, Start_Position, End_Position, minor_cn, major_cn)
 		 
 		pyclone[[i]] = sufam %>%
 		  	       dplyr::mutate(Chromosome = ifelse(Chromosome == "X", "23", Chromosome)) %>%
@@ -80,7 +80,7 @@ if (as.numeric(opt$option) == 1) {
 		  dplyr::filter(!is.na(ref_counts)) %>%
 		  dplyr::filter(!is.na(alt_counts)) %>%
 		  dplyr::mutate(alt_counts = ifelse(alt_counts<=1, 0, alt_counts)) %>%
-		  dplyr::filter(!is.na(major_cn)) %>%
+		  dplyr::mutate(major_cn = ifelse(is.na(major_cn), 1, major_cn)) %>%
 		  dplyr::filter(major_cn != 0) %>%
 		  dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), 0, minor_cn))
 	
