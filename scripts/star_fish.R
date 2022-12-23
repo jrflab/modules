@@ -92,7 +92,7 @@ if (as.numeric(opt$option)==1) {
 		}
 	}
 	signature_df = do.call(bind_rows, signature_df)
-	readr::write_tsv(x = signature_df, path = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
 } else if (as.numeric(opt$option)==5) {
 	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
@@ -107,6 +107,6 @@ if (as.numeric(opt$option)==1) {
 		}
 	}
 	signature_df = do.call(bind_rows, signature_df)
-	readr::write_tsv(x = signature_df, path = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
 }
