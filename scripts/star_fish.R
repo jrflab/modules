@@ -54,59 +54,44 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = data, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
 } else if (as.numeric(opt$option)==3) {
-	sample_name = as.character(opt$sample_name)
-	sv_df = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_sv.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		readr::type_convert()
-	cn_df = readr::read_tsv(file = paste0("star_fish/", sample_name, "/", sample_name, ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		readr::type_convert()
-	gd_df = dplyr::tibble(sample = sample_name, gender = "unknown") %>%
-		readr::type_convert()
-	
-	starfish_link_out = starfish_link(sv_file = sv_df, prefix = paste0("star_fish/", sample_name, "/", sample_name))
-	if (length(starfish_link_out)==1) {
-		cat(starfish_link_out, file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
+	sv_df = cn_df = gd_df = list()
+	for (i in 1:length(sample_names)) {
+		sv_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], ".merged_sv.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+			     readr::type_convert()
+		cn_df[[i]] = readr::read_tsv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], ".merged_cn.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		     	     readr::type_convert()
+		gd_df[[i]] = dplyr::tibble(sample = sample_names[i], gender = "unknown") %>%
+		     	     readr::type_convert()
+	}
+	sv_df = do.call(bind_rows, sv_df)
+	cn_df = do.call(bind_rows, cn_df)
+	gd_df = do.call(bind_rows, gd_df)
+	starfish_link_out = starfish_link(sv_file = sv_df, prefix = "star_fish/summary/")
+	if (length(starfish_link_out) == 1) {
+		cat(starfish_link_out, file = as.character(opt$output_file), append = FALSE)
 	} else {
-		starfish_feature_out = starfish_feature(cgr = starfish_link_out$starfish_call, complex_sv = starfish_link_out$interleave_tra_complex_sv,
-							cnv_file = cn_df, gender_file = gd_df, prefix = paste0("star_fish/", sample_name, "/", sample_name),
-							genome_v = "hg19", cnv_factor = "auto", arm_del_rm = TRUE)
+		starfish_feature_out = starfish_feature(cgr = starfish_link_out$starfish_call,
+							complex_sv = starfish_link_out$interleave_tra_complex_sv,
+							cnv_file = cn_df,
+							gender_file = gd_df,
+							prefix = "star_fish/summary/",
+							genome_v = "hg19",
+							cnv_factor = "auto",
+							arm_del_rm = TRUE)
 		starfish_sig_out = starfish_sig(cluster_feature = starfish_feature_out$cluster_feature,
-					        prefix = paste0("star_fish/", sample_name, "/", sample_name),
+					        prefix = "star_fish/summary/",
 					        cmethod = "class")
 		wd = getwd()
-		setwd(paste0("star_fish/", sample_name, "/"))
+		setwd("star_fish/summary/")
 		starfish_plot(sv_file = sv_df, cnv_file = cn_df, cgr = starfish_link_out$starfish_call, genome_v = "hg19")
 		setwd(wd)
-		cat("taskcomplete!!", file = paste0("star_fish/", sample_name, "/", sample_name, ".taskcomplete"), append = FALSE)
+		cat("taskcomplete!!", file = as.character(opt$output_file), append = FALSE)
 	}
-	
+
 } else if (as.numeric(opt$option)==4) {
-	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
-	signature_df = list()
-	ii = 1
-	for (i in 1:length(sample_names)) {
-		if (file.exists(paste0("star_fish/", sample_names[i], "/", sample_names[i], "_pcawg_6signatures_class.csv"))) {
-			signature_df[[ii]] = readr::read_csv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], "_pcawg_6signatures_class.csv"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-					     readr::type_convert() %>%
-					     dplyr::mutate(sample_name = sample_names[i])
-			ii = ii + 1
-		}
-	}
-	signature_df = do.call(bind_rows, signature_df)
-	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	
 	
 } else if (as.numeric(opt$option)==5) {
-	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
-	signature_df = list()
-	ii = 1
-	for (i in 1:length(sample_names)) {
-		if (file.exists(paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"))) {
-			signature_df[[ii]] = readr::read_csv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-					     readr::type_convert() %>%
-					     dplyr::rename(sample_name = sample)
-			ii = ii + 1
-		}
-	}
-	signature_df = do.call(bind_rows, signature_df)
-	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
 }
