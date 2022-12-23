@@ -80,7 +80,7 @@ if (as.numeric(opt$option)==1) {
 	}
 	
 } else if (as.numeric(opt$option)==4) {
-	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
 	signature_df = list()
 	ii = 1
 	for (i in 1:length(sample_names)) {
@@ -95,7 +95,7 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 	
 } else if (as.numeric(opt$option)==5) {
-	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
 	signature_df = list()
 	ii = 1
 	for (i in 1:length(sample_names)) {
