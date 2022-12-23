@@ -3,7 +3,7 @@ include modules/Makefile.inc
 LOGDIR ?= log/star_fish.$(NOW)
 
 MIN_SIZE = 1
-MAX_SIZE = 10000000000000000
+MAX_SIZE = 10000000000000000000
 
 star_fish :  $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bed) \
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bedpe) \
