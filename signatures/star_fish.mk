@@ -9,7 +9,8 @@ star_fish :  $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bedpe) \
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_cn.txt) \
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).taskcomplete) \
-	     star_fish/summary/taskcomplete
+	     star_fish/pcawg_6signatures_class.txt \
+	     star_fish/cgr_feature_matrix.txt
 		
 define starfish-sv
 star_fish/$1_$2/$1_$2.merged_sv.bed : vcf/$1_$2.merged_sv.vcf
@@ -46,11 +47,19 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call starfish-sv,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-star_fish/summary/taskcomplete : $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_cn.txt)
+star_fish/pcawg_6signatures_class.txt : $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).taskcomplete)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(STARFISH_ENV),"set -o pipefail && \
 							     $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
 							     --option 4 \
-							     --sample_name '$(SAMPLE_PAIRS)'")
+							     --sample_name '$(SAMPLE_PAIRS)' \
+							     --output_file $(@)")
+							     
+star_fish/cgr_feature_matrix.txt : $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).taskcomplete)
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(STARFISH_ENV),"set -o pipefail && \
+							     $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
+							     --option 5 \
+							     --sample_name '$(SAMPLE_PAIRS)' \
+							     --output_file $(@)")
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(STARFISH_ENV)/bin/R --version &> version/star_fish.txt;)

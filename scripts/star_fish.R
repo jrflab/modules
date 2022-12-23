@@ -80,5 +80,33 @@ if (as.numeric(opt$option)==1) {
 	}
 	
 } else if (as.numeric(opt$option)==4) {
-
+	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
+	signature_df = list()
+	ii = 1
+	for (i in 1:length(sample_names)) {
+		if (file.exists(paste0("star_fish/", sample_names[i], "/", sample_names[i], "_pcawg_6signatures_class.csv"))) {
+			signature_df[[ii]] = readr::read_csv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], "_pcawg_6signatures_class.csv"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+					     readr::type_convert() %>%
+					     dplyr::mutate(sample_name = sample_names[i])
+			ii = ii + 1
+		}
+	}
+	signature_df = do.call(bind_rows, signature_df)
+	readr::write_tsv(x = signature_df, path = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option)==5) {
+	sample_names = strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE)
+	signature_df = list()
+	ii = 1
+	for (i in 1:length(sample_names)) {
+		if (file.exists(paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"))) {
+			signature_df[[ii]] = readr::read_csv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+					     readr::type_convert() %>%
+					     dplyr::rename(sample_name = sample) %>%
+			ii = ii + 1
+		}
+	}
+	signature_df = do.call(bind_rows, signature_df)
+	readr::write_tsv(x = signature_df, path = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	
 }
