@@ -64,9 +64,9 @@ if (as.numeric(opt$option)==1) {
 		gd_df[[i]] = dplyr::tibble(sample = sample_names[i], gender = "unknown") %>%
 		     	     readr::type_convert()
 	}
-	sv_df = do.call(bind_rows, sv_df)
-	cn_df = do.call(bind_rows, cn_df)
-	gd_df = do.call(bind_rows, gd_df)
+	sv_df = do.call(rbind, sv_df)
+	cn_df = do.call(rbind, cn_df)
+	gd_df = do.call(rbind, gd_df)
 	starfish_link_out = starfish_link(sv_file = sv_df, prefix = "star_fish/summary/")
 	if (length(starfish_link_out) == 1) {
 		cat(starfish_link_out, file = as.character(opt$output_file), append = FALSE)
