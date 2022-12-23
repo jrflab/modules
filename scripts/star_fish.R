@@ -102,7 +102,7 @@ if (as.numeric(opt$option)==1) {
 		if (file.exists(paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"))) {
 			signature_df[[ii]] = readr::read_csv(file = paste0("star_fish/", sample_names[i], "/", sample_names[i], "_CGR_feature_matrix.csv"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 					     readr::type_convert() %>%
-					     dplyr::rename(sample_name = sample) %>%
+					     dplyr::rename(sample_name = sample)
 			ii = ii + 1
 		}
 	}
