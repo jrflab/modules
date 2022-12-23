@@ -73,7 +73,11 @@ if (as.numeric(opt$option)==1) {
 	} else {
 		starfish_feature_out = starfish_feature(cgr = starfish_link_out$starfish_call,
 							complex_sv = starfish_link_out$interleave_tra_complex_sv,
-							cnv_file = cn_df,
+							cnv_file = cn_df %>%
+								   dplyr::mutate(chromosome = as.character(chromosome)) %>%
+								   dplyr::mutate(chromosome = case_when(
+									   chromosome == "23" ~ "X",
+									   TRUE ~ chromosome)),
 							gender_file = gd_df,
 							prefix = "star_fish/summary/",
 							genome_v = "hg19",
