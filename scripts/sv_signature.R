@@ -67,4 +67,16 @@ if (as.numeric(opt$option)==1) {
 	}
 	signature_df = do.call(bind_rows, signature_df)
 	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option)==3) {
+	sample_name = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
+	signature_df = list()
+	for (i in 1:length(sample_name)) {
+		signature_df[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged_features.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+				    readr::type_convert() %>%
+				    dplyr::mutate(feature_proportion = 100*feature_count / sum(feature_count)) %>%
+				    dplyr::select(feature_name, feature_count, feature_proportion, sample_name)
+	}
+	signature_df = do.call(bind_rows, signature_df)
+	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 }

@@ -8,7 +8,8 @@ MAX_SIZE = 100000000000000000000
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt) \
-		sv_signature/exposures.txt
+		sv_signature/exposures.txt \
+		sv_signature/features.txt
 		
 define signature-sv
 sv_signature/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
@@ -41,6 +42,9 @@ sv_signature/exposures.txt : $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
 					  			    $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 2 --sample_name '$(SAMPLE_PAIRS)' --output_file $(@)")
 
+sv_signature/features.txt : $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt)
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+					  			    $(RSCRIPT) $(SCRIPTS_DIR)/sv_signature.R --option 3 --sample_name '$(SAMPLE_PAIRS)' --output_file $(@)")
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(SURVIVOR_ENV)/bin/SURVIVOR --version &> version/sv_signature.txt;)
