@@ -96,5 +96,8 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = df, file = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option)==5) {
-	
+	df = readr::read_csv(file = "star_fish/summary/_CGR_feature_matrix.csv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	     readr::type_convert() %>%
+	     dplyr::rename(sample_name = sample)
+	readr::write_tsv(x = df, file = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 }
