@@ -59,102 +59,12 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
 	
 } else if (as.numeric(opt$option)==2) {
-	sample_name = as.character(opt$sample_name)
-	bedpe_org = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		    dplyr::filter(chrom1 != "Y") %>%
-	    	    dplyr::filter(chrom2 != "Y") %>%
-		    readr::type_convert()
-	bedpe_cli = readr::read_tsv(file = paste0("sv_signature/", sample_name, "/", sample_name, ".merged.sv_clusters_and_footprints.tsv"), col_names = FALSE, col_types = cols(.default = col_character())) %>%
-		    readr::type_convert() %>%
-		    dplyr::select(chrom1 = X1,
-				  start1 = X2,
-				  end1 = X3,
-				  chrom2 = X4,
-				  start2 = X5,
-				  end2 = X6,
-				  n_svs = X12,
-				  p_value = X17) %>%
-		    dplyr::mutate(p_value = as.numeric(p_value)) %>%
-		    dplyr::mutate(p_value = case_when(
-			  is.na(p_value) ~ 1,
-			  TRUE ~ p_value))
-	bedpe_org = bedpe_org %>%
-		    dplyr::left_join(bedpe_cli, by = c("chrom1", "start1", "end1", "chrom2", "start2", "end2")) %>%
-	    	    dplyr::mutate(is_clustered = case_when(
-		    	p_value<.05 & n_svs>=100 ~ "c1",
-		    	TRUE ~ "non_clustered"
-	    	    )) %>%
-		    dplyr::mutate(is_clustered = case_when(
-		    	p_value<.01 & n_svs>=250 ~ "c2",
-		    	TRUE ~ is_clustered
-		    )) %>%
-		    dplyr::mutate(svclass = case_when(
-		    	svclass == "TRA" & is_clustered == "c1" ~ "c1TRA",
-		    	svclass == "TRA" & is_clustered == "c2" ~ "c2TRA",
-		    	svclass == "INV" & (is_clustered == "c1" | is_clustered == "c2") ~ "cINV",
-		    	TRUE ~ svclass
-		    )) %>%
-		    dplyr::select(chrom1, start1, end1, chrom2, start2, end2, sv_id, pe_support, strand1, strand2, svclass)
-	write_tsv(x = bedpe_org, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-	
-} else if (as.numeric(opt$option)==3) {
-	sample_name = as.character(opt$sample_name)
-	catalogues = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		     readr::type_convert()
-	catalogues_mutations = data.frame(catalogues %>% dplyr::select(manual_sv_type))
-	colnames(catalogues_mutations) = sample_name
-	rownames(catalogues_mutations) = catalogues %>% .[["...1"]]
-	
-	signatures = readr::read_tsv(file = "~/share/lib/resource_files/viola/NMF/signature_matrix.txt", col_names = TRUE, col_types = cols(.default = col_character())) %>%
-		     readr::type_convert()
-	signatures_mutations = data.frame(signatures %>% dplyr::select(-`SV Type`))
-	colnames(signatures_mutations) = colnames(signatures)[-1]
-	rownames(signatures_mutations) = signatures %>% .[["SV Type"]]
-	exposureFilterType = "fixedThreshold"
-	threshold_percent = 5
-	optimisation_method = "KLD"
-	useBootstrap = FALSE
-	nboot = 1000
-	threshold_p.value = 0.05
-	nparallel = 4
-	randomSeed = 1
-	fit = Fit(catalogues = catalogues_mutations,
-		  signatures = signatures_mutations,
-		  exposureFilterType = exposureFilterType,
-		  threshold_percent = threshold_percent,
-		  method = optimisation_method,
-		  useBootstrap = useBootstrap,
-		  nboot = nboot,
-		  threshold_p.value = threshold_p.value,
-		  nparallel = nparallel,
-		  randomSeed = randomSeed,
-		  verbose = TRUE)
-	x = dplyr::tibble(feature_name = rownames(fit$catalogues),
-			  feature_count = as.vector(fit$catalogues[,1])) %>%
-	    dplyr::mutate(sample_name = sample_name)
-	readr::write_tsv(x = x, file = paste0(opt$output_file, "_features.txt"), col_names = TRUE, append = FALSE)
-	
-	x = dplyr::tibble(signature_name = colnames(fit$exposures),
-			  signature_exposure = as.vector(fit$exposures[1,])/sum(as.vector(fit$exposures[1,])) * 100) %>%
-	    dplyr::mutate(sample_name = sample_name)
-	readr::write_tsv(x = x, file = paste0(opt$output_file, "_exposures.txt"), col_names = TRUE, append = FALSE)
-
-} else if (as.numeric(opt$option)==4) {
 	sample_name = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
-	signature_x = list()
+	signature_df = list()
 	for (i in 1:length(sample_name)) {
-		signature_x[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged_exposures.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-				   readr::type_convert() %>%
-				   dplyr::mutate(method = "signature.tools.lib")
+		signature_df[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged_exposures.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+				    readr::type_convert()
 	}
-	signature_x = do.call(bind_rows, signature_x)
-	signature_y = list()
-	for (i in 1:length(sample_name)) {
-		signature_y[[i]] = readr::read_tsv(file = paste0("sv_signature/", sample_name[i], "/", sample_name[i], ".merged.sv_clusters_and_footprints_exposures.txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
-				   readr::type_convert() %>%
-				   dplyr::mutate(method = "viola")
-	}
-	signature_y = do.call(bind_rows, signature_y)
-	signature_df = dplyr::bind_rows(signature_x, signature_y)
+	signature_df = do.call(bind_rows, signature_df)
 	readr::write_tsv(x = signature_df, file = as.character(opt$output_file), col_names = TRUE, append = FALSE)
 }
