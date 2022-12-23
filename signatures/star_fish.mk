@@ -10,7 +10,7 @@ star_fish :  $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_cn.txt) \
 	     star_fish/summary/taskcomplete \
 	     star_fish/summary/exposures.txt
-	     star_fish/summary/features.txt
+#	     star_fish/summary/features.txt
 		
 define starfish-sv
 star_fish/$1_$2/$1_$2.merged_sv.bed : vcf/$1_$2.merged_sv.vcf
