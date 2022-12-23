@@ -7,8 +7,8 @@ MAX_SIZE = 100000000000000000000
 
 signature_sv :  $(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bed) \
 		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged.bedpe) \
-		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt)
-#		sv_signature/.txt
+		$(foreach pair,$(SAMPLE_PAIRS),sv_signature/$(pair)/$(pair).merged_exposures.txt) \
+		sv_signature/exposures.txt
 		
 define signature-sv
 sv_signature/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
