@@ -90,7 +90,10 @@ if (as.numeric(opt$option)==1) {
 	}
 
 } else if (as.numeric(opt$option)==4) {
-	
+	df = readr::read_csv(file = "star_fish/summary/_pcawg_6signatures_class.csv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	     readr::type_convert() %>%
+	     dplyr::mutate(sample_name = unlist(lapply(cluster_id, function(x) { paste0(unlist(strsplit(x, "_", fixed = TRUE))[1:2], collapse="_")})))
+	readr::write_tsv(x = df, file = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option)==5) {
 	

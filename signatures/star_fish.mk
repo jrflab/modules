@@ -8,9 +8,9 @@ MAX_SIZE = 10000000000000000000
 star_fish :  $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bed) \
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_sv.bedpe) \
 	     $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair)/$(pair).merged_cn.txt) \
-	     star_fish/summary/taskcomplete
-#	     star_fish/exposures.txt
-#	     star_fish/features.txt
+	     star_fish/summary/taskcomplete \
+	     star_fish/summary/exposures.txt
+	     star_fish/summary/features.txt
 		
 define starfish-sv
 star_fish/$1_$2/$1_$2.merged_sv.bed : vcf/$1_$2.merged_sv.vcf
@@ -46,6 +46,12 @@ star_fish/summary/taskcomplete : $(foreach pair,$(SAMPLE_PAIRS),star_fish/$(pair
 							     $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
 							     --option 3 \
 							     --sample_name '$(SAMPLE_PAIRS)' \
+							     --output_file $(@)")
+							     
+star_fish/summary/exposures.txt : star_fish/summary/taskcomplete
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(STARFISH_ENV),"set -o pipefail && \
+							     $(RSCRIPT) $(SCRIPTS_DIR)/star_fish.R \
+							     --option 4 \
 							     --output_file $(@)")
 							     
 ..DUMMY := $(shell mkdir -p version; \
