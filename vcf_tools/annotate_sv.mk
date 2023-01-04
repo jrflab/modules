@@ -15,6 +15,7 @@ annotate_sv/$1/$2/$1.$2_sv.tsv : vcf/$1.$2_sv.vcf
 	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(ANNOTATE_SV_ENV),"set -o pipefail && \
 							       mkdir -p annotate_sv/$1/$2 && \
 							       $$(ANNOTATE_SV) \
+							       -benignAF \
 							       -SVinputFile $$(<) \
 							       -outputFile ./annotate_sv/$1/$2/$1.$2_sv.tsv \
 							       -genomeBuild GRCh37")
