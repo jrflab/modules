@@ -32,13 +32,6 @@ ann_pathogen: true
 # target panels
 targets_file: ~/share/reference/target_panels/
 
-# cnvkit default target panels
-# ontarget_file: ~/share/reference/target_panels/
-# offtarget_file: ~/share/reference/target_panels/
-
-# whole exome sequencing
-# exome: false
-
 # gatk options
 gatk_hard_filter_snps: true
 gatk_pool_snp_recal: false
