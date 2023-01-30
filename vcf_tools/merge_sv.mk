@@ -4,7 +4,7 @@ LOGDIR ?= log/merge_sv.$(NOW)
 
 SV_CALLERS = svaba manta gridss
 MAX_DIST = 500
-NUM_CALLERS = 2
+NUM_CALLERS = 3
 TYPE = 1
 STRAND = 1
 MIN_SIZE = 30
