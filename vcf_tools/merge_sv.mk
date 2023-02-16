@@ -4,9 +4,9 @@ LOGDIR ?= log/merge_sv.$(NOW)
 
 SV_CALLERS = svaba manta gridss
 MAX_DIST = 500
-NUM_CALLERS = 3
-TYPE = 1
-STRAND = 1
+NUM_CALLERS = 2
+TYPE = 0
+STRAND = 0
 MIN_SIZE = 30
 
 merge_sv :  $(foreach pair,$(SAMPLE_PAIRS),merge_sv/$(pair)/samples.txt) \
