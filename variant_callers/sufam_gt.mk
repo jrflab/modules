@@ -7,11 +7,11 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000 --ff UNMAP,SECONDARY,
 
 sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) \
-	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf) \
-	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
-	   $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf) \
-	   sufam/mutation_summary.maf \
-	   sufam/mutation_summary_ft.maf
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf)
+#	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
+#	   $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ann.maf) \
+#	   sufam/mutation_summary.maf \
+#	   sufam/mutation_summary_ft.maf
 
 define sufam-gt
 sufam/$1.vcf : summary/tsv/all.tsv
@@ -81,7 +81,7 @@ sufam/mutation_summary.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),su
 					  --output_file $(@)")
 
 
-sufam/mutation_summary_ft.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf)
+sufam/mutation_summary_ann.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf)
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
 					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					  --option 5 \
