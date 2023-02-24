@@ -54,7 +54,7 @@ if (as.numeric(opt$option)==1) {
 } else if (as.numeric(opt$option)==2) {
 	tumor_sample = unlist(strsplit(x = as.character(opt$tumor_sample), split = " ", fixed=TRUE))
 	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
-	maf = readr::read_tsv(file = opt$input_file, col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	maf = readr::read_tsv(file = opt$input_file, comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	      readr::type_convert() %>%
 	      dplyr::mutate(chrom = Chromosome,
 			    loc.start = Start_Position,
