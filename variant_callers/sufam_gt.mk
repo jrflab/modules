@@ -61,12 +61,12 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		
 define combine-maf
 sufam/$1.maf : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf)
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					 --option 3 \
-					 --sample_set '$(set.$1)' \
-					 --normal_sample '$(normal.$1)' \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(INNOVATION_ENV),"set -o pipefail && \
+							      $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+							      --option 3 \
+							      --sample_set '$(set.$1)' \
+							      --normal_sample '$(normal.$1)' \
+							      --output_file $$(@)")
 					 
 endef
 $(foreach set,$(SAMPLE_SETS),\
