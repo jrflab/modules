@@ -99,20 +99,14 @@ if (as.numeric(opt$option)==1) {
 	maf = do.call(bind_rows, maf)
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
-} else if (as.numeric(opt$option)==9) {
-	maf = readr::read_tsv(file = as.character(opt$input_file), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
-	      readr::type_convert() %>%
-	      dplyr::filter(t_alt_count > 1)
-	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
-
-} else if (as.numeric(opt$option)==99) {
+} else if (as.numeric(opt$option)==4) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
 	maf = list()
 	for (i in 1:length(sample_set)) {
 		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character()))
 	}
 	maf = do.call(bind_rows, maf) %>%
-	readr::type_convert()
+	      readr::type_convert()
 	smry = readr::read_tsv(file = as.character(opt$input_file), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	       dplyr::mutate(HOTSPOT = case_when(
 		       is.na(HOTSPOT) ~ FALSE,
@@ -135,7 +129,7 @@ if (as.numeric(opt$option)==1) {
 		       cmo_hotspot == "TRUE" ~ TRUE,
 		       cmo_hotspot == "FALSE" ~ FALSE
 	       )) %>%
-	       dplyr::mutate(is_hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
+	       dplyr::mutate(is_Hotspot = HOTSPOT | HOTSPOT_INTERNAL | cmo_hotspot) %>%
 	       dplyr::mutate(facetsLOHCall = case_when(
 		       is.na(facetsLOHCall) ~ FALSE,
 		       facetsLOHCall == "True" ~ TRUE,
@@ -143,17 +137,17 @@ if (as.numeric(opt$option)==1) {
 		       facetsLOHCall == "TRUE" ~ TRUE,
 		       facetsLOHCall == "FALSE" ~ FALSE
 	       )) %>%
-	       dplyr::mutate(is_loh = facetsLOHCall) %>%
+	       dplyr::mutate(is_LOH = facetsLOHCall) %>%
 	       readr::type_convert()
 	maf = maf %>%
 	      dplyr::left_join(smry %>%
 			       dplyr::group_by(CHROM, POS, REF, ALT) %>%
-	       		       dplyr::summarize(is_hotspot = unique(is_hotspot)) %>%
+	       		       dplyr::summarize(is_Hotspot = unique(is_Hotspot)) %>%
 			       dplyr::ungroup(),
 			       by = c("CHROM", "POS", "REF", "ALT"))
 	maf = maf %>%
 	      dplyr::left_join(smry %>%
-			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_loh),
+			       dplyr::select(CHROM, POS, REF, ALT, Tumor_Sample_Barcode = TUMOR_SAMPLE, is_LOH),
 			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 

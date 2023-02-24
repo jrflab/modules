@@ -9,8 +9,8 @@ sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf) \
-	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
-#	   sufam/mutation_summary.maf \
+	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
+	   sufam/mutation_summary.maf
 #	   sufam/mutation_summary_ft.maf
 
 define sufam-gt
@@ -74,21 +74,12 @@ $(foreach set,$(SAMPLE_SETS),\
 		
 
 sufam/mutation_summary.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
-	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					  --option 4 \
-					  --sample_set '$(SAMPLE_SETS)' \
-					  --input_file $(<) \
-					  --output_file $(@)")
-
-
-sufam/mutation_summary_ann.maf : summary/tsv/all.tsv $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ft.maf)
-	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
-					  $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					  --option 5 \
-					  --sample_set '$(SAMPLE_SETS)' \
-					  --input_file $(<) \
-					  --output_file $(@)")
+	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
+							       $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+							       --option 4 \
+							       --sample_set '$(SAMPLE_SETS)' \
+							       --input_file $(<) \
+							       --output_file $(@)")
 
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version > version/sufam_gt.txt)
