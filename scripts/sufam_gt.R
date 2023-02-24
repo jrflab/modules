@@ -75,7 +75,7 @@ if (as.numeric(opt$option)==1) {
 			
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
-} else if (as.numeric(opt$option)==99) {
+} else if (as.numeric(opt$option)==3) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
 	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
 	sample_set = setdiff(sample_set, normal_sample)
@@ -91,7 +91,7 @@ if (as.numeric(opt$option)==1) {
 				      t_alt_count = val_al_count) %>%
 		 	dplyr::mutate(t_ref_count = t_depth - t_alt_count)
 			
-		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], ".maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		maf[[i]] = readr::read_tsv(file = paste0("sufam/", sample_set[i], "_ann.maf"), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		      	   readr::type_convert() %>%
 		      	   dplyr::select(-t_depth, -t_alt_count, -t_ref_count) %>%
 		      	   dplyr::bind_cols(sufam)
@@ -99,13 +99,13 @@ if (as.numeric(opt$option)==1) {
 	maf = do.call(bind_rows, maf)
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
-} else if (as.numeric(opt$option)==3) {
+} else if (as.numeric(opt$option)==9) {
 	maf = readr::read_tsv(file = as.character(opt$input_file), comment = "#", col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	      readr::type_convert() %>%
 	      dplyr::filter(t_alt_count > 1)
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
-} else if (as.numeric(opt$option)==4) {
+} else if (as.numeric(opt$option)==99) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
 	maf = list()
 	for (i in 1:length(sample_set)) {
@@ -157,7 +157,7 @@ if (as.numeric(opt$option)==1) {
 			       by = c("CHROM", "POS", "REF", "ALT", "Tumor_Sample_Barcode"))
 	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
 
-} else if (as.numeric(opt$option)==5) {
+} else if (as.numeric(opt$option)==999) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
 	maf = list()
 	for (i in 1:length(sample_set)) {

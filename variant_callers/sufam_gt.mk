@@ -8,9 +8,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000 --ff UNMAP,SECONDARY,
 sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf) \
-	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf)
-#	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
-#	   $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ann.maf) \
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf) \
+	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf)
 #	   sufam/mutation_summary.maf \
 #	   sufam/mutation_summary_ft.maf
 
@@ -61,21 +60,13 @@ $(foreach sample,$(TUMOR_SAMPLES),\
 		$(eval $(call sufam-gt,$(sample))))
 		
 define combine-maf
-sufam/$1.maf : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf)
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					 --option 2 \
-					 --sample_set '$(set.$1)' \
-					 --normal_sample '$(normal.$1)' \
-					 --output_file $$(@)")
-					 
-sufam/$1_ft.maf : sufam/$1.maf
+sufam/$1.maf : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf)
 	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
 					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
 					 --option 3 \
-					 --input_file $$(<) \
+					 --sample_set '$(set.$1)' \
+					 --normal_sample '$(normal.$1)' \
 					 --output_file $$(@)")
-
 					 
 endef
 $(foreach set,$(SAMPLE_SETS),\
