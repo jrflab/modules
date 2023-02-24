@@ -58,7 +58,8 @@ if (as.numeric(opt$option)==1) {
 	      readr::type_convert() %>%
 	      dplyr::mutate(chrom = Chromosome,
 			    loc.start = Start_Position,
-			    loc.end = End_Position)
+			    loc.end = End_Position) %>%
+	      dplyr::mutate(chrom = as.character(chrom))
 	facets = readr::read_tsv(file = paste0("facets/cncf/", tumor_sample, "_", normal_sample, ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 		 dplyr::mutate(chrom = case_when(
 			 chrom == "23" ~ "X",
