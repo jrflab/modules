@@ -7,7 +7,8 @@ SUFAM_OPTS = --mpileup-parameters='-A -q 15 -Q 15 -d 15000 --ff UNMAP,SECONDARY,
 
 sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).txt) \
-	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf)
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).maf) \
+	   $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample)_ann.maf)
 #	   $(foreach set,$(SAMPLE_SETS),sufam/$(set).maf) \
 #	   $(foreach set,$(SAMPLE_SETS),sufam/$(set)_ann.maf) \
 #	   sufam/mutation_summary.maf \
@@ -15,13 +16,13 @@ sufam_gt : $(foreach sample,$(TUMOR_SAMPLES),sufam/$(sample).vcf) \
 
 define sufam-gt
 sufam/$1.vcf : summary/tsv/all.tsv
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					 --option 1 \
-					 --sample_set '$(set.$1)' \
-					 --normal_sample '$(normal.$1)' \
-					 --input_file $$(<) \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(INNOVATION_ENV),"set -o pipefail && \
+							      $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+							      --option 1 \
+							      --sample_set '$(set.$1)' \
+							      --normal_sample '$(normal.$1)' \
+							      --input_file $$(<) \
+							      --output_file $$(@)")
 					 
 sufam/$1.txt : sufam/$1.vcf bam/$1.bam
 	$$(call RUN,-c -n 1 -s 2G -m 3G -v $(SUFAM_ENV),"set -o pipefail && \
@@ -44,6 +45,15 @@ sufam/$1.maf : sufam/$1.vcf
 							--vep-data $$(VEP_DATA) \
 							--tmp-dir `mktemp -d` \
 							--output-maf $$(@)")
+							
+sufam/$1_ann.maf : sufam/$1.maf
+	$$(call RUN,-c -n 1 -s 2G -m 3G -v $(INNOVATION_ENV),"set -o pipefail && \
+							      $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+							      --option 2 \
+							      --tumor_sample $1 \
+							      --normal_sample '$(normal.$1)' \
+							      --input_file $$(<) \
+							      --output_file $$(@)")
 
 
 endef

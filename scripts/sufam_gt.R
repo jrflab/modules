@@ -4,6 +4,7 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("fuzzyjoin"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -11,6 +12,7 @@ if (!interactive()) {
 
 optList = list(make_option("--option", default = NA, type = 'character', help = "analysis type"),
                make_option("--sample_set", default = NA, type = 'character', help = "sample set"),
+	       make_option("--tumor_sample", default = NA, type = 'character', help = "tumor sample"),
 	       make_option("--normal_sample", default = NA, type = 'character', help = "normal sample"),
 	       make_option("--input_file", default = NA, type = 'character', help = "input file"),
 	       make_option("--output_file", default = NA, type = 'character', help = "output file"))
@@ -50,6 +52,29 @@ if (as.numeric(opt$option)==1) {
 	readr::write_tsv(x = smry, path = as.character(opt$output_file), append = TRUE, col_names = TRUE)
 
 } else if (as.numeric(opt$option)==2) {
+	tumor_sample = unlist(strsplit(x = as.character(opt$tumor_sample), split = " ", fixed=TRUE))
+	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
+	maf = readr::read_tsv(file = opt$input_file, col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	      readr::type_convert() %>%
+	      dplyr::mutate(chrom = Chromosome,
+			    loc.start = Start_Position,
+			    loc.end = End_Position)
+	facets = readr::read_tsv(file = paste0("facets/cncf/", tumor_sample, "_", normal_sample, ".txt"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+		 dplyr::mutate(chrom = case_when(
+			 chrom == "23" ~ "X",
+			 TRUE ~ chrom
+		 )) %>%
+		 readr::type_convert() %>%
+		 dplyr::mutate(qt = tcn.em,
+			       q2 = tcn.em - lcn.em) %>%
+		 dplyr::select(chrom, loc.start, loc.end, qt, q2)
+	maf = maf %>%
+	      fuzzyjoin::genome_left_join(facets, by = c("chrom", "loc.start", "loc.end")) %>%
+	      dplyr::select(-chrom.x, -loc.start.x, -loc.end.x, -chrom.y, -loc.start.y, -loc.end.y)
+			
+	write_tsv(x = maf, path = as.character(opt$output_file), append = FALSE, col_names = TRUE)
+
+} else if (as.numeric(opt$option)==99) {
 	sample_set = unlist(strsplit(x = as.character(opt$sample_set), split = " ", fixed=TRUE))
 	normal_sample = unlist(strsplit(x = as.character(opt$normal_sample), split = " ", fixed=TRUE))
 	sample_set = setdiff(sample_set, normal_sample)
