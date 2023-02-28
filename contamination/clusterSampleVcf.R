@@ -40,15 +40,15 @@ cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pai
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
 		      
 row_annot = rowAnnotation(
-	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
+	`cluster_id` = sample_pairs %>% .[["normal_samples"]],
+	col = list(`cluster_id` = cluster_color),
 	show_annotation_name = FALSE,
 	simple_anno_size = unit(.5, "cm"),
 	show_legend = FALSE
 )
 col_annot = columnAnnotation(
-	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
+	`cluster_id` = sample_pairs %>% .[["normal_samples"]],
+	col = list(`cluster_id` = cluster_color),
 	show_annotation_name = FALSE,
 	simple_anno_size = unit(.5, "cm"),
 	show_legend = FALSE
