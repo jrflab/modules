@@ -10,11 +10,12 @@ else
 DBSNP_SUBSET = $(HOME)/share/reference/dbsnp_tseq_intersect.bed
 endif
 
-CLUSTER_VCF = $(RSCRIPT) modules/contamination/clusterSampleVcf.R
+CLUSTER_VCF = modules/contamination/clusterSampleVcf.R
 
 snp_cluster : $(foreach sample,$(SAMPLES),snp_vcf/$(sample).snps.vcf) \
 	      snp_vcf/snps.vcf \
-	      snp_vcf/snps_ft.vcf
+	      snp_vcf/snps_ft.vcf \
+	      snp_vcf/snps_ft.pdf
 
 snp_vcf/%.snps.vcf : bam/%.bam 
 	$(call RUN,-n 4 -s 2.5G -m 3G,"set -o pipefail && \
@@ -40,8 +41,14 @@ snp_vcf/snps.vcf : $(foreach sample,$(SAMPLES),snp_vcf/$(sample).snps.vcf)
 snp_vcf/snps_ft.vcf : snp_vcf/snps.vcf
 	$(INIT) grep '^#' $< > $@ && grep -e '0/1' -e '1/1' $< >> $@
 
-#snp_vcf/%.clust.png : snp_vcf/%.vcf
-#	$(INIT) $(CLUSTER_VCF) --outPrefix snp_vcf/$* $<
+snp_vcf/snps_ft.pdf : snp_vcf/snps_ft.vcf
+	$(call RUN,-n 1 -s 16G -m 20G -v $(VARIANT_ANNOTATION_ENV),"set -o pipefail && \
+								    $(RSCRIPT) modules/contamination/clusterSampleVcf.R \
+								    --input_file $(<)\
+								    --output_file $(@)\
+								    --sample_pairs '$(SAMPLE_PAIRS)'\
+								    --genome b37")
+	
 	
 ..DUMMY := $(shell mkdir -p version; \
              echo "GATK" > version/cluster_samples.txt;)
