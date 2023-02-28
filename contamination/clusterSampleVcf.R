@@ -54,13 +54,16 @@ col_annot = columnAnnotation(
 		   simple_anno_size = unit(.5, "cm"),
 		   show_legend = FALSE
 )
-		      
+col_pal = c(rep("#800026", 2),
+	    rev(brewer.pal(n = 9, name = "YlOrRd")),
+	    rep("#FFFFCC", 3))
+
 pdf(as.character(opt$output_file), height = 21, width = 22)
 draw(Heatmap(matrix = dt,
 	     name = " ",
 	     rect_gp = gpar(col = "white"),
 	     border = NA,
-	     col = rev(brewer.pal(n = 9, name = "YlOrRd")),
+	     col = col_pal,
 	     cluster_rows = TRUE,
 	     show_row_dend = TRUE,
 	     row_dend_width = unit(3, "cm"),
