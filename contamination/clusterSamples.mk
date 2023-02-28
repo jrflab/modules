@@ -14,8 +14,7 @@ CLUSTER_VCF = $(RSCRIPT) modules/contamination/clusterSampleVcf.R
 
 snp_cluster : $(foreach sample,$(SAMPLES),snp_vcf/$(sample).snps.vcf) \
 	      snp_vcf/snps.vcf \
-	      snp_vcf/snps_ft.vcf \
-	      snp_vcf/snps_filtered.clust.png
+	      snp_vcf/snps_ft.vcf
 
 snp_vcf/%.snps.vcf : bam/%.bam 
 	$(call RUN,-n 4 -s 2.5G -m 3G,"set -o pipefail && \
@@ -41,8 +40,8 @@ snp_vcf/snps.vcf : $(foreach sample,$(SAMPLES),snp_vcf/$(sample).snps.vcf)
 snp_vcf/snps_ft.vcf : snp_vcf/snps.vcf
 	$(INIT) grep '^#' $< > $@ && grep -e '0/1' -e '1/1' $< >> $@
 
-snp_vcf/%.clust.png : snp_vcf/%.vcf
-	$(INIT) $(CLUSTER_VCF) --outPrefix snp_vcf/$* $<
+#snp_vcf/%.clust.png : snp_vcf/%.vcf
+#	$(INIT) $(CLUSTER_VCF) --outPrefix snp_vcf/$* $<
 	
 ..DUMMY := $(shell mkdir -p version; \
              echo "GATK" > version/cluster_samples.txt;)
