@@ -8,9 +8,13 @@ suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ComplexHeatmap"))
 suppressPackageStartupMessages(library("RColorBrewer"))
 
+if (!interactive()) {
+    options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
+}
+
 optList <- list(make_option("--input_file", default = 'snp_vcf/snps_ft.vcf', help = "input file"),
 		make_option("--output_file", default = 'snp_vcf/snps_ft.pdf', help = "output file"),
-		make_option("--sample_pairs", default = NA, help = "sample pairs"),
+		make_option("--sample_pairs", default = NA, type = 'character', help = "sample pairs"),
 		make_option("--genome", default = 'b37', help = "genome build"))
 
 parser <- OptionParser(usage = "%prog vcf.files", option_list = optList)
@@ -30,7 +34,8 @@ X[!gt %in% c("0/0", "0/1", "1/1")] = NA
 gt = matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 dt = as.matrix(dist(t(gt)))
 
-print(opt$sample_pairs)
+print(opt)
+
 tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
 normal_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[2] }))
 sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(normal_samples)), levels = rownames(dt), ordered = TRUE),
