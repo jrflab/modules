@@ -31,6 +31,9 @@ gt = matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = 
 dt = as.matrix(dist(t(gt)))
 		      
 tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
+
+print(tumor_samples)
+ 
 normal_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[2] }))
 sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(normal_samples)), levels = rownames(dt), ordered = TRUE),
 			     normal_samples = c(normal_samples, unique(normal_samples))) %>%
@@ -48,41 +51,40 @@ row_annot = rowAnnotation(
 	simple_anno_size = unit(.5, "cm"),
 	show_legend = FALSE
 )
-#col_annot = columnAnnotation(
-#	cluster_id = sample_pairs %>% .[["normal_samples"]],
-#	col = list(cluster_id = cluster_color),
-#	show_annotation_name = FALSE,
-#	simple_anno_size = unit(.5, "cm"),
-#	show_legend = FALSE
-#)
-#col_pal = c(rep("#662506", 3),
-#	    rev(brewer.pal(n = 7, name = "YlOrBr")),
-#	    rep("#fff7bc", 3))
+col_annot = columnAnnotation(
+	cluster_id = sample_pairs %>% .[["normal_samples"]],
+	col = list(cluster_id = cluster_color),
+	show_annotation_name = FALSE,
+	simple_anno_size = unit(.5, "cm"),
+	show_legend = FALSE
+)
+col_pal = c(rep("#662506", 3),
+	    rev(brewer.pal(n = 7, name = "YlOrBr")),
+	    rep("#fff7bc", 3))
 	       
 pdf(as.character(opt$output_file), height = 21, width = 22)
 draw(Heatmap(matrix = dt
-#	     name = " ",
-#	     rect_gp = gpar(col = "white"),
-#	     border = NA,
-#	     col = col_pal,
-#	     cluster_rows = TRUE,
-#	     show_row_dend = TRUE,
-#	     row_dend_width = unit(3, "cm"),
-#	     row_names_side = "right",
-#	     row_names_gp = gpar(fontsize = 12),
-#	     show_row_names = TRUE,
-#	     left_annotation = row_annot,
-#	          
-#	     show_column_names = TRUE,
-#	     column_names_side = "bottom",
-#	     column_names_gp = gpar(fontsize = 12),
-#	     cluster_columns = TRUE,
-#	     show_column_dend = TRUE,
-#	     column_dend_height = unit(3, "cm"),
-#	     top_annotation = col_annot,
-#	     
-#	     use_raster = FALSE,
-#	     show_heatmap_legend = TRUE,
-#	     heatmap_legend_param = list(legend_height = unit(5, "cm"), legend_width = unit(5, "cm"))
-))
+	     name = " ",
+	     rect_gp = gpar(col = "white"),
+	     border = NA,
+	     col = col_pal,
+	     cluster_rows = TRUE,
+	     show_row_dend = TRUE,
+	     row_dend_width = unit(3, "cm"),
+	     row_names_side = "right",
+	     row_names_gp = gpar(fontsize = 12),
+	     show_row_names = TRUE,
+	     left_annotation = row_annot,
+	          
+	     show_column_names = TRUE,
+	     column_names_side = "bottom",
+	     column_names_gp = gpar(fontsize = 12),
+	     cluster_columns = TRUE,
+	     show_column_dend = TRUE,
+	     column_dend_height = unit(3, "cm"),
+	     top_annotation = col_annot,
+	     
+	     use_raster = FALSE,
+	     show_heatmap_legend = TRUE,
+	     heatmap_legend_param = list(legend_height = unit(5, "cm"), legend_width = unit(5, "cm"))))
 dev.off()
