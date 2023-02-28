@@ -39,27 +39,27 @@ sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(norm
 cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pairs %>% .[["normal_samples"]])))
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
 		      
-row_annot = rowAnnotation(
-	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
-	show_annotation_name = FALSE,
-	simple_anno_size = unit(.5, "cm"),
-	show_legend = FALSE
-)
-col_annot = columnAnnotation(
-	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
-	show_annotation_name = FALSE,
-	simple_anno_size = unit(.5, "cm"),
-	show_legend = FALSE
-)
-col_pal = c(rep("#662506", 3),
-	    rev(brewer.pal(n = 7, name = "YlOrBr")),
-	    rep("#fff7bc", 3))
-		      
-print(row_annot)
-print(col_annot)
-print(col_pal)
+#row_annot = rowAnnotation(
+#	cluster_id = sample_pairs %>% .[["normal_samples"]],
+#	col = list(cluster_id = cluster_color),
+#	show_annotation_name = FALSE,
+#	simple_anno_size = unit(.5, "cm"),
+#	show_legend = FALSE
+#)
+#col_annot = columnAnnotation(
+#	cluster_id = sample_pairs %>% .[["normal_samples"]],
+#	col = list(cluster_id = cluster_color),
+#	show_annotation_name = FALSE,
+#	simple_anno_size = unit(.5, "cm"),
+#	show_legend = FALSE
+#)
+#col_pal = c(rep("#662506", 3),
+#	    rev(brewer.pal(n = 7, name = "YlOrBr")),
+#	    rep("#fff7bc", 3))
+#		      
+#print(row_annot)
+#print(col_annot)
+#print(col_pal)
 	       
 pdf(as.character(opt$output_file), height = 21, width = 22)
 draw(Heatmap(matrix = dt
