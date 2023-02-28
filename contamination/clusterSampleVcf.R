@@ -85,6 +85,6 @@ draw(Heatmap(matrix = dt
 #	     
 #	     use_raster = FALSE,
 #	     show_heatmap_legend = TRUE,
-#	     heatmap_legend_param = list(legend_height = unit(5, "cm"), legend_width = unit(5, "cm")))
-)
+#	     heatmap_legend_param = list(legend_height = unit(5, "cm"), legend_width = unit(5, "cm"))
+))
 dev.off()
