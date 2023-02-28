@@ -40,17 +40,17 @@ cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pai
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
 row_annot = rowAnnotation(
 	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
+	col = list(cluster_id = cluster_color,
 		   show_annotation_name = FALSE,
 		   simple_anno_size = unit(.5, "cm"),
-		   show_legend = FALSE
+		   show_legend = FALSE)
 )
 col_annot = columnAnnotation(
 	cluster_id = sample_pairs %>% .[["normal_samples"]],
-	col = list(cluster_id = cluster_color),
+	col = list(cluster_id = cluster_color,
 		   show_annotation_name = FALSE,
 		   simple_anno_size = unit(.5, "cm"),
-		   show_legend = FALSE
+		   show_legend = FALSE)
 )
 col_pal = c(rep("#662506", 3),
 	    rev(brewer.pal(n = 7, name = "YlOrBr")),
@@ -68,7 +68,7 @@ draw(Heatmap(matrix = dt,
 	     row_names_side = "right",
 	     row_names_gp = gpar(fontsize = 12),
 	     show_row_names = TRUE,
-	     #left_annotation = row_annot,
+	     left_annotation = row_annot,
 	          
 	     show_column_names = TRUE,
 	     column_names_side = "bottom",
@@ -76,7 +76,7 @@ draw(Heatmap(matrix = dt,
 	     cluster_columns = TRUE,
 	     show_column_dend = TRUE,
 	     column_dend_height = unit(3, "cm"),
-	     #top_annotation = col_annot,
+	     top_annotation = col_annot,
 	     
 	     use_raster = FALSE,
 	     show_heatmap_legend = TRUE,
