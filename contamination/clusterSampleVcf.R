@@ -38,6 +38,9 @@ sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(norm
 	       dplyr::mutate(normal_samples = factor(normal_samples, levels = unique(normal_samples), ordered = TRUE))
 cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pairs %>% .[["normal_samples"]])))
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
+		      
+print("ok")
+
 row_annot = rowAnnotation(
 	cluster_id = sample_pairs %>% .[["normal_samples"]],
 	col = list(cluster_id = cluster_color),
@@ -68,7 +71,7 @@ draw(Heatmap(matrix = dt,
 	     row_names_side = "right",
 	     row_names_gp = gpar(fontsize = 12),
 	     show_row_names = TRUE,
-	     #left_annotation = row_annot,
+	     left_annotation = row_annot,
 	          
 	     show_column_names = TRUE,
 	     column_names_side = "bottom",
@@ -76,7 +79,7 @@ draw(Heatmap(matrix = dt,
 	     cluster_columns = TRUE,
 	     show_column_dend = TRUE,
 	     column_dend_height = unit(3, "cm"),
-	     #top_annotation = col_annot,
+	     top_annotation = col_annot,
 	     
 	     use_raster = FALSE,
 	     show_heatmap_legend = TRUE,
