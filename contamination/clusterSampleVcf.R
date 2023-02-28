@@ -29,11 +29,9 @@ X[!gt %in% c("0/0", "0/1", "1/1")] = NA
 
 gt = matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 dt = as.matrix(dist(t(gt)))
-		      
-tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
 
-print(tumor_samples)
- 
+print(opt$sample_pairs)
+tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
 normal_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[2] }))
 sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(normal_samples)), levels = rownames(dt), ordered = TRUE),
 			     normal_samples = c(normal_samples, unique(normal_samples))) %>%
@@ -41,8 +39,6 @@ sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(norm
 	       dplyr::mutate(normal_samples = factor(normal_samples, levels = unique(normal_samples), ordered = TRUE))
 cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pairs %>% .[["normal_samples"]])))
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
-		      
-print(sample_pairs)
 		      
 row_annot = rowAnnotation(
 	cluster_id = sample_pairs %>% .[["normal_samples"]],
