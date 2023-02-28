@@ -39,6 +39,8 @@ sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(norm
 cluster_color = colorRampPalette(brewer.pal(9, "Set1"))(length(unique(sample_pairs %>% .[["normal_samples"]])))
 names(cluster_color) = sort(unique(sample_pairs %>% .[["normal_samples"]]))
 		      
+print(cluster_color)
+		      
 row_annot = rowAnnotation(
 	cluster_id = sample_pairs %>% .[["normal_samples"]],
 	col = list(cluster_id = cluster_color),
