@@ -44,9 +44,9 @@ snp_vcf/snps_ft.vcf : snp_vcf/snps.vcf
 snp_vcf/snps_ft.pdf : snp_vcf/snps_ft.vcf
 	$(call RUN,-n 1 -s 16G -m 20G -v $(VARIANT_ANNOTATION_ENV),"set -o pipefail && \
 								    $(RSCRIPT) modules/contamination/clusterSampleVcf.R \
-								    --input_file $(<)\
-								    --output_file $(@)\
-								    --sample_pairs '$(SAMPLE_PAIRS)'\
+								    --input_file $(<) \
+								    --output_file $(@) \
+								    --sample_pairs '$(SAMPLE_PAIRS)' \
 								    --genome b37")
 	
 	

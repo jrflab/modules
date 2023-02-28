@@ -8,8 +8,6 @@ suppressPackageStartupMessages(library("ggplot2"))
 suppressPackageStartupMessages(library("ComplexHeatmap"))
 suppressPackageStartupMessages(library("RColorBrewer"))
 
-options(error = quote(dump.frames("testdump", TRUE)))
-
 optList <- list(make_option("--input_file", default = 'snp_vcf/snps_ft.vcf', help = "input file"),
 		make_option("--output_file", default = 'snp_vcf/snps_ft.pdf', help = "output file"),
 		make_option("--sample_pairs", default = NA, help = "sample pairs"),
