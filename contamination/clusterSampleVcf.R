@@ -54,9 +54,9 @@ col_annot = columnAnnotation(
 		   simple_anno_size = unit(.5, "cm"),
 		   show_legend = FALSE
 )
-col_pal = c(rep("#800026", 2),
-	    rev(brewer.pal(n = 9, name = "YlOrRd")),
-	    rep("#FFFFCC", 3))
+col_pal = c(rep("#662506", 3),
+	    rev(brewer.pal(n = 7, name = "YlOrBr")),
+	    rep("#fff7bc", 3))
 
 pdf(as.character(opt$output_file), height = 21, width = 22)
 draw(Heatmap(matrix = dt,
@@ -84,4 +84,3 @@ draw(Heatmap(matrix = dt,
 	     show_heatmap_legend = TRUE,
 	     heatmap_legend_param = list(legend_height = unit(5, "cm"), legend_width = unit(5, "cm"))))
 dev.off()
-
