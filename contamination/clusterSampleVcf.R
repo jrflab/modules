@@ -34,7 +34,7 @@ X[!gt %in% c("0/0", "0/1", "1/1")] = NA
 gt = matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 dt = as.matrix(dist(t(gt)))
 
-print(opt)
+print(opt$sample_pairs)
 
 tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
 normal_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[2] }))
