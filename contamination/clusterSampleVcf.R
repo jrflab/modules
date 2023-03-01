@@ -34,8 +34,6 @@ X[!gt %in% c("0/0", "0/1", "1/1")] = NA
 gt = matrix(as.integer(factor(X)), nrow = nrow(gt), ncol = ncol(gt), dimnames = list(rownames(gt), colnames(gt)))
 dt = as.matrix(dist(t(gt)))
 
-print(opt$sample_pairs)
-
 tumor_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[1] }))
 normal_samples = unlist(lapply(strsplit(x = unlist(strsplit(x = as.character(opt$sample_pairs), split = " ")), split = "_"), function(x) { x[2] }))
 sample_pairs = dplyr::tibble(tumor_samples = factor(c(tumor_samples, unique(normal_samples)), levels = rownames(dt), ordered = TRUE),
@@ -64,7 +62,7 @@ col_pal = c(rep("#662506", 3),
 	    rep("#fff7bc", 3))
 	       
 pdf(as.character(opt$output_file), height = 21, width = 22)
-draw(Heatmap(matrix = dt
+draw(Heatmap(matrix = dt,
 	     name = " ",
 	     rect_gp = gpar(col = "white"),
 	     border = NA,
