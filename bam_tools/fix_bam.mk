@@ -30,7 +30,7 @@ unprocessed_bam/$1.fixed.bam : unprocessed_bam/$1.bam unprocessed_bam/$1.ubam
 							R=$$(DMP_FASTA) \
 							ALIGNED_BAM=$$(<) \
 							UNMAPPED_BAM=$$(<<) \
-							O=$$(@).fixed.bam \
+							O=$$(@) \
 							CREATE_INDEX=true \
 							ADD_MATE_CIGAR=true \
 							CLIP_ADAPTERS=true \
