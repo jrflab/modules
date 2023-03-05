@@ -28,7 +28,7 @@ unprocessed_bam/$1.ubam : unprocessed_bam/$1.bam
 unprocessed_bam/$1.fixed.bam : unprocessed_bam/$1.bam unprocessed_bam/$1.ubam
 	$$(call RUN, -c -n 1 -s 12G -m 18G -w 72:00:00,"java -Djava.io.tmpdir=$(TMPDIR) -Xmx16G -jar $$(PICARD_JAR) MergeBamAlignment \
 							R=$$(DMP_FASTA) \
-							ALIGNED_BAM=$$(<).bam \
+							ALIGNED_BAM=$$(<) \
 							UNMAPPED_BAM=$$(<<) \
 							O=$$(@).fixed.bam \
 							CREATE_INDEX=true \
