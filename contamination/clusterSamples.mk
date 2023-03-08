@@ -21,6 +21,7 @@ snp_vcf/%.snps.vcf : bam/%.bam
 	$(call RUN,-n 4 -s 2.5G -m 3G,"set -o pipefail && \
 				       $(call GATK_MEM,8G) \
 				       -T UnifiedGenotyper \
+				       -rf BadCigar \
 				       -nt 4 \
 				       -R $(REF_FASTA) \
 				       --dbsnp $(DBSNP) \
