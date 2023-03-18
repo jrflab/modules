@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
     of = open(args.out_file, 'w')
 
-    config = yaml.load(open(args.project_config_file, 'r'))
+    config = yaml.full_load(open(args.project_config_file, 'r'))
     for k, v in config.items():
         print("{} = {}".format(k.upper(), lowerBool(v)), file=of)
 
