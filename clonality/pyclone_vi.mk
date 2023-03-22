@@ -17,13 +17,13 @@ pyclone : $(foreach sample,$(TUMOR_SAMPLES),pyclone_vi/$(sample)/$(sample).vcf) 
 
 define r-sufam
 pyclone_vi/$1/$1.vcf : summary/tsv/all.tsv
-	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
-					 $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
-					 --option 1 \
-					 --sample_set '$(set.$1)' \
-					 --normal_sample '$(normal.$1)' \
-					 --input_file $$(<) \
-					 --output_file $$(@)")
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(INNOVATION_ENV),"set -o pipefail && \
+							      $(RSCRIPT) $(SCRIPTS_DIR)/sufam_gt.R \
+							      --option 1 \
+							      --sample_set '$(set.$1)' \
+							      --normal_sample '$(normal.$1)' \
+							      --input_file $$(<) \
+							      --output_file $$(@)")
 					 
 pyclone_vi/$1/$1.txt : pyclone_vi/$1/$1.vcf bam/$1.bam
 	$$(call RUN,-c -n 1 -s 2G -m 3G -v $(SUFAM_ENV),"set -o pipefail && \
