@@ -15,7 +15,14 @@ bam_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).idx_stats.txt) \
 	      summary/hs_metrics.txt \
 	      summary/gc_metrics.txt \
 	      summary/gc_summary.txt
-	      
+
+CALC_HS_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectHsMetrics $(PICARD_OPTS)
+COLLECT_ALIGNMENT_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectAlignmentSummaryMetrics $(PICAD_OPTS)
+COLLECT_INSERT_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectInsertSizeMetrics $(PICAD_OPTS)
+COLLECT_OXOG_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectOxoGMetrics $(PICAD_OPTS)
+COLLECT_GC_BIAS = $(PICARD) -Xmx$(PICARD_MEM) CollectGcBiasMetrics $(PICAD_OPTS)
+BAM_INDEX = $(PICARD) -Xmx$(PICARD_MEM) BamIndexStats $(PICAD_OPTS)
+
 TARGETS_LIST ?= $(HOME)/share/lib/resource_files/MSK-IMPACT-v4.sorted.list
 	      
 define idx-metrics
