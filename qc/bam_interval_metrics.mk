@@ -16,6 +16,9 @@ bam_metrics : $(foreach sample,$(SAMPLES),metrics/$(sample).idx_stats.txt) \
 	      summary/gc_metrics.txt \
 	      summary/gc_summary.txt
 
+PICARD = picard
+PICARD_MEM = 16G
+PICARD_OPTS = VALIDATION_STRINGENCY=LENIENT MAX_RECORDS_IN_RAM=4000000 TMP_DIR=$(TMPDIR)
 CALC_HS_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectHsMetrics $(PICARD_OPTS)
 COLLECT_ALIGNMENT_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectAlignmentSummaryMetrics $(PICAD_OPTS)
 COLLECT_INSERT_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectInsertSizeMetrics $(PICAD_OPTS)
