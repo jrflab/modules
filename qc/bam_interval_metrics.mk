@@ -1,4 +1,4 @@
-include innovation-lab/Makefile.inc
+include modules/Makefile.inc
 
 LOGDIR ?= log/bam_interval_metrics.$(NOW)
 
