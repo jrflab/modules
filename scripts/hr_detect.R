@@ -4,6 +4,7 @@ suppressPackageStartupMessages(library("optparse"))
 suppressPackageStartupMessages(library("dplyr"))
 suppressPackageStartupMessages(library("readr"))
 suppressPackageStartupMessages(library("magrittr"))
+suppressPackageStartupMessages(library("signature.tools.lib"))
 
 if (!interactive()) {
     options(warn = -1, error = quote({ traceback(); q('no', status = 1) }))
@@ -72,5 +73,62 @@ if (as.numeric(opt$option) == 1) {
 			   total.copy.number.inTumour,
 			   minor.copy.number.inTumour)
 	     
-	readr::write_tsv(x = cn, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".cn.txt"), col_names = TRUE, append = TRUE)
+	readr::write_tsv(x = cn, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".cn.txt"), col_names = TRUE, append = FALSE)
+	
+} else if (as.numeric(opt$option) == 4) {
+	sv = readr::read_tsv(file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	     readr::type_convert() %>%
+     	     dplyr::mutate(sample = as.character(opt$sample_name))
+	     
+	readr::write_tsv(x = sv, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe"), col_names = TRUE, append = FALSE)
+
+	
+} else if (as.numeric(opt$option) == 5) {
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))[21]
+	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv.vcf") }))
+	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel.vcf.bgz") }))
+	cn_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".cn.txt") }))
+	sv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".sv.bedpe") }))
+	
+	names(snv_files) = names(indel_files) = names(cn_files) = names(sv_files) <- sample_names
+	
+	snv_cat_list = list()
+	for (i in 1:length(snv_files)) {
+		snv_tab = readr::read_tsv(file = snv_files[i], col_names = TRUE, comment = "##", col_types = cols(.default = col_character())) %>%
+			  readr::type_convert() %>%
+			  dplyr::select(chr = `#CHROM`,
+				        position = POS,
+				        REF,
+					ALT) %>%
+			 as.data.frame()
+		res = tabToSNVcatalogue(subs = snv_tab, genome.v = "hg19")
+		colnames(res$catalogue) = sample_names[i]
+		snv_cat_list[[i]] = res$catalogue
+	}
+	snv_catalogues = do.call(cbind, snv_cat_list)
+	
+	sigsToUse = c(1,2,3,5,6,8,13,17,18,20,26,30)
+	subs_fit_res = Fit(catalogues = snv_catalogues,
+			   signatures = COSMIC30_subs_signatures[,sigsToUse],
+			   useBootstrap = TRUE,
+			   nboot = 100,
+			   nparallel = 4)
+	snv_exp = subs_fit_res$exposures
+	
+	col_hrdetect = c("del.mh.prop", "SNV3", "SV3", "SV5", "hrd", "SNV8")
+	input_matrix = matrix(NA, nrow = length(sample_names), ncol = length(col_hrdetect), dimnames = list(sample_names, col_hrdetect))
+	input_matrix[rownames(snv_exp),"SNV3"] = snv_exp[,"Signature3"]
+	input_matrix[rownames(snv_exp),"SNV8"] = snv_exp[,"Signature8"]
+	res =  HRDetect_pipeline(input_matrix,
+				 genome.v = "hg19",
+				 SNV_signature_version = "COSMICv2",
+				 SV_bedpe_files = sv_files,
+				 Indels_tab_files = indel_files,
+				 CNV_tab_files = cn_files,
+				 nparallel = 4)
+	
+	readr::write_tsv(x = res$hrdetect_output %>%
+			     dplyr::as_tibble() %>%
+			     dplyr::mutate(sample_name = sample_names),
+			path = "hr_detect/summary.txt", append = FALSE, col_names = TRUE)
 }
