@@ -107,12 +107,16 @@ hr_detect/$1_$2/$1_$2.indel_repaired.vcf.bgz.tbi : hr_detect/$1_$2/$1_$2.indel_r
 								tabix -p vcf $$(<)")
 
 hr_detect/$1_$2/$1_$2.genomePlot.png : hr_detect/$1_$2/$1_$2.snv_repaired.vcf.bgz.tbi hr_detect/$1_$2/$1_$2.indel_repaired.vcf.bgz.tbi hr_detect/$1_$2/$1_$2.cn.txt hr_detect/$1_$2/$1_$2.sv.bedpe
-	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
-								$(RSCRIPT) modules/scripts/hr_detect.R --option 5 --sample_name $1_$2")
+	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+								    $(RSCRIPT) modules/scripts/hr_detect.R \
+								    --option 5 \
+								    --sample_name $1_$2")
 
 hr_detect/$1_$2/$1_$2.genomePlot.svg : hr_detect/$1_$2/$1_$2.snv_repaired.vcf.bgz.tbi hr_detect/$1_$2/$1_$2.indel_repaired.vcf.bgz.tbi hr_detect/$1_$2/$1_$2.cn.txt hr_detect/$1_$2/$1_$2.sv.bedpe
-	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
-								$(RSCRIPT) modules/scripts/hr_detect.R --option 6 --sample_name $1_$2")
+	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+								     $(RSCRIPT) modules/scripts/hr_detect.R \
+								     --option 6 \
+								     --sample_name $1_$2")
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
