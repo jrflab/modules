@@ -111,6 +111,8 @@ if (as.numeric(opt$option) == 1) {
 } else if (as.numeric(opt$option) == 4) {
 	sv = readr::read_tsv(file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	     readr::type_convert() %>%
+	     dplyr::filter(chrom1 %in% c(1:22, "X")) %>%
+	     dplyr::filter(chrom2 %in% c(1:22, "X")) %>%
 	     dplyr::mutate(svclass = case_when(
 		     svclass == "BND" ~ "translocation",
 		     svclass == "TRA" ~ "translocation",
