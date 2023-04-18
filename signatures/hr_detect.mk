@@ -42,12 +42,12 @@ hr_detect/$1_$2/$1_$2.indel.vcf : summary/tsv/all.tsv
 								     --sample_name $1_$2")
 								     
 hr_detect/$1_$2/$1_$2.indel.vcf.bgz : hr_detect/$1_$2/$1_$2.indel.vcf
-	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNNOVATION_ENV),"set -o pipefail && \
-								 bgzip -c $$(<) > $$(@)")
+	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
+								bgzip -c $$(<) > $$(@)")
 
 hr_detect/$1_$2/$1_$2.indel.vcf.bgz.tbi : hr_detect/$1_$2/$1_$2.indel.vcf.bgz
-	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
-								     tabix -p vcf $$(<)")
+	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
+								tabix -p vcf $$(<)")
 
 
 hr_detect/$1_$2/$1_$2.cn.txt : facets/cncf/$1_$2.txt
