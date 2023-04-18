@@ -64,6 +64,14 @@ if (as.numeric(opt$option) == 1) {
 			   minor.copy.number.inNormal = 1,
 			   total.copy.number.inTumour = tcn.em,
 			   minor.copy.number.inTumour = lcn.em) %>%
+	     dplyr::mutate(total.copy.number.inTumour = case_when(
+		     		is.na(total.copy.number.inTumour) ~ 2,
+		     		TRUE ~ total.copy.number.inTumour
+	     )) %>%
+	     dplyr::mutate(minor.copy.number.inTumour = case_when(
+		     		is.na(minor.copy.number.inTumour) ~ 2,
+		     		TRUE ~ minor.copy.number.inTumour
+	     )) %>%
 	     dplyr::select(seg_no,
 			   Chromosome,
 			   chromStart,
