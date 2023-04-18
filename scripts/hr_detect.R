@@ -31,11 +31,17 @@ if (as.numeric(opt$option) == 1) {
 	      dplyr::filter(TUMOR_DP>=10 & NORMAL_DP>=10) %>%
 	      dplyr::mutate(CHROM = as.character(CHROM)) %>%
 	      dplyr::mutate(CHROM = ifelse(CHROM == "23", "X", CHROM)) %>%
+	      dplyr::mutate(QUAL = 100,
+			    FILTER = "PASS",
+			    INFO = ".") %>%
 	      dplyr::select(`#CHROM` = CHROM,
 			    POS = POS,
 			    ID = ID,
 			    REF = REF,
-			    ALT = ALT)
+			    ALT = ALT,
+			    QUAL = QUAL,
+			    FILTER = FILTER,
+			    INFO = INFO)
 	cat("##fileformat=VCFv4.1\n", file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".snv.vcf"), append = FALSE)
 	readr::write_tsv(x = vcf, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".snv.vcf"), col_names = TRUE, append = TRUE)
 
@@ -56,11 +62,17 @@ if (as.numeric(opt$option) == 1) {
 	      dplyr::filter(TUMOR_DP>=10 & NORMAL_DP>=10) %>%
 	      dplyr::mutate(CHROM = as.character(CHROM)) %>%
 	      dplyr::mutate(CHROM = ifelse(CHROM == "23", "X", CHROM)) %>%
+	      dplyr::mutate(QUAL = 100,
+			    FILTER = "PASS",
+			    INFO = ".") %>%
 	      dplyr::select(`#CHROM` = CHROM,
 			    POS = POS,
 			    ID = ID,
 			    REF = REF,
-			    ALT = ALT)
+			    ALT = ALT,
+			    QUAL = QUAL,
+			    FILTER = FILTER,
+			    INFO = INFO)
 	cat("##fileformat=VCFv4.1\n", file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".indel.vcf"), append = FALSE)
 	readr::write_tsv(x = vcf, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".indel.vcf"), col_names = TRUE, append = TRUE)
 
