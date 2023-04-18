@@ -12,7 +12,8 @@ hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz.tbi) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt) \
-	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe)
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) \
+	     hr_detect/summary.txt
 
 define hr-detect
 hr_detect/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
@@ -65,9 +66,9 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hr-detect,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-hr_detect/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
-	$(call RUN, -c -n 1 -s 12G -m 16G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
-					  			     $(RSCRIPT) modules/scripts/hr_detect.R --option 4 --sample_name '$(SAMPLE_PAIRS)'")
+hr_detect/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
+	$(call RUN, -c -n 1 -s 24G -m 36G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+					  			     $(RSCRIPT) modules/scripts/hr_detect.R --option 5 --sample_name '$(SAMPLE_PAIRS)'")
 
 		
 ..DUMMY := $(shell mkdir -p version; \
