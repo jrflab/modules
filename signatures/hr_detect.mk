@@ -2,6 +2,9 @@ include modules/Makefile.inc
 
 LOGDIR ?= log/hr_detect.$(NOW)
 
+MIN_SIZE = 1
+MAX_SIZE = 100000000000000000000
+
 hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bedpe) \
 
