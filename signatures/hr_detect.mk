@@ -7,6 +7,7 @@ MAX_SIZE = 100000000000000000000
 
 hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bedpe) \
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf)
 
 define hr-detect
 hr_detect/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
