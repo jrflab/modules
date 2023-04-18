@@ -101,6 +101,7 @@ if (as.numeric(opt$option) == 1) {
 	     readr::type_convert() %>%
 	     dplyr::mutate(svclass = case_when(
 		     svclass == "BND" ~ "translocation",
+		     svclass == "TRA" ~ "translocation",
 		     svclass == "DEL" ~ "deletion",
 		     svclass == "DUP" ~ "tandem-duplication",
 		     svclass == "INS" ~ "insertion",
