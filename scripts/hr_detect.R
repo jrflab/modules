@@ -84,7 +84,7 @@ if (as.numeric(opt$option) == 1) {
 
 	
 } else if (as.numeric(opt$option) == 5) {
-	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))[21]
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
 	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv.vcf") }))
 	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel.vcf.bgz") }))
 	cn_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".cn.txt") }))
