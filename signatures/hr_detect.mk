@@ -1,0 +1,31 @@
+include modules/Makefile.inc
+
+LOGDIR ?= log/hr_detect.$(NOW)
+
+hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed) \
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bedpe) \
+
+define hr-detect
+hr_detect/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
+	$$(call RUN,-c -n 1 -s 4G -m 8G -v $(SURVIVOR_ENV),"set -o pipefail && \
+							    SURVIVOR vcftobed \
+							    $$(<) \
+							    $(MIN_SIZE) \
+							    $(MAX_SIZE) \
+							    $$(@)")
+							    
+hr_detect/$1_$2/$1_$2.merged.bedpe : hr_detect/$1_$2/$1_$2.merged.bed
+	$$(call RUN,-c -n 1 -s 4G -m 8G,"set -o pipefail && \
+					 echo \"chrom1	start1	end1	chrom2	start2	end2	sv_id	pe_support	strand1	strand2	svclass\" > \
+					 $$(@) && \
+					 cat $$(<) >> $$(@)")
+							    
+endef
+$(foreach pair,$(SAMPLE_PAIRS),\
+		$(eval $(call hr-detect,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+..DUMMY := $(shell mkdir -p version; \
+	     R --version &> version/hr_detect.txt;)
+.DELETE_ON_ERROR:
+.SECONDARY:
+.PHONY: hr_detect

@@ -515,7 +515,10 @@ sv_signature :
 TARGETS += star_fish
 star_fish :
 	$(call RUN_MAKE,modules/signatures/star_fish.mk)
-
+	
+TARGETS += hr_detect
+hr_detect :
+	$(call RUN_MAKE,modules/signatures/hr_detect.mk)
 
 #==================================================
 # miscellaneous
