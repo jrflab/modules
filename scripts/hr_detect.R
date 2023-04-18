@@ -108,8 +108,7 @@ if (as.numeric(opt$option) == 1) {
 		     svclass == "INV" ~ "inversion",
 	     	     TRUE ~ svclass
 	     )) %>%
-             dplyr::filter(svclass != "inversion") %>%
-	     dplyr::select(-strand1, -strand2) %>%
+             dplyr::select(-strand1, -strand2) %>%
      	     dplyr::mutate(sample = as.character(opt$sample_name))
 	     
 	readr::write_tsv(x = sv, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe"), col_names = TRUE, append = FALSE)
