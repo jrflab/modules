@@ -7,7 +7,8 @@ MAX_SIZE = 100000000000000000000
 
 hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bedpe) \
-	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf)
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) \
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf)
 
 define hr-detect
 hr_detect/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
@@ -29,7 +30,13 @@ hr_detect/$1_$2/$1_$2.snv.vcf : summary/tsv/all.tsv
 					   $(RSCRIPT) modules/scripts/hr_detect.R \
 					   --option 1 \
 					   --sample_name $1_$2")
-							    
+
+hr_detect/$1_$2/$1_$2.indel.vcf : summary/tsv/all.tsv
+	$$(call RUN,-c -n 1 -s 12G -m 16G,"set -o pipefail && \
+					   $(RSCRIPT) modules/scripts/hr_detect.R \
+					   --option 2 \
+					   --sample_name $1_$2")
+
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hr-detect,$(tumor.$(pair)),$(normal.$(pair)))))
