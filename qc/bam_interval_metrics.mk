@@ -106,31 +106,31 @@ $(foreach sample,$(SAMPLES),\
 		
 summary/idx_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).idx_stats.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 1 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 1 --sample_names '$(SAMPLES)'")
 
 summary/aln_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).aln_metrics.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 2 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 2 --sample_names '$(SAMPLES)'")
 
 summary/insert_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).insert_metrics.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 3 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 3 --sample_names '$(SAMPLES)'")
 
 summary/oxog_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).oxog_metrics.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 4 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 4 --sample_names '$(SAMPLES)'")
 
 summary/hs_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).hs_metrics.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 5 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 5 --sample_names '$(SAMPLES)'")
 
 summary/gc_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).gc_metrics.txt)
 	$(call RUN, -c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
-							       $(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 6 --sample_names '$(SAMPLES)'")
+							       $(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 6 --sample_names '$(SAMPLES)'")
 					  
 summary/gc_summary.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).gc_metrics.txt)
 	$(call RUN, -c -n 1 -s 12G -m 24G -v $(INNOVATION_ENV),"set -o pipefail && \
-								$(RSCRIPT) $(SCRIPTS_DIR)/qc/bam_metrics.R --option 7 --sample_names '$(SAMPLES)'")
+								$(RSCRIPT) $(SCRIPTS_DIR)/bam_metrics.R --option 7 --sample_names '$(SAMPLES)'")
 
 
 ..DUMMY := $(shell mkdir -p version; \
