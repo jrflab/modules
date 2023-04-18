@@ -109,12 +109,47 @@ if (as.numeric(opt$option) == 1) {
 	     	     TRUE ~ svclass
 	     )) %>%
              dplyr::filter(svclass != "inversion") %>%
+	     dplyr::select(-strand1, -strand2) %>%
      	     dplyr::mutate(sample = as.character(opt$sample_name))
 	     
 	readr::write_tsv(x = sv, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe"), col_names = TRUE, append = FALSE)
 
 	
 } else if (as.numeric(opt$option) == 5) {
+	url_subs_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".snv_repaired.vcf.bgz")
+	url_indels_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".indel_repaired.vcf.bgz")
+	url_cn_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".cn.txt")
+	url_sv_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe")
+
+	genomePlot(subsVcf.file = url_subs_file,
+		   indelsVcf.file = url_indels_file,
+		   cnvsTab.file = url_cn_file,
+		   rearrBedpe.file = url_sv_file, 
+		   sampleID = as.character(opt$sample_name),
+		   genome.v = "hg19", file.ideogram = NULL, plot_title = NULL, 
+		   no_copynumber = FALSE, no_rearrangements = FALSE, no_indels = FALSE, 
+           	   no_subs_legend = FALSE, out_format = "png",
+		   out_path = paste0("hr_detect/", as.character(opt$sample_name), "/"), 
+		   rearr_only_assembled = FALSE, base.per.unit = NULL)
+	
+} else if (as.numeric(opt$option) == 6) {
+	url_subs_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".snv_repaired.vcf.bgz")
+	url_indels_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".indel_repaired.vcf.bgz")
+	url_cn_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".cn.txt")
+	url_sv_file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe")
+
+	genomePlot(subsVcf.file = url_subs_file,
+		   indelsVcf.file = url_indels_file,
+		   cnvsTab.file = url_cn_file,
+		   rearrBedpe.file = url_sv_file, 
+		   sampleID = as.character(opt$sample_name),
+		   genome.v = "hg19", file.ideogram = NULL, plot_title = NULL, 
+		   no_copynumber = FALSE, no_rearrangements = FALSE, no_indels = FALSE, 
+           	   no_subs_legend = FALSE, out_format = "svg",
+		   out_path = paste0("hr_detect/", as.character(opt$sample_name), "/"), 
+		   rearr_only_assembled = FALSE, base.per.unit = NULL)
+	
+} else if (as.numeric(opt$option) == 7) {
 	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
 	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv.vcf") }))
 	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel.vcf.bgz") }))
