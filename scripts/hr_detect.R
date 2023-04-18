@@ -18,7 +18,13 @@ opt <- arguments$options
 
 if (as.numeric(opt$option) == 1) {
 	vcf = readr::read_tsv(file = "summary/tsv/all.tsv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	      dplyr::filter(CHROM %in% c(1:22, "X")) %>%
+	      dplyr::mutate(CHROM = case_when(
+		      CHROM == "X" ~ "23",
+		      TRUE ~ CHROM
+	      )) %>%
 	      readr::type_convert() %>%
+	      dplyr::arrange(CHROM, POS) %>%
 	      dplyr::mutate(TUMOR_NORMAL = paste0(TUMOR_SAMPLE, "_", NORMAL_SAMPLE)) %>%
 	      dplyr::filter(TUMOR_NORMAL == as.character(opt$sample_name)) %>%
 	      dplyr::filter(variantCaller == "mutect") %>%
@@ -35,6 +41,13 @@ if (as.numeric(opt$option) == 1) {
 
 } else if (as.numeric(opt$option) == 2) {
 	vcf = readr::read_tsv(file = "summary/tsv/all.tsv", col_names = TRUE, col_types = cols(.default = col_character())) %>%
+	      dplyr::filter(CHROM %in% c(1:22, "X")) %>%
+	      dplyr::mutate(CHROM = case_when(
+		      CHROM == "X" ~ "23",
+		      TRUE ~ CHROM
+	      )) %>%
+	      readr::type_convert() %>%
+	      dplyr::arrange(CHROM, POS) %>%
 	      readr::type_convert() %>%
 	      dplyr::mutate(TUMOR_NORMAL = paste0(TUMOR_SAMPLE, "_", NORMAL_SAMPLE)) %>%
 	      dplyr::filter(TUMOR_NORMAL == as.character(opt$sample_name)) %>%
@@ -86,6 +99,15 @@ if (as.numeric(opt$option) == 1) {
 } else if (as.numeric(opt$option) == 4) {
 	sv = readr::read_tsv(file = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".merged.bedpe"), col_names = TRUE, col_types = cols(.default = col_character())) %>%
 	     readr::type_convert() %>%
+	     dplyr::mutate(svclass = case_when(
+		     svclass == "BND" ~ "translocation",
+		     svclass == "DEL" ~ "deletion",
+		     svclass == "DUP" ~ "tandem-duplication",
+		     svclass == "INS" ~ "insertion",
+		     svclass == "INV" ~ "inversion",
+	     	     TRUE ~ svclass
+	     )) %>%
+             dplyr::filter(svclass != "inversion") %>%
      	     dplyr::mutate(sample = as.character(opt$sample_name))
 	     
 	readr::write_tsv(x = sv, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe"), col_names = TRUE, append = FALSE)
