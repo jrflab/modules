@@ -22,6 +22,12 @@ hr_detect/$1_$2/$1_$2.merged.bedpe : hr_detect/$1_$2/$1_$2.merged.bed
 					 echo \"chrom1	start1	end1	chrom2	start2	end2	sv_id	pe_support	strand1	strand2	svclass\" > \
 					 $$(@) && \
 					 cat $$(<) >> $$(@)")
+					 
+hr_detect/$1_$2/$1_$2.snv.vcf : summary/tsv/all.tsv
+	$$(call RUN,-c -n 1 -s 12G -m 16G,"set -o pipefail && \
+					   $(RSCRIPT) modules/scripts/hr_detect.R \
+					   --option 1 \
+					   --sample_name $1_$2")
 							    
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
