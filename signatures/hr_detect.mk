@@ -124,7 +124,7 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hr-detect,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-hr_detect/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
+hr_detect/hrdetect.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
 	$(call RUN, -c -n 4 -s 6G -m 9G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
 					  			     $(RSCRIPT) modules/scripts/hr_detect.R --option 7 --sample_name '$(SAMPLE_PAIRS)'")
 
