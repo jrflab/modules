@@ -205,9 +205,12 @@ if (as.numeric(opt$option) == 1) {
 				 Indels_tab_files = indel_files,
 				 CNV_tab_files = cn_files,
 				 nparallel = 4)
-	
+	readr::write_tsv(x = snv_exp %>%
+			     dplyr::as_tibble() %>%
+			     dplyr::mutate(sample_name = sample_names),
+			path = "hr_detect/signatures.txt", append = FALSE, col_names = TRUE)
 	readr::write_tsv(x = res$hrdetect_output %>%
 			     dplyr::as_tibble() %>%
 			     dplyr::mutate(sample_name = sample_names),
-			path = "hr_detect/summary.txt", append = FALSE, col_names = TRUE)
+			path = "hr_detect/hrdetect.txt", append = FALSE, col_names = TRUE)
 }
