@@ -205,12 +205,33 @@ if (as.numeric(opt$option) == 1) {
 				 Indels_tab_files = indel_files,
 				 CNV_tab_files = cn_files,
 				 nparallel = 4)
-	readr::write_tsv(x = snv_exp %>%
-			     dplyr::as_tibble() %>%
-			     dplyr::mutate(sample_name = sample_names),
-			path = "hr_detect/signatures.txt", append = FALSE, col_names = TRUE)
+	
+	snv_exp = snv_exp %>%
+		  dplyr::as_tibble() %>%
+		  dplyr::mutate(sample_name = sample_names) %>%
+		  reshape2::melt() %>%
+		  dplyr::group_by(sample_name) %>%
+		  dplyr::summarize(Sum_Exporsures = sum(value)) %>%
+		  dplyr::left_join(snv_exp, by = "sample_name") %>%
+		  dplyr::rename(Unassigned = unassigned) %>%
+		  dplyr::mutate(Signature1 = Signature1/Sum_Exporsures,
+				Signature2 = Signature2/Sum_Exporsures,
+				Signature3 = Signature3/Sum_Exporsures,
+				Signature5 = Signature5/Sum_Exporsures,
+				Signature6 = Signature6/Sum_Exporsures,
+				Signature8 = Signature8/Sum_Exporsures,
+				Signature13 = Signature13/Sum_Exporsures,
+				Signature17 = Signature17/Sum_Exporsures,
+				Signature18 = Signature18/Sum_Exporsures,
+				Signature20 = Signature20/Sum_Exporsures,
+				Signature26 = Signature26/Sum_Exporsures,
+				Signature30 = Signature30/Sum_Exporsures,
+				Unassigned = Unassigned/Sum_Exporsures)
+	
+	readr::write_tsv(x = snv_exp,
+			 path = "hr_detect/signatures.txt", append = FALSE, col_names = TRUE)
 	readr::write_tsv(x = res$hrdetect_output %>%
 			     dplyr::as_tibble() %>%
 			     dplyr::mutate(sample_name = sample_names),
-			path = "hr_detect/hrdetect.txt", append = FALSE, col_names = TRUE)
+			 path = "hr_detect/hrdetect.txt", append = FALSE, col_names = TRUE)
 }
