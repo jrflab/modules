@@ -212,7 +212,9 @@ if (as.numeric(opt$option) == 1) {
 		  reshape2::melt() %>%
 		  dplyr::group_by(sample_name) %>%
 		  dplyr::summarize(Sum_Exporsures = sum(value)) %>%
-		  dplyr::left_join(snv_exp, by = "sample_name") %>%
+		  dplyr::left_join(snv_exp %>%
+				   dplyr::as_tibble() %>%
+				   dplyr::mutate(sample_name = sample_names), by = "sample_name") %>%
 		  dplyr::rename(Unassigned = unassigned) %>%
 		  dplyr::mutate(Signature1 = Signature1/Sum_Exporsures,
 				Signature2 = Signature2/Sum_Exporsures,
