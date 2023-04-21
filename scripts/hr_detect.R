@@ -164,8 +164,8 @@ if (as.numeric(opt$option) == 1) {
 	
 } else if (as.numeric(opt$option) == 7) {
 	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
-	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv.vcf") }))
-	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel.vcf.bgz") }))
+	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv_repaired.vcf") }))
+	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel_repaired.vcf.bgz") }))
 	cn_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".cn.txt") }))
 	sv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".sv.bedpe") }))
 	
