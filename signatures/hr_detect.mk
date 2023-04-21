@@ -10,19 +10,15 @@ hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf.bgz) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf.bgz.tbi) \
-	     
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz.tbi) \
-	     
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel.vcf.bgz.tbi) \
-	     
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz.tbi) \
-	     
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) \
 	     hr_detect/hrdetect.txt \
