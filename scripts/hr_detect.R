@@ -122,7 +122,6 @@ if (as.numeric(opt$option) == 1) {
 		     svclass == "INV" ~ "inversion",
 	     	     TRUE ~ svclass
 	     )) %>%
-             dplyr::select(-strand1, -strand2) %>%
      	     dplyr::mutate(sample = as.character(opt$sample_name))
 	     
 	readr::write_tsv(x = sv, path = paste0("hr_detect/", as.character(opt$sample_name), "/", as.character(opt$sample_name), ".sv.bedpe"), col_names = TRUE, append = FALSE)
@@ -164,76 +163,61 @@ if (as.numeric(opt$option) == 1) {
 	
 } else if (as.numeric(opt$option) == 7) {
 	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
-	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv.vcf") }))
+	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv_repaired.vcf.bgz") }))
 	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel_repaired.vcf.bgz") }))
 	cn_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".cn.txt") }))
 	sv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".sv.bedpe") }))
 	
 	names(snv_files) = names(indel_files) = names(cn_files) = names(sv_files) <- sample_names
 	
-	snv_cat_list = list()
-	for (i in 1:length(snv_files)) {
-		snv_tab = readr::read_tsv(file = snv_files[i], col_names = TRUE, comment = "##", col_types = cols(.default = col_character())) %>%
-			  readr::type_convert() %>%
-			  dplyr::select(chr = `#CHROM`,
-				        position = POS,
-				        REF,
-					ALT) %>%
-			 as.data.frame()
-		res = tabToSNVcatalogue(subs = snv_tab, genome.v = "hg19")
-		colnames(res$catalogue) = sample_names[i]
-		snv_cat_list[[i]] = res$catalogue
-	}
-	snv_catalogues = do.call(cbind, snv_cat_list)
-	
-	sigsToUse = c(1,2,3,5,6,8,13,17,18,20,26,30)
-	subs_fit_res = Fit(catalogues = snv_catalogues,
-			   signatures = COSMIC30_subs_signatures[,sigsToUse],
-			   useBootstrap = TRUE,
-			   nboot = 100,
-			   nparallel = 4)
-	snv_exp = subs_fit_res$exposures
-	
-	col_hrdetect = c("del.mh.prop", "SNV3", "SV3", "SV5", "hrd", "SNV8")
-	input_matrix = matrix(NA, nrow = length(sample_names), ncol = length(col_hrdetect), dimnames = list(sample_names, col_hrdetect))
-	input_matrix[rownames(snv_exp),"SNV3"] = snv_exp[,"Signature3"]
-	input_matrix[rownames(snv_exp),"SNV8"] = snv_exp[,"Signature8"]
-	res =  HRDetect_pipeline(input_matrix,
-				 genome.v = "hg19",
-				 SNV_signature_version = "COSMICv2",
+	res =  HRDetect_pipeline(genome.v = "hg19",
+				 SNV_vcf_files = snv_files,
 				 SV_bedpe_files = sv_files,
-				 Indels_tab_files = indel_files,
+				 Indels_vcf_files = indel_files,
 				 CNV_tab_files = cn_files,
+				 SNV_signature_version = "COSMICv2",
 				 nparallel = 4)
 	
-	snv_exp = snv_exp %>%
-		  dplyr::as_tibble() %>%
-		  dplyr::mutate(sample_name = sample_names) %>%
-		  reshape2::melt() %>%
-		  dplyr::group_by(sample_name) %>%
-		  dplyr::summarize(Sum_Exporsures = sum(value)) %>%
-		  dplyr::left_join(snv_exp %>%
-				   dplyr::as_tibble() %>%
-				   dplyr::mutate(sample_name = sample_names), by = "sample_name") %>%
-		  dplyr::rename(Unassigned = unassigned) %>%
-		  dplyr::mutate(Signature1 = Signature1/Sum_Exporsures,
-				Signature2 = Signature2/Sum_Exporsures,
-				Signature3 = Signature3/Sum_Exporsures,
-				Signature5 = Signature5/Sum_Exporsures,
-				Signature6 = Signature6/Sum_Exporsures,
-				Signature8 = Signature8/Sum_Exporsures,
-				Signature13 = Signature13/Sum_Exporsures,
-				Signature17 = Signature17/Sum_Exporsures,
-				Signature18 = Signature18/Sum_Exporsures,
-				Signature20 = Signature20/Sum_Exporsures,
-				Signature26 = Signature26/Sum_Exporsures,
-				Signature30 = Signature30/Sum_Exporsures,
-				Unassigned = Unassigned/Sum_Exporsures)
-	
-	readr::write_tsv(x = snv_exp,
-			 path = "hr_detect/signatures.txt", append = FALSE, col_names = TRUE)
 	readr::write_tsv(x = res$hrdetect_output %>%
 			     dplyr::as_tibble() %>%
 			     dplyr::mutate(sample_name = sample_names),
-			 path = "hr_detect/hrdetect.txt", append = FALSE, col_names = TRUE)
+			 path = "hr_detect/hrdetect_smry.txt", append = FALSE, col_names = TRUE)
+	
+} else if (as.numeric(opt$option) == 8) {
+	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
+	snv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".snv_repaired.vcf.bgz") }))
+	indel_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".indel_repaired.vcf.bgz") }))
+	cn_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".cn.txt") }))
+	sv_files = unlist(lapply(sample_names, function(x) { paste0("hr_detect/", x, "/", x, ".sv.bedpe") }))
+	
+	names(snv_files) = names(indel_files) = names(cn_files) = names(sv_files) <- sample_names
+	
+	res =  HRDetect_pipeline(genome.v = "hg19",
+				 SNV_vcf_files = snv_files,
+				 SV_bedpe_files = sv_files,
+				 Indels_vcf_files = indel_files,
+				 CNV_tab_files = cn_files,
+				 SNV_signature_version = "COSMICv2",
+				 nparallel = 4)
+	
+	signatures_to_use = paste0("Signature", c(1,2,3,5,6,8,13,17,18,20,26,30))
+	
+	res = res$exposures_subs %>%
+	      dplyr::as_tibble() %>%
+	      dplyr::mutate(signatures = rownames(res$exposures_subs)) %>%
+	      reshape2::melt(id.vars = "signatures", variable.name = "sample_name", value.name = "exposure") %>%
+	      dplyr::filter(signatures %in% signatures_to_use) %>%
+	      dplyr::group_by(sample_name) %>%
+	      dplyr::summarize(sum_exposures = sum(exposure)) %>%
+	      dplyr::right_join(res$exposures_subs %>%
+	      		        dplyr::as_tibble() %>%
+			        dplyr::mutate(signatures = rownames(res$exposures_subs)) %>%
+			        reshape2::melt(id.vars = "signatures", variable.name = "sample_name", value.name = "exposure") %>%
+				dplyr::filter(signatures %in% signatures_to_use), by = "sample_name") %>%
+	      dplyr::mutate(exposure = exposure/sum_exposures) %>%
+	      reshape2::dcast(formula = sample_name ~ signatures, value.var = "exposure", fill = 0) %>%
+	      dplyr::select(all_of(c("sample_name", signatures_to_use)))
+	
+	readr::write_tsv(x = res, path = "hr_detect/signatures_smry.txt", append = FALSE, col_names = TRUE)
+
 }
