@@ -21,9 +21,10 @@ hr_detect :  $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).merged.bed
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz.tbi) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt) \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) \
-	     hr_detect/hrdetect.txt \
 	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).png) \
-	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).svg)
+	     $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).svg) \
+	     hr_detect/hrdetect_smry.txt \
+	     hr_detect/signatures_smry.txt
 
 define hr-detect
 hr_detect/$1_$2/$1_$2.merged.bed : vcf/$1_$2.merged_sv.vcf
@@ -68,7 +69,7 @@ hr_detect/$1_$2/$1_$2.indel.vcf.bgz.tbi : hr_detect/$1_$2/$1_$2.indel.vcf.bgz
 	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
 								tabix -p vcf $$(<)")
 								
-hr_detect/$1_$2/$1_$2.snv_repaired.vcf : hr_detect/$1_$2/$1_$2.snv.vcf.bgz
+hr_detect/$1_$2/$1_$2.snv_repaired.vcf : hr_detect/$1_$2/$1_$2.snv.vcf.bgz hr_detect/$1_$2/$1_$2.snv.vcf.bgz.tbi
 	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
 								bcftools view $$(<) > $$(@)")
 								
@@ -80,7 +81,7 @@ hr_detect/$1_$2/$1_$2.snv_repaired.vcf.bgz.tbi : hr_detect/$1_$2/$1_$2.snv_repai
 	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
 								tabix -p vcf $$(<)")
 
-hr_detect/$1_$2/$1_$2.indel_repaired.vcf : hr_detect/$1_$2/$1_$2.indel.vcf.bgz
+hr_detect/$1_$2/$1_$2.indel_repaired.vcf : hr_detect/$1_$2/$1_$2.indel.vcf.bgz hr_detect/$1_$2/$1_$2.indel.vcf.bgz.tbi
 	$$(call RUN,-c -n 1 -s 12G -m 16G -v $(INNOVATION_ENV),"set -o pipefail && \
 								bcftools view $$(<) > $$(@)")
 								
@@ -123,10 +124,13 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hr-detect,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-hr_detect/hrdetect.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv.vcf) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
+hr_detect/hrdetect_smry.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
 	$(call RUN, -c -n 4 -s 6G -m 9G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
 					  			   $(RSCRIPT) modules/scripts/hr_detect.R --option 7 --sample_name '$(SAMPLE_PAIRS)'")
 
+hr_detect/signatures_smry.txt : $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).sv.bedpe) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).snv_repaired.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).indel_repaired.vcf.bgz.tbi) $(foreach pair,$(SAMPLE_PAIRS),hr_detect/$(pair)/$(pair).cn.txt)
+	$(call RUN, -c -n 4 -s 6G -m 9G -v $(SIGNATURE_TOOLS_ENV),"set -o pipefail && \
+					  			   $(RSCRIPT) modules/scripts/hr_detect.R --option 8 --sample_name '$(SAMPLE_PAIRS)'")
 		
 ..DUMMY := $(shell mkdir -p version; \
 	     R --version &> version/hr_detect.txt;)
