@@ -48,9 +48,11 @@ if (as.numeric(opt$option) == 1) {
 			 dplyr::mutate(Chromosome = chrom,
 				       Start_Position = loc.start,
 				       End_Position = loc.end,
-				       minor_cn = ifelse(is.na(lcn.em), "0", lcn.em),
+				       minor_cn = lcn.em,
 				       major_cn = tcn.em) %>%
 		 	 readr::type_convert() %>%
+			 dplyr::mutate(major_cn = ifelse(is.na(major_cn), 2, major_cn)) %>%
+			 dplyr::mutate(minor_cn = ifelse(is.na(minor_cn), major_cn, minor_cn)) %>%
 		 	 dplyr::mutate(major_cn = major_cn - minor_cn) %>%
 			 dplyr::select(Chromosome, Start_Position, End_Position, minor_cn, major_cn)
 		 
@@ -72,6 +74,8 @@ if (as.numeric(opt$option) == 1) {
 			 dplyr::mutate(X1 = gsub("# Purity = ", "", X1)) %>%
 			 readr::type_convert() %>%
 			 .[["X1"]]
+		
+		parame = ifelse(is.na(params), .1, params)
 		
 		pyclone[[i]] = pyclone[[i]] %>%
 			       dplyr::mutate(tumour_content = params)
