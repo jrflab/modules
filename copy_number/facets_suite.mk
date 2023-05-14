@@ -17,7 +17,7 @@ facets_suite/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 	
 define snp-pileup
-facets_suite/$1_$2/$1_$2.snp_pileup.gz : bam/$1.bam bam/$2.bam
+facets_suite/$1_$2/$1_$2.snp_pileup.gz : facets_suite/vcf/targets_dbsnp.vcf bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -s 1G -m 2G -v $(FACETS_SUITE_ENV),"set -o pipefail && \
 							   snp-pileup-wrapper.R --verbose \
 							   -sp /home/$(USER)/share/usr/env/r-facets-suite-2.0.8/bin/snp-pileup \
