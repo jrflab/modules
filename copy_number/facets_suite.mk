@@ -10,8 +10,8 @@ FACETS_MIN_NHET ?= 25
 FACETS_SNP_NBHD ?= 250
 FACETS_HET_THRESHOLD ?= 0.25
 
-facets_suite : facets_suite/vcf/targets_dbsnp.vcf \
-	       $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/$(pair).snp_pileup.gz)
+facets_suite : facets_suite/vcf/targets_dbsnp.vcf
+#	       $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/$(pair).snp_pileup.gz)
 
 facets_suite/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
