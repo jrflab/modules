@@ -201,7 +201,11 @@ strelka_varscan_indels :
 TARGETS += facets
 facets :
 	$(call RUN_MAKE,modules/copy_number/facets.mk)
-	
+
+TARGETS += facets_suite
+facets_suite :
+	$(call RUN_MAKE,modules/copy_number/facets_suite.mk)
+
 TARGETS += ascat
 ascat :
 	$(call RUN_MAKE,modules/copy_number/ascat.mk)

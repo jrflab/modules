@@ -38,6 +38,7 @@ CNVKIT_ENV ?= $(HOME)/share/usr/env/cnvkit-0.9.9
 STARFISH_ENV ?= $(HOME)/share/usr/env/r-starfish-0.11
 MEDICC_ENV = $(HOME)/share/usr/env/medicc2-0.8.1
 VARIANT_ANNOTATION_ENV = $(HOME)/share/usr/env/r-variantannotation-1.44.0
+FACETS_SUITE_ENV = $(HOME)/share/usr/env/r-facets-suite-2.0.8
 
 JARDIR ?= $(HOME)/share/usr/lib/java
 
