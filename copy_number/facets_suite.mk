@@ -31,9 +31,7 @@ facets_suite/$1_$2/$1_$2.snp_pileup.gz : facets_suite/vcf/targets_dbsnp.vcf bam/
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
-	$(eval $(call snp-pileup,\
-		$(tumor.$(pair)),$(normal.$(pair)))))
-
+		$(eval $(call snp-pileup,$(tumor.$(pair)),$(normal.$(pair)))))
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(FACETS_SUITE_ENV)/bin/R --version > version/facets_suite.txt)
