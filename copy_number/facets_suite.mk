@@ -12,11 +12,11 @@ FACETS_HET_THRESHOLD ?= 0.25
 
 facets_suite : facets_suite/vcf/targets_dbsnp.vcf
 
-facets/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
+facets_suite/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
 	
 define snp-pileup
-facets/$1_$2/$1__$2.N.snp_pileup.gz : facets/vcf/targets_dbsnp.vcf bam/$1.bam bam/$2.bam
+facets/$1_$2/$1__$2.N.snp_pileup.gz : facets_suite/vcf/targets_dbsnp.vcf bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -s 1G -m 2G -v $(FACETS_SUITE_ENV),"set -o pipefail && \
 							   snp-pileup-wrapper.R --verbose \
 							   -sp /home/$(USER)/share/usr/env/r-facets-suite-2.0.8/bin/snp-pileup \
