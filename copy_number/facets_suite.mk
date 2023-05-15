@@ -12,7 +12,8 @@ NORMAL_DEPTH ?= 25
 
 facets_suite : facets_suite/vcf/targets_dbsnp.vcf \
 	       $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/$(pair).snp_pileup.gz) \
-	       $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/taskcomplete)
+	       $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/taskcomplete) \
+	       facets_suite/summary/summary.txt
 
 facets_suite/vcf/targets_dbsnp.vcf : $(TARGETS_FILE)
 	$(INIT) $(BEDTOOLS) intersect -header -u -a $(DBSNP) -b $< > $@
@@ -57,6 +58,12 @@ facets_suite/$1_$2/taskcomplete : facets_suite/$1_$2/$1_$2.snp_pileup.gz
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call run-facets,$(tumor.$(pair)),$(normal.$(pair)))))
+		
+
+facets_suite/summary/summary.txt : $(foreach pair,$(SAMPLE_PAIRS),facets_suite/$(pair)/taskcomplete)
+	$(call RUN, -c -n 1 -s 24G -m 48G -v $(INNOVATION_ENV),"set -o pipefail && \
+								$(RSCRIPT) $(SCRIPTS_DIR)/facets_suite.R --option 1 --sample_pairs '$(SAMPLE_PAIRS)'")
+					  
 
 ..DUMMY := $(shell mkdir -p version; \
 	     $(FACETS_SUITE_ENV)/bin/R --version > version/facets_suite.txt)
