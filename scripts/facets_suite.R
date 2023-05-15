@@ -18,7 +18,7 @@ opt <- arguments$options
 if (as.numeric(opt$option) == 1) {
 	sample_names = unlist(strsplit(as.character(opt$sample_pairs), split = " ", fixed = TRUE))
 	CN = list()
-	for (i in 1:length(sample_pairs)) {
+	for (i in 1:length(sample_names)) {
 		CN[[i]] = readr::read_tsv(file = paste0("facets_suite/", sample_names[i], "/", sample_names[i], ".gene_level.txt"),
 					  col_names = TRUE, col_types = cols(.default = col_character())) %>%
 			  readr::type_convert()
