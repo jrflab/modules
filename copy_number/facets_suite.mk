@@ -52,7 +52,7 @@ facets_suite/$1_$2/taskcomplete : facets_suite/$1_$2/$1_$2.snp_pileup.gz
 							   --seed 0 \
 							   --legacy-output True \
 							   --facets-lib-path /home/$(USER)/share/usr/env/r-facets-suite-2.0.8/lib/R/library/ && \
-							   touch $$(@)")
+							   echo 'finished!' > $$(@)")
 	
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
