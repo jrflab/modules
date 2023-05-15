@@ -24,6 +24,6 @@ if (as.numeric(opt$option) == 1) {
 			  readr::type_convert()
 	}
 	CN = do.call(rbind, CN)
-	readr::write_tsv(x = CN, path = "facets_suite/summary/summary.txt", col_names = TRUE, append = FALSE)
+	readr::write_tsv(x = CN, path = "facets_suite/summary.txt", col_names = TRUE, append = FALSE)
 
 }
