@@ -510,7 +510,6 @@ pyclone_vi :
 TARGETS += deconstruct_sigs
 deconstruct_sigs :
 	$(call RUN_MAKE,modules/signatures/deconstruct_sigs.mk)
-	
 
 TARGETS += sv_signature
 sv_signature :
@@ -523,6 +522,7 @@ star_fish :
 TARGETS += hr_detect
 hr_detect :
 	$(call RUN_MAKE,modules/signatures/hr_detect.mk)
+
 
 #==================================================
 # miscellaneous
@@ -551,7 +551,7 @@ krona_classify :
 TARGETS += medicc2
 medicc2 :
 	$(call RUN_MAKE,modules/copy_number/medicc2.mk)
-	
+
 
 #==================================================
 # reports
@@ -568,10 +568,6 @@ genome_summary :
 TARGETS += mutation_summary
 mutation_summary :
 	$(call RUN_MAKE,modules/summary/mutationsummary.mk)
-	
-TARGETS += cravat_summary
-cravat_summary :
-	$(call RUN_MAKE,modules/summary/cravat_summary.mk)
 	
 TARGETS += delmh_summary
 delmh_summary :
@@ -594,13 +590,13 @@ TARGETS += ann_vcf
 ann_vcf : 
 	$(call RUN_MAKE,modules/vcf_tools/annotateVcf.mk)
 	
-TARGETS += cravat_annotation
-cravat_annotation :
-	$(call RUN_MAKE,modules/test/workflows/cravat_annotation.mk)
-	
 TARGETS += cravat_annotate
 cravat_annotate :
 	$(call RUN_MAKE,modules/vcf_tools/cravat_annotation.mk)
+	
+TARGETS += cravat_summary
+cravat_summary :
+	$(call RUN_MAKE,modules/summary/cravat_summary.mk)
 	
 TARGETS += ann_summary_vcf
 ann_summary_vcf : 
