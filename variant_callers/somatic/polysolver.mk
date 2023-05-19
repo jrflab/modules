@@ -50,15 +50,15 @@ endef
 $(foreach pair,$(SAMPLE_PAIRS),\
 		$(eval $(call hla-polysolver,$(tumor.$(pair)),$(normal.$(pair)))))
 		
-hla_polysolver/summary/genotype_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),$(pair).mutect.unfiltered.annotated) $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).strelka_indels.unfiltered.annotated)
+hla_polysolver/summary/genotype_summary.txt : $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).mutect.unfiltered.annotated) $(foreach pair,$(SAMPLE_PAIRS),hla_polysolver/$(pair)/$(pair).strelka_indels.unfiltered.annotated)
 	$(call RUN,-c -s 12G -m 24G,"set -o pipefail && \
 				     $(RSCRIPT) modules/variant_callers/somatic/hla_summary.R --sample_names '$(SAMPLE_PAIRS)'")
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     $(POLYSOLVER_ENV)/shell_call_hla_type --help &> version/hla_polysolver.txt; \
-	     $(POLYSOLVER_ENV)/shell_call_hla_mutations_from_type --help &> version/hla_polysolver.txt; \
-	     $(POLYSOLVER_ENV)/shell_annotate_hla_mutations --help &> version/hla_polysolver.txt)
+	     $(POLYSOLVER_ENV)/bin/shell_call_hla_type --help &> version/hla_polysolver.txt; \
+	     $(POLYSOLVER_ENV)/bin/shell_call_hla_mutations_from_type --help &>> version/hla_polysolver.txt; \
+	     $(POLYSOLVER_ENV)/bin/shell_annotate_hla_mutations --help &>> version/hla_polysolver.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: hla_polysolver
