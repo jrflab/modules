@@ -20,7 +20,7 @@ hla_polysolver/$1_$2/winners.hla.txt : bam/$1.bam bam/$2.bam
 									   1 \
 									   hg19 \
 									   STDFQ \
-									   1 \
+									   0 \
 									   hla_polysolver/$1_$2")
 								 	  
 hla_polysolver/$1_$2/hla.intervals : bam/$1.bam bam/$2.bam hla_polysolver/$1_$2/winners.hla.txt
