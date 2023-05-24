@@ -179,9 +179,10 @@ if (as.numeric(opt$option) == 1) {
 				 nparallel = 4)
 	
 	readr::write_tsv(x = res$hrdetect_output %>%
-			     dplyr::as_tibble() %>%
-			     dplyr::mutate(sample_name = sample_names),
-			 path = "hr_detect/hrdetect_smry.txt", append = FALSE, col_names = TRUE)
+			     as.data.frame() %>%
+			     tibble::rownames_to_column(var = "sample_name") %>%
+			     dplyr::as_tibble(),
+			 file = "hr_detect/hrdetect_smry.txt", append = FALSE, col_names = TRUE)
 	
 } else if (as.numeric(opt$option) == 8) {
 	sample_names = unlist(strsplit(x = as.character(opt$sample_name), split = " ", fixed = TRUE))
@@ -192,32 +193,39 @@ if (as.numeric(opt$option) == 1) {
 	
 	names(snv_files) = names(indel_files) = names(cn_files) = names(sv_files) <- sample_names
 	
-	res =  HRDetect_pipeline(genome.v = "hg19",
-				 SNV_vcf_files = snv_files,
-				 SV_bedpe_files = sv_files,
-				 Indels_vcf_files = indel_files,
-				 CNV_tab_files = cn_files,
-				 SNV_signature_version = "COSMICv2",
-				 nparallel = 4)
-	
-	signatures_to_use = paste0("Signature", c(1,2,3,5,6,8,13,17,18,20,26,30))
-	
-	res = res$exposures_subs %>%
-	      dplyr::as_tibble() %>%
-	      dplyr::mutate(signatures = rownames(res$exposures_subs)) %>%
-	      reshape2::melt(id.vars = "signatures", variable.name = "sample_name", value.name = "exposure") %>%
-	      dplyr::filter(signatures %in% signatures_to_use) %>%
+	res =  signatureFit_pipeline(genome.v = "hg19",
+				     SNV_vcf_files = snv_files,
+				     nparallel = 4)
+	signatures_to_use = c("SBS1", "SBS2", "SBS3", "SBS4", "SBS6", "SBS7a", "SBS7c", "SBS8",
+			      "SBS9", "SBS10a", "SBS10d", "SBS11", "SBS13", "SBS14", "SBS15",
+			      "SBS18", "SBS20", "SBS22", "SBS24", "SBS26", "SBS30", "SBS31",
+			      "SBS32", "SBS35", "SBS38", "SBS44", "SBS84", "SBS87", "SBS88",
+			      "SBS90", "SBS94", "SBS95", "SBS96", "SBS97", "SBS104", "SBS105",
+			      "SBS107", "SBS108", "SBS109", "SBS110", "SBS111", "SBS112",
+			      "SBS113", "SBS119", "SBS129", "SBS137")
+	tags_to_use = c("Deamination (Age)", "Deamination (APOBEC)", "HR deficiency", "Tobacco", "MMR deficiency",
+			"UV exposure", "UV exposure", "HR deficiency", "Lymphoma", "POLE deficiency", "POLD deficiency",
+			"Temozolomide-1,2-DMH", "Deamination (APOBEC)", "MMR deficiency (POLE deficiency)", "MMR deficiency",
+			"BER deficiency", "MMR deficiency (POLD deficiency)", "AAI", "Aflatoxin", "MMR deficiency",
+			"BER deficiency", "Platinum", "Azathioprine", "Platinum", "Similar to UV", "MMR deficiency",
+			"AID", "Deamination (Thiopurine)", "Colibactin", "Duocarmycin", "Similar to tobacco", "Deamination",
+			"Deamination", "MMR deficiency", "Platinum-related", "Deamination", "Similar to tobacco", "BER deficiency",
+			"Similar to tobacco", "Similar to AAI", "Platinum-related", "Platinum-related", "AAI", "Temozolomide-1,2-DMH",
+			"Similar to UV", "Similar to UV")
+
+	res = res$fitResults$exposures %>%
+	      as.data.frame() %>%
+	      tibble::rownames_to_column(var = "sample_name") %>%
+	      reshape2::melt(id.vars = "sample_name", variable.name = "signature", value.name = "exposure") %>%
+	      dplyr::filter(signature %in% signatures_to_use) %>%
 	      dplyr::group_by(sample_name) %>%
-	      dplyr::summarize(sum_exposures = sum(exposure)) %>%
-	      dplyr::right_join(res$exposures_subs %>%
-	      		        dplyr::as_tibble() %>%
-			        dplyr::mutate(signatures = rownames(res$exposures_subs)) %>%
-			        reshape2::melt(id.vars = "signatures", variable.name = "sample_name", value.name = "exposure") %>%
-				dplyr::filter(signatures %in% signatures_to_use), by = "sample_name") %>%
-	      dplyr::mutate(exposure = exposure/sum_exposures) %>%
-	      reshape2::dcast(formula = sample_name ~ signatures, value.var = "exposure", fill = 0) %>%
-	      dplyr::select(all_of(c("sample_name", signatures_to_use)))
+	      dplyr::summarize(signature = signature,
+			       exposure = exposure/sum(exposure)) %>%
+ 	      dplyr::ungroup() %>%
+	      dplyr::left_join(dplyr::tibble(signature = signatures_to_use,
+					     description = tags_to_use), by = "signature")
 	
-	readr::write_tsv(x = res, path = "hr_detect/signatures_smry.txt", append = FALSE, col_names = TRUE)
+	
+	readr::write_tsv(x = res, file = "hr_detect/signatures_smry.txt", append = FALSE, col_names = TRUE)
 
 }
