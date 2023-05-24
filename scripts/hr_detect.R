@@ -196,6 +196,7 @@ if (as.numeric(opt$option) == 1) {
 	res =  signatureFit_pipeline(genome.v = "hg19",
 				     SNV_vcf_files = snv_files,
 				     nparallel = 4)
+	
 	signatures_to_use = c("SBS1", "SBS2", "SBS3", "SBS4", "SBS6", "SBS7a", "SBS7c", "SBS8",
 			      "SBS9", "SBS10a", "SBS10d", "SBS11", "SBS13", "SBS14", "SBS15",
 			      "SBS18", "SBS20", "SBS22", "SBS24", "SBS26", "SBS30", "SBS31",
@@ -203,6 +204,7 @@ if (as.numeric(opt$option) == 1) {
 			      "SBS90", "SBS94", "SBS95", "SBS96", "SBS97", "SBS104", "SBS105",
 			      "SBS107", "SBS108", "SBS109", "SBS110", "SBS111", "SBS112",
 			      "SBS113", "SBS119", "SBS129", "SBS137")
+	
 	tags_to_use = c("Deamination (Age)", "Deamination (APOBEC)", "HR deficiency", "Tobacco", "MMR deficiency",
 			"UV exposure", "UV exposure", "HR deficiency", "Lymphoma", "POLE deficiency", "POLD deficiency",
 			"Temozolomide-1,2-DMH", "Deamination (APOBEC)", "MMR deficiency (POLE deficiency)", "MMR deficiency",
@@ -218,6 +220,10 @@ if (as.numeric(opt$option) == 1) {
 	      tibble::rownames_to_column(var = "sample_name") %>%
 	      reshape2::melt(id.vars = "sample_name", variable.name = "signature", value.name = "exposure") %>%
 	      dplyr::filter(signature %in% signatures_to_use) %>%
+	      dplyr::mutate(exposure = case_when(
+		      is.na(exposure) ~ 0,
+		      TRUE ~ exposure
+	      )) %>%
 	      dplyr::group_by(sample_name) %>%
 	      dplyr::summarize(signature = signature,
 			       exposure = exposure/sum(exposure)) %>%
