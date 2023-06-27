@@ -12,7 +12,8 @@ GRIDSS_PON_DIR ?= $(HOME)/share/lib/resource_files/gridss/pon/
 
 gridss : $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv.vcf) \
 	 $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/$(pair).gridss_sv_ft.vcf.bgz) \
-	 $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).gridss_sv.vcf)
+	 $(foreach pair,$(SAMPLE_PAIRS),vcf/$(pair).gridss_sv.vcf) \
+	 $(foreach pair,$(SAMPLE_PAIRS),gridss/$(pair)/taskcomplete)
 
 define gridss-tumor-normal
 gridss/$1_$2/$1_$2.gridss_sv.vcf : bam/$1.bam bam/$2.bam
@@ -40,6 +41,15 @@ gridss/$1_$2/$1_$2.gridss_sv_ft.vcf.bgz : gridss/$1_$2/$1_$2.gridss_sv.vcf
 
 vcf/$1_$2.gridss_sv.vcf : gridss/$1_$2/$1_$2.gridss_sv_ft.vcf.bgz
 	$$(INIT) zcat $$(<) > $$(@)
+	
+gridss/$1_$2/taskcomplete : vcf/$1_$2.gridss_sv.vcf
+	$$(INIT) rm -f gridss/$1_$2/$1.bam.gridss.working/$1.bam.sv.bam && \
+		 rm -f gridss/$1_$2/$1.bam.gridss.working/$1.bam.sv.bam.bai && \
+		 rm -f gridss/$1_$2/$2.bam.gridss.working/$2.bam.sv.bam && \
+		 rm -f gridss/$1_$2/$2.bam.gridss.working/$2.bam.sv.bam.bai && \
+		 rm -f gridss/$1_$2/$1_$2.gridss_sv.vcf.assembly.bam.gridss.working/FL001-101CD_FL001-101NL.gridss_sv.vcf.assembly.bam.sv.bam && \
+		 rm -f gridss/$1_$2/$1_$2.gridss_sv.vcf.assembly.bam.gridss.working/FL001-101CD_FL001-101NL.gridss_sv.vcf.assembly.bam.sv.bam.bai && \
+		 echo 'complete!' > $$(@)
 
 endef
 $(foreach pair,$(SAMPLE_PAIRS),\
