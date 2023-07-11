@@ -26,7 +26,8 @@ COLLECT_OXOG_METRICS = $(PICARD) -Xmx$(PICARD_MEM) CollectOxoGMetrics $(PICAD_OP
 COLLECT_GC_BIAS = $(PICARD) -Xmx$(PICARD_MEM) CollectGcBiasMetrics $(PICAD_OPTS)
 BAM_INDEX = $(PICARD) -Xmx$(PICARD_MEM) BamIndexStats $(PICAD_OPTS)
 
-TARGETS_LIST ?= $(HOME)/share/lib/resource_files/MSK-IMPACT-v4.sorted.list
+BAITS_LIST = $(HOME)/share/lib/bed_files/targets/IMPACT505/b37/IMPACT505_b37_baits.list
+TARGETS_LIST ?= $(HOME)/share/lib/bed_files/targets/IMPACT505/b37/IMPACT505_b37_targets.list
 	      
 define idx-metrics
 metrics/$1.idx_stats.txt : bam/$1.bam
@@ -83,7 +84,7 @@ metrics/$1.hs_metrics.txt : bam/$1.bam
 								 REFERENCE_SEQUENCE=$$(REF_FASTA) \
 								 INPUT=$$(<) \
 								 OUTPUT=$$(@) \
-								 BAIT_INTERVALS=$$(TARGETS_LIST) \
+								 BAIT_INTERVALS=$$(BAITS_LIST) \
 								 TARGET_INTERVALS=$$(TARGETS_LIST)")
 
 endef
