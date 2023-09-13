@@ -106,11 +106,11 @@ summary/duplicate_metrics.txt : $(foreach sample,$(SAMPLES),metrics/$(sample).du
 	$(call RUN, -c -n 1 -s 8G -m 12G,"set -o pipefail && \
 					  $(RSCRIPT) $(SCRIPTS_DIR)/wgs_metrics.R --option 7 --sample_names '$(SAMPLES)'")
 
-..DUMMY := $(shell mkdir -p version; \
-	     $(SAMTOOLS) --version >> version/wgs_metrics.txt; \
-	     echo "gatk3" >> version/wgs_metrics.txt; \
-	     $(GATK) --version >> version/wgs_metrics.txt; \
-	     echo "picard" >> version/wgs_metrics.txt)
+#..DUMMY := $(shell mkdir -p version; \
+#	     $(SAMTOOLS) --version >> version/wgs_metrics.txt; \
+#	     echo "gatk3" >> version/wgs_metrics.txt; \
+#	     $(GATK) --version >> version/wgs_metrics.txt; \
+#	     echo "picard" >> version/wgs_metrics.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: wgs_metrics
