@@ -437,6 +437,10 @@ TARGETS += bam_interval_metrics
 bam_interval_metrics :
 	$(call RUN_MAKE,modules/qc/bam_interval_metrics.mk)
 
+TARGETS += wgs_metrics
+wgs_metrics :
+	$(call RUN_MAKE,modules/qc/wgs_metrics.mk)
+
 TARGETS += rnaseq_metrics
 rnaseq_metrics :
 	$(call RUN_MAKE,modules/qc/rnaseqMetrics.mk)
