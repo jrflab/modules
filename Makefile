@@ -431,7 +431,7 @@ bam_to_fasta :
 
 TARGETS += bam_metrics
 bam_metrics :
-	$(call RUN_MAKE,modules/qc/bamMetrics.mk)
+	$(call RUN_MAKE,modules/qc/bam_metrics.mk)
 
 TARGETS += bam_interval_metrics
 bam_interval_metrics :
