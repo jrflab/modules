@@ -378,9 +378,9 @@ TARGETS += process_bam
 process_bam : 
 	$(call RUN_MAKE,modules/bam_tools/processBam.mk)
 	
-TARGETS += get_bam
-get_bam : 
-	$(call RUN_MAKE,modules/bam_tools/get_bam.mk)
+TARGETS += getbam_irb_mirror
+getbam_irb_mirror : 
+	$(call RUN_MAKE,modules/bam_tools/getbam_irb_mirror.mk)
 	
 
 #==================================================
