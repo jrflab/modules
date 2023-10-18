@@ -382,6 +382,13 @@ TARGETS += getbam_irb_mirror
 getbam_irb_mirror : 
 	$(call RUN_MAKE,modules/bam_tools/getbam_irb_mirror.mk)
 	
+TARGETS += getbam_data_mirror
+getbam_data_mirror : 
+	$(call RUN_MAKE,modules/bam_tools/getbam_data_mirror.mk)
+	
+TARGETS += putbam_data_mirror
+putbam_data_mirror : 
+	$(call RUN_MAKE,modules/bam_tools/putbam_data_mirror.mk)
 
 #==================================================
 # VCF tools
