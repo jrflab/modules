@@ -5,6 +5,8 @@ LOGDIR = log/getbam_data_mirror.$(NOW)
 get_bam : $(foreach sample,$(SAMPLES),bam/$(sample).bam) \
 	  $(foreach sample,$(SAMPLES),bam/$(sample).bam.bai) \
 	  $(foreach sample,$(SAMPLES),bam/$(sample).bai)
+	  
+PROJECT_NAME = (basename $(PWD))
 
 define get-bam
 bam/$1.bam :
