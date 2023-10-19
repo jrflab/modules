@@ -4,7 +4,7 @@ LOGDIR = log/putbam_data_mirror.$(NOW)
 
 put_bam : $(foreach sample,$(SAMPLES),bam/$(sample).taskcomplete)
 	  
-PROJECT_NAME = basename $(PWD)
+PROJECT_NAME = $(basename $(PWD))
 
 define put-bam
 bam/$1.taskcomplete : bam/$1.bam
