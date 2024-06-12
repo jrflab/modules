@@ -11,17 +11,17 @@ PROJECT_NAME = $(shell basename $(PWD))
 define get-bam
 bam/$1.bam :
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
-					  rsync -aP -e ssh $(USER)@swan.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bam \
+					  rsync -aP -e ssh $(USER)@lilac-xfer01.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bam \
 					  bam/")
 					  
 bam/$1.bam.bai :
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
-					  rsync -aP -e ssh $(USER)@swan.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bam.bai \
+					  rsync -aP -e ssh $(USER)@lilac-xfer01.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bam.bai \
 					  bam/")
 					  
 bam/$1.bai :
 	$$(call RUN,-c -n 1 -s 2G -m 4G, "set -o pipefail && \
-					  rsync -aP -e ssh $(USER)@swan.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bai \
+					  rsync -aP -e ssh $(USER)@lilac-xfer01.mskcc.org:/oscar/warm/reis-filho/by_user/$(USER)/$(PROJECT_NAME)/$1.bai \
 					  bam/")
 
 
