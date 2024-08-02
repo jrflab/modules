@@ -13,7 +13,7 @@ msisensor/$1_$2.msi : bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -n 8 -s 1G -m 2G -v $(MSISENSOR_ENV),"set -o pipefail && \
 							     msisensor msi $$(MSISENSOR_OPTS) \
 							     -d $$(MICROSATELLITES_LIST) \
-							     -d $$(MSI_REGIONS) \
+							     -e $$(MSI_REGIONS) \
 							     -n $$(<<) \
 							     -t $$(<) \
 							     -b 8 \
