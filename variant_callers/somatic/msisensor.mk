@@ -5,12 +5,15 @@ LOGDIR ?= log/msisensor.$(NOW)
 msisensor: $(foreach pair,$(SAMPLE_PAIRS),msisensor/$(pair).msi) \
 	   msisensor/msi.tsv
 
-MSISENSOR_OPTS ?= -d $(REF_MSI) $(if $(TARGETS_FILE),-e $(TARGETS_FILE))
+MICROSATELLITES_LIST = $(HOME)/share/lib/resource_files/MSIsensor/microsatellites.list
+MSI_REGIONS = $(HOME)/share/lib/resource_files/MSIsensor/msiregions.bed
 
 define msisensor-tumor-normal
-msisensor/$1_$2.msi : bam/$1.bam bam/$2.bam bam/$1.bam.bai bam/$2.bam.bai
+msisensor/$1_$2.msi : bam/$1.bam bam/$2.bam
 	$$(call RUN,-c -n 8 -s 1G -m 2G -v $(MSISENSOR_ENV),"set -o pipefail && \
 							     msisensor msi $$(MSISENSOR_OPTS) \
+							     -d $$(MICROSATELLITES_LIST) \
+							     -d $$(MSI_REGIONS) \
 							     -n $$(<<) \
 							     -t $$(<) \
 							     -b 8 \
