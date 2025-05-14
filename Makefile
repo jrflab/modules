@@ -157,6 +157,10 @@ TARGETS += msisensor
 msisensor :
 	$(call RUN_MAKE,modules/variant_callers/somatic/msisensor.mk)	
 
+TARGETS += mimsi
+msisensor :
+	$(call RUN_MAKE,modules/variant_callers/somatic/mimsi.mk)
+
 TARGETS += hla_polysolver
 hla_polysolver :
 	$(call RUN_MAKE,modules/variant_callers/somatic/polysolver.mk)
