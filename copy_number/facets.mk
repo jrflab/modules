@@ -21,8 +21,8 @@ FACETS_NDEPTH_MAX ?= 1000
 FACETS_HET_THRESHOLD ?= 0.25
 FACETS_GATK_VARIANTS ?= false
 FACETS_OPTS = --genome $(REF) \
-			  $(if $(facets_cval1.$1),--cval1 $(facets_diplogr.$1),--cval1 $(FACETS_CVAL1)) \
-			  $(if $(facets_cval2.$1),--cval2 $(facets_diplogr.$1),--cval2 $(FACETS_CVAL1)) \
+			  $(if $(facets_cval1.$1),--cval1 $(facets_cval1.$1),--cval1 $(FACETS_CVAL1)) \
+			  $(if $(facets_cval2.$1),--cval2 $(facets_cval2.$1),--cval2 $(FACETS_CVAL2)) \
 			  --het_threshold $(FACETS_HET_THRESHOLD) \
 			  --min_nhet $(FACETS_MIN_NHET) \
 			  --snp_nbhd $(FACETS_SNP_NBHD) \
