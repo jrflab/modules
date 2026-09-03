@@ -97,7 +97,7 @@ $(foreach sample,$(SAMPLES),\
 
 
 ..DUMMY := $(shell mkdir -p version; \
-	     echo 'mixcr' > version/mixcr_tumor_normal.txt)
+	     echo 'mixcr' > version/mixcr.txt)
 .SECONDARY:
 .DELETE_ON_ERROR:
 .PHONY: mixcr
