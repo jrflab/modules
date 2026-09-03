@@ -20,10 +20,10 @@ mixcr/$1/$1.txt : bam/$1.bam
 								    $$(SAMTOOLS) view -f 4 $$(<) | cut -f1; } | sort -u > $$(@)")
 
 mixcr/$1/$1.bam : bam/$1.bam mixcr/$1/$1.txt
-	$$(call RUN,-n 4 -s 4G -m 9G,"set -o pipefail && \
-								  mkdir -p mixcr/$1 && \
-								  $$(SAMTOOLS) view -b -N $$(<<) $$(<) | \
-								  $$(SAMTOOLS) sort -T mixcr/$1/$1 -O bam -n -@ 4 -m 6G -o $$(@) -")
+	$$(call RUN,-n 4 -s 4G -m 9G -v $(SAMTOOLS_ENV),"set -o pipefail && \
+													 mkdir -p mixcr/$1 && \
+													 $$(SAMTOOLS) view -b -N $$(<<) $$(<) | \
+													 $$(SAMTOOLS) sort -T mixcr/$1/$1 -O bam -n -@ 4 -m 6G -o $$(@) -")
 
 mixcr/$1/$1.1.fastq : mixcr/$1/$1.bam
 	$$(call RUN,-n 4 -s 4G -m 9G,"set -o pipefail && \
