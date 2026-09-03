@@ -1,6 +1,6 @@
 include modules/Makefile.inc
 
-LOGDIR = log/mixcr_tumor_normal.$(NOW)
+LOGDIR = log/mixcr.$(NOW)
 
 mixcr : $(foreach sample,$(SAMPLES),mixcr/$(sample)/$(sample).1.fastq.gz) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments.vdjca) \
