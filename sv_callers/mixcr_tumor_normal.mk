@@ -46,6 +46,7 @@ mixcr/$1/alignments.vdjca : mixcr/$1/$1.1.fastq.gz
 															  --preset rna-seq \
 															  --dna \
 															  -OallowPartialAlignments=true \
+															  -OallowNoCDR3PartAlignments=true \
 															  --threads 8 \
 															  --verbose \
 															  mixcr/$1/$1.1.fastq.gz mixcr/$1/$1.2.fastq.gz \
@@ -70,14 +71,24 @@ mixcr/$1/alignments_rescued_2.vdjca : mixcr/$1/alignments_rescued_1.vdjca
 															  -OminimalNOverlap=3 \
 															  $$(<) \
 															  $$(@)")
-								  
-mixcr/$1/alignments_rescued_2_extended.vdjca : mixcr/$1/alignments_rescued_2.vdjca
+															  
+mixcr/$1/alignments_rescued_3.vdjca : mixcr/$1/alignments_rescued_2.vdjca
+	$$(call RUN,-n 8 -s 4G -m 6G -v $(MIXCR_ENV) -w 24:00:00,"set -o pipefail && \
+															  mixcr assemblePartial \
+															  -OkValue=7 \
+															  -OkOffset=-3 \
+															  -OminimalAssembleOverlap=7 \
+															  -OminimalNOverlap=2 \
+															  $$(<) \
+															  $$(@)")
+															  
+mixcr/$1/alignments_rescued_3_extended.vdjca : mixcr/$1/alignments_rescued_3.vdjca
 	$$(call RUN,-n 8 -s 4G -m 6G -v $(MIXCR_ENV) -w 24:00:00,"set -o pipefail && \
 															  mixcr extend \
 															  $$(<) \
 															  $$(@)")
 
-mixcr/$1/clones.clns : mixcr/$1/alignments_rescued_2_extended.vdjca
+mixcr/$1/clones.clns : mixcr/$1/alignments_rescued_3_extended.vdjca
 	$$(call RUN,-n 8 -s 2G -m 4G -v $(MIXCR_ENV),"set -o pipefail && \
 											      mixcr assemble \
 											      -OminimalClonalSequenceLength=10 \
