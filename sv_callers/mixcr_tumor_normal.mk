@@ -6,7 +6,8 @@ mixcr : $(foreach sample,$(SAMPLES),mixcr/$(sample)/$(sample).1.fastq.gz) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_1.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_2.vdjca) \
-		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_2_extended.vdjca) \
+		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3.vdjca) \
+		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3_extended.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/clones.clns) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/clones.tsv)
 
