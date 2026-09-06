@@ -111,8 +111,8 @@ $(foreach sample,$(SAMPLES),\
 		
 
 mixcr/summary.txt : $(foreach sample,$(SAMPLES),mixcr/$(sample)/taskcomplete.txt)
-	$(call RUN,-c -n 1 -s 8G -m 12G,"set -o pipefail && \
-									 $(RSCRIPT) $(SCRIPTS_DIR)/mixcr_summary.R --sample_names '$(SAMPLES)'")
+	$(call RUN,-c -n 1 -s 8G -m 12G -v $(INNOVATION_ENV),"set -o pipefail && \
+														  $(RSCRIPT) $(SCRIPTS_DIR)/mixcr_summary.R --sample_names '$(SAMPLES)'")
 
 
 
