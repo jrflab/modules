@@ -9,7 +9,7 @@ mixcr : $(foreach sample,$(SAMPLES),mixcr/$(sample)/$(sample).1.fastq.gz) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3_extended.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/clones.clns) \
-		$(foreach sample,$(SAMPLES),mixcr/$(sample)/clones.tsv)
+		$(foreach sample,$(SAMPLES),mixcr/$(sample)/taskcomplete.txt)
 
 VDJ_LOCI_BED ?= $(HOME)/share/lib/bed_files/hg19_vdj_loci.bed
 
@@ -97,11 +97,12 @@ mixcr/$1/clones.clns : mixcr/$1/alignments_rescued_3_extended.vdjca
 											      $$(<) \
 											      $$(@)")
 								  
-mixcr/$1/clones.tsv : mixcr/$1/clones.clns
+mixcr/$1/taskcomplete.txt : mixcr/$1/clones.clns
 	$$(call RUN,-n 8 -s 2G -m 4G -v $(MIXCR_ENV),"set -o pipefail && \
 											      mixcr exportClones \
 											      $$(<) \
-											      $$(@)")
+											      $$(@) & \
+											      touch $$(@)")
 								  
 endef
 $(foreach sample,$(SAMPLES),\
