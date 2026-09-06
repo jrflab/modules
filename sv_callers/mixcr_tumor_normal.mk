@@ -9,7 +9,8 @@ mixcr : $(foreach sample,$(SAMPLES),mixcr/$(sample)/$(sample).1.fastq.gz) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/alignments_rescued_3_extended.vdjca) \
 		$(foreach sample,$(SAMPLES),mixcr/$(sample)/clones.clns) \
-		$(foreach sample,$(SAMPLES),mixcr/$(sample)/taskcomplete.txt)
+		$(foreach sample,$(SAMPLES),mixcr/$(sample)/taskcomplete.txt) \
+		mixcr/summary.txt
 
 VDJ_LOCI_BED ?= $(HOME)/share/lib/bed_files/hg19_vdj_loci.bed
 
@@ -107,6 +108,12 @@ mixcr/$1/taskcomplete.txt : mixcr/$1/clones.clns
 endef
 $(foreach sample,$(SAMPLES),\
 		$(eval $(call mixcr-tumor-normal,$(sample))))
+		
+
+mixcr/summary.txt : $(foreach sample,$(SAMPLES),mixcr/$(sample)/taskcomplete.txt)
+	$(call RUN,-c -n 1 -s 8G -m 12G,"set -o pipefail && \
+									 $(RSCRIPT) $(SCRIPTS_DIR)/mixcr_summary.R --sample_names '$(SAMPLES)'")
+
 
 
 ..DUMMY := $(shell mkdir -p version; \
